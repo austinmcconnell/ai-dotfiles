@@ -17,6 +17,66 @@
       "scope": "global",
       "filePattern": ".*\\.py$",
       "severity": "warning"
+    },
+    {
+      "name": "Shell Indentation",
+      "description": "Use 4 spaces for indentation in shell scripts",
+      "pattern": "(?m)^(\\t+)(.*)$",
+      "replacement": "$2",
+      "message": "Use 4 spaces for indentation instead of tabs in shell scripts.",
+      "scope": "global",
+      "filePattern": ".*\\.(sh|bash)$",
+      "severity": "warning"
+    },
+    {
+      "name": "Shell Line Length",
+      "description": "Enforce 100 character line length limit for shell scripts",
+      "pattern": "(?m)^(.{101,})$",
+      "replacement": "",
+      "message": "Line exceeds 100 characters. Consider refactoring for better readability.",
+      "scope": "global",
+      "filePattern": ".*\\.(sh|bash)$",
+      "severity": "warning"
+    },
+    {
+      "name": "Shell Trailing Whitespace",
+      "description": "Remove trailing whitespace in shell scripts",
+      "pattern": "(?m)[ \\t]+$",
+      "replacement": "",
+      "message": "Remove trailing whitespace.",
+      "scope": "global",
+      "filePattern": ".*\\.(sh|bash)$",
+      "severity": "warning"
+    },
+    {
+      "name": "Shell Double Quote Strings",
+      "description": "Use single quotes for strings without variables in shell scripts",
+      "pattern": "(?m)\"([^\"]*)\"",
+      "replacement": "'$1'",
+      "message": "Use single quotes for strings without variables.",
+      "scope": "global",
+      "filePattern": ".*\\.(sh|bash)$",
+      "severity": "info"
+    },
+    {
+      "name": "Shell Shebang",
+      "description": "Ensure shell scripts have a proper shebang",
+      "pattern": "(?m)^(?!#!/).*$",
+      "replacement": "#!/bin/bash\n\n",
+      "message": "Shell scripts should start with a shebang (#!/bin/bash).",
+      "scope": "file",
+      "filePattern": "^[^.]+\\.(sh|bash)$",
+      "severity": "warning"
+    },
+    {
+      "name": "Shell End of File",
+      "description": "Ensure shell scripts end with a newline",
+      "pattern": "(?m)([^\\n])$",
+      "replacement": "$1\n",
+      "message": "Files should end with a newline.",
+      "scope": "file",
+      "filePattern": ".*\\.(sh|bash)$",
+      "severity": "warning"
     }
   ]
 }
