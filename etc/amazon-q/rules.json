@@ -1,0 +1,22 @@
+{
+  "rules": [
+    {
+      "name": "Default",
+      "pattern": ".*",
+      "actions": {
+        "allowCodeGeneration": true,
+        "allowCodeExecution": true
+      }
+    },
+    {
+      "name": "Python Line Length",
+      "description": "Enforce 100 character line length limit for Python files",
+      "pattern": "(?m)^(.{101,})$",
+      "replacement": "",
+      "message": "Line exceeds 100 characters. Consider refactoring for better readability.",
+      "scope": "global",
+      "filePattern": ".*\\.py$",
+      "severity": "warning"
+    }
+  ]
+}
