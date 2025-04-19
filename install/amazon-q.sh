@@ -30,13 +30,16 @@ fi
 install_if_needed "amazon-q" "cask"
 
 AMAZON_Q_APPLICATION_SUPPORT_DIR="$HOME/Library/Application Support/amazon-q"
-AMAZON_Q_DOT_DIR="$HOME/.amazonq"
+AMAZON_Q_CONFIG_DIR="$HOME/.aws/amazonq"
+AMAZON_Q_DEFAULT_PROFILE_DIR="$AMAZON_Q_CONFIG_DIR/profiles/default"
 
 mkdir -p "$AMAZON_Q_APPLICATION_SUPPORT_DIR"
-mkdir -p "$AMAZON_Q_DOT_DIR"
+mkdir -p "$AMAZON_Q_CONFIG_DIR"
+mkdir -p "$AMAZON_Q_DEFAULT_PROFILE_DIR"
 
 ln -sfv "$DOTFILES_DIR/etc/amazon-q/settings.json" "$AMAZON_Q_APPLICATION_SUPPORT_DIR"
-ln -sfv "$DOTFILES_DIR/etc/amazon-q/rules.json" "$AMAZON_Q_DOT_DIR/rules.json"
+ln -sfv "$DOTFILES_DIR/etc/amazon-q/global_context.json" "$AMAZON_Q_CONFIG_DIR"
+ln -sfv "$DOTFILES_DIR/etc/amazon-q/profiles/default/context.json" "$AMAZON_Q_DEFAULT_PROFILE_DIR"
 
 if is-executable q; then
     print_header "Installing Amazon Q integrations"
