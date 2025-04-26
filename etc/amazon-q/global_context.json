@@ -2,6 +2,7 @@
     "paths": [
         ".amazonq/rules/**/*.md",
         "README.md",
-        "docs/**/*.md"
+        "docs/**/*.md",
+        "~/.dotfiles/.amazonq/rules/pre-commit-guidance.md"
     ]
 }
