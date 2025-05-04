@@ -1,4 +1,5 @@
 {
     "codeWhisperer.shareCodeWhispererContentWithAWS": false,
+    "inline.enabled": false,
     "telemetry.enabled": false
 }
