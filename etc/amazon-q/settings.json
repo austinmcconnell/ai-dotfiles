@@ -1,5 +1,6 @@
 {
     "codeWhisperer.shareCodeWhispererContentWithAWS": false,
     "inline.enabled": false,
+    "mcp.loadedBefore": true,
     "telemetry.enabled": false
 }
