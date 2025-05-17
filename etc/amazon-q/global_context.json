@@ -5,6 +5,7 @@
         "docs/**/*.md",
         "~/.dotfiles/.amazonq/rules/pre-commit-guidance.md",
         "~/.dotfiles/.amazonq/rules/security-best-practices.md",
-        "~/.dotfiles/.amazonq/rules/testing-standards.md"
+        "~/.dotfiles/.amazonq/rules/testing-standards.md",
+        "~/.dotfiles/.amazonq/rules/virtual-environment-guidance.md"
     ]
 }
