@@ -55,7 +55,27 @@ mkdir -p "$AMAZON_Q_DEFAULT_PROFILE_DIR"
 # Link configuration files from dotfiles repository to appropriate locations
 ln -sfv "$DOTFILES_DIR/etc/amazon-q/settings.json" "$AMAZON_Q_APPLICATION_SUPPORT_DIR"
 ln -sfv "$DOTFILES_DIR/etc/amazon-q/global_context.json" "$AMAZON_Q_CONFIG_DIR"
-ln -sfv "$DOTFILES_DIR/etc/amazon-q/profiles/default/context.json" "$AMAZON_Q_DEFAULT_PROFILE_DIR"
+
+# Link all existing profile configurations from dotfiles
+if [ -d "$DOTFILES_DIR/etc/amazon-q/profiles" ]; then
+    for profile_dir in "$DOTFILES_DIR/etc/amazon-q/profiles"/*; do
+        if [ -d "$profile_dir" ]; then
+            profile_name=$(basename "$profile_dir")
+            target_profile_dir="$AMAZON_Q_CONFIG_DIR/profiles/$profile_name"
+
+            # Create target directory if it doesn't exist
+            mkdir -p "$target_profile_dir"
+
+            # Link context.json if it exists in dotfiles
+            if [ -f "$profile_dir/context.json" ]; then
+                ln -sfv "$profile_dir/context.json" "$target_profile_dir/context.json"
+                echo "✓ Linked profile: $profile_name"
+            fi
+        fi
+    done
+else
+    echo "No profiles directory found in dotfiles"
+fi
 
 # Install Amazon Q integrations if the CLI is available
 if is-executable q; then
