@@ -1,6 +1,13 @@
 {
     "hooks": {},
     "paths": [
-        "**/*.py"
+        "app/**/*.py",
+        "tests/**/conftest.py",
+        "tests/factories.py",
+        "tests/settings.py",
+        "*.py",
+        "pyproject.toml",
+        "Pipfile",
+        ".env.example"
     ]
 }
