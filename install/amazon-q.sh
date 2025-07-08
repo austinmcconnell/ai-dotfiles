@@ -51,6 +51,7 @@ AMAZON_Q_DEFAULT_PROFILE_DIR="$AMAZON_Q_CONFIG_DIR/profiles/default"
 mkdir -p "$AMAZON_Q_APPLICATION_SUPPORT_DIR"
 mkdir -p "$AMAZON_Q_CONFIG_DIR"
 mkdir -p "$AMAZON_Q_DEFAULT_PROFILE_DIR"
+mkdir -p "$DOTFILES_DIR/etc/ai-prompts"
 
 # Link configuration files from dotfiles repository to appropriate locations
 ln -sfv "$DOTFILES_DIR/etc/amazon-q/settings.json" "$AMAZON_Q_APPLICATION_SUPPORT_DIR"
