@@ -1,0 +1,37 @@
+Help me create a refactoring plan for the following code. Analyze the current implementation and suggest improvements.
+
+**Please provide:**
+
+1. **Current State Analysis**
+   - Identify code smells, anti-patterns, or technical debt
+   - Assess complexity, maintainability, and performance issues
+   - Note any violations of SOLID principles or best practices
+
+2. **Refactoring Strategy**
+   - Break down the refactoring into safe, incremental steps
+   - Prioritize changes by impact and risk
+   - Identify dependencies between different refactoring tasks
+
+3. **Specific Improvements**
+   - Extract methods/classes where appropriate
+   - Simplify complex conditionals or loops
+   - Improve naming and code organization
+   - Reduce duplication and improve reusability
+
+4. **Risk Assessment**
+   - Identify high-risk changes that need extra testing
+   - Suggest areas where feature flags might be useful
+   - Recommend rollback strategies
+
+5. **Testing Strategy**
+   - What tests should be added before refactoring
+   - How to verify behavior remains unchanged
+   - Integration points that need special attention
+
+**Output Format:**
+- Write the complete plan in markdown format
+- Save to a file named `plan-refactor-[component].md` in the project root
+- Include a table of contents for easy navigation
+- Use checkboxes for actionable items to track progress
+
+**Goal:** Create a step-by-step plan that improves code quality while minimizing risk of introducing bugs.

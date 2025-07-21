@@ -1,0 +1,35 @@
+Generate a comprehensive pull request description based on the current branch changes.
+
+**Analysis Context:**
+```bash
+git log --oneline main..HEAD
+git diff --stat main HEAD
+git diff main HEAD
+```
+
+**PR Description should include:**
+
+## Summary
+Brief overview of what this PR accomplishes and why it's needed.
+
+## Changes Made
+- List of key changes organized by category (features, fixes, refactoring, etc.)
+- Files/modules affected
+- Any breaking changes or API modifications
+
+## Testing
+- How the changes were tested
+- Any new test cases added
+- Manual testing performed
+
+## Deployment Notes
+- Any special deployment considerations
+- Environment variables or configuration changes needed
+- Database migrations or other setup required
+
+## Screenshots/Examples
+- Suggest if visual changes need screenshots
+- Provide code examples for API changes
+
+**Format:** Use clear markdown formatting suitable for GitHub/GitLab PR templates.
+**Tone:** Professional but concise, focusing on reviewer needs.

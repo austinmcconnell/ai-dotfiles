@@ -72,11 +72,7 @@ These prompts work with any AI chat service:
 
 ## Example Prompts
 
-- `code-review` - Comprehensive code review checklist
-- `debugging-python` - Python-specific debugging assistance
-- `documentation-api` - API documentation generation
-- `performance-analysis` - Performance optimization guidance
-- `security-audit` - Security vulnerability assessment
-- `explain-code` - Request detailed code explanations
-- `refactor-suggestions` - Code refactoring recommendations
-- `test-generation` - Unit test generation prompts
+- `branch-analysis` - Analyze git branch differences and changes
+- `discover-previous-work` - Analyze previous work and determine next steps
+- `pr-description` - Generate pull request descriptions
+- `refactor-plan` - Create comprehensive refactoring plans (outputs to markdown file)

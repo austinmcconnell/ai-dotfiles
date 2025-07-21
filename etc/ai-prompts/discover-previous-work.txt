@@ -1,0 +1,117 @@
+Help me understand the current state of a feature implementation or refactoring effort and determine the next steps.
+
+**Analysis Process:**
+
+1. **Find and Read Plan/Roadmap Files**
+   - Look for markdown files with the pattern `plan-*`
+   - Common plan types: `plan-refactor-*`, `plan-feature-*`, `plan-migration-*`, `plan-architecture-*`
+   - Read the complete plan to understand the overall goals and strategy
+   - Identify the planned phases, milestones, and dependencies
+   - Note any success criteria or acceptance requirements
+
+2. **Check Git Branch and History Context**
+   - Identify the current branch and its relationship to main/master
+   - Review branch commits to understand what work has been completed
+   - Check if this is a feature branch with a specific naming convention
+   - Look for related branches that might contain parallel work
+   - Look for commit messages that reference the plan, feature, or issue numbers
+   - Identify patterns in the commit history that show progress toward the goal
+
+3. **Analyze Current Git Status**
+   - Run `git status` to see staged, modified, and untracked files
+   - Pay special attention to untracked files that might contain work-in-progress
+   - Check for any merge conflicts or uncommitted changes
+   - Identify any files that have been moved, renamed, or deleted
+
+4. **Inspect Work-in-Progress Files**
+   - Examine any untracked or modified files to understand incomplete work
+   - Look for TODO comments, FIXME notes, incomplete functions, or placeholder code
+   - Identify any temporary files, backup files, or experimental code
+   - Check for commented-out code that might indicate abandoned approaches
+
+5. **Cross-Reference with Plan**
+   - Compare the current state against the original plan
+   - Identify which steps have been completed, partially completed, or not started
+   - Note any deviations from the original plan and understand why
+   - Check if the scope or requirements have evolved
+
+6. **Validate Current System State**
+   - Run existing tests to ensure current code is working (`npm test`, `pytest`, etc.)
+   - Check CI/CD pipeline status if applicable
+   - Verify the development environment is properly set up
+   - Identify any broken functionality that needs immediate attention
+   - Check if the application/service starts and runs correctly
+
+7. **Check Dependencies and Integration Points**
+   - Review package.json, requirements.txt, Cargo.toml, or similar dependency files for changes
+   - Check for any new dependencies that were added but not documented
+   - Identify integration points with other systems, APIs, or services
+   - Look for environment-specific configurations that might be incomplete
+   - Check for database migrations or schema changes
+
+8. **Documentation and Communication Review**
+   - Check for any README updates, API documentation, or inline comments
+   - Look for related issues, tickets, or pull requests in the repository
+   - Review any architectural decision records (ADRs) or design documents
+   - Check for any team communication references in commit messages
+
+**Special Considerations:**
+
+- If no plan files are found, look for related documentation, issues, or README sections
+- If git history is unclear, suggest creating a summary of current understanding
+- If there are merge conflicts, prioritize resolving them before analysis
+- If the working directory is very messy, recommend a cleanup strategy first
+- If tests are failing, determine if this is expected or indicates a problem
+
+**Provide Analysis:**
+
+1. **Executive Summary**
+   - One-sentence description of the current state
+   - Confidence level in the analysis (High/Medium/Low based on available information)
+   - Estimated effort to complete remaining work (Small/Medium/Large)
+
+2. **Current State Summary**
+   - What was the original goal/plan?
+   - What has been accomplished so far?
+   - What work is currently in progress?
+   - How much time has passed since the last work on this feature?
+
+3. **Progress Assessment**
+   - Which planned steps are complete? ✅
+   - Which steps are partially complete? 🔄
+   - Which steps haven't been started? ⏳
+   - What unexpected issues or changes have occurred?
+   - Has the scope or requirements changed since the original plan?
+
+4. **Immediate Actions Required**
+   - What must be done before any new development work?
+   - Any cleanup, commits, stashing, or environment setup needed?
+   - Are there failing tests that need to be fixed first?
+   - Any merge conflicts or git issues to resolve?
+
+5. **Next Steps Recommendation**
+   - What is the logical next step based on the plan and current state?
+   - Are there any blockers or dependencies that need to be resolved first?
+   - Should the plan be updated based on new information?
+   - What is the business impact of completing vs. delaying this work?
+
+6. **Risk Assessment and Mitigation**
+   - Are there any incomplete changes that could cause issues?
+   - What needs to be tested or verified before proceeding?
+   - **Rollback options**: How can we safely revert if needed?
+   - Are there any integration points that need special attention?
+   - What could go wrong with the next steps?
+
+7. **Alternative Approaches**
+   - If the original plan seems outdated, what alternatives exist?
+   - Should we continue with the current approach or pivot?
+   - Are there simpler ways to achieve the same goal?
+
+8. **Resource and Time Estimate**
+   - How much work remains to complete the original goal?
+   - What skills, tools, or resources are needed?
+   - Are there any external dependencies or waiting periods?
+
+**Important:** Wait for explicit confirmation before making any code changes, commits, or file modifications. Only provide analysis and recommendations initially.
+
+**Goal:** Provide a comprehensive understanding of where we are in the implementation process, what the next logical step should be, and how to proceed safely and efficiently.
