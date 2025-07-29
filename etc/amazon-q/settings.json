@@ -1,4 +1,6 @@
 {
+  "autocomplete.disable": true,
+  "autocomplete.insertSpaceAutomatically": true,
   "codeWhisperer.shareCodeWhispererContentWithAWS": false,
   "inline.enabled": false,
   "mcp.loadedBefore": true,
