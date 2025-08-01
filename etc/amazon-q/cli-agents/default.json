@@ -1,0 +1,25 @@
+{
+    "allowedTools": [
+        "fs_read"
+    ],
+    "description": "Default CLI agent configuration",
+    "hooks": {
+        "agentSpawn": [],
+        "userPromptSubmit": []
+    },
+    "mcpServers": {},
+    "name": "default",
+    "prompt": null,
+    "resources": [
+        "file://~/.dotfiles/etc/amazon-q/global_rules/**/*.md",
+        "file://.amazonq/rules/**/*.md",
+        "file://README.md",
+        "file://docs/**/*.md"
+    ],
+    "toolAliases": {},
+    "tools": [
+        "*"
+    ],
+    "toolsSettings": {},
+    "useLegacyMcpJson": true
+}

@@ -46,11 +46,13 @@ install_if_needed "amazon-q" "cask"
 AMAZON_Q_APPLICATION_SUPPORT_DIR="$HOME/Library/Application Support/amazon-q"
 AMAZON_Q_CONFIG_DIR="$HOME/.aws/amazonq"
 AMAZON_Q_DEFAULT_PROFILE_DIR="$AMAZON_Q_CONFIG_DIR/profiles/default"
+AMAZON_Q_CLI_AGENTS_DIR="$AMAZON_Q_CONFIG_DIR/cli-agents"
 
 # Create necessary directories
 mkdir -p "$AMAZON_Q_APPLICATION_SUPPORT_DIR"
 mkdir -p "$AMAZON_Q_CONFIG_DIR"
 mkdir -p "$AMAZON_Q_DEFAULT_PROFILE_DIR"
+mkdir -p "$AMAZON_Q_CLI_AGENTS_DIR"
 mkdir -p "$DOTFILES_DIR/etc/ai-prompts"
 
 # Link configuration files from dotfiles repository to appropriate locations
@@ -76,6 +78,19 @@ if [ -d "$DOTFILES_DIR/etc/amazon-q/profiles" ]; then
     done
 else
     echo "No profiles directory found in dotfiles"
+fi
+
+# Link CLI agents from dotfiles repository
+if [ -d "$DOTFILES_DIR/etc/amazon-q/cli-agents" ]; then
+    for agent_file in "$DOTFILES_DIR/etc/amazon-q/cli-agents"/*.json; do
+        if [ -f "$agent_file" ]; then
+            agent_name=$(basename "$agent_file")
+            ln -sfv "$agent_file" "$AMAZON_Q_CLI_AGENTS_DIR/$agent_name"
+            echo "✓ Linked CLI agent: $agent_name"
+        fi
+    done
+else
+    echo "No CLI agents directory found in dotfiles"
 fi
 
 # Install Amazon Q integrations if the CLI is available
