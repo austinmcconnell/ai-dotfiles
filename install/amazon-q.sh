@@ -100,3 +100,58 @@ if is-executable q; then
 else
     echo "Amazon Q CLI not found. Skipping integrations installation."
 fi
+
+# Install MCP servers if npm is available
+if is-executable npm; then
+    print_header "Installing Amazon Q MCP servers"
+
+    # List of Node.js MCP servers to install
+    MCP_SERVERS=(
+        "@modelcontextprotocol/server-filesystem"
+        "@modelcontextprotocol/server-sequential-thinking"
+        "enhanced-postgres-mcp-server"
+        "@aashari/mcp-server-atlassian-jira"
+    )
+
+    # Install each MCP server
+    for server in "${MCP_SERVERS[@]}"; do
+        echo "Installing $server..."
+        if npm list -g "$server" >/dev/null 2>&1; then
+            echo "✓ $server is already installed"
+        else
+            npm install -g "$server"
+            echo "✓ $server installed successfully"
+        fi
+    done
+
+    echo "✅ All Node.js MCP servers installed successfully"
+else
+    echo "npm not found. Skipping Node.js MCP server installation."
+fi
+
+# Install Python MCP servers if pip is available
+if is-executable pip; then
+    print_header "Installing Python MCP servers"
+
+    # List of Python MCP servers to install
+    PYTHON_MCP_SERVERS=(
+        "mcp-server-git"
+        "mcp-server-time"
+        "mcp-server-fetch"
+    )
+
+    # Install each Python MCP server
+    for server in "${PYTHON_MCP_SERVERS[@]}"; do
+        echo "Installing $server..."
+        if pip show "$server" >/dev/null 2>&1; then
+            echo "✓ $server is already installed"
+        else
+            pip install "$server"
+            echo "✓ $server installed successfully"
+        fi
+    done
+
+    echo "✅ All Python MCP servers installed successfully"
+else
+    echo "pip not found. Skipping Python MCP server installation."
+fi
