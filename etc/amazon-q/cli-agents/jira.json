@@ -1,0 +1,111 @@
+{
+    "allowedTools": [
+        "fs_read",
+        "@filesystem/read_text_file",
+        "@filesystem/list_directory",
+        "@filesystem/search_files",
+        "@filesystem/get_file_info",
+        "@filesystem/directory_tree",
+        "@sequential-thinking/sequentialthinking",
+        "@time/get_current_time",
+        "@fetch/fetch_url",
+        "@jira/list_projects",
+        "@jira/search_issues",
+        "@jira/get_issue",
+        "@jira/add_comment",
+        "@jira/add_worklog",
+        "@jira/update_worklog",
+        "@jira/list_worklogs",
+        "@jira/list_comments",
+        "@jira/create_issue",
+        "@jira/get_create_meta",
+        "@jira/get_project",
+        "@jira/list_statuses"
+    ],
+    "description": "JIRA-focused agent with deep SCRUM and Agile knowledge for creating, reviewing, and updating user stories",
+    "hooks": {
+        "agentSpawn": [],
+        "userPromptSubmit": []
+    },
+    "mcpServers": {
+        "filesystem": {
+            "command": "npx",
+            "args": [
+                "@modelcontextprotocol/server-filesystem",
+                "~/.dotfiles",
+                "."
+            ],
+            "env": {},
+            "timeout": 120000,
+            "disabled": false
+        },
+        "sequential-thinking": {
+            "command": "npx",
+            "args": [
+                "@modelcontextprotocol/server-sequential-thinking"
+            ],
+            "env": {},
+            "timeout": 300000,
+            "disabled": false
+        },
+        "time": {
+            "command": "python",
+            "args": [
+                "-m", "mcp_server_time",
+                "--local-timezone=America/Chicago"
+            ],
+            "env": {},
+            "timeout": 30000,
+            "disabled": false
+        },
+        "fetch": {
+            "command": "python",
+            "args": [
+                "-m", "mcp_server_fetch"
+            ],
+            "env": {},
+            "timeout": 120000,
+            "disabled": false
+        },
+        "jira": {
+            "command": "npx",
+            "args": [
+                "@aashari/mcp-server-atlassian-jira"
+            ],
+            "env": {},
+            "timeout": 120000,
+            "disabled": false
+        }
+    },
+    "name": "jira",
+    "prompt": "You are a JIRA-focused agent with deep expertise in SCRUM and Agile methodologies. Your primary role is to help create, review, and update JIRA user stories and other work items according to SCRUM best practices.\n\nYou have the ability to:\n- READ, CREATE, and UPDATE JIRA issues (but NEVER DELETE)\n- Analyze and improve user story quality\n- Provide guidance on SCRUM ceremonies and practices\n- Help with sprint planning and backlog refinement\n- Review acceptance criteria and definition of done\n\nAlways follow SCRUM principles and ensure user stories meet the INVEST criteria (Independent, Negotiable, Valuable, Estimable, Small, Testable). When reviewing or creating stories, focus on user value, clear acceptance criteria, and proper story structure.",
+    "resources": [
+        "file://~/.dotfiles/etc/amazon-q/global_rules/**/*.md",
+        "file://~/.dotfiles/etc/amazon-q/jira-scrum-rules/**/*.md",
+        "file://.amazonq/rules/**/*.md",
+        "file://README.md",
+        "file://docs/**/*.md"
+    ],
+    "toolAliases": {
+        "@filesystem/read_text_file": "read",
+        "@filesystem/list_directory": "ls",
+        "@filesystem/search_files": "find",
+        "@time/get_current_time": "now",
+        "@jira/get_issue": "jira_get_issue",
+        "@jira/list_projects": "jira_ls_projects",
+        "@jira/search_issues": "jira_ls_issues",
+        "@jira/add_comment": "jira_add_comment",
+        "@jira/add_worklog": "jira_add_worklog",
+        "@jira/list_worklogs": "jira_ls_worklogs",
+        "@jira/list_comments": "jira_ls_comments",
+        "@jira/create_issue": "jira_create_issue",
+        "@jira/get_create_meta": "jira_get_create_meta",
+        "@jira/get_project": "jira_get_project",
+        "@jira/list_statuses": "jira_ls_statuses"
+    },
+    "tools": [
+        "*"
+    ],
+    "toolsSettings": {},
+    "useLegacyMcpJson": true
+}
