@@ -155,3 +155,51 @@ if is-executable pip; then
 else
     echo "pip not found. Skipping Python MCP server installation."
 fi
+
+# Build official GitHub MCP Server from source if Go is available
+if is-executable go; then
+    print_header "Building official GitHub MCP Server from source"
+
+    GITHUB_MCP_REPO_DIR="$HOME/.repositories/github-mcp-server"
+    GITHUB_MCP_BINARY="$HOME/.local/bin/github-mcp-server"
+
+    # Create directories
+    mkdir -p "$HOME/.repositories"
+    mkdir -p "$HOME/.local/bin"
+
+    # Clone or update the repository
+    if [ -d "$GITHUB_MCP_REPO_DIR" ]; then
+        echo "Updating existing GitHub MCP Server repository..."
+        cd "$GITHUB_MCP_REPO_DIR"
+        git pull origin main
+    else
+        echo "Cloning GitHub MCP Server repository..."
+        git clone https://github.com/github/github-mcp-server.git "$GITHUB_MCP_REPO_DIR"
+        cd "$GITHUB_MCP_REPO_DIR"
+    fi
+
+    # Build the binary
+    echo "Building GitHub MCP Server binary..."
+    if go build -o "$GITHUB_MCP_BINARY" cmd/github-mcp-server/main.go; then
+        echo "✅ GitHub MCP Server built successfully at: $GITHUB_MCP_BINARY"
+
+        # Make sure it's executable
+        chmod +x "$GITHUB_MCP_BINARY"
+
+        # Test the binary
+        if "$GITHUB_MCP_BINARY" --help >/dev/null 2>&1; then
+            echo "✅ GitHub MCP Server binary is working correctly"
+        else
+            echo "⚠️  GitHub MCP Server binary built but may have issues"
+        fi
+    else
+        echo "❌ Failed to build GitHub MCP Server"
+        echo "   You may need to build it manually:"
+        echo "   cd $GITHUB_MCP_REPO_DIR"
+        echo "   go build -o $GITHUB_MCP_BINARY cmd/github-mcp-server/main.go"
+    fi
+else
+    echo "Go not found. Skipping GitHub MCP Server build."
+    echo "To use the GitHub agent, install Go and run this script again, or use Docker:"
+    echo "   docker pull ghcr.io/github/github-mcp-server"
+fi
