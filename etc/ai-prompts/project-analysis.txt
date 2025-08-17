@@ -1,0 +1,28 @@
+Scan this repository to understand its structure, purpose, and current development direction. Please:
+
+**Repository Analysis:**
+1. Examine the repository structure and identify the main technology stack/framework
+2. Read the README and any top-level documentation to understand the project's purpose
+3. Check recent commit history (last 10-20 commits) to understand current development trajectory
+4. Look for documentation folders (docs/, documentation/, wiki/) for additional context
+5. Identify configuration files that indicate tooling, workflows, or development practices
+6. Check for planning documents, roadmaps, or TODO files that show future direction
+
+**Focus Areas:**
+- What problem does this project solve?
+- What is the current architecture/structure?
+- What major changes or improvements have been made recently?
+- What development workflows and quality controls are in place?
+- What are the current priorities or next steps?
+- What is the maturity level of the project?
+
+**Output Format:**
+Provide a comprehensive overview covering:
+- Project purpose and scope
+- Current architecture/structure
+- Recent development activity and direction
+- Development workflow and tooling
+- Current status and next steps
+- Any notable patterns, decisions, or areas of focus
+
+Prioritize understanding the current state and recent trajectory over suggesting changes.
