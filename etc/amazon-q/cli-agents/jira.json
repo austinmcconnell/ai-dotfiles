@@ -26,7 +26,7 @@
         "jira_add_worklog",
         "jira_update_worklog"
     ],
-    "description": "JIRA-focused agent with deep SCRUM and Agile knowledge for creating, reviewing, and updating user stories",
+    "description": "JIRA-focused agent with deep SCRUM and Agile knowledge, restricted to safe operations",
     "hooks": {
         "agentSpawn": [],
         "userPromptSubmit": []
@@ -115,6 +115,55 @@
     "tools": [
         "*"
     ],
-    "toolsSettings": {},
-    "useLegacyMcpJson": true
+    "toolsSettings": {
+        "execute_bash": {
+            "deny": [
+                "rm *",
+                "rmdir *",
+                "sudo *",
+                "chmod *",
+                "chown *",
+                "mv *",
+                "cp *",
+                "dd *",
+                "systemctl *",
+                "service *",
+                "kill *",
+                "killall *",
+                "pkill *",
+                "crontab *",
+                "aws *",
+                "kubectl *",
+                "docker *",
+                "git push *",
+                "git commit *",
+                "git merge *",
+                "git rebase *",
+                "npm install *",
+                "pip install *",
+                "brew install *"
+            ],
+            "allow": [
+                "ls *",
+                "cat *",
+                "grep *",
+                "find *",
+                "head *",
+                "tail *",
+                "wc *",
+                "sort *",
+                "uniq *",
+                "echo *",
+                "pwd",
+                "which *",
+                "whoami",
+                "date",
+                "git status",
+                "git log *",
+                "git diff *",
+                "git show *"
+            ]
+        }
+    },
+    "useLegacyMcpJson": false
 }

@@ -35,7 +35,7 @@
         "@jira/get_project",
         "@jira/list_statuses"
     ],
-    "description": "Default CLI agent configuration",
+    "description": "Default CLI agent with comprehensive development tools and security restrictions",
     "hooks": {
         "agentSpawn": [],
         "userPromptSubmit": []
@@ -153,6 +153,52 @@
     "tools": [
         "*"
     ],
-    "toolsSettings": {},
-    "useLegacyMcpJson": true
+    "toolsSettings": {
+        "execute_bash": {
+            "deny": [
+                "rm *",
+                "rmdir *",
+                "sudo *",
+                "chmod *",
+                "chown *",
+                "mv /* *",
+                "cp /* *",
+                "dd *",
+                "mkfs *",
+                "fdisk *",
+                "mount *",
+                "umount *",
+                "systemctl *",
+                "service *",
+                "kill -9 *",
+                "killall *",
+                "pkill *",
+                "reboot",
+                "shutdown *",
+                "init *",
+                "crontab -e",
+                "crontab -r"
+            ]
+        },
+        "use_aws": {
+            "allowedOperations": [
+                "describe-*",
+                "list-*",
+                "get-*",
+                "show-*"
+            ],
+            "deniedOperations": [
+                "delete-*",
+                "terminate-*",
+                "remove-*",
+                "create-*",
+                "update-*",
+                "modify-*",
+                "put-*",
+                "attach-*",
+                "detach-*"
+            ]
+        }
+    },
+    "useLegacyMcpJson": false
 }

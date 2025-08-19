@@ -53,7 +53,7 @@
         "@github/list_organization_repositories",
         "@github/list_notifications"
     ],
-    "description": "GitHub-focused agent with comprehensive repository, issue, and pull request management capabilities",
+    "description": "GitHub-focused agent with comprehensive repository management and security restrictions",
     "hooks": {
         "agentSpawn": [],
         "userPromptSubmit": []
@@ -148,6 +148,49 @@
     "tools": [
         "*"
     ],
-    "toolsSettings": {},
-    "useLegacyMcpJson": true
+    "toolsSettings": {
+        "execute_bash": {
+            "deny": [
+                "rm *",
+                "rmdir *",
+                "sudo *",
+                "chmod *",
+                "chown *",
+                "mv /* *",
+                "cp /* *",
+                "dd *",
+                "systemctl *",
+                "service *",
+                "kill *",
+                "killall *",
+                "pkill *",
+                "crontab *",
+                "aws *",
+                "kubectl *",
+                "docker run *",
+                "docker exec *",
+                "docker rm *",
+                "docker rmi *"
+            ],
+            "allow": [
+                "git *",
+                "ls *",
+                "cat *",
+                "grep *",
+                "find *",
+                "head *",
+                "tail *",
+                "wc *",
+                "sort *",
+                "uniq *",
+                "echo *",
+                "pwd",
+                "which *",
+                "whoami",
+                "date",
+                "gh *"
+            ]
+        }
+    },
+    "useLegacyMcpJson": false
 }
