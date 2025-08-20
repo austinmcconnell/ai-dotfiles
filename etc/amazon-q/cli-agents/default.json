@@ -115,9 +115,15 @@
         }
     },
     "name": "default",
-    "prompt": null,
+    "prompt": "You are a comprehensive development assistant with expertise in AWS, infrastructure, databases, and general software development. Your primary role is to help with:\n\n- AWS operations (read-only, following security best practices)\n- Infrastructure analysis and troubleshooting\n- Database operations and queries\n- General development tasks and code review\n- JIRA project management and user story creation\n- Git operations and version control\n\nAlways prioritize security and follow the principle of least privilege. For AWS and Kubernetes operations, request explicit permission before proceeding and only perform read-only operations unless specifically authorized. When working with databases, be cautious with queries that might affect performance.\n\nYou have access to comprehensive workflow guidance - leverage this knowledge to provide informed recommendations aligned with established best practices.",
     "resources": [
-        "file://~/.dotfiles/etc/amazon-q/global_rules/**/*.md",
+        "file://~/.dotfiles/etc/amazon-q/global_rules/workflow/aws-operations-guidance.md",
+        "file://~/.dotfiles/etc/amazon-q/global_rules/workflow/kubernetes-operations-guidance.md",
+        "file://~/.dotfiles/etc/amazon-q/global_rules/workflow/pre-commit-guidance.md",
+        "file://~/.dotfiles/etc/amazon-q/global_rules/workflow/virtual-environment-guidance.md",
+        "file://~/.dotfiles/etc/amazon-q/global_rules/code/**/*.md",
+        "file://~/.dotfiles/etc/amazon-q/global_rules/security/**/*.md",
+        "file://~/.dotfiles/etc/amazon-q/jira-scrum-rules/**/*.md",
         "file://.amazonq/rules/**/*.md",
         "file://README.md"
     ],
@@ -177,7 +183,14 @@
                 "shutdown *",
                 "init *",
                 "crontab -e",
-                "crontab -r"
+                "crontab -r",
+                "docker run --privileged *",
+                "docker exec --privileged *",
+                "kubectl delete *",
+                "kubectl apply *",
+                "kubectl create *",
+                "kubectl patch *",
+                "kubectl replace *"
             ]
         },
         "use_aws": {
