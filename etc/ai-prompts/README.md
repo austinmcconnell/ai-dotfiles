@@ -72,7 +72,24 @@ These prompts work with any AI chat service:
 
 ## Example Prompts
 
+### Development Analysis
+
+- `project-analysis` - Comprehensive project overview and current state (outputs to `analysis/project-analysis.md`)
+- `architecture-analysis` - Technical architecture and system design analysis (outputs to `analysis/architecture-analysis.md`)
+- `integration-analysis` - External integrations, APIs, and data flows (outputs to `analysis/integration-analysis.md`)
+- `security-analysis` - Security posture, vulnerabilities, and compliance (outputs to `analysis/security-analysis.md`)
+- `performance-analysis` - Performance characteristics, bottlenecks, and optimization (outputs to `analysis/performance-analysis.md`)
+- `testing-analysis` - Testing strategy, coverage, and quality assurance (outputs to `analysis/testing-analysis.md`)
+- `documentation-analysis` - Documentation quality, completeness, and maintenance (outputs to `analysis/documentation-analysis.md`)
+- `technical-debt-analysis` - Code quality issues and refactoring opportunities (outputs to `analysis/technical-debt-analysis.md`)
+
+### Git and Code Review
+
 - `branch-analysis` - Analyze git branch differences and changes
 - `discover-previous-work` - Analyze previous work and determine next steps
 - `pr-description` - Generate pull request descriptions
 - `refactor-plan` - Create comprehensive refactoring plans (outputs to markdown file)
+
+### Skills Development
+
+- `vim-practice-session` - Interactive vim skills practice with progress tracking
