@@ -1,0 +1,124 @@
+**IMPORTANT: Branch Validation Required**
+Before proceeding, verify the current git branch:
+```bash
+git branch --show-current
+```
+
+This analysis should ONLY be performed on `main` or `master` branches. If currently on a different branch, abort the analysis and inform the user that architecture analysis should be done from the main branch.
+
+**Prerequisite Check:**
+This analysis requires the following prerequisite analysis to be completed first.
+
+Check for required file:
+- `analysis/project-analysis.md`
+
+If the file is missing, run the prerequisite analysis first:
+- Missing project-analysis.md? Run: `project-analysis`
+
+**If the prerequisite file is missing, abort this analysis and complete the prerequisite first.**
+
+**Architecture Analysis:**
+Analyze the technical architecture and system design of this repository.
+
+**Read Prerequisite Analysis:**
+Read `analysis/project-analysis.md` to understand the project context, purpose, and current development direction before proceeding with the architecture analysis.
+
+Please:
+
+1. **System Architecture Overview**
+   - Identify the overall architectural pattern (MVC, microservices, monolith, serverless, etc.)
+   - Map out major system components and their relationships
+   - Identify system boundaries and interfaces
+   - Document the technology stack and frameworks used
+
+2. **Component Analysis**
+   - Analyze directory structure and how it reflects architectural decisions
+   - Identify core modules, services, or components
+   - Document component responsibilities and interactions
+   - Note any architectural layers (presentation, business logic, data access)
+
+3. **Data Architecture**
+   - Identify data storage solutions (databases, caches, file systems)
+   - Analyze data models and schemas
+   - Document data flow between components
+   - Note any data transformation or processing patterns
+
+4. **Design Patterns and Principles**
+   - Identify design patterns in use (Repository, Factory, Observer, etc.)
+   - Assess adherence to SOLID principles
+   - Note any architectural principles being followed (DRY, KISS, etc.)
+   - Identify any anti-patterns or architectural smells
+
+5. **Scalability and Performance**
+   - Analyze scalability considerations in the architecture
+   - Identify potential performance bottlenecks
+   - Document caching strategies and optimization approaches
+   - Note any load balancing or distribution patterns
+
+6. **Configuration and Environment**
+   - Analyze configuration management approach
+   - Document environment-specific considerations
+   - Identify deployment architecture and infrastructure needs
+   - Note any containerization or orchestration patterns
+
+**Focus Areas:**
+- What architectural patterns are being used and why?
+- How are concerns separated and responsibilities divided?
+- What are the key architectural decisions and trade-offs?
+- How does the architecture support the system's requirements?
+- What are the strengths and potential weaknesses of the current architecture?
+- How well does the architecture support maintainability and extensibility?
+
+**Output Requirements:**
+
+1. **Save to File**: Write the complete analysis to `analysis/architecture-analysis.md`
+2. **Metadata Header**: Include the following metadata at the top of the file:
+
+```markdown
+# Architecture Analysis
+
+**Generated:** [YYYY-MM-DD HH:MM:SS UTC]
+**Branch:** [current branch name]
+**HEAD Commit:** [full commit hash]
+**Repository:** [repository name/path]
+
+---
+```
+
+3. **Analysis Content**: Provide a comprehensive overview covering:
+   - System architecture overview and patterns
+   - Component structure and relationships
+   - Data architecture and flow
+   - Design patterns and principles
+   - Scalability and performance considerations
+   - Configuration and deployment architecture
+   - Architectural strengths and areas for improvement
+
+**Commands to Gather Metadata:**
+```bash
+# Get current branch
+git branch --show-current
+
+# Get HEAD commit hash
+git rev-parse HEAD
+
+# Get repository name
+basename "$(git rev-parse --show-toplevel)"
+
+# Get current timestamp
+date -u +"%Y-%m-%d %H:%M:%S UTC"
+```
+
+**Update Strategy:**
+If `analysis/architecture-analysis.md` already exists:
+1. Read the existing file to understand previous architectural analysis
+2. Note what has changed since the last analysis (compare commit hashes)
+3. Update the analysis with new architectural insights while preserving valuable context
+4. Update the metadata header with new timestamp and commit hash
+
+**File Management:**
+- The `analysis/*.md` files are automatically ignored by git (global gitignore)
+- This allows analysis files to be updated over time without cluttering the repository
+- Files can be manually committed if you want to track architectural evolution over time
+
+Focus on understanding the current architectural state and design decisions rather than suggesting major changes.
