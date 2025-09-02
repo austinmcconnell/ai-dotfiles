@@ -64,8 +64,10 @@
         "git": {
             "command": "python",
             "args": [
-                "-m", "mcp_server_git",
-                "--repository", "."
+                "-m",
+                "mcp_server_git",
+                "--repository",
+                "."
             ],
             "env": {},
             "timeout": 120000,
@@ -74,7 +76,8 @@
         "time": {
             "command": "python",
             "args": [
-                "-m", "mcp_server_time",
+                "-m",
+                "mcp_server_time",
                 "--local-timezone=America/Chicago"
             ],
             "env": {},
@@ -84,7 +87,8 @@
         "fetch": {
             "command": "python",
             "args": [
-                "-m", "mcp_server_fetch"
+                "-m",
+                "mcp_server_fetch"
             ],
             "env": {},
             "timeout": 120000,
@@ -115,8 +119,7 @@
     "resources": [
         "file://~/.dotfiles/etc/amazon-q/global_rules/**/*.md",
         "file://.amazonq/rules/**/*.md",
-        "file://README.md",
-        "file://docs/**/*.md"
+        "file://README.md"
     ],
     "toolAliases": {
         "@git/git_status": "status",

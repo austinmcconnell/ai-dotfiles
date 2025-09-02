@@ -2,7 +2,6 @@
     "paths": [
         "~/.dotfiles/etc/amazon-q/global_rules/**/*.md",
         ".amazonq/rules/**/*.md",
-        "README.md",
-        "docs/**/*.md"
+        "README.md"
     ]
 }
