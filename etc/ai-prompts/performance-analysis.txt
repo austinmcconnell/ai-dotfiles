@@ -1,0 +1,157 @@
+**IMPORTANT: Branch Validation Required**
+Before proceeding, verify the current git branch:
+```bash
+git branch --show-current
+```
+
+This analysis should ONLY be performed on `main` or `master` branches. If currently on a different branch, abort the analysis and inform the user that performance analysis should be done from the main branch.
+
+**Prerequisite Check:**
+This analysis requires the following prerequisite analyses to be completed first.
+
+Check for required files:
+- `analysis/architecture-analysis.md`
+- `analysis/integration-analysis.md`
+
+If any files are missing, run the corresponding analysis prompts first:
+- Missing architecture-analysis.md? Run: `architecture-analysis`
+- Missing integration-analysis.md? Run: `integration-analysis`
+
+**If any prerequisite files are missing, abort this analysis and complete the prerequisites first.**
+
+**Performance Analysis:**
+Analyze the performance characteristics, bottlenecks, and optimization opportunities in this repository.
+
+**Read Prerequisite Analyses:**
+Read the following files to understand the system design and external dependencies before proceeding:
+- `analysis/architecture-analysis.md` - For system design and potential bottlenecks
+- `analysis/integration-analysis.md` - For external dependencies affecting performance
+
+Please:
+
+1. **Application Performance Patterns**
+   - Identify performance-critical code paths and algorithms
+   - Analyze computational complexity of key functions and operations
+   - Review data processing and transformation efficiency
+   - Document any performance optimization techniques already in use
+
+2. **Database and Data Access Performance**
+   - Analyze database query patterns and optimization
+   - Review indexing strategies and database schema design
+   - Identify any N+1 query problems or inefficient data access
+   - Document any caching strategies for database operations
+
+3. **Caching and Memory Management**
+   - Identify caching mechanisms and strategies in use
+   - Analyze memory usage patterns and potential memory leaks
+   - Review garbage collection considerations (if applicable)
+   - Document any in-memory data structures and their efficiency
+
+4. **Network and I/O Performance**
+   - Analyze network request patterns and optimization
+   - Review file I/O operations and disk access patterns
+   - Identify any asynchronous processing or concurrency patterns
+   - Document any connection pooling or resource management
+
+5. **Frontend Performance (if applicable)**
+   - Analyze JavaScript bundle sizes and loading strategies
+   - Review asset optimization (images, CSS, fonts)
+   - Identify any lazy loading or code splitting implementations
+   - Document any performance monitoring or metrics collection
+
+6. **Scalability and Concurrency**
+   - Analyze horizontal and vertical scaling considerations
+   - Review concurrency patterns and thread safety
+   - Identify any bottlenecks that could limit scalability
+   - Document any load balancing or distributed processing
+
+7. **Performance Monitoring and Metrics**
+   - Identify any performance monitoring tools or instrumentation
+   - Review logging and metrics collection for performance data
+   - Analyze any performance testing or benchmarking setup
+   - Document any alerting or performance threshold monitoring
+
+8. **Resource Utilization**
+   - Analyze CPU, memory, and disk usage patterns
+   - Review any resource limits or quotas configuration
+   - Identify any resource-intensive operations or processes
+   - Document any optimization for cloud or containerized environments
+
+**Focus Areas:**
+- What are the main performance bottlenecks and constraints?
+- How is the application optimized for speed and efficiency?
+- What caching and optimization strategies are in use?
+- How does the system handle load and scale?
+- Are there any performance monitoring and alerting systems?
+- What are the resource utilization patterns and requirements?
+
+**Output Requirements:**
+
+1. **Save to File**: Write the complete analysis to `analysis/performance-analysis.md`
+2. **Metadata Header**: Include the following metadata at the top of the file:
+
+```markdown
+# Performance Analysis
+
+**Generated:** [YYYY-MM-DD HH:MM:SS UTC]
+**Branch:** [current branch name]
+**HEAD Commit:** [full commit hash]
+**Repository:** [repository name/path]
+
+---
+```
+
+3. **Analysis Content**: Provide a comprehensive overview covering:
+   - Application performance patterns and algorithms
+   - Database and data access performance
+   - Caching and memory management strategies
+   - Network and I/O performance considerations
+   - Frontend performance optimization (if applicable)
+   - Scalability and concurrency patterns
+   - Performance monitoring and metrics collection
+   - Resource utilization and optimization opportunities
+   - Performance improvement recommendations
+
+**Commands to Gather Metadata:**
+```bash
+# Get current branch
+git branch --show-current
+
+# Get HEAD commit hash
+git rev-parse HEAD
+
+# Get repository name
+basename "$(git rev-parse --show-toplevel)"
+
+# Get current timestamp
+date -u +"%Y-%m-%d %H:%M:%S UTC"
+```
+
+**Additional Performance Analysis Commands:**
+```bash
+# Look for performance-related code patterns
+grep -r -i "cache\|optimize\|performance\|benchmark\|profil" --include="*.py" --include="*.js" --include="*.ts" --include="*.java" --include="*.go" . | head -20
+
+# Find configuration files that might contain performance settings
+find . -name "*.conf" -o -name "*.ini" -o -name "*performance*" -o -name "*config*" | head -10
+
+# Look for database-related files and migrations
+find . -name "*migration*" -o -name "*schema*" -o -name "*.sql" | head -10
+
+# Check for monitoring and metrics files
+find . -name "*metric*" -o -name "*monitor*" -o -name "*telemetry*" | head -10
+```
+
+**Update Strategy:**
+If `analysis/performance-analysis.md` already exists:
+1. Read the existing file to understand previous performance analysis
+2. Note what has changed since the last analysis (compare commit hashes)
+3. Update the analysis with new performance insights while preserving valuable context
+4. Update the metadata header with new timestamp and commit hash
+
+**File Management:**
+- The `analysis/*.md` files are automatically ignored by git (global gitignore)
+- This allows analysis files to be updated over time without cluttering the repository
+- Files can be manually committed if you want to track performance optimization evolution over time
+
+Focus on identifying performance characteristics and optimization opportunities rather than implementing specific performance improvements.
