@@ -1,6 +1,14 @@
-Scan this repository to understand its structure, purpose, and current development direction. Please:
+**IMPORTANT: Branch Validation Required**
+Before proceeding, verify the current git branch:
+```bash
+git branch --show-current
+```
+
+This analysis should ONLY be performed on `main` or `master` branches. If currently on a different branch, abort the analysis and inform the user that project analysis should be done from the main branch.
 
 **Repository Analysis:**
+Scan this repository to understand its structure, purpose, and current development direction. Please:
+
 1. Examine the repository structure and identify the main technology stack/framework
 2. Read the README and any top-level documentation to understand the project's purpose
 3. Check recent commit history (last 10-20 commits) to understand current development trajectory
@@ -16,13 +24,55 @@ Scan this repository to understand its structure, purpose, and current developme
 - What are the current priorities or next steps?
 - What is the maturity level of the project?
 
-**Output Format:**
-Provide a comprehensive overview covering:
-- Project purpose and scope
-- Current architecture/structure
-- Recent development activity and direction
-- Development workflow and tooling
-- Current status and next steps
-- Any notable patterns, decisions, or areas of focus
+**Output Requirements:**
+
+1. **Save to File**: Write the complete analysis to `analysis/project-analysis.md`
+2. **Metadata Header**: Include the following metadata at the top of the file:
+
+```markdown
+# Project Analysis
+
+**Generated:** [YYYY-MM-DD HH:MM:SS UTC]
+**Branch:** [current branch name]
+**HEAD Commit:** [full commit hash]
+**Repository:** [repository name/path]
+
+---
+```
+
+3. **Analysis Content**: Provide a comprehensive overview covering:
+   - Project purpose and scope
+   - Current architecture/structure
+   - Recent development activity and direction
+   - Development workflow and tooling
+   - Current status and next steps
+   - Any notable patterns, decisions, or areas of focus
+
+**Commands to Gather Metadata:**
+```bash
+# Get current branch
+git branch --show-current
+
+# Get HEAD commit hash
+git rev-parse HEAD
+
+# Get repository name
+basename "$(git rev-parse --show-toplevel)"
+
+# Get current timestamp
+date -u +"%Y-%m-%d %H:%M:%S UTC"
+```
+
+**Update Strategy:**
+If `analysis/project-analysis.md` already exists:
+1. Read the existing file to understand previous analysis
+2. Note what has changed since the last analysis (compare commit hashes)
+3. Update the analysis with new information while preserving valuable historical context
+4. Update the metadata header with new timestamp and commit hash
+
+**File Management:**
+- The `analysis/*.md` files are automatically ignored by git (global gitignore)
+- This allows analysis files to be updated over time without cluttering the repository
+- Files can be manually committed if you want to track analysis changes over time
 
 Prioritize understanding the current state and recent trajectory over suggesting changes.
