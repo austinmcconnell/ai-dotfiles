@@ -56,28 +56,42 @@
     },
     "sequential-thinking": {
       "command": "npx",
-      "args": ["@modelcontextprotocol/server-sequential-thinking"],
+      "args": [
+        "@modelcontextprotocol/server-sequential-thinking"
+      ],
       "env": {},
       "timeout": 300000,
       "disabled": false
     },
     "git": {
       "command": "python",
-      "args": ["-m", "mcp_server_git", "--repository", "."],
+      "args": [
+        "-m",
+        "mcp_server_git",
+        "--repository",
+        "."
+      ],
       "env": {},
       "timeout": 120000,
       "disabled": false
     },
     "time": {
       "command": "python",
-      "args": ["-m", "mcp_server_time", "--local-timezone=America/Chicago"],
+      "args": [
+        "-m",
+        "mcp_server_time",
+        "--local-timezone=America/Chicago"
+      ],
       "env": {},
       "timeout": 30000,
       "disabled": false
     },
     "fetch": {
       "command": "python",
-      "args": ["-m", "mcp_server_fetch"],
+      "args": [
+        "-m",
+        "mcp_server_fetch"
+      ],
       "env": {},
       "timeout": 120000,
       "disabled": false
@@ -94,7 +108,9 @@
     },
     "jira": {
       "command": "npx",
-      "args": ["@aashari/mcp-server-atlassian-jira"],
+      "args": [
+        "@aashari/mcp-server-atlassian-jira"
+      ],
       "env": {},
       "timeout": 120000,
       "disabled": false
@@ -113,7 +129,9 @@
     "file://.amazonq/rules/**/*.md",
     "file://README.md"
   ],
-  "tools": ["*"],
+  "tools": [
+    "*"
+  ],
   "toolsSettings": {
     "execute_bash": {
       "deny": [
@@ -149,7 +167,12 @@
       ]
     },
     "use_aws": {
-      "allowedOperations": ["describe-*", "list-*", "get-*", "show-*"],
+      "allowedOperations": [
+        "describe-*",
+        "list-*",
+        "get-*",
+        "show-*"
+      ],
       "deniedOperations": [
         "delete-*",
         "terminate-*",
