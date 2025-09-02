@@ -1,0 +1,161 @@
+**IMPORTANT: Branch Validation Required**
+Before proceeding, verify the current git branch:
+```bash
+git branch --show-current
+```
+
+This analysis should ONLY be performed on `main` or `master` branches. If currently on a different branch, abort the analysis and inform the user that technical debt analysis should be done from the main branch.
+
+**Prerequisite Check:**
+This analysis requires the following prerequisite analyses to be completed first.
+
+Check for required files:
+- `analysis/project-analysis.md`
+- `analysis/architecture-analysis.md`
+
+If any files are missing, run the corresponding analysis prompts first:
+- Missing project-analysis.md? Run: `project-analysis`
+- Missing architecture-analysis.md? Run: `architecture-analysis`
+
+**If any prerequisite files are missing, abort this analysis and complete the prerequisites first.**
+
+**Technical Debt Analysis:**
+Analyze code quality issues, refactoring opportunities, maintainability concerns, and technical debt in this repository.
+
+**Read Prerequisite Analyses:**
+Read the following files to understand the project goals and intended architecture before proceeding:
+- `analysis/project-analysis.md` - For project context, goals, and intended direction
+- `analysis/architecture-analysis.md` - For intended system design to compare against current state
+
+Please:
+
+1. **Code Quality and Structure**
+   - Identify code smells and anti-patterns in the codebase
+   - Analyze code complexity and maintainability metrics
+   - Review adherence to coding standards and best practices
+   - Document any violations of SOLID principles or design patterns
+
+2. **Duplication and Redundancy**
+   - Identify code duplication and repeated patterns
+   - Analyze similar functions or classes that could be consolidated
+   - Review any copy-paste programming or redundant implementations
+   - Document opportunities for abstraction and reusability
+
+3. **Legacy Code and Technical Debt**
+   - Identify outdated code patterns or deprecated approaches
+   - Analyze any TODO comments, FIXME notes, or temporary solutions
+   - Review any commented-out code or dead code paths
+   - Document any known technical debt items or improvement areas
+
+4. **Dependency Management**
+   - Analyze dependency versions and update requirements
+   - Identify any deprecated, vulnerable, or unmaintained dependencies
+   - Review dependency conflicts or version compatibility issues
+   - Document any opportunities to reduce or consolidate dependencies
+
+5. **Architecture and Design Debt**
+   - Identify architectural inconsistencies or design violations
+   - Analyze any tight coupling or high cohesion issues
+   - Review any monolithic components that could be modularized
+   - Document any architectural refactoring opportunities
+
+6. **Performance and Scalability Debt**
+   - Identify performance bottlenecks or inefficient algorithms
+   - Analyze any scalability limitations or resource constraints
+   - Review any memory leaks or resource management issues
+   - Document any performance optimization opportunities
+
+7. **Testing and Quality Assurance Debt**
+   - Identify areas with insufficient test coverage
+   - Analyze any brittle or flaky tests
+   - Review any missing integration or end-to-end tests
+   - Document any quality assurance gaps or improvement needs
+
+8. **Documentation and Knowledge Debt**
+   - Identify areas with insufficient or outdated documentation
+   - Analyze any complex code lacking explanatory comments
+   - Review any missing API documentation or usage examples
+   - Document any knowledge transfer or documentation improvement needs
+
+**Focus Areas:**
+- What are the main sources of technical debt in the codebase?
+- Which areas of code are most difficult to maintain or extend?
+- Are there any critical refactoring opportunities?
+- What are the risks associated with the current technical debt?
+- How does technical debt impact development velocity and quality?
+- What would be the highest-impact debt reduction efforts?
+
+**Output Requirements:**
+
+1. **Save to File**: Write the complete analysis to `analysis/technical-debt-analysis.md`
+2. **Metadata Header**: Include the following metadata at the top of the file:
+
+```markdown
+# Technical Debt Analysis
+
+**Generated:** [YYYY-MM-DD HH:MM:SS UTC]
+**Branch:** [current branch name]
+**HEAD Commit:** [full commit hash]
+**Repository:** [repository name/path]
+
+---
+```
+
+3. **Analysis Content**: Provide a comprehensive overview covering:
+   - Code quality and structural issues
+   - Duplication and redundancy opportunities
+   - Legacy code and technical debt items
+   - Dependency management concerns
+   - Architecture and design debt
+   - Performance and scalability debt
+   - Testing and quality assurance gaps
+   - Documentation and knowledge debt
+   - Prioritized technical debt reduction recommendations
+
+**Commands to Gather Metadata:**
+```bash
+# Get current branch
+git branch --show-current
+
+# Get HEAD commit hash
+git rev-parse HEAD
+
+# Get repository name
+basename "$(git rev-parse --show-toplevel)"
+
+# Get current timestamp
+date -u +"%Y-%m-%d %H:%M:%S UTC"
+```
+
+**Additional Technical Debt Analysis Commands:**
+```bash
+# Look for TODO, FIXME, and HACK comments
+grep -r -i "todo\|fixme\|hack\|xxx\|temporary\|temp" --include="*.py" --include="*.js" --include="*.ts" --include="*.java" --include="*.go" . | head -20
+
+# Find commented-out code blocks
+grep -r -n "^[[:space:]]*#.*[a-zA-Z]" --include="*.py" . | head -10
+grep -r -n "^[[:space:]]*//.*[a-zA-Z]" --include="*.js" --include="*.ts" --include="*.java" . | head -10
+
+# Look for deprecated or outdated patterns
+grep -r -i "deprecated\|obsolete\|legacy\|old\|outdated" --include="*.py" --include="*.js" --include="*.ts" --include="*.java" --include="*.go" . | head -10
+
+# Find large files that might need refactoring
+find . -name "*.py" -o -name "*.js" -o -name "*.ts" -o -name "*.java" -o -name "*.go" | xargs wc -l | sort -nr | head -10
+
+# Look for code quality tools configuration
+find . -name ".eslintrc*" -o -name "pylint.rc" -o -name ".flake8" -o -name "sonar-project.properties" | head -5
+```
+
+**Update Strategy:**
+If `analysis/technical-debt-analysis.md` already exists:
+1. Read the existing file to understand previous technical debt analysis
+2. Note what has changed since the last analysis (compare commit hashes)
+3. Update the analysis with new technical debt insights while preserving valuable context
+4. Update the metadata header with new timestamp and commit hash
+
+**File Management:**
+- The `analysis/*.md` files are automatically ignored by git (global gitignore)
+- This allows analysis files to be updated over time without cluttering the repository
+- Files can be manually committed if you want to track technical debt evolution over time
+
+Focus on identifying and prioritizing technical debt rather than implementing specific refactoring solutions. Provide actionable recommendations with estimated impact and effort.
