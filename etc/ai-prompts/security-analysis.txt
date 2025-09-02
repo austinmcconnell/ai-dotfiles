@@ -1,0 +1,160 @@
+**IMPORTANT: Branch Validation Required**
+Before proceeding, verify the current git branch:
+```bash
+git branch --show-current
+```
+
+This analysis should ONLY be performed on `main` or `master` branches. If currently on a different branch, abort the analysis and inform the user that security analysis should be done from the main branch.
+
+**Prerequisite Check:**
+This analysis requires the following prerequisite analyses to be completed first.
+
+Check for required files:
+- `analysis/project-analysis.md`
+- `analysis/architecture-analysis.md`
+- `analysis/integration-analysis.md`
+
+If any files are missing, run the corresponding analysis prompts first:
+- Missing project-analysis.md? Run: `project-analysis`
+- Missing architecture-analysis.md? Run: `architecture-analysis`
+- Missing integration-analysis.md? Run: `integration-analysis`
+
+**If any prerequisite files are missing, abort this analysis and complete the prerequisites first.**
+
+**Security Analysis:**
+Analyze the security posture, vulnerabilities, and compliance considerations of this repository.
+
+**Read Prerequisite Analyses:**
+Read the following files to understand the complete system context before proceeding:
+- `analysis/project-analysis.md` - For project context, purpose, and scope
+- `analysis/architecture-analysis.md` - For system design and security boundaries
+- `analysis/integration-analysis.md` - For external dependencies and attack surfaces
+
+Please:
+
+1. **Authentication and Authorization**
+   - Identify authentication mechanisms and their implementation
+   - Analyze authorization patterns and access control systems
+   - Review session management and token handling
+   - Document any multi-factor authentication or SSO integrations
+
+2. **Input Validation and Data Sanitization**
+   - Analyze input validation patterns across the application
+   - Identify potential injection vulnerabilities (SQL, XSS, command injection)
+   - Review data sanitization and encoding practices
+   - Document any input filtering or validation libraries used
+
+3. **Secrets and Configuration Management**
+   - Identify how secrets, API keys, and credentials are managed
+   - Check for hardcoded secrets or credentials in code
+   - Analyze environment variable usage and configuration security
+   - Review any secrets management systems or vaults in use
+
+4. **Dependency Security**
+   - Analyze third-party dependencies for known vulnerabilities
+   - Review dependency update practices and security patching
+   - Identify any deprecated or unmaintained dependencies
+   - Document any dependency scanning or vulnerability monitoring
+
+5. **Data Protection and Privacy**
+   - Analyze data encryption at rest and in transit
+   - Review data handling practices and privacy considerations
+   - Identify any PII or sensitive data processing
+   - Document compliance requirements (GDPR, HIPAA, SOC2, etc.)
+
+6. **Network Security**
+   - Analyze network communication security (HTTPS, TLS versions)
+   - Review CORS policies and cross-origin security
+   - Identify any network-level security controls
+   - Document any firewall rules or network segmentation
+
+7. **Error Handling and Information Disclosure**
+   - Review error handling practices and information leakage
+   - Analyze logging practices for security events
+   - Identify any debug information or stack traces exposed
+   - Document any security monitoring or alerting systems
+
+8. **Security Headers and Browser Security**
+   - Analyze HTTP security headers implementation
+   - Review Content Security Policy (CSP) configuration
+   - Identify any XSS or CSRF protection mechanisms
+   - Document any browser security features utilized
+
+**Focus Areas:**
+- What are the primary security risks and vulnerabilities?
+- How are authentication and authorization implemented?
+- Are secrets and sensitive data properly protected?
+- What security best practices are being followed?
+- Are there any compliance requirements being addressed?
+- How is security monitoring and incident response handled?
+
+**Output Requirements:**
+
+1. **Save to File**: Write the complete analysis to `analysis/security-analysis.md`
+2. **Metadata Header**: Include the following metadata at the top of the file:
+
+```markdown
+# Security Analysis
+
+**Generated:** [YYYY-MM-DD HH:MM:SS UTC]
+**Branch:** [current branch name]
+**HEAD Commit:** [full commit hash]
+**Repository:** [repository name/path]
+
+---
+```
+
+3. **Analysis Content**: Provide a comprehensive overview covering:
+   - Authentication and authorization mechanisms
+   - Input validation and data sanitization practices
+   - Secrets and configuration management
+   - Dependency security and vulnerability management
+   - Data protection and privacy considerations
+   - Network security and communication protocols
+   - Error handling and information disclosure risks
+   - Security headers and browser security features
+   - Security recommendations and risk mitigation strategies
+
+**Commands to Gather Metadata:**
+```bash
+# Get current branch
+git branch --show-current
+
+# Get HEAD commit hash
+git rev-parse HEAD
+
+# Get repository name
+basename "$(git rev-parse --show-toplevel)"
+
+# Get current timestamp
+date -u +"%Y-%m-%d %H:%M:%S UTC"
+```
+
+**Additional Security Analysis Commands:**
+```bash
+# Look for potential secrets or credentials
+grep -r -i "password\|secret\|key\|token\|credential" --include="*.py" --include="*.js" --include="*.ts" --include="*.java" --include="*.go" . | head -20
+
+# Find configuration and environment files
+find . -name "*.env*" -o -name "config.*" -o -name "*.conf" -o -name "*.ini" | head -10
+
+# Look for security-related dependencies
+grep -r -i "security\|auth\|crypto\|ssl\|tls" package.json requirements.txt Gemfile pom.xml go.mod Cargo.toml 2>/dev/null | head -10
+
+# Check for common security files
+find . -name "security.txt" -o -name ".security" -o -name "SECURITY.md" -o -name "security.md"
+```
+
+**Update Strategy:**
+If `analysis/security-analysis.md` already exists:
+1. Read the existing file to understand previous security analysis
+2. Note what has changed since the last analysis (compare commit hashes)
+3. Update the analysis with new security insights while preserving valuable context
+4. Update the metadata header with new timestamp and commit hash
+
+**File Management:**
+- The `analysis/*.md` files are automatically ignored by git (global gitignore)
+- This allows analysis files to be updated over time without cluttering the repository
+- Files can be manually committed if you want to track security posture evolution over time
+
+**IMPORTANT**: Focus on identifying security considerations and potential risks rather than providing specific remediation code. Highlight areas that need security review or improvement.
