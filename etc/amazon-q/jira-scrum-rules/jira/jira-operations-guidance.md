@@ -57,14 +57,57 @@ Before performing any JIRA operation, the agent should:
 3. **Check Permissions**: Verify the user has appropriate permissions for the operation
 4. **Confirm Intent**: For create/update operations, clearly state what will be done
 
-### User Confirmation for Destructive Actions
+### User Confirmation for Create/Update Operations
 
 For operations that create or significantly modify JIRA data:
 
-1. **Show Preview**: Display what will be created or changed
+1. **Show Preview**: Display what will be created or changed in markdown format
 2. **Request Confirmation**: Ask user to confirm before proceeding
 3. **Explain Impact**: Describe what the operation will do
 4. **Provide Alternatives**: Suggest alternatives if appropriate
+5. **Wait for Approval**: Never proceed with creation without explicit user approval
+
+#### Mandatory Preview Process for Issue Creation
+
+When creating new JIRA issues (stories, bugs, tasks, etc.), the agent MUST:
+
+1. **Present Story in Markdown**: Format the complete story (summary, description, acceptance
+   criteria) as readable markdown
+2. **Ask for Review**: Explicitly ask "Please review this story and let me know if you'd like
+   any adjustments before I create the JIRA ticket"
+3. **Wait for Feedback**: Do not proceed until user provides feedback or approval
+4. **Incorporate Changes**: Make any requested modifications and show updated version if needed
+5. **Create Only After Approval**: Only call `jira_create_issue` after receiving explicit user confirmation
+
+##### Example Interaction Flow
+
+```text
+User: "Create a story for implementing user authentication"
+
+Agent: [Develops story content]
+
+Agent: "Here's the proposed JIRA story:
+
+## Summary
+Implement User Authentication System
+
+## Description
+As a system administrator,
+I want to implement secure user authentication
+so that only authorized users can access the application.
+
+[... full story content ...]
+
+Please review this story and let me know if you'd like any adjustments before I create the JIRA ticket."
+
+User: "Looks good, create it"
+
+Agent: [Creates JIRA ticket] "✅ Issue Created Successfully - PROJ-123"
+```
+
+**Important**: There are NO exceptions to this workflow. Always follow the preview-first
+process for every new JIRA issue creation, regardless of user experience level or story
+complexity.
 
 ### Error Handling
 
@@ -283,6 +326,77 @@ project = "PROJ" AND assignee = "john.doe" AND status in ("In Progress", "In Rev
 - Avoid overly broad searches
 - Consider pagination for large result sets
 - Cache frequently accessed data when appropriate
+
+## Bug Ticket Creation Guidelines
+
+### Structure for Bug Tickets
+
+Bug tickets should follow this structure:
+
+1. **Summary**: Clear, non-technical description
+2. **Description** with subsections:
+   - Background
+   - Root Cause
+   - Current Impact
+   - Evidence
+3. **Acceptance Criteria**: Observable outcomes only
+
+### Language Precision for Data Issues
+
+When describing data-related bugs:
+
+- Distinguish between "data loss" (actual deletion) vs "data processing issues" (incorrect derived fields)
+- Use specific numbers from database queries when available
+- Avoid alarming language unless the situation truly warrants it
+
+### Sections to Exclude by Default
+
+Unless specifically requested, don't include:
+
+- Issue Type/Priority (set in JIRA interface)
+- Labels
+- "What Still Works" sections
+- Implementation steps in Acceptance Criteria
+
+## Response Formatting Guidelines
+
+### JIRA URL Formatting
+
+When reporting JIRA issue creation or referencing existing issues, always use the proper issue
+key format in URLs:
+
+#### Correct URL Format
+
+- **Browse URL**: `https://uniteus.atlassian.net/browse/{ISSUE-KEY}`
+- **Example**: `https://uniteus.atlassian.net/browse/SCRN-936`
+
+#### Incorrect URL Format
+
+- **Avoid**: Using internal issue IDs in URLs
+- **Example**: `https://uniteus.atlassian.net/browse/461282` ❌
+
+#### Implementation Guidelines
+
+When the `jira_create_issue` tool returns response data:
+
+1. **Extract the Issue Key**: Use the returned issue key (e.g., "SCRN-936") for user-facing URLs
+2. **Format Browse URL**: Construct the browse URL as `https://uniteus.atlassian.net/browse/{ISSUE-KEY}`
+3. **Present to User**: Always show the issue key-based URL to users for easy reference
+
+#### Example Success Response Format
+
+```text
+✅ Issue Created Successfully
+
+- **Issue Key**: SCRN-936
+- **Issue ID**: 461282
+- **Jira URL**: [View in Browser](https://uniteus.atlassian.net/browse/SCRN-936)
+
+---
+*Issue created at: 2025-08-12 20:26:53 UTC*
+```
+
+This ensures users receive clickable, bookmarkable URLs that use the human-readable issue key format.
 
 This guidance ensures the JIRA SCRUM agent operates safely and effectively while supporting SCRUM
 teams in managing their work items and following agile best practices.

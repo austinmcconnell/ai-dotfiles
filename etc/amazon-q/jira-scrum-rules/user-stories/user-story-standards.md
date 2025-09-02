@@ -105,6 +105,39 @@ Then [some outcome is expected].
 - **Leave room for questions**: Don't over-specify; allow for clarification during development
 - **Document assumptions**: Capture important assumptions that come up during discussions
 
+## Technical Story Patterns
+
+### When Writing Technical Implementation Stories
+
+For stories that involve changing system behavior or fixing technical issues:
+
+#### Structure
+- **User Role**: Use specific technical roles (e.g., "data integration specialist", "system administrator")
+- **Goal**: Focus on the desired system behavior change
+- **Benefit**: Explain the business impact, often contrasting with current problematic behavior
+
+#### Background Section
+- Provide context about current system behavior
+- Reference specific analysis or evidence (e.g., "Analysis of real-world X reveals...")
+- Keep it brief but informative
+
+#### Current Issue Section
+- Use bullet points to list specific problems
+- Focus on concrete, observable issues
+- Include the business impact/consequence
+
+#### Acceptance Criteria Organization
+- **Core Functionality**: High-level system behavior changes
+- **Technical Implementation**: Specific technical tasks needed
+- Avoid sections like "Logging", "Error Handling", "Performance" unless specifically requested
+- Don't include "Priority Justification" sections
+
+#### What to Avoid
+- Overly complex acceptance criteria with multiple subsections
+- Backward compatibility requirements unless specifically needed
+- Generic logging and error handling requirements
+- Priority justification sections
+
 ## Acceptance Criteria Best Practices
 
 ### Characteristics of Good Acceptance Criteria

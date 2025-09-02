@@ -362,6 +362,60 @@ Additional Criteria:
 - Instructor can provide feedback directly on submitted files
 ```text
 
+## Technical Implementation Examples
+
+### System Integration Story
+
+```text
+As a [technical role],
+I want [system behavior change]
+so that [business outcome is achieved instead of current problematic behavior].
+
+Background
+[Brief context about current system behavior and why it's problematic]
+
+Current Issue
+• [Specific problem 1 with current implementation]
+• [Specific problem 2 with current implementation]
+• [Impact/consequence of current problems]
+
+Acceptance Criteria
+
+Core Functionality
+• [ ] [Primary system behavior change]
+• [ ] [Secondary system behavior change]
+
+Technical Implementation
+• [ ] [Specific technical task 1]
+• [ ] [Specific technical task 2]
+```
+
+### Example: Data Processing Improvement
+
+```text
+As a healthcare data integration specialist,
+I want FHIR bundle processing to use the organization referenced in the observations (primary care provider)
+so that screenings are correctly attributed to the appropriate healthcare provider instead of the first organization found.
+
+Background
+Analysis of real-world SHIN-NY bundles reveals that the current provider lookup logic treats all organizations equally and returns the first match found. However, the observations in these bundles reference a specific performing organization that should be used as the primary care provider.
+
+Current Issue
+• Provider lookup processes organizations sequentially and returns the first match found
+• Ignores the fact that observations reference a specific performing organization
+• Can result in screenings being attributed to technology platforms or payers instead of the actual care provider
+
+Acceptance Criteria
+
+Core Functionality
+• [ ] Observation-Referenced Organization: System identifies which organization is referenced in the Observation resources as the performing organization
+• [ ] Primary Provider Selection: Use the organization referenced in observations as the primary care provider for screening attribution
+
+Technical Implementation
+• [ ] Organization Reference Extraction: Extract performer references from Observation resources
+• [ ] Provider Matching: Match the observation-performing organization against the provider database
+```
+
 ## Common Story Patterns
 
 ### CRUD Operations
