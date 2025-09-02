@@ -178,9 +178,13 @@ if is-executable go; then
         cd "$GITHUB_MCP_REPO_DIR"
     fi
 
-    # Build the binary
+    # Build the binary with proper version information
     echo "Building GitHub MCP Server binary..."
-    if go build -o "$GITHUB_MCP_BINARY" cmd/github-mcp-server/main.go; then
+    VERSION=$(git describe --tags --always --dirty 2>/dev/null || echo "dev")
+    COMMIT=$(git rev-parse --short HEAD 2>/dev/null || echo "unknown")
+    DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+    if go build -ldflags "-s -w -X main.version=$VERSION -X main.commit=$COMMIT -X main.date=$DATE" -o "$GITHUB_MCP_BINARY" ./cmd/github-mcp-server; then
         echo "✅ GitHub MCP Server built successfully at: $GITHUB_MCP_BINARY"
 
         # Make sure it's executable
@@ -196,7 +200,10 @@ if is-executable go; then
         echo "❌ Failed to build GitHub MCP Server"
         echo "   You may need to build it manually:"
         echo "   cd $GITHUB_MCP_REPO_DIR"
-        echo "   go build -o $GITHUB_MCP_BINARY cmd/github-mcp-server/main.go"
+        echo "   VERSION=\$(git describe --tags --always --dirty 2>/dev/null || echo \"dev\")"
+        echo "   COMMIT=\$(git rev-parse --short HEAD 2>/dev/null || echo \"unknown\")"
+        echo "   DATE=\$(date -u +\"%Y-%m-%dT%H:%M:%SZ\")"
+        echo "   go build -ldflags \"-s -w -X main.version=\$VERSION -X main.commit=\$COMMIT -X main.date=\$DATE\" -o $GITHUB_MCP_BINARY ./cmd/github-mcp-server"
     fi
 else
     echo "Go not found. Skipping GitHub MCP Server build."
