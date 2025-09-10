@@ -69,12 +69,74 @@ These prompts work with any AI chat service:
 4. **Version control** - These prompts are tracked in your dotfiles, so you can version and share them
 5. **Test prompts** - Try your prompts with different AI services to ensure they produce good results
 6. **Cross-platform** - Design prompts that work well across different AI services
+7. **Follow dependencies** - Always run prerequisite analyses before dependent ones
+   (see Dependency Hierarchy above)
+8. **Use main branch** - Most analysis prompts require running from `main` or `master`
+   branch for accurate results
+
+## Prompt Dependencies
+
+Many analysis prompts have prerequisite requirements and must be run in a specific order.
+Each prompt checks for required analysis files and will abort if prerequisites are missing.
+
+### Dependency Hierarchy
+
+```text
+Level 0 (No Dependencies - Can run anytime):
+├── project-analysis          # Foundation for all other analyses
+├── branch-analysis           # Git branch and commit analysis
+├── discover-previous-work    # Understand current implementation state
+├── pr-description           # Generate pull request descriptions
+├── refactor-plan            # Create refactoring plans
+└── vim-practice-session     # Interactive vim skills practice
+
+Level 1 (Requires: project-analysis):
+├── architecture-analysis     # System design and architecture
+└── documentation-analysis    # Documentation quality and completeness
+
+Level 2 (Requires: project-analysis + architecture-analysis):
+├── integration-analysis      # External APIs, databases, services
+├── testing-analysis         # Testing strategy and coverage
+└── technical-debt-analysis  # Code quality and refactoring opportunities
+
+Level 3 (Requires: architecture-analysis + integration-analysis):
+└── performance-analysis     # Performance bottlenecks and optimization
+
+Level 4 (Requires: project-analysis + architecture-analysis + integration-analysis):
+└── security-analysis        # Security posture and vulnerabilities
+```
+
+### Execution Order
+
+For comprehensive project analysis, run prompts in this order:
+
+1. **Start Here**: `project-analysis` (required by most other analyses)
+2. **Architecture**: `architecture-analysis` (required by technical analyses)
+3. **Parallel Group** (can run in any order):
+   - `documentation-analysis`
+   - `integration-analysis` (required for performance and security)
+   - `testing-analysis`
+   - `technical-debt-analysis`
+4. **Advanced Analyses**:
+   - `performance-analysis` (requires integration-analysis)
+   - `security-analysis` (requires project + architecture + integration)
+
+### Independent Prompts
+
+These prompts can be run at any time without prerequisites:
+
+- `branch-analysis` - Analyze current git branch changes
+- `discover-previous-work` - Understand work-in-progress state
+- `pr-description` - Generate pull request descriptions
+- `refactor-plan` - Create refactoring strategies
+- `vim-practice-session` - Practice vim skills
 
 ## Example Prompts
 
 ### Development Analysis
 
-- `project-analysis` - Comprehensive project overview and current state (outputs to `analysis/project-analysis.md`)
+- `project-analysis` - **[FOUNDATION]** Comprehensive project overview and current state
+  (outputs to `analysis/project-analysis.md`)
 - `architecture-analysis` - Technical architecture and system design analysis (outputs to `analysis/architecture-analysis.md`)
 - `integration-analysis` - External integrations, APIs, and data flows (outputs to `analysis/integration-analysis.md`)
 - `security-analysis` - Security posture, vulnerabilities, and compliance (outputs to `analysis/security-analysis.md`)
