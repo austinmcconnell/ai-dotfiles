@@ -34,10 +34,8 @@ install_integration_if_needed() {
 
 print_header "Installing Amazon Q"
 
-# Initialize Homebrew cache if needed
-if [[ "$CACHE_INITIALIZED" != "true" ]]; then
-    init_brew_cache
-fi
+# Initialize Homebrew cache
+init_brew_cache
 
 # Install Amazon Q using Homebrew
 install_if_needed "amazon-q" "cask"
