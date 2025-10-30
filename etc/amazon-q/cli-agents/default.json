@@ -4,11 +4,9 @@
     "@filesystem/read_text_file",
     "@filesystem/read_multiple_files",
     "@filesystem/read_media_file",
-    "@filesystem/list_directory",
     "@filesystem/list_allowed_directories",
     "@filesystem/search_files",
     "@filesystem/get_file_info",
-    "@filesystem/directory_tree",
     "@filesystem/create_directory",
     "@sequential-thinking/sequentialthinking",
     "@git/git_status",
@@ -133,6 +131,12 @@
     "*"
   ],
   "toolsSettings": {
+    "list_directory": {
+      "disabled": true
+    },
+    "directory_tree": {
+      "disabled": true
+    },
     "execute_bash": {
       "deny": [
         "rm *",

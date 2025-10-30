@@ -7,7 +7,6 @@
     "ls",
     "find",
     "get_file_info",
-    "directory_tree",
     "mkdir",
     "sequentialthinking",
     "now",
@@ -96,6 +95,12 @@
     "*"
   ],
   "toolsSettings": {
+    "list_directory": {
+      "disabled": true
+    },
+    "directory_tree": {
+      "disabled": true
+    },
     "execute_bash": {
       "deny": [
         "rm *",
