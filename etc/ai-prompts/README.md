@@ -92,9 +92,10 @@ Level 0 (No Dependencies - Can run anytime):
 
 Level 1 (Requires: project-analysis):
 ├── architecture-analysis     # System design and architecture
+├── schema-analysis          # Database schemas and data models
 └── documentation-analysis    # Documentation quality and completeness
 
-Level 2 (Requires: project-analysis + architecture-analysis):
+Level 2 (Requires: project-analysis + architecture-analysis + schema-analysis):
 ├── integration-analysis      # External APIs, databases, services
 ├── testing-analysis         # Testing strategy and coverage
 └── technical-debt-analysis  # Code quality and refactoring opportunities
@@ -111,9 +112,11 @@ Level 4 (Requires: project-analysis + architecture-analysis + integration-analys
 For comprehensive project analysis, run prompts in this order:
 
 1. **Start Here**: `project-analysis` (required by most other analyses)
-2. **Architecture**: `architecture-analysis` (required by technical analyses)
-3. **Parallel Group** (can run in any order):
+2. **Level 1 Group** (can run in any order):
+   - `architecture-analysis` (required by technical analyses)
+   - `schema-analysis` (required by integration analysis)
    - `documentation-analysis`
+3. **Level 2 Group** (can run in any order):
    - `integration-analysis` (required for performance and security)
    - `testing-analysis`
    - `technical-debt-analysis`
@@ -138,6 +141,7 @@ These prompts can be run at any time without prerequisites:
 - `project-analysis` - **[FOUNDATION]** Comprehensive project overview and current state
   (outputs to `analysis/project-analysis.md`)
 - `architecture-analysis` - Technical architecture and system design analysis (outputs to `analysis/architecture-analysis.md`)
+- `schema-analysis` - Database schemas, data models, and API structures (outputs to `analysis/schema-analysis.md`)
 - `integration-analysis` - External integrations, APIs, and data flows (outputs to `analysis/integration-analysis.md`)
 - `security-analysis` - Security posture, vulnerabilities, and compliance (outputs to `analysis/security-analysis.md`)
 - `performance-analysis` - Performance characteristics, bottlenecks, and optimization (outputs to `analysis/performance-analysis.md`)

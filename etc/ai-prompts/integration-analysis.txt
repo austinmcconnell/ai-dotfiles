@@ -12,10 +12,12 @@ This analysis requires the following prerequisite analyses to be completed first
 Check for required files:
 - `analysis/project-analysis.md`
 - `analysis/architecture-analysis.md`
+- `analysis/schema-analysis.md`
 
 If any files are missing, run the corresponding analysis prompts first:
 - Missing project-analysis.md? Run: `project-analysis`
 - Missing architecture-analysis.md? Run: `architecture-analysis`
+- Missing schema-analysis.md? Run: `schema-analysis`
 
 **If any prerequisite files are missing, abort this analysis and complete the prerequisites first.**
 
@@ -26,6 +28,7 @@ Analyze how this system integrates with external services, APIs, databases, and 
 Read the following files to understand the project context and architecture before proceeding:
 - `analysis/project-analysis.md` - For project context, purpose, and scope
 - `analysis/architecture-analysis.md` - For system design and component structure
+- `analysis/schema-analysis.md` - For data models, schemas, and API structures
 
 Please:
 
