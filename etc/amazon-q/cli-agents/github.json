@@ -201,35 +201,6 @@
         ".env.local",
         ".env.*.local"
       ]
-    },
-    "@filesystem/directory_tree": {
-      "defaultExcludePatterns": [
-        ".venv",
-        "venv",
-        "node_modules",
-        ".git",
-        "__pycache__",
-        "*.pyc",
-        "*.pyo",
-        ".pytest_cache",
-        ".coverage",
-        "coverage.xml",
-        "htmlcov",
-        ".tox",
-        ".mypy_cache",
-        "dist",
-        "build",
-        "*.egg-info",
-        ".DS_Store",
-        "Thumbs.db",
-        "*.log",
-        "*.tmp",
-        "*.swp",
-        "*.swo",
-        ".env",
-        ".env.local",
-        ".env.*.local"
-      ]
     }
   },
   "useLegacyMcpJson": false
