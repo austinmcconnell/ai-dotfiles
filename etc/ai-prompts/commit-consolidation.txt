@@ -1,0 +1,81 @@
+Analyze the commits on my current branch and identify which ones can be consolidated through interactive rebase.
+
+**Step 1: Initial Analysis**
+
+Run these commands to understand the commit structure:
+
+```bash
+# Get all commits on this branch
+git log --oneline main..HEAD
+
+# Show which files each commit touches
+for commit in $(git log --oneline main..HEAD | awk '{print $1}'); do
+  echo "=== $commit ==="
+  git show --stat --oneline $commit | head -20
+  echo ""
+done
+```
+
+**Step 2: Identify Consolidation Candidates**
+
+Look for commits that should be grouped based on:
+- **Same file(s)**: Multiple commits touching the same file(s) with related changes
+- **Marked for removal**: Commits with "fixup", "DROP", "WIP", "TEMP", or debug/temporary language
+- **Bug fixes**: Commits that fix issues introduced earlier in the branch
+- **Incremental work**: Small improvements to the same feature that should be atomic
+- **Add/remove cycles**: Commits that add then remove/modify the same code
+- **Related functionality**: Changes that logically belong together as one atomic commit
+
+**Step 3: Present All Consolidation Opportunities**
+
+First, present a complete overview of ALL consolidation opportunities you've identified:
+
+1. **List all groups** with brief descriptions (e.g., "Set 1: Scheduler Bug Fixes (4 commits)")
+2. **Show total impact**: "X commits → Y commits after consolidation"
+3. **Highlight any commits to drop** (marked DROP, TEMP, etc.)
+4. **Ask for approval**: "Do you want to proceed with these consolidations?"
+5. **Wait for user confirmation** before starting the interactive process
+
+**Step 4: Work Through Groups Interactively**
+
+After receiving approval, work through each group one at a time:
+
+1. **Show the commits** being grouped with their file changes
+2. **Provide rebase instructions** in this format:
+   ```
+   pick <hash> <message>
+   fixup <hash> <message>
+   fixup <hash> <message>
+   ```
+3. **Suggest improved commit message** for the consolidated commit
+4. **Explain the rationale** - why these commits should be grouped
+5. **Ask for confirmation**: "Ready to proceed with this set?"
+6. **Wait for user response** before moving to the next group
+
+**Step 5: Chronological Ordering**
+
+After all consolidations are confirmed, check if commits are in logical chronological order:
+- Foundation/setup commits first
+- Feature implementation commits next
+- Bug fixes and improvements after
+- Temporary/debug commits last
+
+If reordering would improve clarity, provide the rebase instructions to reorder commits.
+
+**Important Guidelines:**
+- Work through ONE group at a time
+- Don't move to the next group until user confirms
+- Consider ALL commits on the branch, not just recent ones
+- Prioritize clarity and atomic commits over reducing commit count
+- Keep commits that represent distinct logical changes separate
+- Flag any commits marked "DROP" or "TEMP" for removal
+
+**Output Format:**
+Present each consolidation group clearly with:
+- Group title (e.g., "Set 1: Scheduler Bug Fixes")
+- List of commits being consolidated
+- Interactive rebase instructions
+- Suggested commit message
+- Confirmation prompt
+
+Work systematically through all consolidation opportunities before suggesting reordering.
