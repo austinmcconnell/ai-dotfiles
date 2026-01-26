@@ -1,0 +1,130 @@
+Analyze the commits on my current branch and identify which ones can be consolidated through interactive rebase, which should have improved commit messages, and which should be split into smaller units of work.
+
+**Step 1: Initial Analysis**
+
+Run these commands to understand the commit structure:
+
+bash
+# Get all commits on this branch
+git log --oneline main..HEAD
+
+# Show detailed diff for each commit
+for commit in $(git log --oneline main..HEAD | awk '{print $1}'); do
+ echo "=== $commit ==="
+ git show --stat $commit
+ echo ""
+done
+
+**Step 2: Analyze Each Commit**
+
+For each commit, examine:
+1. **Commit message quality**: Is it descriptive? Does it explain WHY, not just WHAT?
+2. **Scope**: Does it change multiple unrelated things that should be separate commits?
+3. **Atomic nature**: Is it a single logical unit of work?
+4. **Diff content**: Read the actual code changes to understand what the commit does
+
+**Step 3: Identify All Opportunities**
+
+Look for:
+
+**A. Consolidation Candidates** (commits to merge):
+- **Same file(s)**: Multiple commits touching the same file(s) with related changes
+- **Marked for removal**: Commits with "fixup", "DROP", "WIP", "TEMP", or debug/temporary language
+- **Bug fixes**: Commits that fix issues introduced earlier in the branch
+- **Incremental work**: Small improvements to the same feature that should be atomic
+- **Add/remove cycles**: Commits that add then remove/modify the same code
+- **Related functionality**: Changes that logically belong together as one atomic commit
+
+**B. Split Candidates** (commits to break apart):
+- **Multiple concerns**: Commit changes unrelated files/features (e.g., "Add feature X and fix bug Y")
+- **Mixed refactoring**: Combines refactoring with new functionality
+- **Scope creep**: Commit message says one thing but diff shows additional unrelated changes
+- **Large commits**: Changes many files in ways that could be separate logical steps
+
+**C. Message Improvement Candidates**:
+- **Vague messages**: "Fix bug", "Update code", "Changes", "WIP"
+- **Missing context**: Doesn't explain WHY the change was made
+- **Inaccurate**: Message doesn't match what the diff actually does
+- **Missing details**: For complex changes, should list key changes in bullet points
+
+**Step 4: Present Complete Analysis**
+
+First, present a complete overview organized by action type:
+
+### Consolidation Opportunities
+List all groups with:
+- Group title (e.g., "Set 1: Scheduler Bug Fixes (4 commits)")
+- Brief rationale
+- Total impact on commit count
+
+### Split Recommendations
+List all commits that should be split with:
+- Current commit message
+- Proposed split (e.g., "Split into: 1) Refactor X, 2) Add feature Y")
+- Rationale for split
+
+### Message Improvements
+List all commits needing better messages with:
+- Current message
+- Analysis of what the diff actually does
+- Proposed improved message
+- Rationale for improvement
+
+### Summary
+- Total commits: X → Y after consolidation
+- Commits to split: Z (will become W commits)
+- Messages to improve: N
+- **Ask for approval**: "Do you want to proceed with these changes?"
+- **Wait for user confirmation** before starting
+
+**Step 5: Work Through Changes Interactively**
+
+After receiving approval, work through each change one at a time:
+
+1. **Show the specific change** (consolidation/split/message improvement)
+2. **Provide rebase/amend instructions**
+3. **Explain the rationale**
+4. **Ask for confirmation**: "Ready to proceed with this change?"
+5. **Wait for user response** before moving to the next change
+
+**Step 6: Verify Each Change**
+
+After each modification:
+1. Show the resulting commit(s)
+2. Verify the diff matches expectations
+3. Check for any unintended side effects
+
+**Important Guidelines:**
+- Work through ONE change at a time
+- Don't move to the next change until user confirms
+- For splits, check which files/lines are changed and if other commits touch the same code
+- For consolidations, check which files/lines are changed and if other commits touch the same code
+- Consider ALL commits on the branch, not just recent ones
+- Prioritize clarity and atomic commits over reducing commit count
+- Read the actual diff content, not just file names and stats
+- Ensure commit messages accurately describe what the code changes do
+
+**Commit Message Best Practices:**
+- First line: Imperative mood, <50 chars, no period (e.g., "Add user authentication")
+- Body: Explain WHY, not just WHAT. Include context, trade-offs, alternatives considered
+- Reference issues/tickets if applicable
+- For complex changes, use bullet points to list key changes
+
+**Split Decision Criteria:**
+A commit should be split if:
+- It mixes refactoring with new features
+- It touches multiple unrelated subsystems
+- The commit message uses "and" to describe multiple distinct changes
+- Half the changes could be merged with a different commit
+- The diff shows changes that aren't mentioned in the commit message
+
+**Output Format:**
+Present each change clearly with:
+- Change type (Consolidate/Split/Improve Message)
+- Current state
+- Proposed state
+- Rebase/amend instructions
+- Rationale
+- Confirmation prompt
+
+Work systematically through all opportunities before moving to execution.
