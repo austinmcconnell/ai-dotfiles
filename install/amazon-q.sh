@@ -1,12 +1,12 @@
 #!/bin/bash
 
 # ---------------------------------------------------------------
-# Amazon Q Installation Script
+# Kiro CLI (formerly Amazon Q) Installation Script
 # This script:
-# 1. Installs Amazon Q via Homebrew
+# 1. Installs Kiro CLI via Homebrew
 # 2. Creates necessary configuration directories
 # 3. Links configuration files from the dotfiles repository
-# 4. Installs Amazon Q integrations (like SSH)
+# 4. Installs Kiro CLI integrations (like SSH)
 # ---------------------------------------------------------------
 
 set -euo pipefail
@@ -32,13 +32,13 @@ install_integration_if_needed() {
     fi
 }
 
-print_header "Installing Amazon Q"
+print_header "Installing Kiro CLI"
 
 # Initialize Homebrew cache
 init_brew_cache
 
-# Install Amazon Q using Homebrew
-install_if_needed "amazon-q" "cask"
+# Install Kiro CLI using Homebrew
+install_if_needed "kiro-cli" "cask"
 
 # Define Amazon Q configuration directories
 AMAZON_Q_APPLICATION_SUPPORT_DIR="$HOME/Library/Application Support/amazon-q"
@@ -55,7 +55,6 @@ mkdir -p "$DOTFILES_DIR/etc/ai-prompts"
 
 # Link configuration files from dotfiles repository to appropriate locations
 ln -sfv "$DOTFILES_DIR/etc/amazon-q/settings.json" "$AMAZON_Q_APPLICATION_SUPPORT_DIR"
-ln -sfv "$DOTFILES_DIR/etc/amazon-q/global_context.json" "$AMAZON_Q_CONFIG_DIR"
 
 # Link all existing profile configurations from dotfiles
 if [ -d "$DOTFILES_DIR/etc/amazon-q/profiles" ]; then
@@ -93,15 +92,15 @@ fi
 
 # Install Amazon Q integrations if the CLI is available
 if is-executable q; then
-    print_header "Installing Amazon Q integrations"
+    print_header "Installing Kiro CLI integrations"
     install_integration_if_needed "ssh"
 else
-    echo "Amazon Q CLI not found. Skipping integrations installation."
+    echo "Kiro CLI not found. Skipping integrations installation."
 fi
 
 # Install MCP servers if npm is available
 if is-executable npm; then
-    print_header "Installing Amazon Q MCP servers"
+    print_header "Installing Kiro CLI MCP servers"
 
     # List of Node.js MCP servers to install
     MCP_SERVERS=(
