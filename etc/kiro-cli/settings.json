@@ -1,9 +1,9 @@
 {
   "autocomplete.disable": true,
   "autocomplete.insertSpaceAutomatically": true,
+  "chat.defaultAgent": "default",
   "codeWhisperer.shareCodeWhispererContentWithAWS": false,
   "inline.enabled": false,
   "mcp.loadedBefore": true,
-  "telemetry.enabled": false,
-  "chat.defaultAgent": "default"
+  "telemetry.enabled": false
 }

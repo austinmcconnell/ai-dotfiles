@@ -1,0 +1,224 @@
+{
+    "allowedTools": [
+        "fs_read",
+        "web_search",
+        "web_fetch",
+        "@filesystem/read_text_file",
+        "@filesystem/read_multiple_files",
+        "@filesystem/read_media_file",
+        "@filesystem/search_files",
+        "@filesystem/get_file_info",
+        "@filesystem/create_directory",
+        "@sequential-thinking/sequentialthinking",
+        "@git/git_status",
+        "@git/git_log",
+        "@git/git_diff",
+        "@git/git_show",
+        "@git/git_branch",
+        "@git/git_diff_staged",
+        "@git/git_diff_unstaged",
+        "@time/get_current_time",
+        "@time/convert_time",
+        "@fetch/fetch_url",
+        "@github/get_repository",
+        "@github/get_file_contents",
+        "@github/list_repository_contents",
+        "@github/search_repositories",
+        "@github/search_code",
+        "@github/search_issues",
+        "@github/search_users",
+        "@github/get_issue",
+        "@github/list_issues",
+        "@github/list_issue_comments",
+        "@github/get_pull_request",
+        "@github/list_pull_requests",
+        "@github/list_pull_request_comments",
+        "@github/get_pull_request_diff",
+        "@github/list_commits",
+        "@github/get_commit",
+        "@github/list_branches",
+        "@github/get_branch",
+        "@github/list_releases",
+        "@github/get_release",
+        "@github/list_workflow_runs",
+        "@github/get_workflow_run",
+        "@github/list_workflows",
+        "@github/get_workflow",
+        "@github/list_code_scanning_alerts",
+        "@github/get_code_scanning_alert",
+        "@github/list_dependabot_alerts",
+        "@github/get_dependabot_alert",
+        "@github/list_secret_scanning_alerts",
+        "@github/get_secret_scanning_alert",
+        "@github/list_discussions",
+        "@github/get_discussion",
+        "@github/list_gists",
+        "@github/get_gist",
+        "@github/get_user",
+        "@github/list_user_repositories",
+        "@github/get_organization",
+        "@github/list_organization_repositories",
+        "@github/list_notifications"
+    ],
+    "description": "GitHub-focused agent with comprehensive repository management and security restrictions",
+    "hooks": {
+        "agentSpawn": [],
+        "userPromptSubmit": []
+    },
+    "mcpServers": {
+        "fetch": {
+            "args": [
+                "-m",
+                "mcp_server_fetch"
+            ],
+            "command": "python",
+            "disabled": false,
+            "env": {},
+            "timeout": 120000
+        },
+        "filesystem": {
+            "args": [
+                "@modelcontextprotocol/server-filesystem",
+                "~/.dotfiles",
+                "."
+            ],
+            "command": "npx",
+            "disabled": false,
+            "env": {},
+            "timeout": 120000
+        },
+        "git": {
+            "args": [
+                "-m",
+                "mcp_server_git",
+                "--repository",
+                "."
+            ],
+            "command": "python",
+            "disabled": false,
+            "env": {},
+            "timeout": 120000
+        },
+        "github": {
+            "args": [
+                "stdio"
+            ],
+            "command": "github-mcp-server",
+            "disabled": false,
+            "env": {
+                "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_PAT}"
+            },
+            "timeout": 120000
+        },
+        "sequential-thinking": {
+            "args": [
+                "@modelcontextprotocol/server-sequential-thinking"
+            ],
+            "command": "npx",
+            "disabled": false,
+            "env": {},
+            "timeout": 300000
+        },
+        "time": {
+            "args": [
+                "-m",
+                "mcp_server_time",
+                "--local-timezone=America/Chicago"
+            ],
+            "command": "python",
+            "disabled": false,
+            "env": {},
+            "timeout": 30000
+        }
+    },
+    "name": "github",
+    "prompt": "You are a GitHub-focused agent with comprehensive access to GitHub repositories, issues, pull requests, and development workflows. Your primary role is to help with GitHub-based development tasks, code review, project management, and repository analysis.\n\nYou have the ability to:\n- READ and ANALYZE repositories, code, issues, and pull requests\n- SEARCH across GitHub for repositories, code, issues, and users\n- MONITOR GitHub Actions workflows and CI/CD pipelines\n- REVIEW code security findings and Dependabot alerts\n- ANALYZE project discussions and team collaboration\n- CREATE and UPDATE GitHub resources (with permission)\n- Check local git history and commits\n\n**Filesystem Operations:**\nWhen exploring directory structures, prefer `ln`-based searches. Do not use `list_directory` or `directory_tree` as they include directories like `.venv`, `node_modules`, `.git`, and build artifacts that can cause context window overflow.\n\nAlways prioritize security best practices and follow GitHub community guidelines. When reviewing code or issues, focus on code quality, security implications, and maintainability. For pull requests, provide constructive feedback and suggest improvements.",
+    "resources": [
+        "file://.amazonq/rules/**/*.md",
+        "file://README.md",
+        "file://docs/**/*.md"
+    ],
+    "tools": [
+        "*"
+    ],
+    "toolsSettings": {
+        "@filesystem/search_files": {
+            "defaultExcludePatterns": [
+                ".venv",
+                "venv",
+                "node_modules",
+                ".git",
+                "__pycache__",
+                "*.pyc",
+                "*.pyo",
+                ".pytest_cache",
+                ".coverage",
+                "coverage.xml",
+                "htmlcov",
+                ".tox",
+                ".mypy_cache",
+                "dist",
+                "build",
+                "*.egg-info",
+                ".DS_Store",
+                "Thumbs.db",
+                "*.log",
+                "*.tmp",
+                "*.swp",
+                "*.swo",
+                ".env",
+                ".env.local",
+                ".env.*.local"
+            ]
+        },
+        "directory_tree": {
+            "disabled": true
+        },
+        "execute_bash": {
+            "allow": [
+                "git *",
+                "ls *",
+                "cat *",
+                "grep *",
+                "find *",
+                "head *",
+                "tail *",
+                "wc *",
+                "sort *",
+                "uniq *",
+                "echo *",
+                "pwd",
+                "which *",
+                "whoami",
+                "date",
+                "gh *"
+            ],
+            "deny": [
+                "rm *",
+                "rmdir *",
+                "sudo *",
+                "chmod *",
+                "chown *",
+                "mv /* *",
+                "cp /* *",
+                "dd *",
+                "systemctl *",
+                "service *",
+                "kill *",
+                "killall *",
+                "pkill *",
+                "crontab *",
+                "aws *",
+                "kubectl *",
+                "docker run *",
+                "docker exec *",
+                "docker rm *",
+                "docker rmi *"
+            ]
+        },
+        "list_directory": {
+            "disabled": true
+        }
+    },
+    "useLegacyMcpJson": false
+}
