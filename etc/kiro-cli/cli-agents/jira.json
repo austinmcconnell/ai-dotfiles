@@ -20,7 +20,6 @@
         "git_diff_unstaged",
         "now",
         "convert_time",
-        "fetch",
         "jira_ls_projects",
         "jira_ls_issues",
         "jira_get_issue",
@@ -40,16 +39,6 @@
         "userPromptSubmit": []
     },
     "mcpServers": {
-        "fetch": {
-            "args": [
-                "-m",
-                "mcp_server_fetch"
-            ],
-            "command": "python",
-            "disabled": false,
-            "env": {},
-            "timeout": 120000
-        },
         "filesystem": {
             "args": [
                 "@modelcontextprotocol/server-filesystem",

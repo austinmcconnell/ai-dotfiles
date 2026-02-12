@@ -19,7 +19,6 @@
         "@git/git_diff_unstaged",
         "@time/get_current_time",
         "@time/convert_time",
-        "@fetch/fetch_url",
         "@github/get_repository",
         "@github/get_file_contents",
         "@github/list_repository_contents",
@@ -66,16 +65,6 @@
         "userPromptSubmit": []
     },
     "mcpServers": {
-        "fetch": {
-            "args": [
-                "-m",
-                "mcp_server_fetch"
-            ],
-            "command": "python",
-            "disabled": false,
-            "env": {},
-            "timeout": 120000
-        },
         "filesystem": {
             "args": [
                 "@modelcontextprotocol/server-filesystem",

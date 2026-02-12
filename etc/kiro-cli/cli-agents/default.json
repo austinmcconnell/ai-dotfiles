@@ -17,8 +17,7 @@
         "@git/git_show",
         "@git/git_branch",
         "@git/git_diff_staged",
-        "@git/git_diff_unstaged",
-        "@fetch/fetch_url"
+        "@git/git_diff_unstaged"
     ],
     "description": "Default CLI agent with comprehensive development tools and security restrictions",
     "hooks": {
@@ -26,16 +25,6 @@
         "userPromptSubmit": []
     },
     "mcpServers": {
-        "fetch": {
-            "args": [
-                "-m",
-                "mcp_server_fetch"
-            ],
-            "command": "python",
-            "disabled": false,
-            "env": {},
-            "timeout": 120000
-        },
         "filesystem": {
             "args": [
                 "@modelcontextprotocol/server-filesystem",
