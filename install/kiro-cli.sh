@@ -50,7 +50,7 @@ mkdir -p "$KIRO_AGENTS_DIR"
 mkdir -p "$DOTFILES_DIR/etc/ai-prompts"
 
 # Link settings from dotfiles
-ln -sfv "$DOTFILES_DIR/etc/kiro-cli/settings.json" "$KIRO_SETTINGS_DIR/cli.json"
+ln -sfv "$DOTFILES_DIR/etc/kiro-cli/settings/cli.json" "$KIRO_SETTINGS_DIR/cli.json"
 ln -sfv "$DOTFILES_DIR/etc/kiro-cli/settings/mcp.json" "$KIRO_SETTINGS_DIR/mcp.json"
 
 # Link CLI agents from dotfiles repository
