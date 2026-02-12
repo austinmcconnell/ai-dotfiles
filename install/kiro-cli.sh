@@ -14,13 +14,13 @@ set -euo pipefail
 # Source the utilities script for helper functions
 source "$DOTFILES_DIR/install/utils.sh"
 
-# Check if an Amazon Q integration is installed
+# Check if a Kiro CLI integration is installed
 is_integration_installed() {
     local integration_name=$1
-    q integrations status "$integration_name" | grep -q "Installed"
+    kiro-cli integrations status "$integration_name" | grep -q "Installed"
 }
 
-# Install an Amazon Q integration if it's not already installed
+# Install a Kiro CLI integration if it's not already installed
 install_integration_if_needed() {
     local integration_name=$1
 
@@ -28,7 +28,7 @@ install_integration_if_needed() {
         echo -e "\033[32m✓ ${integration_name} integration is already installed\033[0m"
     else
         echo "Installing ${integration_name} integration..."
-        q integrations install "$integration_name"
+        kiro-cli integrations install "$integration_name"
     fi
 }
 
@@ -75,8 +75,8 @@ if is-executable kiro-cli; then
     kiro-cli agent set-default --name default 2>/dev/null || echo "⚠️  Could not set default agent (may need to run manually)"
 fi
 
-# Install Amazon Q integrations if the CLI is available
-if is-executable q; then
+# Install Kiro CLI integrations if the CLI is available
+if is-executable kiro-cli; then
     print_header "Installing Kiro CLI integrations"
     install_integration_if_needed "ssh"
 else
