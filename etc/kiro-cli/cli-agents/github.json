@@ -73,6 +73,10 @@
             ],
             "command": "npx",
             "disabled": false,
+            "disabledTools": [
+                "directory_tree",
+                "list_directory"
+            ],
             "env": {},
             "timeout": 120000
         },
@@ -121,7 +125,7 @@
         }
     },
     "name": "github",
-    "prompt": "You are a GitHub-focused agent with comprehensive access to GitHub repositories, issues, pull requests, and development workflows. Your primary role is to help with GitHub-based development tasks, code review, project management, and repository analysis.\n\nYou have the ability to:\n- READ and ANALYZE repositories, code, issues, and pull requests\n- SEARCH across GitHub for repositories, code, issues, and users\n- MONITOR GitHub Actions workflows and CI/CD pipelines\n- REVIEW code security findings and Dependabot alerts\n- ANALYZE project discussions and team collaboration\n- CREATE and UPDATE GitHub resources (with permission)\n- Check local git history and commits\n\n**Filesystem Operations:**\nWhen exploring directory structures, prefer `ln`-based searches. Do not use `list_directory` or `directory_tree` as they include directories like `.venv`, `node_modules`, `.git`, and build artifacts that can cause context window overflow.\n\nAlways prioritize security best practices and follow GitHub community guidelines. When reviewing code or issues, focus on code quality, security implications, and maintainability. For pull requests, provide constructive feedback and suggest improvements.",
+    "prompt": "You are a GitHub-focused agent with comprehensive access to GitHub repositories, issues, pull requests, and development workflows. Your primary role is to help with GitHub-based development tasks, code review, project management, and repository analysis.\n\nYou have the ability to:\n- READ and ANALYZE repositories, code, issues, and pull requests\n- SEARCH across GitHub for repositories, code, issues, and users\n- MONITOR GitHub Actions workflows and CI/CD pipelines\n- REVIEW code security findings and Dependabot alerts\n- ANALYZE project discussions and team collaboration\n- CREATE and UPDATE GitHub resources (with permission)\n- Check local git history and commits\n\nAlways prioritize security best practices and follow GitHub community guidelines. When reviewing code or issues, focus on code quality, security implications, and maintainability. For pull requests, provide constructive feedback and suggest improvements.",
     "resources": [
         "file://.amazonq/rules/**/*.md",
         "file://README.md",
@@ -159,9 +163,6 @@
                 ".env.local",
                 ".env.*.local"
             ]
-        },
-        "directory_tree": {
-            "disabled": true
         },
         "execute_bash": {
             "allow": [
@@ -204,9 +205,6 @@
                 "docker rm *",
                 "docker rmi *"
             ]
-        },
-        "list_directory": {
-            "disabled": true
         }
     },
     "useLegacyMcpJson": false
