@@ -1,6 +1,8 @@
 {
   "allowedTools": [
     "fs_read",
+    "web_search",
+    "web_fetch",
     "@filesystem/read_text_file",
     "@filesystem/read_multiple_files",
     "@filesystem/read_media_file",
@@ -8,6 +10,13 @@
     "@filesystem/get_file_info",
     "@filesystem/create_directory",
     "@sequential-thinking/sequentialthinking",
+    "@git/git_status",
+    "@git/git_log",
+    "@git/git_diff",
+    "@git/git_show",
+    "@git/git_branch",
+    "@git/git_diff_staged",
+    "@git/git_diff_unstaged",
     "@time/get_current_time",
     "@time/convert_time",
     "@fetch/fetch_url",
@@ -77,6 +86,18 @@
       "timeout": 300000,
       "disabled": false
     },
+    "git": {
+      "command": "python",
+      "args": [
+        "-m",
+        "mcp_server_git",
+        "--repository",
+        "."
+      ],
+      "env": {},
+      "timeout": 120000,
+      "disabled": false
+    },
     "time": {
       "command": "python",
       "args": [
@@ -111,12 +132,8 @@
     }
   },
   "name": "github",
-  "prompt": "You are a GitHub-focused agent with comprehensive access to GitHub repositories, issues, pull requests, and development workflows. Your primary role is to help with GitHub-based development tasks, code review, project management, and repository analysis.\n\nYou have the ability to:\n- READ and ANALYZE repositories, code, issues, and pull requests\n- SEARCH across GitHub for repositories, code, issues, and users\n- MONITOR GitHub Actions workflows and CI/CD pipelines\n- REVIEW code security findings and Dependabot alerts\n- ANALYZE project discussions and team collaboration\n- CREATE and UPDATE GitHub resources (with permission)\n\n**Filesystem Operations:**\nWhen exploring directory structures, prefer `ln`-based searches. Do not use `list_directory` or `directory_tree` as they include directories like `.venv`, `node_modules`, `.git`, and build artifacts that can cause context window overflow.\n\nAlways prioritize security best practices and follow GitHub community guidelines. When reviewing code or issues, focus on code quality, security implications, and maintainability. For pull requests, provide constructive feedback and suggest improvements.",
+  "prompt": "You are a GitHub-focused agent with comprehensive access to GitHub repositories, issues, pull requests, and development workflows. Your primary role is to help with GitHub-based development tasks, code review, project management, and repository analysis.\n\nYou have the ability to:\n- READ and ANALYZE repositories, code, issues, and pull requests\n- SEARCH across GitHub for repositories, code, issues, and users\n- MONITOR GitHub Actions workflows and CI/CD pipelines\n- REVIEW code security findings and Dependabot alerts\n- ANALYZE project discussions and team collaboration\n- CREATE and UPDATE GitHub resources (with permission)\n- Check local git history and commits\n\n**Filesystem Operations:**\nWhen exploring directory structures, prefer `ln`-based searches. Do not use `list_directory` or `directory_tree` as they include directories like `.venv`, `node_modules`, `.git`, and build artifacts that can cause context window overflow.\n\nAlways prioritize security best practices and follow GitHub community guidelines. When reviewing code or issues, focus on code quality, security implications, and maintainability. For pull requests, provide constructive feedback and suggest improvements.",
   "resources": [
-    "file://~/.dotfiles/etc/amazon-q/global_rules/workflow/pre-commit-guidance.md",
-    "file://~/.dotfiles/etc/amazon-q/global_rules/workflow/virtual-environment-guidance.md",
-    "file://~/.dotfiles/etc/amazon-q/global_rules/code/**/*.md",
-    "file://~/.dotfiles/etc/amazon-q/global_rules/security/**/*.md",
     "file://.amazonq/rules/**/*.md",
     "file://README.md",
     "file://docs/**/*.md"
