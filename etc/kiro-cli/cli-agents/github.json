@@ -206,6 +206,5 @@
                 "docker rmi *"
             ]
         }
-    },
-    "useLegacyMcpJson": false
+    }
 }
