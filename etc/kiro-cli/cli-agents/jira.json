@@ -114,6 +114,30 @@
                 "pip install .*",
                 "brew install .*"
             ]
+        },
+        "write": {
+            "allowedPaths": [
+                "~/projects/**",
+                "~/repositories/**",
+                "~/.dotfiles/**",
+                "./**"
+            ],
+            "deniedPaths": [
+                "/etc/**",
+                "/usr/**",
+                "/bin/**",
+                "/sbin/**",
+                "/System/**"
+            ]
+        },
+        "web_fetch": {
+            "trusted": [
+                ".*atlassian\\.com.*",
+                ".*atlassian\\.net.*"
+            ],
+            "blocked": [
+                ".*pastebin\\.com.*"
+            ]
         }
     }
 }
