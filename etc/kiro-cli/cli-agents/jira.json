@@ -38,34 +38,8 @@
         "agentSpawn": [],
         "userPromptSubmit": []
     },
+    "includeMcpJson": true,
     "mcpServers": {
-        "filesystem": {
-            "args": [
-                "@modelcontextprotocol/server-filesystem",
-                "~/.dotfiles",
-                "."
-            ],
-            "command": "npx",
-            "disabled": false,
-            "disabledTools": [
-                "directory_tree",
-                "list_directory"
-            ],
-            "env": {},
-            "timeout": 120000
-        },
-        "git": {
-            "args": [
-                "-m",
-                "mcp_server_git",
-                "--repository",
-                "."
-            ],
-            "command": "python",
-            "disabled": false,
-            "env": {},
-            "timeout": 120000
-        },
         "jira": {
             "args": [
                 "@aashari/mcp-server-atlassian-jira"
@@ -74,15 +48,6 @@
             "disabled": false,
             "env": {},
             "timeout": 120000
-        },
-        "sequential-thinking": {
-            "args": [
-                "@modelcontextprotocol/server-sequential-thinking"
-            ],
-            "command": "npx",
-            "disabled": false,
-            "env": {},
-            "timeout": 300000
         },
         "time": {
             "args": [
