@@ -78,16 +78,25 @@ else
 fi
 
 # Link CLI agents from dotfiles repository
+KIRO_AGENTS_DIR="$HOME/.kiro/agents"
+mkdir -p "$KIRO_AGENTS_DIR"
+
 if [ -d "$DOTFILES_DIR/etc/amazon-q/cli-agents" ]; then
     for agent_file in "$DOTFILES_DIR/etc/amazon-q/cli-agents"/*.json; do
         if [ -f "$agent_file" ]; then
             agent_name=$(basename "$agent_file")
-            ln -sfv "$agent_file" "$AMAZON_Q_CLI_AGENTS_DIR/$agent_name"
+            ln -sfv "$agent_file" "$KIRO_AGENTS_DIR/$agent_name"
             echo "✓ Linked CLI agent: $agent_name"
         fi
     done
 else
     echo "No CLI agents directory found in dotfiles"
+fi
+
+# Set default agent to use custom 'default' agent instead of built-in kiro_default
+if is-executable kiro-cli; then
+    echo "Setting default agent to 'default'..."
+    kiro-cli agent set-default --name default 2>/dev/null || echo "⚠️  Could not set default agent (may need to run manually)"
 fi
 
 # Install Amazon Q integrations if the CLI is available
