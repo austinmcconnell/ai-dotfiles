@@ -30,5 +30,6 @@
   "knowledge.maxFiles": 2000,
   "knowledge.indexType": "best",
   "chat.diffTool": "delta",
-  "chat.enableThinking": true
+  "chat.enableThinking": true,
+  "chat.enableTodoList": true
 }
