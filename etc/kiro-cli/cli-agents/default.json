@@ -40,6 +40,22 @@
     ],
     "toolsSettings": {
         "shell": {
+            "allowedCommands": [
+                "man .*",
+                "which .*",
+                "type .*",
+                "command -v .*",
+                "ls .*",
+                "pwd",
+                "whoami",
+                "hostname",
+                "grep .*",
+                "head .*",
+                "tail .*",
+                "wc .*",
+                "sort .*",
+                "uniq .*"
+            ],
             "deniedCommands": [
                 "rm .*",
                 "rmdir .*",

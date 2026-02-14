@@ -70,24 +70,20 @@
     "toolsSettings": {
         "shell": {
             "allowedCommands": [
+                "man .*",
+                "which .*",
+                "type .*",
+                "command -v .*",
                 "ls .*",
-                "cat .*",
+                "pwd",
+                "whoami",
+                "hostname",
                 "grep .*",
-                "find .*",
                 "head .*",
                 "tail .*",
                 "wc .*",
                 "sort .*",
-                "uniq .*",
-                "echo .*",
-                "pwd",
-                "which .*",
-                "whoami",
-                "date",
-                "git status",
-                "git log .*",
-                "git diff .*",
-                "git show .*"
+                "uniq .*"
             ],
             "deniedCommands": [
                 "rm .*",
