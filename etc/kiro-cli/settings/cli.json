@@ -5,5 +5,28 @@
   "codeWhisperer.shareCodeWhispererContentWithAWS": false,
   "inline.enabled": false,
   "mcp.loadedBefore": true,
-  "telemetry.enabled": false
+  "telemetry.enabled": false,
+  "chat.enableKnowledge": true,
+  "knowledge.defaultIncludePatterns": [
+    "*.md",
+    "*.sh",
+    "*.zsh",
+    "*.vim",
+    "*.py",
+    "*.json",
+    "*.yaml",
+    "*.yml"
+  ],
+  "knowledge.defaultExcludePatterns": [
+    "*.log",
+    "node_modules",
+    ".git",
+    "*.pyc",
+    "__pycache__",
+    ".antidote",
+    ".zsh_plugins.zsh",
+    "*.zwc"
+  ],
+  "knowledge.maxFiles": 2000,
+  "knowledge.indexType": "best"
 }
