@@ -28,5 +28,6 @@
     "*.zwc"
   ],
   "knowledge.maxFiles": 2000,
-  "knowledge.indexType": "best"
+  "knowledge.indexType": "best",
+  "chat.diffTool": "delta"
 }
