@@ -25,6 +25,19 @@
             "disabled": false,
             "env": {},
             "timeout": 120000
+        },
+        "kubernetes": {
+            "args": [
+                "-y",
+                "kubernetes-mcp-server@latest",
+                "--read-only",
+                "--toolsets",
+                "core,config,helm"
+            ],
+            "command": "npx",
+            "disabled": false,
+            "env": {},
+            "timeout": 120000
         }
     }
 }
