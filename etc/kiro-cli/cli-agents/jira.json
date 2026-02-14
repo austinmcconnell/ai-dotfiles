@@ -24,7 +24,6 @@
         "read_multiple_files",
         "read_text_file",
         "search_files",
-        "sequentialthinking",
         "web_fetch",
         "web_search"
     ],

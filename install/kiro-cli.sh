@@ -90,7 +90,6 @@ if is-executable npm; then
     # List of Node.js MCP servers to install
     MCP_SERVERS=(
         "@modelcontextprotocol/server-filesystem"
-        "@modelcontextprotocol/server-sequential-thinking"
         "enhanced-postgres-mcp-server"
         "@aashari/mcp-server-atlassian-jira"
     )

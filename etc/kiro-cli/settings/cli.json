@@ -29,5 +29,6 @@
   ],
   "knowledge.maxFiles": 2000,
   "knowledge.indexType": "best",
-  "chat.diffTool": "delta"
+  "chat.diffTool": "delta",
+  "chat.enableThinking": true
 }

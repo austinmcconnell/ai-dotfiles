@@ -25,15 +25,6 @@
             "disabled": false,
             "env": {},
             "timeout": 120000
-        },
-        "sequential-thinking": {
-            "args": [
-                "@modelcontextprotocol/server-sequential-thinking"
-            ],
-            "command": "npx",
-            "disabled": false,
-            "env": {},
-            "timeout": 300000
         }
     }
 }

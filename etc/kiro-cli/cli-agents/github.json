@@ -36,7 +36,6 @@
         "@github/search_pull_requests",
         "@github/search_repositories",
         "@github/search_users",
-        "@sequential-thinking/sequentialthinking",
         "@time/convert_time",
         "@time/get_current_time",
         "fs_read",
