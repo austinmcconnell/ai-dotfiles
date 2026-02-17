@@ -61,7 +61,9 @@
         "file://AGENTS.md",
         "file://~/.dotfiles/etc/kiro-cli/steering/jira-scrum/**/*.md",
         "file://.kiro/steering/**/*.md",
-        "file://README.md"
+        "file://README.md",
+        "skill://.kiro/skills/**/SKILL.md",
+        "skill://~/.kiro/skills/**/SKILL.md"
     ],
     "tools": [
         "*"
