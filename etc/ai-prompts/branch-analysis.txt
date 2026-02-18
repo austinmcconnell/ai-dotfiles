@@ -4,7 +4,7 @@ Please analyze the current git branch and provide a comprehensive overview of th
 
 1. **Branch Overview**
    - Branch name and its relationship to main/master
-   - Number of commits ahead/behind main
+   - Number of commits in this branch (since merge-base with main)
    - Overall purpose based on branch name and commit messages
 
 2. **Commit Analysis**
@@ -13,7 +13,7 @@ Please analyze the current git branch and provide a comprehensive overview of th
    - Flag any commits that seem out of scope or unclear
 
 3. **Code Changes Review**
-   - Analyze `git diff main HEAD` (or appropriate base branch)
+   - Analyze changes since the common ancestor with main: `git diff $(git merge-base main HEAD) HEAD`
    - Summarize what files/modules are being modified
    - Identify the scope and impact of changes
    - Note any potential breaking changes or dependencies
@@ -30,11 +30,19 @@ Please analyze the current git branch and provide a comprehensive overview of th
 
 **Commands to run:**
 ```bash
+# Find common ancestor
+MERGE_BASE=$(git merge-base main HEAD)
+
+# Show branch and working directory status
 git status
-git rev-list --left-right --count main...HEAD
-git log --oneline main..HEAD
-git diff --stat main HEAD
-git diff main HEAD
+git rev-parse --abbrev-ref HEAD
+
+# Show commits in this branch
+git log --oneline $MERGE_BASE..HEAD
+
+# Show changes since common ancestor
+git diff --stat $MERGE_BASE HEAD
+git diff $MERGE_BASE HEAD
 ```
 
 Please provide a clear summary that would help in code review or understanding the branch's purpose.
