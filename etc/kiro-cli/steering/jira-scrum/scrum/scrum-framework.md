@@ -71,7 +71,8 @@
 
 ### Sprint Backlog
 
-- **Definition**: Set of Product Backlog items selected for the Sprint plus a plan for delivering them
+- **Definition**: Set of Product Backlog items selected for the Sprint plus a plan for delivering
+  them
 - **Characteristics**:
   - Created during Sprint Planning
   - Owned by the Development Team
@@ -80,7 +81,8 @@
 
 ### Product Increment
 
-- **Definition**: Sum of all Product Backlog items completed during a Sprint plus all previous Sprints
+- **Definition**: Sum of all Product Backlog items completed during a Sprint plus all previous
+  Sprints
 - **Characteristics**:
   - Must be potentially shippable
   - Must meet the Definition of Done

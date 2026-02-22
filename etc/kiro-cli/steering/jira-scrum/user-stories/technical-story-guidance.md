@@ -4,7 +4,8 @@
 
 ### 1. Focus on System Behavior Changes
 
-Technical stories should describe **what the system should do differently**, not just what code to write.
+Technical stories should describe **what the system should do differently**, not just what code to
+write.
 
 **Good**: "System identifies which organization is referenced in the Observation resources"
 **Poor**: "Add a function to extract performer references"
@@ -205,8 +206,8 @@ so that preference updates are consistent across all user interfaces instead of 
 - [ ] **Business Impact**: Clearly explains why the change matters
 - [ ] **Background**: Provides context about current problematic behavior
 - [ ] **Current Issues**: Lists specific, observable problems
-- [ ] **Clean Acceptance Criteria**: Uses simple bullet points for Acceptance Criteria and
-  separate Technical Implementation section
+- [ ] **Clean Acceptance Criteria**: Uses simple bullet points for Acceptance Criteria and separate
+      Technical Implementation section
 - [ ] **No Over-Engineering**: Avoids unnecessary generic sections
 - [ ] **Testable**: Criteria can be verified and demonstrated
 - [ ] **Focused**: Single system behavior change, not multiple unrelated changes

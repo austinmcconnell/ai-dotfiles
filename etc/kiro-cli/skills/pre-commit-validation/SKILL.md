@@ -1,6 +1,9 @@
 ---
 name: pre-commit-validation
-description: Validate code and documentation using pre-commit hooks. Use when working with .pre-commit-config.yaml files, checking code formatting, running linters, or validating changes before committing.
+description:
+  Validate code and documentation using pre-commit hooks. Use when working with
+  .pre-commit-config.yaml files, checking code formatting, running linters, or validating changes
+  before committing.
 ---
 
 # Pre-commit Validation
@@ -44,12 +47,13 @@ Pre-commit hooks often auto-fix issues like:
 - Trailing whitespace
 - Quote style
 
-**Important:** Always read hook-modified files before making further changes. Build on the
-corrected version, not the original.
+**Important:** Always read hook-modified files before making further changes. Build on the corrected
+version, not the original.
 
 ## Common failures and fixes
 
-See [references/common-checks.md](references/common-checks.md) for detailed formatting rules by language.
+See [references/common-checks.md](references/common-checks.md) for detailed formatting rules by
+language.
 
 ## Best practices
 

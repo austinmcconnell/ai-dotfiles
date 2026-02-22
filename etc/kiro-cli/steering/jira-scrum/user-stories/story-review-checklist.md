@@ -1,6 +1,7 @@
 # User Story Review Checklist
 
-Use this checklist when reviewing user stories to ensure they meet quality standards and SCRUM best practices.
+Use this checklist when reviewing user stories to ensure they meet quality standards and SCRUM best
+practices.
 
 ## Story Structure Review
 

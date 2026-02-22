@@ -2,8 +2,8 @@
 
 ## User Story Definition
 
-A user story is a short, simple description of a feature told from the perspective of the person
-who desires the new capability, usually a user or customer of the system.
+A user story is a short, simple description of a feature told from the perspective of the person who
+desires the new capability, usually a user or customer of the system.
 
 ## The INVEST Criteria
 
@@ -67,7 +67,7 @@ Every user story should meet the INVEST criteria:
 
 ### Basic Template
 
-```text
+````text
 As a [type of user],
 I want [some goal]
 so that [some reason/benefit].
@@ -328,3 +328,4 @@ Before a user story can be brought into a Sprint, it should meet the Definition 
 - Improves Sprint predictability
 - Ensures team has necessary information to start work
 - Prevents incomplete stories from entering Sprints
+````

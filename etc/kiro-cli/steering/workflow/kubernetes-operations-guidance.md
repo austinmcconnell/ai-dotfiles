@@ -1,7 +1,7 @@
 # Kubernetes Operations Guidance
 
-This document defines how Amazon Q should interact with Kubernetes clusters and resources,
-including permission requirements, allowed operations, and safety guardrails.
+This document defines how Amazon Q should interact with Kubernetes clusters and resources, including
+permission requirements, allowed operations, and safety guardrails.
 
 ## Permission Requirements
 

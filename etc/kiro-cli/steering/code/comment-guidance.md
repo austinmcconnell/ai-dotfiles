@@ -8,8 +8,8 @@ code without unnecessary noise.
 1. **Avoid redundant comments** that merely repeat what the code already clearly communicates
 2. **Focus on the "why" not the "what"** when adding comments
 3. **Comment complex logic** that isn't immediately obvious
-4. **Use docstrings** for functions, classes, and modules to explain purpose, parameters, and
-return values
+4. **Use docstrings** for functions, classes, and modules to explain purpose, parameters, and return
+   values
 
 ## When NOT to Comment
 
@@ -81,11 +81,13 @@ return values
 ## Docstring Guidelines
 
 1. **Always include docstrings** for:
+
    - Modules
    - Classes
    - Public methods and functions
 
 2. **Docstrings should include**:
+
    - Brief description of purpose
    - Parameters with types and descriptions
    - Return values with types and descriptions

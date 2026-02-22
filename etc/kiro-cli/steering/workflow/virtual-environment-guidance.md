@@ -1,11 +1,12 @@
 # Virtual Environment Guidance
 
-When working with Python projects or executing project-specific tools, always check for the
-presence of a virtual environment and ensure it's activated before running commands.
+When working with Python projects or executing project-specific tools, always check for the presence
+of a virtual environment and ensure it's activated before running commands.
 
 ## Detection and Activation
 
 1. Check for the presence of a virtual environment directory:
+
    - Common locations: `.venv/`, `venv/`, `.env/`, `env/`
 
 2. If a virtual environment exists, activate it before running any project-specific commands:

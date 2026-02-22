@@ -65,6 +65,7 @@ how to facilitate them effectively.
 #### Preparation
 
 - **Product Owner Preparation**:
+
   - Prioritize Product Backlog
   - Ensure top stories meet Definition of Ready
   - Prepare to explain business value and requirements
@@ -413,6 +414,7 @@ Structure discussion around Sprint Goal progress:
 #### Preparation
 
 - **Product Owner Preparation**:
+
   - Review upcoming backlog items
   - Gather additional requirements or clarifications
   - Prepare to explain business value and context

@@ -145,8 +145,8 @@ q --agent jira "Help me refine the backlog for the upcoming sprint"
 
 ### With Default Agent
 
-The JIRA agent inherits global rules from the default agent while adding specialized JIRA and
-SCRUM knowledge.
+The JIRA agent inherits global rules from the default agent while adding specialized JIRA and SCRUM
+knowledge.
 
 ### With Development Workflow
 

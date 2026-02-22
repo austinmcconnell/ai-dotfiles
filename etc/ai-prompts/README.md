@@ -1,8 +1,8 @@
 # AI Prompt Management
 
-This directory contains reusable prompts for AI chat sessions. The prompt management system
-provides shell functions to easily save, organize, and reuse common prompts across any AI
-service (Amazon Q, Claude, ChatGPT, Gemini, etc.).
+This directory contains reusable prompts for AI chat sessions. The prompt management system provides
+shell functions to easily save, organize, and reuse common prompts across any AI service (Amazon Q,
+Claude, ChatGPT, Gemini, etc.).
 
 ## Available Commands
 
@@ -66,18 +66,20 @@ These prompts work with any AI chat service:
 1. **Be specific** - Create prompts for specific scenarios rather than generic ones
 2. **Include context** - Add instructions about what type of code or information to include
 3. **Use templates** - Include placeholders like `[CODE HERE]` or `[DESCRIPTION]` where appropriate
-4. **Version control** - These prompts are tracked in your dotfiles, so you can version and share them
-5. **Test prompts** - Try your prompts with different AI services to ensure they produce good results
+4. **Version control** - These prompts are tracked in your dotfiles, so you can version and share
+   them
+5. **Test prompts** - Try your prompts with different AI services to ensure they produce good
+   results
 6. **Cross-platform** - Design prompts that work well across different AI services
-7. **Follow dependencies** - Always run prerequisite analyses before dependent ones
-   (see Dependency Hierarchy above)
-8. **Use main branch** - Most analysis prompts require running from `main` or `master`
-   branch for accurate results
+7. **Follow dependencies** - Always run prerequisite analyses before dependent ones (see Dependency
+   Hierarchy above)
+8. **Use main branch** - Most analysis prompts require running from `main` or `master` branch for
+   accurate results
 
 ## Prompt Dependencies
 
-Many analysis prompts have prerequisite requirements and must be run in a specific order.
-Each prompt checks for required analysis files and will abort if prerequisites are missing.
+Many analysis prompts have prerequisite requirements and must be run in a specific order. Each
+prompt checks for required analysis files and will abort if prerequisites are missing.
 
 ### Dependency Hierarchy
 
@@ -138,16 +140,24 @@ These prompts can be run at any time without prerequisites:
 
 ### Development Analysis
 
-- `project-analysis` - **[FOUNDATION]** Comprehensive project overview and current state
-  (outputs to `analysis/project-analysis.md`)
-- `architecture-analysis` - Technical architecture and system design analysis (outputs to `analysis/architecture-analysis.md`)
-- `schema-analysis` - Database schemas, data models, and API structures (outputs to `analysis/schema-analysis.md`)
-- `integration-analysis` - External integrations, APIs, and data flows (outputs to `analysis/integration-analysis.md`)
-- `security-analysis` - Security posture, vulnerabilities, and compliance (outputs to `analysis/security-analysis.md`)
-- `performance-analysis` - Performance characteristics, bottlenecks, and optimization (outputs to `analysis/performance-analysis.md`)
-- `testing-analysis` - Testing strategy, coverage, and quality assurance (outputs to `analysis/testing-analysis.md`)
-- `documentation-analysis` - Documentation quality, completeness, and maintenance (outputs to `analysis/documentation-analysis.md`)
-- `technical-debt-analysis` - Code quality issues and refactoring opportunities (outputs to `analysis/technical-debt-analysis.md`)
+- `project-analysis` - **[FOUNDATION]** Comprehensive project overview and current state (outputs to
+  `analysis/project-analysis.md`)
+- `architecture-analysis` - Technical architecture and system design analysis (outputs to
+  `analysis/architecture-analysis.md`)
+- `schema-analysis` - Database schemas, data models, and API structures (outputs to
+  `analysis/schema-analysis.md`)
+- `integration-analysis` - External integrations, APIs, and data flows (outputs to
+  `analysis/integration-analysis.md`)
+- `security-analysis` - Security posture, vulnerabilities, and compliance (outputs to
+  `analysis/security-analysis.md`)
+- `performance-analysis` - Performance characteristics, bottlenecks, and optimization (outputs to
+  `analysis/performance-analysis.md`)
+- `testing-analysis` - Testing strategy, coverage, and quality assurance (outputs to
+  `analysis/testing-analysis.md`)
+- `documentation-analysis` - Documentation quality, completeness, and maintenance (outputs to
+  `analysis/documentation-analysis.md`)
+- `technical-debt-analysis` - Code quality issues and refactoring opportunities (outputs to
+  `analysis/technical-debt-analysis.md`)
 
 ### Git and Code Review
 

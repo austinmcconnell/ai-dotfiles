@@ -7,7 +7,7 @@ different domains and contexts.
 
 ### Basic Template
 
-```text
+````text
 As a [type of user],
 I want [some goal]
 so that [some reason/benefit].
@@ -388,7 +388,7 @@ Core Functionality
 Technical Implementation
 • [ ] [Specific technical task 1]
 • [ ] [Specific technical task 2]
-```
+````
 
 ### Example: Data Processing Improvement
 
@@ -422,7 +422,7 @@ Technical Implementation
 
 #### Create Story
 
-```text
+````text
 As a [user type],
 I want to create a new [entity]
 so that I can [benefit/reason].
@@ -555,3 +555,4 @@ When writing or reviewing stories, ensure they meet these criteria:
 - [ ] Dependencies are identified
 - [ ] Definition of Done criteria are clear
 - [ ] Business value is quantified where possible
+````

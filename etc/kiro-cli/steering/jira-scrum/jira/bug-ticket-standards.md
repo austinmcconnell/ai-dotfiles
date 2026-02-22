@@ -74,15 +74,15 @@ Structure the description with these subsections:
 
 ### Distinguish Between Data Loss vs Processing Issues
 
-**Actual Data Loss**: Original data is deleted or corrupted and cannot be recovered
-**Data Processing Issues**: Original data exists but derived/computed fields are incorrect
+**Actual Data Loss**: Original data is deleted or corrupted and cannot be recovered **Data
+Processing Issues**: Original data exists but derived/computed fields are incorrect
 
 Most bugs are processing issues, not actual data loss.
 
 ### Use Specific Numbers
 
-❌ **Vague**: "Many assessment screens are affected"
-✅ **Specific**: "28,067 assessment screens in production database have empty identified_needs arrays"
+❌ **Vague**: "Many assessment screens are affected" ✅ **Specific**: "28,067 assessment screens in
+production database have empty identified_needs arrays"
 
 ## Evidence Best Practices
 
@@ -136,32 +136,31 @@ Most bugs are processing issues, not actual data loss.
 
 ```markdown
 ## Summary
+
 Fix typo preventing user data from being processed correctly
 
 ## Description
 
 ### Background
-The system should process all user preferences and store them in the derived preferences table for quick lookup.
+
+The system should process all user preferences and store them in the derived preferences table for
+quick lookup.
 
 ### Root Cause
-**File**: `app/users/service.py`
-**Line**: 245
-**Issue**: Typo in condition check
+
+**File**: `app/users/service.py` **Line**: 245 **Issue**: Typo in condition check
 
     # Current (incorrect)
     if user.type == 'premum':  # ← Missing 'i' in 'premium'
 
 ### Current Impact
 
-**Data Consistency Issues**
-• 15,432 premium users have empty preferences arrays
-• Individual preference answers stored correctly in raw answers table
-• Derived preferences field remains unpopulated
+**Data Consistency Issues** • 15,432 premium users have empty preferences arrays • Individual
+preference answers stored correctly in raw answers table • Derived preferences field remains
+unpopulated
 
-**Affected Functionality**
-• User dashboard shows default preferences instead of saved ones
-• Recommendation engine uses fallback logic
-• Premium feature toggles not working correctly
+**Affected Functionality** • User dashboard shows default preferences instead of saved ones •
+Recommendation engine uses fallback logic • Premium feature toggles not working correctly
 
 ### Evidence
 
@@ -174,8 +173,7 @@ Production database query:
 
 ## Acceptance Criteria
 
-• New premium users have preferences populated correctly
-• User dashboard displays saved preferences
-• Recommendation engine uses actual user preferences
-• Premium feature toggles work based on user settings
+• New premium users have preferences populated correctly • User dashboard displays saved preferences
+• Recommendation engine uses actual user preferences • Premium feature toggles work based on user
+settings
 ```

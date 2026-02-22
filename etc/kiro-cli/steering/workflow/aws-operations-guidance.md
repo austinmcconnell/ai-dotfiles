@@ -242,5 +242,5 @@ If you encounter authentication errors:
 - New chat session begins
 - User explicitly asks to change AWS context
 
-This guidance ensures safe, controlled access to AWS resources while maintaining user trust
-and preventing accidental destructive operations.
+This guidance ensures safe, controlled access to AWS resources while maintaining user trust and
+preventing accidental destructive operations.
