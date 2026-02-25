@@ -1,7 +1,6 @@
 ---
 name: pre-commit-validation
-description:
-  Validate code and documentation using pre-commit hooks. Use when working with
+description: Validate code and documentation using pre-commit hooks. Use when working with
   .pre-commit-config.yaml files, checking code formatting, running linters, or validating changes
   before committing.
 ---
