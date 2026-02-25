@@ -110,7 +110,8 @@
                 "rmdir .*",
                 "service .*",
                 "sudo .*",
-                "systemctl .*"
+                "systemctl .*",
+                "trash .*"
             ]
         },
         "write": {

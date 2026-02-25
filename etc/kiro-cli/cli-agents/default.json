@@ -86,6 +86,7 @@
                 "shutdown .*",
                 "sudo .*",
                 "systemctl .*",
+                "trash .*",
                 "umount .*"
             ]
         },
