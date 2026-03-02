@@ -15,6 +15,8 @@
         "@git/git_show",
         "@git/git_status",
         "fs_read",
+        "glob",
+        "grep",
         "web_fetch",
         "web_search"
     ],

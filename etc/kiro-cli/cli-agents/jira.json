@@ -11,6 +11,8 @@
         "git_log",
         "git_show",
         "git_status",
+        "glob",
+        "grep",
         "jira_get_create_meta",
         "jira_get_issue",
         "jira_get_project",

@@ -39,6 +39,8 @@
         "@time/convert_time",
         "@time/get_current_time",
         "fs_read",
+        "glob",
+        "grep",
         "web_fetch",
         "web_search"
     ],
