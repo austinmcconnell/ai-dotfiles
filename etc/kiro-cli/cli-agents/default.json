@@ -28,9 +28,18 @@
                 "command": "git status --short --branch 2>/dev/null || echo 'Not a git repository'"
             }
         ],
-        "userPromptSubmit": [
+        "preToolUse": [
             {
-                "command": "if [ -d '.venv' ] || [ -d 'venv' ]; then if [ -z \"$VIRTUAL_ENV\" ]; then echo '⚠️  Virtual environment detected but not activated. Run: source .venv/bin/activate || source venv/bin/activate'; fi; fi"
+                "matcher": "use_aws",
+                "command": "jq -c '{timestamp: now | strftime(\"%Y-%m-%d %H:%M:%S\"), tool: .tool_name, input: .tool_input}' >> ~/.kiro/logs/aws-audit.jsonl"
+            },
+            {
+                "matcher": "@kubernetes",
+                "command": "jq -c '{timestamp: now | strftime(\"%Y-%m-%d %H:%M:%S\"), tool: .tool_name, input: .tool_input}' >> ~/.kiro/logs/kubectl-audit.jsonl"
+            },
+            {
+                "matcher": "execute_bash",
+                "command": "~/.dotfiles/etc/kiro-cli/hooks/audit-shell-commands.sh"
             }
         ]
     },

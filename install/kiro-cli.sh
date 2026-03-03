@@ -44,12 +44,19 @@ install_if_needed "kiro-cli" "cask"
 KIRO_SETTINGS_DIR="$HOME/.kiro/settings"
 KIRO_AGENTS_DIR="$HOME/.kiro/agents"
 KIRO_SKILLS_DIR="$HOME/.kiro/skills"
+KIRO_LOGS_DIR="$HOME/.kiro/logs"
 
 # Create necessary directories
 mkdir -p "$KIRO_SETTINGS_DIR"
 mkdir -p "$KIRO_AGENTS_DIR"
 mkdir -p "$KIRO_SKILLS_DIR"
+mkdir -p "$KIRO_LOGS_DIR"
 mkdir -p "$DOTFILES_DIR/etc/ai-prompts"
+
+# Create audit log files with proper permissions
+touch "$KIRO_LOGS_DIR/aws-audit.jsonl"
+touch "$KIRO_LOGS_DIR/kubectl-audit.jsonl"
+chmod 600 "$KIRO_LOGS_DIR"/*.jsonl
 
 # Link settings from dotfiles
 ln -sfv "$DOTFILES_DIR/etc/kiro-cli/settings/cli.json" "$KIRO_SETTINGS_DIR/cli.json"
