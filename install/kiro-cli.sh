@@ -60,7 +60,7 @@ KIRO_AGENTS_DIR="$HOME/.kiro/agents"
 mkdir -p "$KIRO_AGENTS_DIR"
 
 if [ -d "$DOTFILES_DIR/etc/kiro-cli/cli-agents" ]; then
-    for agent_file in "$DOTFILES_DIR/etc/kiro-cli/cli-agents"/*.json; do
+    for agent_file in "$DOTFILES_DIR/etc/kiro-cli/cli-agents"/*.{json,md}; do
         if [ -f "$agent_file" ]; then
             agent_name=$(basename "$agent_file")
             ln -sfv "$agent_file" "$KIRO_AGENTS_DIR/$agent_name"
