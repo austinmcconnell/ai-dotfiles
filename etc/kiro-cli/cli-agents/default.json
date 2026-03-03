@@ -23,8 +23,16 @@
     ],
     "description": "Default CLI agent with comprehensive development tools and security restrictions",
     "hooks": {
-        "agentSpawn": [],
-        "userPromptSubmit": []
+        "agentSpawn": [
+            {
+                "command": "git status --short --branch 2>/dev/null || echo 'Not a git repository'"
+            }
+        ],
+        "userPromptSubmit": [
+            {
+                "command": "if [ -d '.venv' ] || [ -d 'venv' ]; then if [ -z \"$VIRTUAL_ENV\" ]; then echo '⚠️  Virtual environment detected but not activated. Run: source .venv/bin/activate || source venv/bin/activate'; fi; fi"
+            }
+        ]
     },
     "includeMcpJson": true,
     "name": "default",
