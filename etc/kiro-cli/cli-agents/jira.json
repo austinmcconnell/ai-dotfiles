@@ -26,6 +26,7 @@
         "fs_read",
         "glob",
         "grep",
+        "use_subagent",
         "web_fetch",
         "web_search"
     ],
@@ -35,7 +36,7 @@
         "userPromptSubmit": []
     },
     "keyboardShortcut": "ctrl+j",
-    "useLegacyMcpJson": true,
+    "includeMcpJson": true,
     "mcpServers": {
         "jira": {
             "args": [
@@ -140,6 +141,18 @@
                 "/sbin/**",
                 "/System/**"
             ]
+        },
+        "grep": {
+            "allowedPaths": ["~/projects/**", "~/repositories/**", "~/.dotfiles/**", "./**"],
+            "deniedPaths": ["/etc/**", "/usr/**", "/bin/**", "/sbin/**", "/System/**"]
+        },
+        "glob": {
+            "allowedPaths": ["~/projects/**", "~/repositories/**", "~/.dotfiles/**", "./**"],
+            "deniedPaths": ["/etc/**", "/usr/**", "/bin/**", "/sbin/**", "/System/**"]
+        },
+        "subagent": {
+            "availableAgents": ["default", "github", "jira"],
+            "trustedAgents": ["default"]
         },
         "web_fetch": {
             "trustedUrlPatterns": [
