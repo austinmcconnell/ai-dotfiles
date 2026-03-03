@@ -35,7 +35,6 @@
         "agentSpawn": [],
         "userPromptSubmit": []
     },
-    "keyboardShortcut": "ctrl+j",
     "includeMcpJson": true,
     "mcpServers": {
         "jira": {

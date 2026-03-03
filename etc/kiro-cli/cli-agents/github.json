@@ -50,7 +50,7 @@
         "agentSpawn": [],
         "userPromptSubmit": []
     },
-    "keyboardShortcut": "ctrl+g",
+
     "includeMcpJson": true,
     "mcpServers": {
         "github": {

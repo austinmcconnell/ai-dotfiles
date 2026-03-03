@@ -26,7 +26,6 @@
         "agentSpawn": [],
         "userPromptSubmit": []
     },
-    "keyboardShortcut": "ctrl+d",
     "includeMcpJson": true,
     "name": "default",
     "prompt": "file://./default-prompt.md",
