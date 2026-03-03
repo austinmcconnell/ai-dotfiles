@@ -34,7 +34,8 @@
         "agentSpawn": [],
         "userPromptSubmit": []
     },
-    "includeMcpJson": true,
+    "keyboardShortcut": "ctrl+j",
+    "useLegacyMcpJson": true,
     "mcpServers": {
         "jira": {
             "args": [
@@ -141,11 +142,11 @@
             ]
         },
         "web_fetch": {
-            "trusted": [
+            "trustedUrlPatterns": [
                 ".*atlassian\\.com.*",
                 ".*atlassian\\.net.*"
             ],
-            "blocked": [
+            "blockedUrlPatterns": [
                 ".*pastebin\\.com.*"
             ]
         }

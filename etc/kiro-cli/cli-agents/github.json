@@ -49,7 +49,8 @@
         "agentSpawn": [],
         "userPromptSubmit": []
     },
-    "includeMcpJson": true,
+    "keyboardShortcut": "ctrl+g",
+    "useLegacyMcpJson": true,
     "mcpServers": {
         "github": {
             "args": [
@@ -155,12 +156,12 @@
             ]
         },
         "web_fetch": {
-            "trusted": [
+            "trustedUrlPatterns": [
                 ".*github\\.com.*",
                 ".*docs\\.github\\.com.*",
                 ".*raw\\.githubusercontent\\.com.*"
             ],
-            "blocked": [
+            "blockedUrlPatterns": [
                 ".*pastebin\\.com.*"
             ]
         }

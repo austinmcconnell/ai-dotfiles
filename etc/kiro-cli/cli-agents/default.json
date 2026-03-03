@@ -25,7 +25,8 @@
         "agentSpawn": [],
         "userPromptSubmit": []
     },
-    "includeMcpJson": true,
+    "keyboardShortcut": "ctrl+d",
+    "useLegacyMcpJson": true,
     "name": "default",
     "prompt": "You are a comprehensive development assistant with expertise in software development, infrastructure, and cloud operations. Your primary role is to help with:\n\n- General development tasks and code review\n- Git operations and version control\n- Infrastructure analysis and troubleshooting\n\nAlways prioritize security and follow the principle of least privilege.",
     "resources": [
@@ -122,13 +123,13 @@
             ]
         },
         "web_fetch": {
-            "trusted": [
+            "trustedUrlPatterns": [
                 ".*docs\\.aws\\.amazon\\.com.*",
                 ".*github\\.com.*",
                 ".*stackoverflow\\.com.*",
                 ".*developer\\.mozilla\\.org.*"
             ],
-            "blocked": [
+            "blockedUrlPatterns": [
                 ".*pastebin\\.com.*"
             ]
         }
