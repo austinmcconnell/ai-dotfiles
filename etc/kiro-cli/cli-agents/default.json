@@ -152,13 +152,13 @@
             "trustedAgents": ["default"]
         },
         "web_fetch": {
-            "trustedUrlPatterns": [
+            "trusted": [
                 ".*docs\\.aws\\.amazon\\.com.*",
                 ".*github\\.com.*",
                 ".*stackoverflow\\.com.*",
                 ".*developer\\.mozilla\\.org.*"
             ],
-            "blockedUrlPatterns": [
+            "blocked": [
                 ".*pastebin\\.com.*"
             ]
         }

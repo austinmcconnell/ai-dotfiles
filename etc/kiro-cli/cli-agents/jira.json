@@ -154,11 +154,11 @@
             "trustedAgents": ["default"]
         },
         "web_fetch": {
-            "trustedUrlPatterns": [
+            "trusted": [
                 ".*atlassian\\.com.*",
                 ".*atlassian\\.net.*"
             ],
-            "blockedUrlPatterns": [
+            "blocked": [
                 ".*pastebin\\.com.*"
             ]
         }

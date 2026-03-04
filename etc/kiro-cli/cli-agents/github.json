@@ -169,12 +169,12 @@
             "trustedAgents": ["default"]
         },
         "web_fetch": {
-            "trustedUrlPatterns": [
+            "trusted": [
                 ".*github\\.com.*",
                 ".*docs\\.github\\.com.*",
                 ".*raw\\.githubusercontent\\.com.*"
             ],
-            "blockedUrlPatterns": [
+            "blocked": [
                 ".*pastebin\\.com.*"
             ]
         }
