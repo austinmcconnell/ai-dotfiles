@@ -22,6 +22,17 @@ Skip specs for:
 - Well-understood patterns
 - Urgent hotfixes
 
+## When to Use Implementation Guides Instead
+
+Use implementation guides (not specs) for:
+- Security vulnerability fixes with detailed remediation steps
+- Complex refactoring across many files
+- Step-by-step migration guides
+- Detailed how-to documentation for implementers
+- Bug fixes requiring extensive code changes
+
+Implementation guides include code examples, before/after comparisons, exact file changes, and detailed testing instructions. Specs focus on requirements, architecture, and decisions.
+
 ## Spec Structure
 
 Single `spec.md` file with these sections:
