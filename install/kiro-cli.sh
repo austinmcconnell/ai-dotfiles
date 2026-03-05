@@ -92,7 +92,7 @@ if [ -d "$DOTFILES_DIR/etc/kiro-cli/skills" ]; then
     for skill_dir in "$DOTFILES_DIR/etc/kiro-cli/skills"/*; do
         if [ -d "$skill_dir" ]; then
             skill_name=$(basename "$skill_dir")
-            ln -sfv "$skill_dir" "$KIRO_SKILLS_DIR/$skill_name"
+            ln -sfnv "$skill_dir" "$KIRO_SKILLS_DIR/$skill_name"
             echo "✓ Linked skill: $skill_name"
         fi
     done
