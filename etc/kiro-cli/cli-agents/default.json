@@ -53,8 +53,12 @@
         "file://~/.dotfiles/etc/kiro-cli/steering/security/**/*.md",
         "file://.kiro/steering/**/*.md",
         "file://README.md",
-        "skill://.kiro/skills/**/SKILL.md",
-        "skill://~/.kiro/skills/**/SKILL.md"
+        "skill://.kiro/skills/development/**/SKILL.md",
+        "skill://.kiro/skills/operations/**/SKILL.md",
+        "skill://.kiro/skills/shared/**/SKILL.md",
+        "skill://~/.kiro/skills/development/**/SKILL.md",
+        "skill://~/.kiro/skills/operations/**/SKILL.md",
+        "skill://~/.kiro/skills/shared/**/SKILL.md"
     ],
     "tools": [
         "*"

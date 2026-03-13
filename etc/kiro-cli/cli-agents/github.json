@@ -84,7 +84,8 @@
         "file://README.md",
         "file://docs/**/*.md",
         "skill://.kiro/skills/**/SKILL.md",
-        "skill://~/.kiro/skills/**/SKILL.md"
+        "skill://~/.kiro/skills/development/**/SKILL.md",
+        "skill://~/.kiro/skills/shared/**/SKILL.md"
     ],
     "tools": [
         "*"
