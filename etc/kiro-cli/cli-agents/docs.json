@@ -88,7 +88,10 @@
             "trusted": [
                 ".*rust-lang\\.io.*",
                 ".*github\\.com.*",
-                ".*mdbook.*"
+                ".*mdbook.*",
+                ".*adr\\.github\\.io.*",
+                ".*readthedocs\\.io.*",
+                ".*docs\\..*"
             ],
             "blocked": [
                 ".*pastebin\\.com.*"
