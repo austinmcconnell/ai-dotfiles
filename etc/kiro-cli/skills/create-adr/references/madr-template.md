@@ -13,6 +13,7 @@ informed: [list everyone kept up-to-date; one-way communication]
 
 {Describe the context and problem statement, e.g., in free form using two to three sentences or in the form of an illustrative story. You may want to articulate the problem in form of a question and add links to collaboration boards or issue management systems.}
 
+<!-- This is an optional element. Feel free to remove. -->
 ## Decision Drivers
 
 * {decision driver 1, e.g., a force, facing concern, …}
@@ -30,20 +31,24 @@ informed: [list everyone kept up-to-date; one-way communication]
 
 Chosen option: "{title of option 1}", because {justification. e.g., only option which meets k.o. criterion decision driver | which resolves force {force} | … | comes out best (see below)}.
 
+<!-- This is an optional element. Feel free to remove. -->
 ### Consequences
 
 * Good, because {positive consequence, e.g., improvement of one or more desired qualities, …}
 * Bad, because {negative consequence, e.g., compromising one or more desired qualities, …}
 * … <!-- numbers of consequences can vary -->
 
+<!-- This is an optional element. Feel free to remove. -->
 ### Confirmation
 
-{Describe how the implementation of/compliance with the ADR can/will be confirmed. E.g., a design/code review or a test with a library such as ArchUnit can help validate this. Note that although we classify this element as optional, it is included in many ADRs.}
+{Describe how the implementation of/compliance with the ADR can/will be confirmed. Is the chosen design and its implementation in line with the decision? E.g., a design/code review or a test with a library such as ArchUnit can help validate this. Note that although we classify this element as optional, it is included in many ADRs.}
 
+<!-- This is an optional element. Feel free to remove. -->
 ## Pros and Cons of the Options
 
 ### {title of option 1}
 
+<!-- This is an optional element. Feel free to remove. -->
 {example | description | pointer to more information | …}
 
 * Good, because {argument a}
@@ -73,6 +78,7 @@ Chosen option: "{title of option 1}", because {justification. e.g., only option 
 * Bad, because {argument d}
 * …
 
+<!-- This is an optional element. Feel free to remove. -->
 ## More Information
 
-{You might want to provide additional evidence/confidence for the decision outcome here and/or document the team agreement on the decision and/or define when/how this decision should be realized and if/when it should be re-visited. Links to other decisions and resources might appear here as well.}
+{You might want to provide additional evidence/confidence for the decision outcome here and/or document the team agreement on the decision and/or define when/how this decision the decision should be realized and if/when it should be re-visited. Links to other decisions and resources might appear here as well.}
