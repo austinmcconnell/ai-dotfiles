@@ -1,0 +1,100 @@
+{
+    "name": "docs",
+    "description": "Documentation project specialist with mdBook expertise and best practices",
+    "prompt": "file://./docs-prompt.md",
+
+    "resources": [
+        "file://~/.dotfiles/etc/kiro-cli/steering/documentation/**/*.md",
+        "file://.kiro/steering/**/*.md",
+        "file://AGENTS.md",
+        "file://README.md",
+        "file://SUMMARY.md",
+        "file://book.toml",
+        "skill://~/.kiro/skills/**/SKILL.md"
+    ],
+
+    "allowedTools": [
+        "@filesystem/create_directory",
+        "@filesystem/get_file_info",
+        "@filesystem/list_allowed_directories",
+        "@filesystem/read_multiple_files",
+        "@filesystem/read_text_file",
+        "@filesystem/search_files",
+        "@git/git_status",
+        "execute_bash",
+        "fs_read",
+        "fs_write",
+        "glob",
+        "grep",
+        "web_search"
+    ],
+
+    "tools": ["*"],
+
+    "hooks": {
+        "agentSpawn": [],
+        "preToolUse": []
+    },
+
+    "toolsSettings": {
+        "shell": {
+            "allowedCommands": [
+                "mdbook .*",
+                "pre-commit .*",
+                "git status.*",
+                "ls .*",
+                "cat .*",
+                "grep .*",
+                "awk .*",
+                "head .*",
+                "tail .*",
+                "wc .*"
+            ],
+            "deniedCommands": [
+                "rm .*",
+                "sudo .*",
+                "chmod .*",
+                "chown .*",
+                "git add.*",
+                "git commit.*",
+                "docker .*",
+                "kubectl .*"
+            ]
+        },
+        "write": {
+            "allowedPaths": [
+                "~/projects/**",
+                "~/repositories/**",
+                "~/.dotfiles/**",
+                "./**"
+            ],
+            "deniedPaths": [
+                "/etc/**",
+                "/usr/**",
+                "/bin/**",
+                "/sbin/**",
+                "/System/**"
+            ]
+        },
+        "grep": {
+            "allowedPaths": ["~/projects/**", "~/repositories/**", "~/.dotfiles/**", "./**"],
+            "deniedPaths": ["/etc/**", "/usr/**", "/bin/**", "/sbin/**", "/System/**"]
+        },
+        "glob": {
+            "allowedPaths": ["~/projects/**", "~/repositories/**", "~/.dotfiles/**", "./**"],
+            "deniedPaths": ["/etc/**", "/usr/**", "/bin/**", "/sbin/**", "/System/**"]
+        },
+        "web_fetch": {
+            "trusted": [
+                ".*rust-lang\\.io.*",
+                ".*github\\.com.*",
+                ".*mdbook.*"
+            ],
+            "blocked": [
+                ".*pastebin\\.com.*"
+            ]
+        }
+    },
+
+    "includeMcpJson": false
+}
