@@ -61,10 +61,11 @@ Prompt the user for the following information:
 
 1. Generate filename: `decisions/adr-XXX-title-in-kebab-case.md` or `decisions/NNNN-title-with-dashes.md`
 2. Use selected template (project-specific or MADR)
-3. Fill in all sections with provided information
-4. Add YAML frontmatter if using MADR format (optional but recommended)
+3. Replace all placeholders with information gathered in Step 3
+4. Add YAML frontmatter with metadata (status, date, decision-makers)
 5. Set Status to "proposed" for new ADRs
 6. Set Date to today's date (YYYY-MM-DD format)
+7. Create the file with the filled-in content
 
 ### Step 5: Update ADR Index (if exists)
 
