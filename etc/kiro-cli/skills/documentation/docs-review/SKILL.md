@@ -7,7 +7,8 @@ description: Review documentation for content ownership violations, duplicate sp
 
 ## Overview
 
-Systematically review documentation repositories to identify content ownership violations, duplicate specifications, broken cross-references, and structural issues.
+Systematically review documentation repositories to identify content ownership violations, duplicate
+specifications, broken cross-references, and structural issues.
 
 ## When to Use This Skill
 
@@ -32,6 +33,7 @@ Systematically review documentation repositories to identify content ownership v
 Review each file for proper content type separation:
 
 **Check configuration/ files (WHAT):**
+
 - [ ] Contains only specifications, not implementation steps
 - [ ] No "click here" or UI navigation instructions
 - [ ] Tables and diagrams for specifications
@@ -39,6 +41,7 @@ Review each file for proper content type separation:
 - [ ] Single source of truth for each specification
 
 **Check procedures/ files (HOW):**
+
 - [ ] Contains step-by-step instructions
 - [ ] References configuration/ instead of duplicating specs
 - [ ] Includes verification steps
@@ -46,12 +49,14 @@ Review each file for proper content type separation:
 - [ ] Links to relevant configuration files in Prerequisites
 
 **Check decisions/ files (WHY):**
+
 - [ ] Follows ADR format (MADR or project-specific)
 - [ ] Contains context, options, decision, consequences
 - [ ] No implementation details (links to procedures/ instead)
 - [ ] No duplicate specifications (links to configuration/ instead)
 
 **Check components/ files (SPECS):**
+
 - [ ] Contains component specifications and capabilities
 - [ ] No network/system assignments (belongs in configuration/)
 - [ ] No implementation steps (belongs in procedures/)
@@ -67,12 +72,14 @@ Search for duplicate content across files:
 1. **Find duplicate diagrams** - Same diagram in multiple files
 
 **Common duplication patterns:**
+
 - Network topology tables in both configuration/ and procedures/
 - Component specifications in both components/ and configuration/
 - Security rules in both configuration/ and procedures/
 - IP assignments scattered across multiple files
 
 **How to fix:**
+
 - Keep specification in ONE file (usually configuration/)
 - Replace duplicates with cross-references
 - Update procedures/ to reference, not duplicate
@@ -82,23 +89,27 @@ Search for duplicate content across files:
 Check that cross-references are complete and accurate:
 
 **Verify link text patterns:**
+
 - [ ] Uses descriptive patterns: `[Configuration: X]`, `[Procedure: Y]`, `[ADR-NNN: Z]`
 - [ ] No "click here" or "see here" links
 - [ ] No bare URLs in documentation
 
 **Check link targets:**
+
 - [ ] All internal links use relative paths
 - [ ] Links point to existing files
 - [ ] Section anchors are correct
 - [ ] External links use absolute URLs
 
 **Verify cross-reference completeness:**
+
 - [ ] Procedures/ files link to relevant configuration/ files
 - [ ] Configuration/ files link to implementation procedures/
 - [ ] ADRs link to related decisions
 - [ ] Components/ files link to configuration/ where used
 
 **Tools to use:**
+
 ```bash
 # Check for broken links
 mdbook build
@@ -120,9 +131,11 @@ Verify SUMMARY.md matches actual file structure:
 1. **Check for missing files** - Files exist but not in SUMMARY.md
 1. **Check for dead links** - SUMMARY.md references non-existent files
 1. **Verify organization** - Files grouped logically by content type
-1. **Check ordering** - Logical progression (planning → components → configuration → procedures → decisions)
+1. **Check ordering** - Logical progression (planning → components → configuration → procedures →
+   decisions)
 
 **Commands to help:**
+
 ```bash
 # List all markdown files
 find src/ -name "*.md" | sort
@@ -141,6 +154,7 @@ Check that each subdirectory has README.md with:
 - [ ] Links to key files
 
 **Directories that need README.md:**
+
 - `configuration/`
 - `procedures/`
 - `decisions/`
@@ -221,29 +235,34 @@ Use `references/review-checklist.md` for detailed checklist.
 ### Quick Checklist
 
 **Content Ownership:**
+
 - [ ] configuration/ contains only WHAT (specifications)
 - [ ] procedures/ contains only HOW (implementation steps)
 - [ ] decisions/ contains only WHY (rationale)
 - [ ] components/ contains only SPECS (component details)
 
 **No Duplication:**
+
 - [ ] Each specification exists in exactly one place
 - [ ] Procedures reference, not duplicate, specifications
 - [ ] No duplicate tables across files
 
 **Cross-References:**
+
 - [ ] All links use descriptive text
 - [ ] Internal links use relative paths
 - [ ] No broken links
 - [ ] Procedures link to relevant configuration files
 
 **Structure:**
+
 - [ ] SUMMARY.md matches actual files
 - [ ] Each subdirectory has README.md
 - [ ] Files follow naming conventions
 - [ ] Logical organization by content type
 
 **Quality:**
+
 - [ ] No bare URLs
 - [ ] No "click here" links
 - [ ] Consistent heading hierarchy
@@ -256,29 +275,33 @@ Use `references/review-checklist.md` for detailed checklist.
 **Problem:** Same table appears in configuration/ and procedures/
 
 **Fix:**
+
 1. Keep table in configuration/ file
 1. In procedures/ file, replace table with:
-   ```markdown
-   Configure according to [Configuration: X](../configuration/x.md#section).
-   ```
+
+```markdown
+Configure according to [Configuration: X](../configuration/x.md#section).
+```
 
 ### Issue: Implementation Steps in Configuration
 
 **Problem:** configuration/ file contains "Step 1, Step 2" instructions
 
 **Fix:**
+
 1. Move steps to procedures/ file
 1. In configuration/ file, add:
-   ```markdown
-   For implementation, see [Procedure: X](../procedures/x.md).
-   ```
+
+```markdown
+For implementation, see [Procedure: X](../procedures/x.md).
+```
 
 ### Issue: Missing Cross-References
 
 **Problem:** Procedure doesn't reference relevant configuration
 
-**Fix:**
-Add Prerequisites section:
+**Fix:** Add Prerequisites section:
+
 ```markdown
 ## Prerequisites
 
@@ -291,6 +314,7 @@ Before proceeding, review:
 **Problem:** `https://example.com` instead of `[Example](https://example.com)`
 
 **Fix:**
+
 ```bash
 # Find bare URLs
 grep -r "http" src/ | grep -v "\[.*\](http"
@@ -304,6 +328,7 @@ grep -r "http" src/ | grep -v "\[.*\](http"
 **Problem:** `[here](../config/system.md)` or `[link](../config/system.md)`
 
 **Fix:**
+
 ```markdown
 [Configuration: System Settings](../configuration/system-settings.md)
 ```
@@ -339,6 +364,7 @@ exclude = ["^http://localhost"]
 ```
 
 Run with:
+
 ```bash
 mdbook build
 ```
@@ -346,6 +372,7 @@ mdbook build
 ## Review Frequency
 
 **When to review:**
+
 - Before major releases
 - After significant content additions
 - When refactoring documentation structure
@@ -353,11 +380,13 @@ mdbook build
 - When onboarding new documentation contributors
 
 **Quick reviews (15-30 min):**
+
 - Check for new duplicate specifications
 - Verify SUMMARY.md is current
 - Run link checker
 
 **Comprehensive reviews (2-4 hours):**
+
 - Full content ownership audit
 - Duplicate specification detection
 - Cross-reference validation

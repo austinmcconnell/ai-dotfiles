@@ -27,11 +27,14 @@ Before performing any AWS operations in a chat session, Amazon Q must:
 After receiving permission, Amazon Q must:
 
 1. **Discover available AWS profiles** by reading `~/.aws/config`
+
 1. **Present profile options** to the user, showing:
+
    - Profile names
    - Associated AWS account IDs
    - Default regions
    - SSO configuration details (if applicable)
+
 1. **Prompt for profile selection** with a message such as:
 
    ```text
@@ -116,6 +119,7 @@ Amazon Q must **never** perform the following operations, regardless of user per
    - Network modifications
 
 1. **Billing and Cost Operations**
+
    - Modifying billing settings
    - Creating or modifying budgets
    - Cost allocation changes

@@ -72,6 +72,7 @@ how to facilitate them effectively.
   - Have acceptance criteria clearly defined
 
 - **Development Team Preparation**:
+
   - Review upcoming backlog items
   - Identify any questions or concerns
   - Consider technical dependencies and risks
@@ -421,6 +422,7 @@ Structure discussion around Sprint Goal progress:
   - Bring mockups, designs, or examples if helpful
 
 - **Development Team Preparation**:
+
   - Review stories to be discussed
   - Identify technical questions or concerns
   - Consider implementation approaches

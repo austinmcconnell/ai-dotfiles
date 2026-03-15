@@ -388,6 +388,7 @@ When the `jira_create_issue` tool returns response data:
 #### Example Success Response Format
 
 ```text
+
 ✅ Issue Created Successfully
 
 - **Issue Key**: SCRN-936

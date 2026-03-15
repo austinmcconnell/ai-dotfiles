@@ -1,6 +1,8 @@
 # mdBook Conventions
 
-**Purpose**: Project-specific conventions for mdBook documentation repositories. Complements the mdbook-setup skill (installation and configuration) with patterns for consistent content organization.
+**Purpose**: Project-specific conventions for mdBook documentation repositories. Complements the
+mdbook-setup skill (installation and configuration) with patterns for consistent content
+organization.
 
 ## SUMMARY.md Structure
 
@@ -201,7 +203,8 @@ use-hierarchical-headings = true
 
 ### Recommended Settings
 
-**`create-missing = false`** - Prevents mdBook from creating empty files for SUMMARY.md entries. Forces you to create files intentionally.
+**`create-missing = false`** - Prevents mdBook from creating empty files for SUMMARY.md entries.
+Forces you to create files intentionally.
 
 **`edit-url-template`** - Enables "Edit this page" links for collaborative documentation.
 

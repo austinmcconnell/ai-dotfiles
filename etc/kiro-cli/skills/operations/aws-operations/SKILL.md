@@ -1,6 +1,6 @@
 ---
 name: aws-operations
-description: >
+description: >-
   Guide AWS operations with permission flows and safety guardrails. Use when accessing
   AWS resources, running AWS CLI commands, describing resources, listing services, or
   troubleshooting AWS issues.

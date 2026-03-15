@@ -1,12 +1,15 @@
 # Feature Name
 
 **Status:** Draft
+
 **Created:** YYYY-MM-DD
+
 **Owner:** @username
 
 ## Overview
 
-[1-2 paragraphs: What is this feature and why does it matter? Give enough context that anyone can understand the goal without reading further.]
+\[1-2 paragraphs: What is this feature and why does it matter? Give enough context that anyone can
+understand the goal without reading further.\]
 
 ## Requirements
 
@@ -35,6 +38,7 @@ Response: { "data": {...}, "meta": {...} }
 ```
 
 **Database Schema:**
+
 ```sql
 CREATE TABLE resource (
   id UUID PRIMARY KEY,
@@ -46,12 +50,12 @@ CREATE TABLE resource (
 ### Key Decisions
 
 **Decision:** [What you decided]
-**Why:** [Rationale for the decision]
-**Trade-off:** [What you're giving up or accepting]
+
+**Why:** [Rationale for the decision] **Trade-off:** [What you're giving up or accepting]
 
 **Decision:** [Another decision]
-**Why:** [Rationale]
-**Trade-off:** [Consequences]
+
+**Why:** [Rationale] **Trade-off:** [Consequences]
 
 ## Implementation Plan
 
@@ -65,11 +69,11 @@ Tasks ordered by dependency (each completable in single PR):
 
 ## Verification
 
-| Requirement | Test Method | Pass Criteria |
-| ----------- | ----------------------- | --------------------------- |
+| Requirement     | Test Method                 | Pass Criteria             |
+| --------------- | --------------------------- | ------------------------- |
 | [Requirement 1] | [Unit/Integration/E2E test] | [Specific pass condition] |
-| [Requirement 2] | [Performance test] | [Metric threshold] |
-| [Requirement 3] | [Manual test] | [Observable outcome] |
+| [Requirement 2] | [Performance test]          | [Metric threshold]        |
+| [Requirement 3] | [Manual test]               | [Observable outcome]      |
 
 ## Open Questions
 
@@ -81,12 +85,16 @@ Tasks ordered by dependency (each completable in single PR):
 ## Example: Real-Time Metrics Dashboard
 
 **Status:** In Progress
+
 **Created:** 2026-03-04
+
 **Owner:** @austin
 
 ### Overview
 
-Add a real-time dashboard showing system metrics (CPU, memory, disk) with automatic threshold highlighting. This replaces manual SSH checks and provides visibility for the entire team. Metrics update every 5 seconds with sub-2-second page load times.
+Add a real-time dashboard showing system metrics (CPU, memory, disk) with automatic threshold
+highlighting. This replaces manual SSH checks and provides visibility for the entire team. Metrics
+update every 5 seconds with sub-2-second page load times.
 
 ### Requirements
 
@@ -96,7 +104,9 @@ Add a real-time dashboard showing system metrics (CPU, memory, disk) with automa
 - [ ] Metrics update automatically every 5 seconds
 - [ ] User can manually refresh metrics
 
-**Edge cases:** No data available → show empty state with "Collecting metrics..." message. API timeout → show cached data with staleness indicator. User has no permissions → redirect to access request page.
+**Edge cases:** No data available → show empty state with "Collecting metrics..." message. API
+timeout → show cached data with staleness indicator. User has no permissions → redirect to access
+request page.
 
 ### Architecture
 
@@ -109,6 +119,7 @@ Add a real-time dashboard showing system metrics (CPU, memory, disk) with automa
 #### Data Contracts
 
 **API Response:**
+
 ```json
 {
   "metrics": {
@@ -126,12 +137,14 @@ Add a real-time dashboard showing system metrics (CPU, memory, disk) with automa
 #### Key Decisions
 
 **Decision:** Use Redis cache with 5-minute TTL
+
 **Why:** Reduces load on metrics service, acceptable staleness for monitoring use case
 **Trade-off:** Users may see slightly outdated data during high-change periods
 
 **Decision:** Client-side polling instead of WebSockets
-**Why:** Simpler implementation, adequate for 5-second refresh rate
-**Trade-off:** Slightly higher network overhead, but negligible for this use case
+
+**Why:** Simpler implementation, adequate for 5-second refresh rate **Trade-off:** Slightly higher
+network overhead, but negligible for this use case
 
 ### Implementation Plan
 
@@ -147,13 +160,13 @@ Add a real-time dashboard showing system metrics (CPU, memory, disk) with automa
 
 ### Verification
 
-| Requirement | Test Method | Pass Criteria |
-| ---------------------- | ----------------- | --------------------------------------- |
-| Dashboard loads < 2s | Performance test | p95 latency < 2000ms |
-| Threshold highlighting | Unit test | Red color applied when value > 80% |
-| Cache behavior | Integration test | Cache hit rate > 90% |
-| Auto-refresh | E2E test | Metrics update within 6 seconds |
-| Error handling | Integration test | Graceful degradation on API failure |
+| Requirement            | Test Method      | Pass Criteria                       |
+| ---------------------- | ---------------- | ----------------------------------- |
+| Dashboard loads < 2s   | Performance test | p95 latency < 2000ms                |
+| Threshold highlighting | Unit test        | Red color applied when value > 80%  |
+| Cache behavior         | Integration test | Cache hit rate > 90%                |
+| Auto-refresh           | E2E test         | Metrics update within 6 seconds     |
+| Error handling         | Integration test | Graceful degradation on API failure |
 
 ### Open Questions
 

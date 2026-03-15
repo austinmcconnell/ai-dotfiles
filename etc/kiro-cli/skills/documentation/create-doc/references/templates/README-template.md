@@ -45,8 +45,8 @@ Do NOT place here:
 
 {Links to important files in this directory}
 
-- [{File Title}]({filename}.md) - {brief description}
-- [{File Title}]({filename}.md) - {brief description}
+- [{File Title}](%7Bfilename%7D.md) - {brief description}
+- [{File Title}](%7Bfilename%7D.md) - {brief description}
 
 ## Related Directories
 

@@ -43,11 +43,9 @@ project-root/
 ## Documentation Structure
 ```
 
-planning/ # Requirements and constraints
-components/ # Physical/logical component specifications
-configuration/ # System specifications (WHAT)
-procedures/ # Implementation steps (HOW)
-decisions/ # Architecture decisions (WHY)
+planning/ # Requirements and constraints components/ # Physical/logical component specifications
+configuration/ # System specifications (WHAT) procedures/ # Implementation steps (HOW) decisions/ #
+Architecture decisions (WHY)
 
 ```markdown
 ## Content Ownership Model

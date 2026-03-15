@@ -140,7 +140,8 @@ Refs: #123
 
 **Q: How should I deal with commit messages in the initial development phase?**
 
-A: Proceed as if you've already released the product. Typically somebody is using your software, even if it's your fellow developers.
+A: Proceed as if you've already released the product. Typically somebody is using your software,
+even if it's your fellow developers.
 
 **Q: Are the types in the commit title uppercase or lowercase?**
 
@@ -148,16 +149,21 @@ A: Any casing may be used, but it's best to be consistent. Lowercase is recommen
 
 **Q: What do I do if the commit conforms to more than one type?**
 
-A: Go back and make multiple commits whenever possible. Part of the benefit of Conventional Commits is its ability to drive us to make more organized commits and PRs.
+A: Go back and make multiple commits whenever possible. Part of the benefit of Conventional Commits
+is its ability to drive us to make more organized commits and PRs.
 
 **Q: Doesn't this discourage rapid development and fast iteration?**
 
-A: It discourages moving fast in a disorganized way. It helps you be able to move fast long term across multiple projects with varied contributors.
+A: It discourages moving fast in a disorganized way. It helps you be able to move fast long term
+across multiple projects with varied contributors.
 
 **Q: Might Conventional Commits lead developers to limit the type of commits they make?**
 
-A: Conventional Commits encourages us to make more of certain types of commits such as fixes. Other than that, the flexibility of Conventional Commits allows your team to come up with their own types and change those types over time.
+A: Conventional Commits encourages us to make more of certain types of commits such as fixes. Other
+than that, the flexibility of Conventional Commits allows your team to come up with their own types
+and change those types over time.
 
 **Q: How does this relate to SemVer?**
 
-A: `fix` type commits should be translated to PATCH releases. `feat` type commits should be translated to MINOR releases. Commits with `BREAKING CHANGE` should be translated to MAJOR releases.
+A: `fix` type commits should be translated to PATCH releases. `feat` type commits should be
+translated to MINOR releases. Commits with `BREAKING CHANGE` should be translated to MAJOR releases.

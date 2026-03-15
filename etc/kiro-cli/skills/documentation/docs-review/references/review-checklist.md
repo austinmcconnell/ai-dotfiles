@@ -1,6 +1,7 @@
 # Documentation Review Checklist
 
-Comprehensive checklist for reviewing documentation repositories. Use this for systematic reviews to ensure content ownership compliance and quality standards.
+Comprehensive checklist for reviewing documentation repositories. Use this for systematic reviews to
+ensure content ownership compliance and quality standards.
 
 ## Pre-Review Setup
 
@@ -259,7 +260,8 @@ Each README.md should have:
 
 - [ ] Files use kebab-case: `system-configuration.md` not `System_Configuration.md`
 - [ ] Descriptive names: `gateway-setup.md` not `setup.md`
-- [ ] Content type clear from name: `security-rules.md` (specs) vs `security-configuration.md` (steps)
+- [ ] Content type clear from name: `security-rules.md` (specs) vs `security-configuration.md`
+  (steps)
 - [ ] ADRs follow pattern: `adr-NNN-title.md` or `NNNN-title.md`
 
 ### File Organization
@@ -345,8 +347,11 @@ After completing checklist, generate report:
 # Documentation Review Report
 
 **Date:** YYYY-MM-DD
+
 **Reviewer:** [Name]
+
 **Repository:** [Name]
+
 **Commit:** [SHA]
 
 ## Summary

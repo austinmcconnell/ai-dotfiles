@@ -1,12 +1,16 @@
 # Security Fixes Implementation Plan
 
 **Branch:** `poc-bundle-dashboard`
+
 **Created:** 2026-02-27
+
 **Status:** Implementation Required Before Merge
 
 ## Executive Summary
 
-This document provides a comprehensive implementation plan for fixing 8 security vulnerabilities (3 CRITICAL, 5 HIGH) introduced by the OAuth authentication and bundle dashboard features. All issues are new code from this branch and must be addressed before production deployment.
+This document provides a comprehensive implementation plan for fixing 8 security vulnerabilities (3
+CRITICAL, 5 HIGH) introduced by the OAuth authentication and bundle dashboard features. All issues
+are new code from this branch and must be addressed before production deployment.
 
 **Vulnerabilities Overview:**
 
@@ -62,10 +66,15 @@ Authorization:
 ### Current Security Strengths
 
 ✅ OAuth 2.0 with PKCE (public client, no client_secret)
+
 ✅ Open redirect prevention (`is_safe_redirect_url()`)
+
 ✅ Rate limiting on auth endpoints (10/min login, 20/min callback)
+
 ✅ Secure session cookies (HttpOnly, Secure, SameSite=Lax)
+
 ✅ No OAuth tokens stored in session
+
 ✅ SECRET_KEY requirement enforced
 
 ### Technology Stack
@@ -86,16 +95,20 @@ Authorization:
 ### Severity: CRITICAL ⚠️
 
 **OWASP:** A03:2025 Injection
+
 **CWE:** CWE-89 (SQL Injection)
 
 ### Vulnerability Description
 
-User-controlled input from the `organization` search parameter is directly interpolated into a PostgreSQL `jsonb_path_exists()` function without sanitization, allowing SQL injection attacks.
+User-controlled input from the `organization` search parameter is directly interpolated into a
+PostgreSQL `jsonb_path_exists()` function without sanitization, allowing SQL injection attacks.
 
 ### Affected Code
 
 **File:** `app/fhir/service.py`
+
 **Lines:** 287-292
+
 **Function:** `FHIRService.search_bundles()`
 
 ```python
@@ -133,12 +146,16 @@ Example 3: Information Disclosure
 
 ### Root Cause
 
-The `organization` parameter is inserted directly into the jsonb_path string using f-string interpolation. PostgreSQL's jsonb_path language supports complex expressions, and unescaped user input can break out of the regex context.
+The `organization` parameter is inserted directly into the jsonb_path string using f-string
+interpolation. PostgreSQL's jsonb_path language supports complex expressions, and unescaped user
+input can break out of the regex context.
 
 ### Feasibility Analysis
 
 **Complexity:** Medium
+
 **Breaking Changes:** None
+
 **Dependencies:** Standard library only (`re.escape()`)
 
 **Challenges:**
@@ -353,11 +370,14 @@ def test_organization_search_prevents_dos_regex(client, auth_headers):
 ### Severity: CRITICAL ⚠️
 
 **OWASP:** A01:2025 Broken Access Control
+
 **CWE:** CWE-352 (Cross-Site Request Forgery)
 
 ### Vulnerability Description
 
-The dashboard uses session-based authentication but lacks CSRF protection. An attacker can craft malicious pages that trick authenticated users into performing unwanted actions (search queries, potentially future POST operations).
+The dashboard uses session-based authentication but lacks CSRF protection. An attacker can craft
+malicious pages that trick authenticated users into performing unwanted actions (search queries,
+potentially future POST operations).
 
 ### Affected Code
 
@@ -420,7 +440,9 @@ Example 3: Future Risk (if POST added)
 ### Feasibility Analysis
 
 **Complexity:** Low-Medium
+
 **Breaking Changes:** Minimal (logout endpoint changes from GET to POST)
+
 **Dependencies:** Flask-WTF (needs to be added to Pipfile)
 
 **Challenges:**
@@ -509,7 +531,8 @@ Modify: `app/fhir/templates/search.html`
 </form>
 ```
 
-**Note:** For GET requests, Flask-WTF validates CSRF tokens if present but doesn't require them by default. This provides defense-in-depth without breaking existing functionality.
+**Note:** For GET requests, Flask-WTF validates CSRF tokens if present but doesn't require them by
+default. This provides defense-in-depth without breaking existing functionality.
 
 Step 5: Convert Logout to POST
 
@@ -671,15 +694,19 @@ def test_api_endpoints_exempt_from_csrf(client):
 ### Severity: CRITICAL ⚠️
 
 **OWASP:** A03:2025 Injection (XSS)
+
 **CWE:** CWE-79 (Cross-Site Scripting)
 
 ### Vulnerability Description
 
-The search results table uses inline `onclick` handlers with Jinja2 template variables. While Jinja2 auto-escapes HTML context, JavaScript context requires different escaping. Malicious bundle IDs could execute arbitrary JavaScript.
+The search results table uses inline `onclick` handlers with Jinja2 template variables. While Jinja2
+auto-escapes HTML context, JavaScript context requires different escaping. Malicious bundle IDs
+could execute arbitrary JavaScript.
 
 ### Affected Code
 
 **File:** `app/fhir/templates/search.html`
+
 **Line:** 82
 
 ```html
@@ -717,7 +744,9 @@ Example 3: Data Exfiltration
 ### Feasibility Analysis
 
 **Complexity:** Low
+
 **Breaking Changes:** None (UI behavior unchanged)
+
 **Dependencies:** None (pure JavaScript/HTML fix)
 
 **Challenges:**
@@ -1008,12 +1037,15 @@ db.session.commit()
 ## Issue 4: Missing Security Headers
 
 ### Severity: HIGH ⚠️
+
 **OWASP:** A02:2025 Security Misconfiguration
+
 **CWE:** CWE-16 (Configuration)
 
 ### Vulnerability Description
 
-The dashboard lacks HTTP security headers that protect against common attacks including XSS, clickjacking, MIME sniffing, and information disclosure.
+The dashboard lacks HTTP security headers that protect against common attacks including XSS,
+clickjacking, MIME sniffing, and information disclosure.
 
 ### Missing Headers
 
@@ -1026,9 +1058,11 @@ The dashboard lacks HTTP security headers that protect against common attacks in
 ### Affected Code
 
 **File:** `app/app.py`
+
 **Current State:** No security headers configured
 
-Existing `@app.after_request` handlers (lines 78-97) only handle logging and error marking, not security headers.
+Existing `@app.after_request` handlers (lines 78-97) only handle logging and error marking, not
+security headers.
 
 ### Attack Vectors
 
@@ -1051,7 +1085,9 @@ Existing `@app.after_request` handlers (lines 78-97) only handle logging and err
 ### Feasibility Analysis
 
 **Complexity:** Low
+
 **Breaking Changes:** Potential (if CSP is too strict)
+
 **Dependencies:** None
 
 **Challenges:**
@@ -1332,16 +1368,21 @@ curl -I https://your-app.com/v2/bundle/dashboard
 ### Severity: HIGH ⚠️
 
 **OWASP:** A03:2025 Injection
+
 **CWE:** CWE-20 (Improper Input Validation)
 
 ### Vulnerability Description
 
-Search parameters lack comprehensive validation for length limits, character whitelisting, and SQL wildcard escaping. This creates risks for DoS attacks, wildcard injection, and database performance issues.
+Search parameters lack comprehensive validation for length limits, character whitelisting, and SQL
+wildcard escaping. This creates risks for DoS attacks, wildcard injection, and database performance
+issues.
 
 ### Affected Code
 
 **File:** `app/fhir/routes.py`
+
 **Lines:** 238-244
+
 **Function:** `bundle_dashboard_search()`
 
 ```python
@@ -1355,7 +1396,9 @@ organization = request.args.get('organization', '').strip()
 ```
 
 **File:** `app/fhir/service.py`
+
 **Lines:** 267, 289
+
 **Function:** `FHIRService.search_bundles()`
 
 ```python
@@ -1404,7 +1447,9 @@ Example 4: Enum Value Injection
 ### Feasibility Analysis
 
 **Complexity:** Medium
+
 **Breaking Changes:** None (adds validation, doesn't change behavior)
+
 **Dependencies:** None (standard library only)
 
 **Challenges:**
@@ -1864,15 +1909,18 @@ def test_search_escapes_sql_wildcards(client, auth_headers, db_session):
 ### Severity: HIGH ⚠️
 
 **OWASP:** Privacy Violation
+
 **Compliance:** GDPR, HIPAA, CCPA
 
 ### Vulnerability Description
 
-User identifiers (user_id, email addresses) are logged in authentication error messages, potentially violating privacy regulations and creating security risks if logs are compromised.
+User identifiers (user_id, email addresses) are logged in authentication error messages, potentially
+violating privacy regulations and creating security risks if logs are compromised.
 
 ### Affected Code
 
 **File:** `app/auth_routes.py`
+
 **Lines:** 71, 119-122
 
 ```python
@@ -1895,12 +1943,15 @@ current_app.logger.warning(
 
 ### Root Cause
 
-Direct logging of user identifiers without hashing or redaction. While commit `f3036109` removed PII from operational logs, these authentication-specific logs were missed.
+Direct logging of user identifiers without hashing or redaction. While commit `f3036109` removed PII
+from operational logs, these authentication-specific logs were missed.
 
 ### Feasibility Analysis
 
 **Complexity:** Low
+
 **Breaking Changes:** None
+
 **Dependencies:** Standard library only (`hashlib`)
 
 **Challenges:**
@@ -2080,7 +2131,7 @@ Step 4: Document Logging Policy
 
 Create: `docs/logging-policy.md`
 
-```markdown
+````markdown
 # Logging Policy
 
 ## PII Handling
@@ -2101,25 +2152,36 @@ from app.logging_utils import hash_identifier
 
 # Hash user email
 logger.info(f'User {hash_identifier(user_email, "email")} performed action')
-```
+````
 
 ## Allowed in Logs
 
 ✅ Hashed identifiers
+
 ✅ Roles and permissions
+
 ✅ Timestamps
+
 ✅ IP addresses (for security events)
+
 ✅ Resource IDs (bundle_id, screen_id)
+
 ✅ Error messages (without PII)
 
 ## Prohibited in Logs
 
 ❌ Email addresses
+
 ❌ User IDs (unhashed)
+
 ❌ Full names
+
 ❌ Phone numbers
+
 ❌ PHI/PII from bundle data
+
 ❌ OAuth tokens
+
 ❌ Session IDs
 
 ## Compliance
@@ -2130,7 +2192,7 @@ This policy supports:
 - HIPAA Security Rule (§164.312)
 - CCPA (California Consumer Privacy Act)
 
-```markdown
+````markdown
 
 ### Testing Requirements
 
@@ -2171,7 +2233,7 @@ def test_sanitize_log_data_hashes_pii():
     assert 'user_id' not in sanitized
     assert 'user_id_hash' in sanitized
     assert sanitized['role'] == 'admin'  # Non-PII preserved
-```
+````
 
 **Integration Tests:**
 
@@ -2239,6 +2301,7 @@ def test_successful_login_logs_hashed_identifier(client, caplog):
 ### Severity: HIGH ⚠️
 
 **OWASP:** A04:2025 Insecure Design, API4:2023 Unrestricted Resource Consumption
+
 **CWE:** CWE-770 (Allocation of Resources Without Limits)
 
 ### Vulnerability Description
@@ -2316,7 +2379,9 @@ for page in range(1, 10000):
 ### Feasibility Analysis
 
 **Complexity:** Low
+
 **Breaking Changes:** None (legitimate users won't hit limits)
+
 **Dependencies:** Flask-Limiter (already installed)
 
 **Challenges:**
@@ -2591,6 +2656,7 @@ def test_rate_limit_per_user_not_per_ip(client, auth_session_1, auth_session_2):
 ```
 
 **Load Testing:**
+
 ```python
 # locustfile.py
 from locust import HttpUser, task, between
@@ -2655,16 +2721,20 @@ Run: `locust --host=http://localhost:5000`
 ### Severity: HIGH ⚠️
 
 **OWASP:** A01:2025 Broken Access Control
+
 **CWE:** CWE-384 (Session Fixation)
 
 ### Vulnerability Description
 
-The session ID is not regenerated after successful authentication, allowing session fixation attacks where an attacker can hijack a user's session by forcing them to use a known session ID.
+The session ID is not regenerated after successful authentication, allowing session fixation attacks
+where an attacker can hijack a user's session by forcing them to use a known session ID.
 
 ### Affected Code
 
 **File:** `app/auth_routes.py`
+
 **Lines:** 127-131
+
 **Function:** `callback()`
 
 ```python
@@ -2698,12 +2768,15 @@ Example 2: Session Donation
 
 ### Root Cause
 
-Flask sessions are not regenerated after privilege escalation (authentication). The same session ID used before authentication continues after authentication, allowing fixation attacks.
+Flask sessions are not regenerated after privilege escalation (authentication). The same session ID
+used before authentication continues after authentication, allowing fixation attacks.
 
 ### Feasibility Analysis
 
 **Complexity:** Low
+
 **Breaking Changes:** None
+
 **Dependencies:** None (Flask built-in)
 
 **Challenges:**
@@ -3183,30 +3256,35 @@ flask test tests/auth/test_session_fixation.py # Issue 8: Session Fixation
 **Pre-Deployment Security Checklist:**
 
 - [ ] SQL Injection
+
   - [ ] Test with special characters in search
   - [ ] Test with regex patterns
   - [ ] Test with SQL injection attempts
   - [ ] Verify no database errors in logs
 
 - [ ] CSRF Protection
+
   - [ ] Verify CSRF tokens in all forms
   - [ ] Test logout requires POST
   - [ ] Test API endpoints exempt from CSRF
   - [ ] Attempt CSRF attack from external page
 
 - [ ] XSS Prevention
+
   - [ ] Test with malicious bundle IDs
   - [ ] Verify no inline event handlers
   - [ ] Test JavaScript execution attempts
   - [ ] Check browser console for errors
 
 - [ ] Security Headers
+
   - [ ] Verify headers with curl/browser DevTools
   - [ ] Test CSP doesn't block legitimate resources
   - [ ] Test iframe embedding blocked
   - [ ] Run securityheaders.com scan
 
 - [ ] Input Validation
+
   - [ ] Test oversized inputs
   - [ ] Test invalid enum values
   - [ ] Test invalid dates
@@ -3214,18 +3292,21 @@ flask test tests/auth/test_session_fixation.py # Issue 8: Session Fixation
   - [ ] Verify user-friendly error messages
 
 - [ ] PII Logging
+
   - [ ] Search logs for email addresses
   - [ ] Verify hashed identifiers present
   - [ ] Test log correlation by hash
   - [ ] Review with compliance team
 
 - [ ] Rate Limiting
+
   - [ ] Test rate limits on all endpoints
   - [ ] Verify rate limit headers
   - [ ] Test per-user vs per-IP limiting
   - [ ] Monitor rate limit metrics
 
 - [ ] Session Security
+
   - [ ] Verify session regeneration after login
   - [ ] Test session timeout
   - [ ] Test session fixation attack
@@ -3268,17 +3349,20 @@ pipenv check
 ### OWASP Resources
 
 1. **[OWASP Top 10 2025](https://owasp.org/www-project-top-ten/)**
+
    - A01:2025 Broken Access Control
    - A02:2025 Security Misconfiguration
    - A03:2025 Injection
    - A04:2025 Insecure Design
 
 1. **[OWASP API Security Top 10 2023](https://owasp.org/API-Security/editions/2023/en/0x11-t10/)**
+
    - API1:2023 Broken Object Level Authorization
    - API4:2023 Unrestricted Resource Consumption
    - API8:2023 Security Misconfiguration
 
 1. **[OWASP Cheat Sheet Series](https://cheatsheetseries.owasp.org/)**
+
    - [SQL Injection Prevention](https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html)
    - [Cross-Site Request Forgery Prevention](https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html)
    - [Cross-Site Scripting Prevention](https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html)
@@ -3300,31 +3384,37 @@ pipenv check
 ### Framework-Specific Documentation
 
 1. **Flask Security**
+
    - [Flask Security Considerations](https://flask.palletsprojects.com/en/latest/security/)
    - [Flask Session Documentation](https://flask.palletsprojects.com/en/latest/api/#sessions)
    - [Jinja2 Autoescaping](https://jinja.palletsprojects.com/en/3.1.x/templates/#html-escaping)
 
 1. **Flask Extensions**
+
    - [Flask-WTF CSRF Protection](https://flask-wtf.readthedocs.io/en/stable/csrf.html)
    - [Flask-Limiter Documentation](https://flask-limiter.readthedocs.io/)
    - [Authlib OAuth Documentation](https://docs.authlib.org/en/latest/client/flask.html)
 
 1. **SQLAlchemy Security**
+
    - [SQLAlchemy SQL Injection Protection](https://docs.sqlalchemy.org/en/20/faq/sqlexpressions.html#how-do-i-render-sql-expressions-as-strings-possibly-with-bound-parameters-inlined)
    - [PostgreSQL Security](https://www.postgresql.org/docs/current/sql-syntax.html)
 
 ### Standards and Compliance
 
 1. **NIST Guidelines**
+
    - [NIST SP 800-63B: Authentication and Lifecycle Management](https://pages.nist.gov/800-63-3/sp800-63b.html)
    - [NIST SP 800-122: Guide to Protecting PII](https://csrc.nist.gov/publications/detail/sp/800-122/final)
 
 1. **Privacy Regulations**
+
    - [GDPR Article 32: Security of Processing](https://gdpr-info.eu/art-32-gdpr/)
    - [HIPAA Security Rule](https://www.hhs.gov/hipaa/for-professionals/security/index.html)
    - [CCPA: California Consumer Privacy Act](https://oag.ca.gov/privacy/ccpa)
 
 1. **Web Standards**
+
    - [RFC 6585: Additional HTTP Status Codes](https://tools.ietf.org/html/rfc6585)
    - [RFC 6749: OAuth 2.0 Authorization Framework](https://tools.ietf.org/html/rfc6749)
    - [RFC 7636: PKCE for OAuth Public Clients](https://tools.ietf.org/html/rfc7636)
@@ -3332,17 +3422,20 @@ pipenv check
 ### Security Tools
 
 1. **Testing Tools**
+
    - [OWASP ZAP](https://www.zaproxy.org/) - Web application security scanner
    - [Bandit](https://bandit.readthedocs.io/) - Python security linter
    - [Safety](https://pyup.io/safety/) - Dependency vulnerability scanner
    - [Locust](https://locust.io/) - Load testing tool
 
 1. **Online Scanners**
+
    - [Security Headers](https://securityheaders.com/) - HTTP security header scanner
    - [CSP Evaluator](https://csp-evaluator.withgoogle.com/) - Content Security Policy validator
    - [SSL Labs](https://www.ssllabs.com/ssltest/) - SSL/TLS configuration tester
 
 1. **Browser Tools**
+
    - Chrome DevTools Security Panel
    - Firefox Developer Tools
    - Browser extensions for security testing
@@ -3350,14 +3443,18 @@ pipenv check
 ### Learning Resources
 
 1. **OWASP Training**
+
    - [OWASP WebGoat](https://owasp.org/www-project-webgoat/) - Interactive security training
-   - [OWASP Juice Shop](https://owasp.org/www-project-juice-shop/) - Vulnerable web application for practice
+   - [OWASP Juice Shop](https://owasp.org/www-project-juice-shop/) - Vulnerable web application for
+     practice
 
 1. **Books**
+
    - "The Web Application Hacker's Handbook" by Dafydd Stuttard
    - "Flask Web Development" by Miguel Grinberg (Security chapter)
 
 1. **Online Courses**
+
    - [PortSwigger Web Security Academy](https://portswigger.net/web-security)
    - [OWASP Top 10 Training](https://owasp.org/www-project-top-ten/)
 
@@ -3368,6 +3465,7 @@ pipenv check
 ### Phase 1: Critical Issues (Block Merge)
 
 - [ ] **Issue 1: SQL Injection**
+
   - [ ] Create `app/fhir/validators.py`
   - [ ] Update `app/fhir/service.py`
   - [ ] Update `app/fhir/routes.py`
@@ -3377,6 +3475,7 @@ pipenv check
   - [ ] Code review
 
 - [ ] **Issue 2: CSRF Protection**
+
   - [ ] Add Flask-WTF to Pipfile
   - [ ] Update `app/extensions.py`
   - [ ] Update `app/app.py`
@@ -3388,6 +3487,7 @@ pipenv check
   - [ ] Code review
 
 - [ ] **Issue 3: XSS Prevention**
+
   - [ ] Update `app/fhir/templates/search.html`
   - [ ] Update `app/fhir/templates/base.html`
   - [ ] Write tests
@@ -3398,6 +3498,7 @@ pipenv check
 ### Phase 2: High Priority Issues (Block Deployment)
 
 - [ ] **Issue 4: Security Headers**
+
   - [ ] Update `app/app.py`
   - [ ] Update `app/settings.py`
   - [ ] Create `app/static/css/dashboard.css` (optional)
@@ -3407,6 +3508,7 @@ pipenv check
   - [ ] Code review
 
 - [ ] **Issue 5: Input Validation**
+
   - [ ] Enhance `app/fhir/validators.py`
   - [ ] Update `app/fhir/routes.py`
   - [ ] Update templates with HTML5 validation
@@ -3415,6 +3517,7 @@ pipenv check
   - [ ] Code review
 
 - [ ] **Issue 6: PII Logging**
+
   - [ ] Create `app/logging_utils.py`
   - [ ] Update `app/auth_routes.py`
   - [ ] Update `app/settings.py`
@@ -3424,6 +3527,7 @@ pipenv check
   - [ ] Compliance review
 
 - [ ] **Issue 7: Rate Limiting**
+
   - [ ] Update `app/fhir/routes.py`
   - [ ] Update `app/extensions.py`
   - [ ] Update `app/app.py`
@@ -3434,6 +3538,7 @@ pipenv check
   - [ ] Code review
 
 - [ ] **Issue 8: Session Fixation**
+
   - [ ] Update `app/auth_routes.py`
   - [ ] Create `app/session_security.py`
   - [ ] Update `app/app.py`
@@ -3456,24 +3561,30 @@ pipenv check
 
 ## Summary
 
-This implementation plan addresses 8 security vulnerabilities (3 CRITICAL, 5 HIGH) introduced by the OAuth authentication and bundle dashboard features. All issues are feasible to fix with low to medium complexity and minimal breaking changes.
+This implementation plan addresses 8 security vulnerabilities (3 CRITICAL, 5 HIGH) introduced by the
+OAuth authentication and bundle dashboard features. All issues are feasible to fix with low to
+medium complexity and minimal breaking changes.
 
 **Total Scope:**
+
 - **New Files:** 10
 - **Modified Files:** 15+
 - **Test Files:** 10+
 - **Dependencies:** Flask-WTF (new)
 
 **Implementation Order:**
+
 1. Critical issues first (SQL injection, CSRF, XSS)
 1. High priority issues second (headers, validation, PII, rate limiting, session fixation)
 1. Testing and verification throughout
 
 **Success Criteria:**
+
 - All tests passing
 - Security scanners show no critical/high issues
 - Manual security testing successful
 - Code review approved
 - Documentation updated
 
-This plan provides sufficient detail for a future agent or developer to implement all fixes without additional research or clarification.
+This plan provides sufficient detail for a future agent or developer to implement all fixes without
+additional research or clarification.

@@ -7,7 +7,8 @@ description: Create new documentation files with proper content type separation 
 
 ## Overview
 
-Streamline documentation creation by prompting for content type, using appropriate templates, and automatically updating SUMMARY.md with proper cross-references.
+Streamline documentation creation by prompting for content type, using appropriate templates, and
+automatically updating SUMMARY.md with proper cross-references.
 
 ## When to Use This Skill
 
@@ -50,7 +51,8 @@ Based on content type, determine location:
 **Procedure (HOW):**
 
 - Directory: `procedures/` or `src/procedures/`
-- Filename pattern: `{component}-{action}.md` (e.g., `gateway-setup.md`, `security-configuration.md`)
+- Filename pattern: `{component}-{action}.md` (e.g., `gateway-setup.md`,
+  `security-configuration.md`)
 - Use kebab-case
 - Be specific, not generic
 

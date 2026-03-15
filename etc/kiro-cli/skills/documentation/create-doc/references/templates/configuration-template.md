@@ -38,10 +38,10 @@ For detailed decision rationale, see [ADR-NNN: {Title}](../decisions/adr-nnn-tit
 
 ## Implementation
 
-For implementation instructions, see [Procedure: {Title}](../procedures/{filename}.md).
+For implementation instructions, see [Procedure: {Title}](../procedures/%7Bfilename%7D.md).
 
 ## Related Documentation
 
-- [Component: {Name}](../components/{component}.md) - Component specifications
+- [Component: {Name}](../components/%7Bcomponent%7D.md) - Component specifications
 - [ADR-NNN: {Title}](../decisions/adr-nnn-title.md) - Decision rationale
-- [Procedure: {Title}](../procedures/{procedure}.md) - Implementation steps
+- [Procedure: {Title}](../procedures/%7Bprocedure%7D.md) - Implementation steps

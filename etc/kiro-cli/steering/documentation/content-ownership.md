@@ -1,6 +1,7 @@
 # Content Ownership Model
 
-**Purpose**: Detailed guide for understanding and applying the WHAT/HOW/WHY/SPECS separation in documentation repositories.
+**Purpose**: Detailed guide for understanding and applying the WHAT/HOW/WHY/SPECS separation in
+documentation repositories.
 
 ## The Four Content Types
 
@@ -29,7 +30,8 @@
 - ❌ UI navigation steps
 - ❌ "Click here, then click there" procedures
 
-**Why**: Specifications change less frequently than UI. Keeping them separate means UI changes don't require updating specs.
+**Why**: Specifications change less frequently than UI. Keeping them separate means UI changes don't
+require updating specs.
 
 ### procedures/ = HOW (Implementation)
 
@@ -57,7 +59,8 @@
 - ❌ Design rationale (reference decisions/ instead)
 - ❌ Duplicate tables from configuration/
 
-**Why**: Procedures reference specifications. When specs change, procedures don't need updating (unless UI changed).
+**Why**: Procedures reference specifications. When specs change, procedures don't need updating
+(unless UI changed).
 
 ### decisions/ = WHY (Rationale)
 
@@ -83,7 +86,8 @@
 - ❌ Implementation details (link to procedures/)
 - ❌ Detailed specifications (link to configuration/)
 
-**Why**: Decisions explain the "why" behind specifications. Future you will thank you for documenting this.
+**Why**: Decisions explain the "why" behind specifications. Future you will thank you for
+documenting this.
 
 ### components/ = COMPONENT SPECS (Physical/Logical Inventory)
 
@@ -111,7 +115,8 @@
 - ❌ Implementation procedures (link to procedures/)
 - ❌ Network/system assignments (belongs in configuration/)
 
-**Why**: Component specs are physical/logical facts. Configuration specs are design decisions. Keep them separate.
+**Why**: Component specs are physical/logical facts. Configuration specs are design decisions. Keep
+them separate.
 
 ## Relationship Between Content Types
 
@@ -169,28 +174,28 @@ WHY (decisions/)  →  WHAT (configuration/)  →  HOW (procedures/)
 
 ### ❌ Duplicating Specifications
 
-**Wrong**: Including full spec table in procedures file
-**Right**: "For complete specifications, see [Configuration: X](../configuration/x.md)"
+**Wrong**: Including full spec table in procedures file **Right**: "For complete specifications, see
+[Configuration: X](../configuration/x.md)"
 
 ### ❌ Implementation Steps in Configuration
 
-**Wrong**: Step-by-step UI instructions in configuration/system.md
-**Right**: "For implementation, see [Procedure: System Configuration](../procedures/system-configuration.md)"
+**Wrong**: Step-by-step UI instructions in configuration/system.md **Right**: "For implementation,
+see [Procedure: System Configuration](../procedures/system-configuration.md)"
 
 ### ❌ Specifications in Multiple Files
 
-**Wrong**: IP assignments in multiple config files and procedures
-**Right**: All related specifications in single configuration file only
+**Wrong**: IP assignments in multiple config files and procedures **Right**: All related
+specifications in single configuration file only
 
 ### ❌ Generic Procedures
 
-**Wrong**: component-setup.md with generic steps
-**Right**: switch-setup.md, module-setup.md (component-specific)
+**Wrong**: component-setup.md with generic steps **Right**: switch-setup.md, module-setup.md
+(component-specific)
 
 ### ❌ Planning Files That Duplicate Other Content
 
-**Wrong**: planning/equipment-selection.md duplicating ADRs
-**Right**: Use ADRs for decisions, planning/ only for requirements
+**Wrong**: planning/equipment-selection.md duplicating ADRs **Right**: Use ADRs for decisions,
+planning/ only for requirements
 
 ## README.md Files
 

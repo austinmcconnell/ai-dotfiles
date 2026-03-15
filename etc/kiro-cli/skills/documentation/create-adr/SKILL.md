@@ -7,7 +7,8 @@ description: Create Architecture Decision Records (ADRs) following MADR format. 
 
 ## ADR Creation Workflow
 
-Follow these steps to create a new Architecture Decision Record (ADR) using the MADR (Markdown Architectural Decision Records) format.
+Follow these steps to create a new Architecture Decision Record (ADR) using the MADR (Markdown
+Architectural Decision Records) format.
 
 ### Step 1: Determine Next ADR Number
 
@@ -37,7 +38,8 @@ Prompt the user for the following information:
 **Required (MADR Core):**
 
 - **Title**: Short, descriptive title (e.g., "Use PostgreSQL for Database")
-- **Context and Problem Statement**: What problem or decision needs to be made? What are the constraints?
+- **Context and Problem Statement**: What problem or decision needs to be made? What are the
+  constraints?
 - **Considered Options**: What options were evaluated?
 - **Decision Outcome**: What was decided? Why?
 - **Consequences**: What are the positive and negative outcomes?
@@ -59,7 +61,8 @@ Prompt the user for the following information:
 
 ### Step 4: Create ADR File
 
-1. Generate filename: `decisions/adr-XXX-title-in-kebab-case.md` or `decisions/NNNN-title-with-dashes.md`
+1. Generate filename: `decisions/adr-XXX-title-in-kebab-case.md` or
+   `decisions/NNNN-title-with-dashes.md`
 1. Use selected template (project-specific or MADR)
 1. Replace all placeholders with information gathered in Step 3
 1. Add YAML frontmatter with metadata (status, date, decision-makers)
@@ -155,12 +158,14 @@ Chosen option: "{option}", because {justification}.
 ## When to Use Short vs Long Format
 
 **Use Short Format** (`references/example-short.md`) when:
+
 - Decision is straightforward
 - Options are well-known
 - Consequences are obvious
 - Quick documentation is needed
 
 **Use Long Format** (`references/example-long.md`) when:
+
 - Decision is complex or controversial
 - Multiple stakeholders involved
 - Detailed analysis needed

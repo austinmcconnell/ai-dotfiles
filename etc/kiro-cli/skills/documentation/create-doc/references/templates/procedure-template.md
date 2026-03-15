@@ -8,9 +8,9 @@
 
 Before proceeding, review:
 
-- [Configuration: {Title}](../configuration/{config-file}.md) - Specifications and requirements
+- [Configuration: {Title}](../configuration/%7Bconfig-file%7D.md) - Specifications and requirements
 - [ADR-NNN: {Title}](../decisions/adr-nnn-title.md) - Decision rationale (if applicable)
-- [Component: {Name}](../components/{component}.md) - Component specifications (if applicable)
+- [Component: {Name}](../components/%7Bcomponent%7D.md) - Component specifications (if applicable)
 
 ## Required Access
 
@@ -73,6 +73,6 @@ Verify the implementation was successful:
 
 ## Related Documentation
 
-- [Configuration: {Title}](../configuration/{config-file}.md) - Specifications
-- [Component: {Name}](../components/{component}.md) - Component details
-- [Procedure: {Related}](../procedures/{related-procedure}.md) - Related procedure
+- [Configuration: {Title}](../configuration/%7Bconfig-file%7D.md) - Specifications
+- [Component: {Name}](../components/%7Bcomponent%7D.md) - Component details
+- [Procedure: {Related}](../procedures/%7Brelated-procedure%7D.md) - Related procedure

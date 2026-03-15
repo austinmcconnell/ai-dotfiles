@@ -1,6 +1,6 @@
 ---
 name: commit-message-writing
-description: >
+description: >-
   Write clear, conventional commit messages following conventional commits format. Use when
   writing commit messages, committing code, using git commit, reviewing commits, or asking
   about commit message format, types, or conventions.
@@ -267,13 +267,17 @@ BREAKING CHANGE: Basic auth is no longer supported
 
 ❌ Past tense: `feat: added new feature` → ✅ Imperative: `feat: add new feature`
 
-❌ Too long: `feat: add a new dashboard that shows real-time system metrics including CPU and memory` → ✅ Concise: `feat(dashboard): add real-time system metrics`
+❌ Too long: `feat: add a new dashboard that shows real-time system metrics including CPU and memory`
+→ ✅ Concise: `feat(dashboard): add real-time system metrics`
 
-❌ No context: `fix: change timeout value` → ✅ With context: `fix(api): increase timeout to 30s for large uploads`
+❌ No context: `fix: change timeout value` → ✅ With context:
+`fix(api): increase timeout to 30s for large uploads`
 
-❌ Wrong breaking change format: `Breaking change: removes endpoint` → ✅ Correct: `BREAKING CHANGE: removes endpoint` or use `!`
+❌ Wrong breaking change format: `Breaking change: removes endpoint` → ✅ Correct:
+`BREAKING CHANGE: removes endpoint` or use `!`
 
 ## Reference Documentation
 
-- [references/conventional-commits.md](references/conventional-commits.md) - Full conventional commits specification
+- [references/conventional-commits.md](references/conventional-commits.md) - Full conventional
+  commits specification
 - [references/examples.md](references/examples.md) - Real-world commit message examples

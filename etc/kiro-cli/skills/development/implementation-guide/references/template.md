@@ -1,8 +1,11 @@
 # [Feature/Fix Name]
 
 **Type:** Security Fix | Refactor | Migration | Bug Fix
+
 **Priority:** Critical | High | Medium | Low
+
 **Estimated Effort:** [X hours/days]
+
 **Prerequisites:** [Required knowledge, tools, or setup]
 
 ## Problem Statement
@@ -10,19 +13,24 @@
 [What is broken, vulnerable, or needs changing? Why does this matter? What happens if not fixed?]
 
 **Impact:** [Severity and scope]
+
 **References:** [OWASP, CWE, tickets, docs]
 
 ## Feasibility Analysis
 
 **Complexity:** Low | Medium | High
+
 **Breaking Changes:** None | Minimal | Significant
+
 **Dependencies:** [What needs to be installed/configured]
 
 **Challenges:**
+
 1. [Challenge 1]
 1. [Challenge 2]
 
 **Solutions Available:**
+
 - Option A: [Description with trade-offs]
 - Option B: [Description with trade-offs]
 
@@ -40,6 +48,7 @@ def problematic_function(user_input):
 ```
 
 **Issues:**
+
 - [Specific problem 1]
 - [Specific problem 2]
 
@@ -57,6 +66,7 @@ def fixed_function(user_input):
 ```
 
 **Improvements:**
+
 - [Specific fix 1]
 - [Specific fix 2]
 
@@ -65,7 +75,9 @@ def fixed_function(user_input):
 ### Step 1: [Action Description]
 
 **File:** `path/to/file.py`
+
 **Lines:** [line numbers if modifying]
+
 **Action:** [Create | Modify | Delete]
 
 ```python
@@ -79,6 +91,7 @@ def fixed_function(user_input):
 ### Step 2: [Action Description]
 
 **File:** `path/to/another_file.py`
+
 **Action:** [Create | Modify | Delete]
 
 ```python
@@ -90,6 +103,7 @@ def fixed_function(user_input):
 ### Step 3: [Action Description]
 
 **Command:** `command to run`
+
 **Purpose:** [What this accomplishes]
 
 ```bash
@@ -132,6 +146,7 @@ def test_end_to_end_flow(client):
 1. [Step 3 with expected outcome]
 
 **Expected Results:**
+
 - [Specific observable outcome 1]
 - [Specific observable outcome 2]
 
@@ -154,6 +169,7 @@ def test_end_to_end_flow(client):
    - [Measure before/after]
 
 **Success Criteria:**
+
 - [ ] All tests pass
 - [ ] Manual testing confirms fix
 - [ ] No regressions detected
@@ -168,6 +184,7 @@ def test_end_to_end_flow(client):
 1. [Command to rollback database if needed]
 
 **Verification after rollback:**
+
 - [How to confirm system is back to previous state]
 
 ## References

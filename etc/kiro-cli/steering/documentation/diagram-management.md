@@ -1,6 +1,7 @@
 # Diagram Management
 
-**Purpose**: Guidelines for creating, managing, and maintaining diagrams in documentation using diagram-as-code tools.
+**Purpose**: Guidelines for creating, managing, and maintaining diagrams in documentation using
+diagram-as-code tools.
 
 ## Diagram-as-Code Philosophy
 

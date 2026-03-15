@@ -7,7 +7,8 @@ description: Guide for setting up and configuring mdBook for technical documenta
 
 ## Overview
 
-mdBook is a command-line tool for creating books from Markdown files. It's ideal for technical documentation with features like live reload, search, and GitHub integration.
+mdBook is a command-line tool for creating books from Markdown files. It's ideal for technical
+documentation with features like live reload, search, and GitHub integration.
 
 [Official docs](https://rust-lang.github.io/mdBook/)
 

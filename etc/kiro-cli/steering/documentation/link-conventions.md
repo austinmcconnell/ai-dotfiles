@@ -1,6 +1,7 @@
 # Link Conventions
 
-**Purpose**: Standards for cross-referencing and linking in documentation repositories to support the "reference, don't duplicate" principle.
+**Purpose**: Standards for cross-referencing and linking in documentation repositories to support
+the "reference, don't duplicate" principle.
 
 ## Core Principles
 
@@ -233,6 +234,7 @@ Configure devices according to [Configuration: Network Topology](../configuratio
 ```
 
 Examples:
+
 - `[Configuration: System Settings](../configuration/system-settings.md)`
 - `[Config: Security Rules](../configuration/security-rules.md)`
 
@@ -244,6 +246,7 @@ Examples:
 ```
 
 Examples:
+
 - `[Procedure: Initial Setup](../procedures/initial-setup.md)`
 - `[Setup: Gateway Configuration](../procedures/gateway-setup.md)`
 
@@ -254,6 +257,7 @@ Examples:
 ```
 
 Examples:
+
 - `[ADR-001: Platform Selection](../decisions/adr-001-platform-selection.md)`
 - `[ADR-003: Security Strategy](../decisions/adr-003-security-strategy.md)`
 
@@ -265,6 +269,7 @@ Examples:
 ```
 
 Examples:
+
 - `[Component: Gateway](../components/gateway.md)`
 - `[Gateway Specifications](../components/gateway.md)`
 

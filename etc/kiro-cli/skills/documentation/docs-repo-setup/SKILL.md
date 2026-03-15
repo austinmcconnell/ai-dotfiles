@@ -7,7 +7,9 @@ description: Guide for setting up structured documentation repositories with mdB
 
 ## Overview
 
-Set up structured technical documentation repositories using mdBook with proper content separation (WHAT/HOW/WHY/SPECS). Based on lessons from real projects that underwent major refactorings due to poor initial structure.
+Set up structured technical documentation repositories using mdBook with proper content separation
+(WHAT/HOW/WHY/SPECS). Based on lessons from real projects that underwent major refactorings due to
+poor initial structure.
 
 **Key principle:** Establish content ownership model on day 1 to prevent costly refactoring later.
 
@@ -317,6 +319,7 @@ Plus eliminates mental overhead of "where does this belong?"
 
 ## Reference Documentation
 
-- `references/templates.md` - Complete file templates (AGENTS.md, README.md, configuration, procedure, component, SUMMARY.md)
+- `references/templates.md` - Complete file templates (AGENTS.md, README.md, configuration,
+  procedure, component, SUMMARY.md)
 
 For mdBook-specific setup, see the `mdbook-setup` skill.

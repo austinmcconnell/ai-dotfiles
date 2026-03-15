@@ -1,6 +1,6 @@
 ---
 name: implementation-guide
-description: >
+description: >-
   Create detailed implementation guides with step-by-step instructions, complete code examples,
   testing procedures, and verification steps. Use for security vulnerabilities, complex refactoring,
   database migrations, API upgrades, bug fixes, or any work requiring precise execution by
@@ -11,7 +11,9 @@ description: >
 
 ## How to Use This Skill
 
-This skill helps you create comprehensive implementation guides for complex technical work. Use the blank template in `references/template.md` to start, or review `references/security-fix-example.md` for a detailed real-world example. Follow the structure below to ensure completeness.
+This skill helps you create comprehensive implementation guides for complex technical work. Use the
+blank template in `references/template.md` to start, or review `references/security-fix-example.md`
+for a detailed real-world example. Follow the structure below to ensure completeness.
 
 ## When to Write Implementation Guides
 
@@ -39,9 +41,13 @@ Every implementation guide should include these sections:
 ### 1. Header & Context
 
 ```markdown
+
 **Type:** Security Fix | Refactor | Migration | Bug Fix
+
 **Priority:** Critical | High | Medium | Low
+
 **Estimated Effort:** [hours/days]
+
 **Prerequisites:** [Required knowledge, tools, or setup]
 ```
 
@@ -113,8 +119,11 @@ Analyze the implementation before starting:
 **Example:**
 
 ```markdown
+
 **Complexity:** Medium
+
 **Breaking Changes:** None (adds validation, doesn't change behavior)
+
 **Dependencies:** Standard library only (re.escape())
 
 **Challenges:**
@@ -162,6 +171,7 @@ Explain WHY the problem exists, not just WHAT is wrong:
 **Example:**
 
 ```markdown
+
 **Root Cause:** User input is directly interpolated into the jsonb_path string
 using f-string interpolation. PostgreSQL's jsonb_path language supports complex
 expressions, and unescaped user input can break out of the regex context.
@@ -348,4 +358,5 @@ Implementation Progress:
 ## Reference Documentation
 
 - [references/template.md](references/template.md) - Blank implementation guide template
-- [references/security-fix-example.md](references/security-fix-example.md) - Comprehensive security vulnerability fix example (8 issues, 50+ pages)
+- [references/security-fix-example.md](references/security-fix-example.md) - Comprehensive security
+  vulnerability fix example (8 issues, 50+ pages)

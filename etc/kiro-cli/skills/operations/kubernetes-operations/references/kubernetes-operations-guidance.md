@@ -27,11 +27,14 @@ Before performing any Kubernetes operations in a chat session, Amazon Q must:
 After receiving permission, Amazon Q must:
 
 1. **Discover available Kubernetes contexts** by reading `~/.kube/config`
+
 1. **Present context options** to the user, showing:
+
    - Context names
    - Associated cluster information
    - Default namespaces
    - Cluster types (EKS, local, etc.)
+
 1. **Prompt for context selection** with a message such as:
 
    ```text
@@ -111,6 +114,7 @@ Amazon Q must **never** perform the following operations, regardless of user per
    - Certificate or RBAC modifications
 
 1. **Execution Operations**
+
    - `exec` into pods
    - `port-forward` operations
    - `proxy` operations

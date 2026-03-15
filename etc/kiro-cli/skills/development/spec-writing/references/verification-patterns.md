@@ -13,15 +13,18 @@ How to verify requirements are met through testing.
 ## Test Methods
 
 ### Unit Tests
+
 Test individual functions or components in isolation.
 
 **When to use:**
+
 - Business logic
 - Data transformations
 - Validation rules
 - Edge case handling
 
 **Example:**
+
 ```markdown
 | Requirement | Test Method | Pass Criteria |
 |-------------|-------------|---------------|
@@ -30,15 +33,18 @@ Test individual functions or components in isolation.
 ```
 
 ### Integration Tests
+
 Test multiple components working together.
 
 **When to use:**
+
 - API endpoints
 - Database operations
 - Service interactions
 - Cache behavior
 
 **Example:**
+
 ```markdown
 | Requirement | Test Method | Pass Criteria |
 |-------------|-------------|---------------|
@@ -47,15 +53,18 @@ Test multiple components working together.
 ```
 
 ### End-to-End (E2E) Tests
+
 Test complete user workflows through the UI.
 
 **When to use:**
+
 - Critical user paths
 - Multi-step workflows
 - UI interactions
 - Cross-system flows
 
 **Example:**
+
 ```markdown
 | Requirement | Test Method | Pass Criteria |
 |-------------|-------------|---------------|
@@ -64,15 +73,18 @@ Test complete user workflows through the UI.
 ```
 
 ### Performance Tests
+
 Test speed, throughput, and resource usage.
 
 **When to use:**
+
 - Response time requirements
 - Load handling
 - Scalability claims
 - Resource limits
 
 **Example:**
+
 ```markdown
 | Requirement | Test Method | Pass Criteria |
 |-------------|-------------|---------------|
@@ -81,15 +93,18 @@ Test speed, throughput, and resource usage.
 ```
 
 ### Manual Tests
+
 Test through human observation and interaction.
 
 **When to use:**
+
 - Visual design verification
 - Usability testing
 - Complex workflows
 - Exploratory testing
 
 **Example:**
+
 ```markdown
 | Requirement | Test Method | Pass Criteria |
 |-------------|-------------|---------------|
@@ -144,39 +159,47 @@ Test through human observation and interaction.
 ## Pass Criteria Guidelines
 
 **Be specific:**
+
 - ✅ "p95 latency < 2000ms"
 - ❌ "Fast enough"
 
 **Be measurable:**
+
 - ✅ "Cache hit rate > 90%"
 - ❌ "Good cache performance"
 
 **Be observable:**
+
 - ✅ "Red color applied when value > 80%"
 - ❌ "Looks right"
 
 **Include thresholds:**
+
 - ✅ "No errors at 1000 RPS"
 - ❌ "Handles load"
 
 ## Test Coverage Goals
 
 **Critical paths:** 100% coverage
+
 - Authentication
 - Payment processing
 - Data integrity
 
 **Business logic:** 90%+ coverage
+
 - Validation rules
 - Calculations
 - State transitions
 
 **Edge cases:** Explicit tests
+
 - Empty states
 - Error conditions
 - Boundary values
 
 **Happy path:** Always covered
+
 - Primary user flows
 - Common operations
 
@@ -194,6 +217,7 @@ Before marking a spec complete:
 ## Anti-Patterns
 
 ❌ **Vague criteria:**
+
 ```markdown
 | Requirement | Test Method | Pass Criteria |
 |-------------|-------------|---------------|
@@ -201,6 +225,7 @@ Before marking a spec complete:
 ```
 
 ✅ **Specific criteria:**
+
 ```markdown
 | Requirement | Test Method | Pass Criteria |
 |-------------|-------------|---------------|
@@ -210,6 +235,7 @@ Before marking a spec complete:
 ---
 
 ❌ **No test method:**
+
 ```markdown
 | Requirement | Test Method | Pass Criteria |
 |-------------|-------------|---------------|
@@ -217,6 +243,7 @@ Before marking a spec complete:
 ```
 
 ✅ **Clear test method:**
+
 ```markdown
 | Requirement | Test Method | Pass Criteria |
 |-------------|-------------|---------------|
@@ -226,6 +253,7 @@ Before marking a spec complete:
 ---
 
 ❌ **Unmeasurable:**
+
 ```markdown
 | Requirement | Test Method | Pass Criteria |
 |-------------|-------------|---------------|
@@ -233,6 +261,7 @@ Before marking a spec complete:
 ```
 
 ✅ **Measurable:**
+
 ```markdown
 | Requirement | Test Method | Pass Criteria |
 |-------------|-------------|---------------|

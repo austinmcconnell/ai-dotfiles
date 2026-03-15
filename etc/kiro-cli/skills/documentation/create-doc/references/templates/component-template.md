@@ -44,7 +44,7 @@
 
 ## Configuration
 
-This component is configured in [Configuration: {Title}](../configuration/{config-file}.md).
+This component is configured in [Configuration: {Title}](../configuration/%7Bconfig-file%7D.md).
 
 Key configuration parameters:
 
@@ -53,9 +53,10 @@ Key configuration parameters:
 
 ## Setup and Maintenance
 
-For setup instructions, see [Procedure: {Component} Setup](../procedures/{component}-setup.md).
+For setup instructions, see [Procedure: {Component} Setup](../procedures/%7Bcomponent%7D-setup.md).
 
-For maintenance procedures, see [Procedure: {Component} Maintenance](../procedures/{component}-maintenance.md).
+For maintenance procedures, see
+[Procedure: {Component} Maintenance](../procedures/%7Bcomponent%7D-maintenance.md).
 
 ## Upgrade Path
 
@@ -69,12 +70,13 @@ For maintenance procedures, see [Procedure: {Component} Maintenance](../procedur
 
 {Links to external vendor documentation}
 
-- [Vendor Documentation]({url})
-- [Technical Specifications]({url})
-- [Support Resources]({url})
+- [Vendor Documentation](%7Burl%7D)
+- [Technical Specifications](%7Burl%7D)
+- [Support Resources](%7Burl%7D)
 
 ## Related Documentation
 
-- [Configuration: {Title}](../configuration/{config-file}.md) - How component is configured
-- [Procedure: {Component} Setup](../procedures/{component}-setup.md) - Setup instructions
-- [ADR-NNN: {Component Selection}](../decisions/adr-nnn-component-selection.md) - Why this component was chosen
+- [Configuration: {Title}](../configuration/%7Bconfig-file%7D.md) - How component is configured
+- [Procedure: {Component} Setup](../procedures/%7Bcomponent%7D-setup.md) - Setup instructions
+- [ADR-NNN: {Component Selection}](../decisions/adr-nnn-component-selection.md) - Why this component
+  was chosen

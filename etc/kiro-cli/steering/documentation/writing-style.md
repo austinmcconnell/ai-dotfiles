@@ -1,6 +1,7 @@
 # Writing Style Guide
 
-**Purpose**: Standards for voice, tone, and technical writing in documentation to ensure consistency and clarity.
+**Purpose**: Standards for voice, tone, and technical writing in documentation to ensure consistency
+and clarity.
 
 ## Core Principles
 
@@ -378,6 +379,7 @@ Click [this link](../configuration/network-topology.md).
 <!-- Good -->
 
 ✅ Success: Configuration saved
+
 ❌ Error: Invalid IP address
 
 <!-- Avoid -->

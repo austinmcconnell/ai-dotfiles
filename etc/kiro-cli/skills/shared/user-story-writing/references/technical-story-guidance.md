@@ -207,7 +207,7 @@ so that preference updates are consistent across all user interfaces instead of 
 - [ ] **Background**: Provides context about current problematic behavior
 - [ ] **Current Issues**: Lists specific, observable problems
 - [ ] **Clean Acceptance Criteria**: Uses simple bullet points for Acceptance Criteria and separate
-      Technical Implementation section
+  Technical Implementation section
 - [ ] **No Over-Engineering**: Avoids unnecessary generic sections
 - [ ] **Testable**: Criteria can be verified and demonstrated
 - [ ] **Focused**: Single system behavior change, not multiple unrelated changes

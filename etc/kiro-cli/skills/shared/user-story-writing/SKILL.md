@@ -1,6 +1,6 @@
 ---
 name: user-story-writing
-description: >
+description: >-
   Write effective user stories following INVEST principles with acceptance criteria, story points,
   and technical considerations. Use when writing user stories, creating stories, refining backlog
   items, documenting feature requirements, or during sprint planning and backlog refinement.
@@ -163,7 +163,11 @@ Before marking a story ready:
 
 ## Reference Documentation
 
-- [references/user-story-standards.md](references/user-story-standards.md) - Complete INVEST criteria and best practices
-- [references/technical-story-guidance.md](references/technical-story-guidance.md) - Writing technical implementation stories
-- [references/story-templates-examples.md](references/story-templates-examples.md) - Real-world examples across domains
-- [references/story-review-checklist.md](references/story-review-checklist.md) - Comprehensive review checklist
+- [references/user-story-standards.md](references/user-story-standards.md) - Complete INVEST
+  criteria and best practices
+- [references/technical-story-guidance.md](references/technical-story-guidance.md) - Writing
+  technical implementation stories
+- [references/story-templates-examples.md](references/story-templates-examples.md) - Real-world
+  examples across domains
+- [references/story-review-checklist.md](references/story-review-checklist.md) - Comprehensive
+  review checklist
