@@ -443,13 +443,13 @@ Instead of one complex diagram:
 ## Best Practices
 
 1. **Keep diagrams simple** - One concept per diagram
-2. **Update with code** - Diagram changes in same commit as related text
-3. **Use consistent style** - Same colors, shapes, and terminology
-4. **Add context** - Brief description before diagram
-5. **Validate rendering** - Always build and check before committing
-6. **Version complex diagrams** - Include date in filename for images
-7. **Prefer code over images** - Use Mermaid when possible
-8. **Document diagram source** - If using external tool, note it
+1. **Update with code** - Diagram changes in same commit as related text
+1. **Use consistent style** - Same colors, shapes, and terminology
+1. **Add context** - Brief description before diagram
+1. **Validate rendering** - Always build and check before committing
+1. **Version complex diagrams** - Include date in filename for images
+1. **Prefer code over images** - Use Mermaid when possible
+1. **Document diagram source** - If using external tool, note it
 
 ## Quality Checklist
 

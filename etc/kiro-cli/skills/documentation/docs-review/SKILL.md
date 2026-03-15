@@ -23,9 +23,9 @@ Systematically review documentation repositories to identify content ownership v
 ### Step 1: Understand Project Structure
 
 1. Read `AGENTS.md` or `README.md` for project-specific conventions
-2. Check `SUMMARY.md` to understand intended structure
-3. Identify content directories: `configuration/`, `procedures/`, `decisions/`, `components/`
-4. Note any project-specific naming conventions or patterns
+1. Check `SUMMARY.md` to understand intended structure
+1. Identify content directories: `configuration/`, `procedures/`, `decisions/`, `components/`
+1. Note any project-specific naming conventions or patterns
 
 ### Step 2: Content Ownership Audit
 
@@ -62,9 +62,9 @@ Review each file for proper content type separation:
 Search for duplicate content across files:
 
 1. **Identify specification tables** - Look for tables in multiple files
-2. **Check IP addresses** - Search for IP addresses appearing in multiple places
-3. **Look for repeated lists** - Component lists, feature lists, requirement lists
-4. **Find duplicate diagrams** - Same diagram in multiple files
+1. **Check IP addresses** - Search for IP addresses appearing in multiple places
+1. **Look for repeated lists** - Component lists, feature lists, requirement lists
+1. **Find duplicate diagrams** - Same diagram in multiple files
 
 **Common duplication patterns:**
 - Network topology tables in both configuration/ and procedures/
@@ -118,9 +118,9 @@ grep -ri "click here" src/
 Verify SUMMARY.md matches actual file structure:
 
 1. **Check for missing files** - Files exist but not in SUMMARY.md
-2. **Check for dead links** - SUMMARY.md references non-existent files
-3. **Verify organization** - Files grouped logically by content type
-4. **Check ordering** - Logical progression (planning → components → configuration → procedures → decisions)
+1. **Check for dead links** - SUMMARY.md references non-existent files
+1. **Verify organization** - Files grouped logically by content type
+1. **Check ordering** - Logical progression (planning → components → configuration → procedures → decisions)
 
 **Commands to help:**
 ```bash
@@ -257,7 +257,7 @@ Use `references/review-checklist.md` for detailed checklist.
 
 **Fix:**
 1. Keep table in configuration/ file
-2. In procedures/ file, replace table with:
+1. In procedures/ file, replace table with:
    ```markdown
    Configure according to [Configuration: X](../configuration/x.md#section).
    ```
@@ -268,7 +268,7 @@ Use `references/review-checklist.md` for detailed checklist.
 
 **Fix:**
 1. Move steps to procedures/ file
-2. In configuration/ file, add:
+1. In configuration/ file, add:
    ```markdown
    For implementation, see [Procedure: X](../procedures/x.md).
    ```

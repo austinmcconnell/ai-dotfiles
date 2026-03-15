@@ -126,13 +126,13 @@ See [the spec template](references/spec-template.md) for full template. Delete s
 ## Best Practices
 
 1. **Start with overview** - Give context first
-2. **Requirements are testable** - Can verify each one
-3. **Explain decisions** - Document the why
-4. **Order tasks by dependency** - Top items unblock bottom
-5. **Keep it concise** - Target under 1000 lines
-6. **Reference existing patterns** - Don't reinvent
-7. **Update as you learn** - Specs evolve with implementation
-8. **Version control** - Commit specs with code
+1. **Requirements are testable** - Can verify each one
+1. **Explain decisions** - Document the why
+1. **Order tasks by dependency** - Top items unblock bottom
+1. **Keep it concise** - Target under 1000 lines
+1. **Reference existing patterns** - Don't reinvent
+1. **Update as you learn** - Specs evolve with implementation
+1. **Version control** - Commit specs with code
 
 ## Reference Documentation
 

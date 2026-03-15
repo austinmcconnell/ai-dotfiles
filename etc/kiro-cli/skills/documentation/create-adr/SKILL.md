@@ -12,17 +12,17 @@ Follow these steps to create a new Architecture Decision Record (ADR) using the 
 ### Step 1: Determine Next ADR Number
 
 1. List all existing ADR files in `decisions/` directory
-2. Find the highest numbered ADR (format: `adr-XXX-*.md` or `NNNN-*.md`)
-3. Increment by 1 for the new ADR number
-4. Format as zero-padded 3 or 4-digit number (e.g., 001, 002, 010 or 0001, 0002)
+1. Find the highest numbered ADR (format: `adr-XXX-*.md` or `NNNN-*.md`)
+1. Increment by 1 for the new ADR number
+1. Format as zero-padded 3 or 4-digit number (e.g., 001, 002, 010 or 0001, 0002)
 
 ### Step 2: Select Template
 
 **Check for project-specific template first:**
 
 1. Look for `decisions/adr-template.md` in the project
-2. Check `AGENTS.md` for template location or ADR conventions
-3. Check `README.md` for ADR format guidance
+1. Check `AGENTS.md` for template location or ADR conventions
+1. Check `README.md` for ADR format guidance
 
 **Use MADR template if no project template exists:**
 
@@ -60,20 +60,20 @@ Prompt the user for the following information:
 ### Step 4: Create ADR File
 
 1. Generate filename: `decisions/adr-XXX-title-in-kebab-case.md` or `decisions/NNNN-title-with-dashes.md`
-2. Use selected template (project-specific or MADR)
-3. Replace all placeholders with information gathered in Step 3
-4. Add YAML frontmatter with metadata (status, date, decision-makers)
-5. Set Status to "proposed" for new ADRs
-6. Set Date to today's date (YYYY-MM-DD format)
-7. Create the file with the filled-in content
+1. Use selected template (project-specific or MADR)
+1. Replace all placeholders with information gathered in Step 3
+1. Add YAML frontmatter with metadata (status, date, decision-makers)
+1. Set Status to "proposed" for new ADRs
+1. Set Date to today's date (YYYY-MM-DD format)
+1. Create the file with the filled-in content
 
 ### Step 5: Update ADR Index (if exists)
 
 If the project has `decisions/README.md` or similar index:
 
 1. Add new entry to the index
-2. Keep entries sorted by ADR number
-3. Include: ADR number, title, status, date
+1. Keep entries sorted by ADR number
+1. Include: ADR number, title, status, date
 
 ### Step 6: Update SUMMARY.md (if using mdBook)
 
@@ -89,8 +89,8 @@ If the project uses mdBook with `SUMMARY.md`:
 If this ADR relates to existing ADRs:
 
 1. Add references in "More Information" or "Related ADRs" section
-2. Consider updating related ADRs to reference the new ADR
-3. Use format: `[ADR-XXX](adr-XXX-title.md): Brief description`
+1. Consider updating related ADRs to reference the new ADR
+1. Use format: `[ADR-XXX](adr-XXX-title.md): Brief description`
 
 ## MADR Template Structure
 
@@ -224,12 +224,12 @@ informed: [Team]
 ## Tips for Writing Good ADRs
 
 1. **Write when context is fresh** - Don't wait until later
-2. **Be specific** - Use actual names, versions, dates
-3. **Document alternatives** - This is often the most valuable part
-4. **Keep it concise** - One decision per ADR
-5. **Update status** - Mark as deprecated or superseded when needed
-6. **Link liberally** - Reference related ADRs and documentation
-7. **Include confirmation** - Explain how to validate the decision
+1. **Be specific** - Use actual names, versions, dates
+1. **Document alternatives** - This is often the most valuable part
+1. **Keep it concise** - One decision per ADR
+1. **Update status** - Mark as deprecated or superseded when needed
+1. **Link liberally** - Reference related ADRs and documentation
+1. **Include confirmation** - Explain how to validate the decision
 
 ## Common Mistakes to Avoid
 
@@ -244,10 +244,10 @@ informed: [Team]
 ## After Creating the ADR
 
 1. Review the ADR with stakeholders if needed
-2. Update Status from "proposed" to "accepted" once approved
-3. Reference the ADR in relevant documentation
-4. Link to the ADR from implementation files/procedures
-5. Consider creating an issue for discussion if needed
+1. Update Status from "proposed" to "accepted" once approved
+1. Reference the ADR in relevant documentation
+1. Link to the ADR from implementation files/procedures
+1. Consider creating an issue for discussion if needed
 
 ## Reference Documentation
 

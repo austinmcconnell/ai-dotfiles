@@ -64,16 +64,16 @@ These prompts work with any AI chat service:
 ## Best Practices
 
 1. **Be specific** - Create prompts for specific scenarios rather than generic ones
-2. **Include context** - Add instructions about what type of code or information to include
-3. **Use templates** - Include placeholders like `[CODE HERE]` or `[DESCRIPTION]` where appropriate
-4. **Version control** - These prompts are tracked in your dotfiles, so you can version and share
+1. **Include context** - Add instructions about what type of code or information to include
+1. **Use templates** - Include placeholders like `[CODE HERE]` or `[DESCRIPTION]` where appropriate
+1. **Version control** - These prompts are tracked in your dotfiles, so you can version and share
    them
-5. **Test prompts** - Try your prompts with different AI services to ensure they produce good
+1. **Test prompts** - Try your prompts with different AI services to ensure they produce good
    results
-6. **Cross-platform** - Design prompts that work well across different AI services
-7. **Follow dependencies** - Always run prerequisite analyses before dependent ones (see Dependency
+1. **Cross-platform** - Design prompts that work well across different AI services
+1. **Follow dependencies** - Always run prerequisite analyses before dependent ones (see Dependency
    Hierarchy above)
-8. **Use main branch** - Most analysis prompts require running from `main` or `master` branch for
+1. **Use main branch** - Most analysis prompts require running from `main` or `master` branch for
    accurate results
 
 ## Prompt Dependencies
@@ -114,15 +114,15 @@ Level 4 (Requires: project-analysis + architecture-analysis + integration-analys
 For comprehensive project analysis, run prompts in this order:
 
 1. **Start Here**: `project-analysis` (required by most other analyses)
-2. **Level 1 Group** (can run in any order):
+1. **Level 1 Group** (can run in any order):
    - `architecture-analysis` (required by technical analyses)
    - `schema-analysis` (required by integration analysis)
    - `documentation-analysis`
-3. **Level 2 Group** (can run in any order):
+1. **Level 2 Group** (can run in any order):
    - `integration-analysis` (required for performance and security)
    - `testing-analysis`
    - `technical-debt-analysis`
-4. **Advanced Analyses**:
+1. **Advanced Analyses**:
    - `performance-analysis` (requires integration-analysis)
    - `security-analysis` (requires project + architecture + integration)
 

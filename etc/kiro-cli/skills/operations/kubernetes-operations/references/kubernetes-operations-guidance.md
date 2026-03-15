@@ -18,21 +18,21 @@ Before performing any Kubernetes operations in a chat session, Amazon Q must:
    May I proceed with accessing Kubernetes resources?
    ```
 
-2. **Wait for explicit user confirmation** before making any kubectl commands
+1. **Wait for explicit user confirmation** before making any kubectl commands
 
-3. **Clearly state what type of operations** will be performed (read-only)
+1. **Clearly state what type of operations** will be performed (read-only)
 
 ### Context Discovery and Selection
 
 After receiving permission, Amazon Q must:
 
 1. **Discover available Kubernetes contexts** by reading `~/.kube/config`
-2. **Present context options** to the user, showing:
+1. **Present context options** to the user, showing:
    - Context names
    - Associated cluster information
    - Default namespaces
    - Cluster types (EKS, local, etc.)
-3. **Prompt for context selection** with a message such as:
+1. **Prompt for context selection** with a message such as:
 
    ```text
    I found the following Kubernetes contexts configured:
@@ -46,13 +46,13 @@ After receiving permission, Amazon Q must:
    Which context would you like me to use?
    ```
 
-4. **Set the Kubernetes context** using:
+1. **Set the Kubernetes context** using:
 
    ```bash
    kubectl config use-context selected_context_name
    ```
 
-5. **Confirm the context selection** before proceeding with Kubernetes operations
+1. **Confirm the context selection** before proceeding with Kubernetes operations
 
 ### Session Permission Context
 
@@ -97,20 +97,20 @@ Amazon Q must **never** perform the following operations, regardless of user per
    - `kubectl delete` of any resource type
    - Resource destruction of any kind
 
-2. **Modification Operations**
+1. **Modification Operations**
 
    - `apply`, `create`, `replace` commands
    - `patch`, `edit` commands
    - `scale` operations
    - `rollout` operations (restart, undo, etc.)
 
-3. **Cluster Administration**
+1. **Cluster Administration**
 
    - `drain`, `cordon`, `uncordon` node operations
    - `label`, `annotate` operations
    - Certificate or RBAC modifications
 
-4. **Execution Operations**
+1. **Execution Operations**
    - `exec` into pods
    - `port-forward` operations
    - `proxy` operations
@@ -132,9 +132,9 @@ All write operations are prohibited, including:
 Before executing any kubectl command, Amazon Q should:
 
 1. **Verify the operation is read-only** by checking the command against the allowed operations list
-2. **Confirm the Kubernetes context** if it has changed since the last operation
-3. **Validate command syntax** to prevent accidental destructive operations
-4. **Check for production context warnings** when accessing production clusters
+1. **Confirm the Kubernetes context** if it has changed since the last operation
+1. **Validate command syntax** to prevent accidental destructive operations
+1. **Check for production context warnings** when accessing production clusters
 
 ### Error Handling
 
@@ -225,19 +225,19 @@ If you encounter authentication errors:
    kubectl config current-context
    ```
 
-2. **Verify cluster connection**:
+1. **Verify cluster connection**:
 
    ```bash
    kubectl cluster-info
    ```
 
-3. **For EKS clusters, ensure AWS authentication**:
+1. **For EKS clusters, ensure AWS authentication**:
 
    ```bash
    aws sts get-caller-identity --profile your-profile-name
    ```
 
-4. **Update kubeconfig if needed**:
+1. **Update kubeconfig if needed**:
 
    ```bash
    aws eks update-kubeconfig --region us-east-1 --name cluster-name --profile your-profile-name

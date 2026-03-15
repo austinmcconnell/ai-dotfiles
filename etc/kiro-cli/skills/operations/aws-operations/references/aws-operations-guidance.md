@@ -18,21 +18,21 @@ Before performing any AWS operations in a chat session, Amazon Q must:
    May I proceed with accessing AWS resources?
    ```
 
-2. **Wait for explicit user confirmation** before making any AWS API calls
+1. **Wait for explicit user confirmation** before making any AWS API calls
 
-3. **Clearly state what type of operations** will be performed (read-only)
+1. **Clearly state what type of operations** will be performed (read-only)
 
 ### Profile Discovery and Selection
 
 After receiving permission, Amazon Q must:
 
 1. **Discover available AWS profiles** by reading `~/.aws/config`
-2. **Present profile options** to the user, showing:
+1. **Present profile options** to the user, showing:
    - Profile names
    - Associated AWS account IDs
    - Default regions
    - SSO configuration details (if applicable)
-3. **Prompt for profile selection** with a message such as:
+1. **Prompt for profile selection** with a message such as:
 
    ```text
    I found the following AWS profiles configured:
@@ -47,13 +47,13 @@ After receiving permission, Amazon Q must:
    Which profile would you like me to use?
    ```
 
-4. **Set the AWS profile** by exporting the `AWS_PROFILE` environment variable:
+1. **Set the AWS profile** by exporting the `AWS_PROFILE` environment variable:
 
    ```bash
    export AWS_PROFILE=selected_profile_name
    ```
 
-5. **Confirm the profile selection** before proceeding with AWS operations
+1. **Confirm the profile selection** before proceeding with AWS operations
 
 ### Session Permission Context
 
@@ -101,21 +101,21 @@ Amazon Q must **never** perform the following operations, regardless of user per
    - `remove-*` commands
    - Resource destruction of any kind
 
-2. **IAM Modifications**
+1. **IAM Modifications**
 
    - Creating, modifying, or deleting IAM users, roles, or policies
    - Attaching or detaching policies
    - Modifying trust relationships
    - Any IAM write operations
 
-3. **Production Resource Modifications**
+1. **Production Resource Modifications**
 
    - Creating, modifying, or updating resources
    - Scaling operations (up or down)
    - Configuration changes
    - Network modifications
 
-4. **Billing and Cost Operations**
+1. **Billing and Cost Operations**
    - Modifying billing settings
    - Creating or modifying budgets
    - Cost allocation changes
@@ -137,8 +137,8 @@ All write operations are prohibited, including:
 Before executing any AWS command, Amazon Q should:
 
 1. **Verify the operation is read-only** by checking the command against the allowed operations list
-2. **Confirm the AWS profile/region context** if it has changed since the last operation
-3. **Validate command syntax** to prevent accidental destructive operations
+1. **Confirm the AWS profile/region context** if it has changed since the last operation
+1. **Validate command syntax** to prevent accidental destructive operations
 
 ### Error Handling
 
@@ -227,13 +227,13 @@ If you encounter authentication errors:
    aws sts get-caller-identity --profile your-profile-name
    ```
 
-2. **If authentication is needed**:
+1. **If authentication is needed**:
 
    ```bash
    aws sso login --profile your-profile-name
    ```
 
-3. **Verify the session is active** before Amazon Q attempts AWS operations
+1. **Verify the session is active** before Amazon Q attempts AWS operations
 
 ### When to Re-request Permission
 

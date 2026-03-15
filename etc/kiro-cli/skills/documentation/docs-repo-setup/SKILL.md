@@ -268,9 +268,9 @@ Centralize external links to prevent link rot.
 ### "Where does this content belong?"
 
 1. Is it a specification? → configuration/
-2. Is it implementation steps? → procedures/
-3. Is it a decision rationale? → decisions/
-4. Is it component specs? → components/
+1. Is it implementation steps? → procedures/
+1. Is it a decision rationale? → decisions/
+1. Is it component specs? → components/
 
 ### "Should I duplicate this spec?"
 
@@ -299,12 +299,12 @@ Centralize external links to prevent link rot.
 After setup:
 
 1. ✅ Complete directory structure
-2. ✅ Know exactly where each content type belongs
-3. ✅ Never duplicate specifications
-4. ✅ Working templates for all file types
-5. ✅ Quality gates (pre-commit hooks)
-6. ✅ Understand WHAT/HOW/WHY separation
-7. ✅ Can add content without restructuring
+1. ✅ Know exactly where each content type belongs
+1. ✅ Never duplicate specifications
+1. ✅ Working templates for all file types
+1. ✅ Quality gates (pre-commit hooks)
+1. ✅ Understand WHAT/HOW/WHY separation
+1. ✅ Can add content without restructuring
 
 ## Time Investment
 

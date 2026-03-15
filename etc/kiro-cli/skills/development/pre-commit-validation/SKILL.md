@@ -30,10 +30,10 @@ pre-commit run <hook-name> --files path/to/file
 ## Workflow
 
 1. Generate or modify files
-2. Run pre-commit on changed files
-3. If hooks modify files, read them back to see what changed
-4. Make additional edits on top of hook-modified versions
-5. Run pre-commit again until all checks pass
+1. Run pre-commit on changed files
+1. If hooks modify files, read them back to see what changed
+1. Make additional edits on top of hook-modified versions
+1. Run pre-commit again until all checks pass
 
 ## When hooks modify files
 

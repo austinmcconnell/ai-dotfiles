@@ -26,9 +26,9 @@ Ask the user what type of content they want to create:
 **Options:**
 
 1. **Configuration (WHAT)** - Specifications, design, requirements
-2. **Procedure (HOW)** - Step-by-step implementation instructions
-3. **Component (SPECS)** - Component specifications and capabilities
-4. **README** - Directory overview and purpose
+1. **Procedure (HOW)** - Step-by-step implementation instructions
+1. **Component (SPECS)** - Component specifications and capabilities
+1. **README** - Directory overview and purpose
 
 **Questions to ask:**
 
@@ -68,8 +68,8 @@ Based on content type, determine location:
 **Check for project conventions:**
 
 1. Look for `AGENTS.md` for naming patterns
-2. Check existing files in target directory
-3. Verify `src/` prefix usage (mdBook projects)
+1. Check existing files in target directory
+1. Verify `src/` prefix usage (mdBook projects)
 
 ### Step 3: Select Template
 
@@ -83,8 +83,8 @@ Use appropriate template from `references/templates/`:
 **Check for project-specific templates:**
 
 1. Look for templates in project root or `.kiro/` directory
-2. Check `AGENTS.md` for template locations
-3. Fall back to skill templates if none exist
+1. Check `AGENTS.md` for template locations
+1. Fall back to skill templates if none exist
 
 ### Step 4: Gather Content Information
 
@@ -132,22 +132,22 @@ Prompt user for content based on type:
 ### Step 5: Create File with Content
 
 1. Use selected template
-2. Replace all placeholders with gathered information
-3. Add proper cross-references using link conventions:
+1. Replace all placeholders with gathered information
+1. Add proper cross-references using link conventions:
    - `[Configuration: Title](../configuration/file.md)`
    - `[Procedure: Title](../procedures/file.md)`
    - `[Component: Name](../components/file.md)`
    - `[ADR-NNN: Title](../decisions/adr-nnn-title.md)`
-4. Ensure relative paths are correct
-5. Create the file in determined location
+1. Ensure relative paths are correct
+1. Create the file in determined location
 
 ### Step 6: Update SUMMARY.md
 
 If project uses mdBook with `SUMMARY.md`:
 
 1. Locate `SUMMARY.md` (usually `src/SUMMARY.md`)
-2. Find appropriate section for content type
-3. Add entry in correct location:
+1. Find appropriate section for content type
+1. Add entry in correct location:
 
 ```markdown
 # Configuration
@@ -164,8 +164,8 @@ If project uses mdBook with `SUMMARY.md`:
 * [New Procedure](procedures/new-procedure.md)
 ```
 
-4. Maintain alphabetical or logical ordering
-5. Use proper indentation for hierarchy
+1. Maintain alphabetical or logical ordering
+1. Use proper indentation for hierarchy
 
 **If SUMMARY.md doesn't exist:**
 
@@ -318,10 +318,10 @@ Before finalizing the document, verify:
 ## After Creating Document
 
 1. **Review content type separation** - Ensure no mixing of WHAT/HOW/WHY/SPECS
-2. **Verify cross-references** - Check that links work and use proper patterns
-3. **Test mdBook build** - Run `mdbook build` to verify no errors
-4. **Add to git** - Stage and commit the new file
-5. **Consider related updates** - Update related files with cross-references
+1. **Verify cross-references** - Check that links work and use proper patterns
+1. **Test mdBook build** - Run `mdbook build` to verify no errors
+1. **Add to git** - Stage and commit the new file
+1. **Consider related updates** - Update related files with cross-references
 
 ## Examples
 
@@ -332,12 +332,12 @@ Before finalizing the document, verify:
 **Workflow:**
 
 1. Content type: Configuration (WHAT)
-2. Location: `src/configuration/network-topology.md`
-3. Template: `configuration-template.md`
-4. Gather: VLANs, IP assignments, network segments
-5. Create file with specifications in tables
-6. Update SUMMARY.md under "Configuration" section
-7. Suggest: Add link from `procedures/network-configuration.md`
+1. Location: `src/configuration/network-topology.md`
+1. Template: `configuration-template.md`
+1. Gather: VLANs, IP assignments, network segments
+1. Create file with specifications in tables
+1. Update SUMMARY.md under "Configuration" section
+1. Suggest: Add link from `procedures/network-configuration.md`
 
 ### Example 2: Creating Procedure File
 
@@ -346,15 +346,15 @@ Before finalizing the document, verify:
 **Workflow:**
 
 1. Content type: Procedure (HOW)
-2. Location: `src/procedures/gateway-setup.md`
-3. Template: `procedure-template.md`
-4. Gather: Prerequisites, steps, verification, troubleshooting
-5. Create file with:
+1. Location: `src/procedures/gateway-setup.md`
+1. Template: `procedure-template.md`
+1. Gather: Prerequisites, steps, verification, troubleshooting
+1. Create file with:
    - Prerequisites linking to `configuration/network-topology.md`
    - Steps referencing specs (not duplicating)
    - Verification checklist
-6. Update SUMMARY.md under "Procedures" section
-7. Suggest: Add link from `configuration/network-topology.md`
+1. Update SUMMARY.md under "Procedures" section
+1. Suggest: Add link from `configuration/network-topology.md`
 
 ### Example 3: Creating Component File
 
@@ -363,12 +363,12 @@ Before finalizing the document, verify:
 **Workflow:**
 
 1. Content type: Component (SPECS)
-2. Location: `src/components/gateway.md`
-3. Template: `component-template.md`
-4. Gather: Model, specs, performance, vendor links
-5. Create file with component details
-6. Update SUMMARY.md under "Components" section
-7. Suggest: Link from `configuration/network-topology.md` and `procedures/gateway-setup.md`
+1. Location: `src/components/gateway.md`
+1. Template: `component-template.md`
+1. Gather: Model, specs, performance, vendor links
+1. Create file with component details
+1. Update SUMMARY.md under "Components" section
+1. Suggest: Link from `configuration/network-topology.md` and `procedures/gateway-setup.md`
 
 ## Reference Documentation
 

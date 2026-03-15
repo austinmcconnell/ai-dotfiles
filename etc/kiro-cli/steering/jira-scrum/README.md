@@ -120,26 +120,26 @@ q --agent jira "Help me refine the backlog for the upcoming sprint"
 ### When Creating Stories
 
 1. **Start with User Need**: Always begin with understanding the user problem
-2. **Define Clear Value**: Articulate the business value and user benefit
-3. **Write Specific Acceptance Criteria**: Make criteria testable and measurable
-4. **Keep Stories Small**: Ensure stories can be completed within one Sprint
-5. **Include Edge Cases**: Consider error conditions and boundary scenarios
+1. **Define Clear Value**: Articulate the business value and user benefit
+1. **Write Specific Acceptance Criteria**: Make criteria testable and measurable
+1. **Keep Stories Small**: Ensure stories can be completed within one Sprint
+1. **Include Edge Cases**: Consider error conditions and boundary scenarios
 
 ### When Reviewing Stories
 
 1. **Check INVEST Criteria**: Validate against all six criteria
-2. **Review Acceptance Criteria**: Ensure they're complete and testable
-3. **Assess Business Value**: Confirm the story delivers meaningful value
-4. **Validate Size**: Ensure the story is appropriately sized for the Sprint
-5. **Check Dependencies**: Identify and document any dependencies
+1. **Review Acceptance Criteria**: Ensure they're complete and testable
+1. **Assess Business Value**: Confirm the story delivers meaningful value
+1. **Validate Size**: Ensure the story is appropriately sized for the Sprint
+1. **Check Dependencies**: Identify and document any dependencies
 
 ### When Using JIRA Operations
 
 1. **Verify Context**: Ensure you're working in the correct project
-2. **Check Permissions**: Confirm you have appropriate access rights
-3. **Preview Changes**: Review what will be created or modified
-4. **Document Decisions**: Add comments explaining important changes
-5. **Follow Team Conventions**: Use consistent labels, components, and formats
+1. **Check Permissions**: Confirm you have appropriate access rights
+1. **Preview Changes**: Review what will be created or modified
+1. **Document Decisions**: Add comments explaining important changes
+1. **Follow Team Conventions**: Use consistent labels, components, and formats
 
 ## Integration with Other Tools
 
@@ -181,9 +181,9 @@ knowledge.
 The agent's knowledge base can be updated and improved over time:
 
 1. **Add New Templates**: Include domain-specific story templates
-2. **Update Best Practices**: Incorporate team-specific conventions
-3. **Expand Examples**: Add more real-world story examples
-4. **Refine Guidance**: Update based on team feedback and experience
+1. **Update Best Practices**: Incorporate team-specific conventions
+1. **Expand Examples**: Add more real-world story examples
+1. **Refine Guidance**: Update based on team feedback and experience
 
 Remember to verify any SCRUM or Agile information against official sources like the Scrum Guide
 (scrumguides.org) and adapt the guidance to your team's specific context and needs.

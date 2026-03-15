@@ -112,8 +112,8 @@ ADRs live in the "Architecture" section of specs:
 
 When decisions change:
 1. Don't delete the old ADR
-2. Add a new ADR explaining the change
-3. Reference the old ADR
+1. Add a new ADR explaining the change
+1. Reference the old ADR
 
 Example:
 ```markdown

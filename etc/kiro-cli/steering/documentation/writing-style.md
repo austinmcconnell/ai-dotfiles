@@ -5,9 +5,9 @@
 ## Core Principles
 
 1. **Clarity over cleverness** - Be direct and unambiguous
-2. **Consistency** - Use the same terms and patterns throughout
-3. **Accessibility** - Write for diverse audiences and abilities
-4. **Scannability** - Use structure to help readers find information quickly
+1. **Consistency** - Use the same terms and patterns throughout
+1. **Accessibility** - Write for diverse audiences and abilities
+1. **Scannability** - Use structure to help readers find information quickly
 
 ## Voice and Tone
 

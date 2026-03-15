@@ -5,9 +5,9 @@
 ## Core Principles
 
 1. **Descriptive link text** - Never use "click here" or bare URLs
-2. **Relative paths** - Use relative paths for internal links
-3. **Consistent patterns** - Follow established link text patterns
-4. **Verify links** - Use link checkers to prevent broken references
+1. **Relative paths** - Use relative paths for internal links
+1. **Consistent patterns** - Follow established link text patterns
+1. **Verify links** - Use link checkers to prevent broken references
 
 ## Link Text Patterns
 

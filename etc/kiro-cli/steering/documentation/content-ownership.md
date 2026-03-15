@@ -144,26 +144,26 @@ WHY (decisions/)  →  WHAT (configuration/)  →  HOW (procedures/)
 ### Adding New Component
 
 1. Create components/[component].md with specifications
-2. Add to configuration/[relevant-config].md if needed
-3. Create procedures/[component]-setup.md
-4. Create ADR if significant decision
-5. Update SUMMARY.md
-6. Add cross-references
+1. Add to configuration/[relevant-config].md if needed
+1. Create procedures/[component]-setup.md
+1. Create ADR if significant decision
+1. Update SUMMARY.md
+1. Add cross-references
 
 ### Changing Specification
 
 1. Update configuration/[spec].md (single source of truth)
-2. Verify procedures/ still reference correctly (don't duplicate)
-3. Update affected ADRs if rationale changed
+1. Verify procedures/ still reference correctly (don't duplicate)
+1. Update affected ADRs if rationale changed
 
 ### Adding Procedure
 
 1. Create procedures/[procedure].md
-2. Add "Review design: [Configuration: X]" in Prerequisites
-3. Reference configuration/ for all specs (don't duplicate)
-4. Add verification checklist
-5. Add troubleshooting section
-6. Update SUMMARY.md
+1. Add "Review design: [Configuration: X]" in Prerequisites
+1. Reference configuration/ for all specs (don't duplicate)
+1. Add verification checklist
+1. Add troubleshooting section
+1. Update SUMMARY.md
 
 ## Anti-Patterns (Never Do This)
 

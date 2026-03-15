@@ -48,11 +48,11 @@ Organize SUMMARY.md by content type following the stage-based architecture:
 **Between sections:**
 
 1. Introduction/README
-2. Planning (if exists)
-3. Components
-4. Configuration
-5. Procedures
-6. Decisions
+1. Planning (if exists)
+1. Components
+1. Configuration
+1. Procedures
+1. Decisions
 
 **Within sections:**
 

@@ -26,8 +26,8 @@ Before proceeding, review:
 {Detailed instructions for this step}
 
 1. {Sub-step 1}
-2. {Sub-step 2}
-3. {Sub-step 3}
+1. {Sub-step 2}
+1. {Sub-step 3}
 
 **Expected result:** {What should happen after completing this step}
 
@@ -50,7 +50,7 @@ Verify the implementation was successful:
 **Test procedure:**
 
 1. {Test step 1}
-2. {Test step 2}
+1. {Test step 2}
 
 **Expected results:** {What indicates success}
 
@@ -65,7 +65,7 @@ Verify the implementation was successful:
 **Solution:**
 
 1. {Fix step 1}
-2. {Fix step 2}
+1. {Fix step 2}
 
 ### Issue: {Common Problem 2}
 

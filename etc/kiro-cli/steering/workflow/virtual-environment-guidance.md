@@ -9,14 +9,14 @@ of a virtual environment and ensure it's activated before running commands.
 
    - Common locations: `.venv/`, `venv/`, `.env/`, `env/`
 
-2. If a virtual environment exists, activate it before running any project-specific commands:
+1. If a virtual environment exists, activate it before running any project-specific commands:
 
    ```bash
    source .venv/bin/activate  # For .venv directory
    source venv/bin/activate   # For venv directory
    ```
 
-3. After activation, verify the correct environment is being used:
+1. After activation, verify the correct environment is being used:
 
    ```bash
    which python  # Should point to the virtual environment's Python

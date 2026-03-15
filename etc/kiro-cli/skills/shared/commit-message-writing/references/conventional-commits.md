@@ -61,7 +61,7 @@ Optional noun describing the section of codebase:
 Indicate breaking changes in two ways:
 
 1. Add `!` after type/scope: `feat(api)!: remove deprecated endpoint`
-2. Add footer: `BREAKING CHANGE: description of what broke`
+1. Add footer: `BREAKING CHANGE: description of what broke`
 
 ## Examples
 

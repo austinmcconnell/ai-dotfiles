@@ -31,10 +31,10 @@ how to facilitate them effectively.
 **Activities**:
 
 1. **Review Sprint Goal**: Product Owner proposes Sprint Goal
-2. **Review Product Backlog**: Examine top-priority items
-3. **Select Stories**: Development Team selects items they can commit to
-4. **Capacity Planning**: Consider team availability and velocity
-5. **Clarify Requirements**: Ask questions about selected items
+1. **Review Product Backlog**: Examine top-priority items
+1. **Select Stories**: Development Team selects items they can commit to
+1. **Capacity Planning**: Consider team availability and velocity
+1. **Clarify Requirements**: Ask questions about selected items
 
 **Outcomes**:
 
@@ -49,10 +49,10 @@ how to facilitate them effectively.
 **Activities**:
 
 1. **Task Breakdown**: Break stories into tasks
-2. **Estimate Tasks**: Estimate effort for individual tasks
-3. **Identify Dependencies**: Note any dependencies between tasks
-4. **Assign Initial Work**: Team members volunteer for initial tasks
-5. **Validate Commitment**: Ensure the plan is realistic
+1. **Estimate Tasks**: Estimate effort for individual tasks
+1. **Identify Dependencies**: Note any dependencies between tasks
+1. **Assign Initial Work**: Team members volunteer for initial tasks
+1. **Validate Commitment**: Ensure the plan is realistic
 
 **Outcomes**:
 
@@ -119,8 +119,8 @@ how to facilitate them effectively.
 - **Frequency**: Every working day at the same time and place
 - **Format**: Each team member addresses three questions:
   1. What did I do yesterday that helped the team meet the Sprint Goal?
-  2. What will I do today to help the team meet the Sprint Goal?
-  3. Do I see any impediments that prevent me or the team from meeting the Sprint Goal?
+  1. What will I do today to help the team meet the Sprint Goal?
+  1. Do I see any impediments that prevent me or the team from meeting the Sprint Goal?
 
 ### Best Practices
 
@@ -155,17 +155,17 @@ how to facilitate them effectively.
 Instead of the three questions, team walks through the Sprint board:
 
 1. Review items in "Done" column
-2. Discuss items in "In Progress"
-3. Plan items to start from "To Do"
-4. Identify any blockers or impediments
+1. Discuss items in "In Progress"
+1. Plan items to start from "To Do"
+1. Identify any blockers or impediments
 
 #### Focus on Sprint Goal
 
 Structure discussion around Sprint Goal progress:
 
 1. How are we progressing toward the Sprint Goal?
-2. What risks do we see to achieving the Sprint Goal?
-3. What do we need to do today to stay on track?
+1. What risks do we see to achieving the Sprint Goal?
+1. What do we need to do today to stay on track?
 
 ### Common Anti-Patterns
 

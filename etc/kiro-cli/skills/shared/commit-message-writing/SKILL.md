@@ -216,7 +216,7 @@ Breaking changes can be indicated in two ways:
    feat(api)!: remove deprecated endpoint
    ```
 
-2. **Add `BREAKING CHANGE:` footer:**
+1. **Add `BREAKING CHANGE:` footer:**
 
    ```text
    feat(api): update response format
@@ -224,7 +224,7 @@ Breaking changes can be indicated in two ways:
    BREAKING CHANGE: Response now uses data envelope
    ```
 
-3. **Use both for emphasis:**
+1. **Use both for emphasis:**
 
    ```text
    feat(api)!: update response format

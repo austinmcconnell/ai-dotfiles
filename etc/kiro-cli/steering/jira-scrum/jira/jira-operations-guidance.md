@@ -53,19 +53,19 @@ The JIRA SCRUM agent must **NEVER** perform the following operations:
 Before performing any JIRA operation, the agent should:
 
 1. **Verify Operation Type**: Confirm the operation is allowed (read, create, or update only)
-2. **Validate Context**: Ensure the operation makes sense in the current context
-3. **Check Permissions**: Verify the user has appropriate permissions for the operation
-4. **Confirm Intent**: For create/update operations, clearly state what will be done
+1. **Validate Context**: Ensure the operation makes sense in the current context
+1. **Check Permissions**: Verify the user has appropriate permissions for the operation
+1. **Confirm Intent**: For create/update operations, clearly state what will be done
 
 ### User Confirmation for Create/Update Operations
 
 For operations that create or significantly modify JIRA data:
 
 1. **Show Preview**: Display what will be created or changed in markdown format
-2. **Request Confirmation**: Ask user to confirm before proceeding
-3. **Explain Impact**: Describe what the operation will do
-4. **Provide Alternatives**: Suggest alternatives if appropriate
-5. **Wait for Approval**: Never proceed with creation without explicit user approval
+1. **Request Confirmation**: Ask user to confirm before proceeding
+1. **Explain Impact**: Describe what the operation will do
+1. **Provide Alternatives**: Suggest alternatives if appropriate
+1. **Wait for Approval**: Never proceed with creation without explicit user approval
 
 #### Mandatory Preview Process for Issue Creation
 
@@ -73,11 +73,11 @@ When creating new JIRA issues (stories, bugs, tasks, etc.), the agent MUST:
 
 1. **Present Story in Markdown**: Format the complete story (summary, description, acceptance
    criteria) as readable markdown
-2. **Ask for Review**: Explicitly ask "Please review this story and let me know if you'd like any
+1. **Ask for Review**: Explicitly ask "Please review this story and let me know if you'd like any
    adjustments before I create the JIRA ticket"
-3. **Wait for Feedback**: Do not proceed until user provides feedback or approval
-4. **Incorporate Changes**: Make any requested modifications and show updated version if needed
-5. **Create Only After Approval**: Only call `jira_create_issue` after receiving explicit user
+1. **Wait for Feedback**: Do not proceed until user provides feedback or approval
+1. **Incorporate Changes**: Make any requested modifications and show updated version if needed
+1. **Create Only After Approval**: Only call `jira_create_issue` after receiving explicit user
    confirmation
 
 ##### Example Interaction Flow
@@ -133,16 +133,16 @@ Before creating a user story, ensure:
 #### Story Creation Process
 
 1. **Gather Requirements**: Understand the user need and business value
-2. **Write Story**: Use standard template format
-3. **Define Acceptance Criteria**: Create specific, testable criteria
-4. **Set Appropriate Fields**:
+1. **Write Story**: Use standard template format
+1. **Define Acceptance Criteria**: Create specific, testable criteria
+1. **Set Appropriate Fields**:
    - Issue Type: Story (or appropriate type)
    - Priority: Based on business value
    - Components: If applicable
    - Labels: For categorization
    - Epic Link: If part of an epic
-5. **Review Before Creation**: Validate against quality standards
-6. **Create and Confirm**: Create the story and verify it was created correctly
+1. **Review Before Creation**: Validate against quality standards
+1. **Create and Confirm**: Create the story and verify it was created correctly
 
 #### Required Fields for Stories
 
@@ -174,21 +174,21 @@ Before creating a user story, ensure:
 #### Update Best Practices
 
 1. **Add Comments for Changes**: Explain why updates were made
-2. **Preserve History**: Don't remove important historical information
-3. **Notify Stakeholders**: Ensure relevant people are aware of changes
-4. **Maintain Consistency**: Keep story format and style consistent
-5. **Update Related Items**: Update epics, dependencies, etc. as needed
+1. **Preserve History**: Don't remove important historical information
+1. **Notify Stakeholders**: Ensure relevant people are aware of changes
+1. **Maintain Consistency**: Keep story format and style consistent
+1. **Update Related Items**: Update epics, dependencies, etc. as needed
 
 ### Story Review and Improvement
 
 #### Review Process
 
 1. **Check INVEST Criteria**: Ensure story meets all criteria
-2. **Validate Acceptance Criteria**: Confirm criteria are testable and complete
-3. **Assess Business Value**: Verify value proposition is clear
-4. **Review Size**: Ensure story is appropriately sized
-5. **Check Dependencies**: Identify and document dependencies
-6. **Validate Ready State**: Confirm story meets Definition of Ready
+1. **Validate Acceptance Criteria**: Confirm criteria are testable and complete
+1. **Assess Business Value**: Verify value proposition is clear
+1. **Review Size**: Ensure story is appropriately sized
+1. **Check Dependencies**: Identify and document dependencies
+1. **Validate Ready State**: Confirm story meets Definition of Ready
 
 #### Common Improvements
 
@@ -334,12 +334,12 @@ project = "PROJ" AND assignee = "john.doe" AND status in ("In Progress", "In Rev
 Bug tickets should follow this structure:
 
 1. **Summary**: Clear, non-technical description
-2. **Description** with subsections:
+1. **Description** with subsections:
    - Background
    - Root Cause
    - Current Impact
    - Evidence
-3. **Acceptance Criteria**: Observable outcomes only
+1. **Acceptance Criteria**: Observable outcomes only
 
 ### Language Precision for Data Issues
 
@@ -381,9 +381,9 @@ format in URLs:
 When the `jira_create_issue` tool returns response data:
 
 1. **Extract the Issue Key**: Use the returned issue key (e.g., "SCRN-936") for user-facing URLs
-2. **Format Browse URL**: Construct the browse URL as
+1. **Format Browse URL**: Construct the browse URL as
    `https://uniteus.atlassian.net/browse/{ISSUE-KEY}`
-3. **Present to User**: Always show the issue key-based URL to users for easy reference
+1. **Present to User**: Always show the issue key-based URL to users for easy reference
 
 #### Example Success Response Format
 

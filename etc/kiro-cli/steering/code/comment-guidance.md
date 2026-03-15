@@ -6,9 +6,9 @@ code without unnecessary noise.
 ## General Principles
 
 1. **Avoid redundant comments** that merely repeat what the code already clearly communicates
-2. **Focus on the "why" not the "what"** when adding comments
-3. **Comment complex logic** that isn't immediately obvious
-4. **Use docstrings** for functions, classes, and modules to explain purpose, parameters, and return
+1. **Focus on the "why" not the "what"** when adding comments
+1. **Comment complex logic** that isn't immediately obvious
+1. **Use docstrings** for functions, classes, and modules to explain purpose, parameters, and return
    values
 
 ## When NOT to Comment
@@ -24,7 +24,7 @@ code without unnecessary noise.
    status = determine_status(encounter)
    ```
 
-2. **Don't comment obvious operations**
+1. **Don't comment obvious operations**
 
    ```python
    # Bad example
@@ -35,7 +35,7 @@ code without unnecessary noise.
    counter += 1
    ```
 
-3. **Don't add comments for simple variable assignments**
+1. **Don't add comments for simple variable assignments**
 
    ```python
    # Bad example
@@ -55,14 +55,14 @@ code without unnecessary noise.
    # This approach reduces time complexity from O(n²) to O(n log n)
    ```
 
-2. **Document non-obvious side effects**
+1. **Document non-obvious side effects**
 
    ```python
    # This operation modifies the original list in-place and also updates the database
    process_items(items)
    ```
 
-3. **Explain workarounds or unusual approaches**
+1. **Explain workarounds or unusual approaches**
 
    ```python
    # Using a sleep here to work around a race condition in the external API
@@ -70,7 +70,7 @@ code without unnecessary noise.
    time.sleep(0.5)
    ```
 
-4. **Clarify intent when the code might be confusing**
+1. **Clarify intent when the code might be confusing**
 
    ```python
    # We're using a negative index to efficiently get the last element
@@ -86,7 +86,7 @@ code without unnecessary noise.
    - Classes
    - Public methods and functions
 
-2. **Docstrings should include**:
+1. **Docstrings should include**:
 
    - Brief description of purpose
    - Parameters with types and descriptions
@@ -94,7 +94,7 @@ code without unnecessary noise.
    - Exceptions that might be raised
    - Examples for complex functions (when helpful)
 
-3. **Follow consistent docstring style** (Google style preferred):
+1. **Follow consistent docstring style** (Google style preferred):
 
    ```python
    def process_data(data, options=None):
@@ -115,7 +115,7 @@ code without unnecessary noise.
 ## Code Organization Instead of Comments
 
 1. **Use descriptive variable and function names** instead of comments
-2. **Extract complex logic** into well-named helper functions
-3. **Use enums and constants** with descriptive names instead of magic numbers with comments
+1. **Extract complex logic** into well-named helper functions
+1. **Use enums and constants** with descriptive names instead of magic numbers with comments
 
 Remember that the best code is self-documenting. Comments should complement the code, not repeat it.

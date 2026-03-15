@@ -20,18 +20,18 @@ This document provides a comprehensive implementation plan for fixing 8 security
 ## Table of Contents
 
 1. [Background & Context](#background--context)
-2. [Critical Issues](#critical-issues)
+1. [Critical Issues](#critical-issues)
    - [Issue 1: SQL Injection via JSONB Path Query](#issue-1-sql-injection-via-jsonb-path-query)
    - [Issue 2: Missing CSRF Protection](#issue-2-missing-csrf-protection)
    - [Issue 3: XSS via Unsafe onclick Handler](#issue-3-xss-via-unsafe-onclick-handler)
-3. [High Severity Issues](#high-severity-issues)
+1. [High Severity Issues](#high-severity-issues)
    - [Issue 4: Missing Security Headers](#issue-4-missing-security-headers)
    - [Issue 5: Insufficient Input Validation](#issue-5-insufficient-input-validation)
    - [Issue 6: PII Exposure in Logs](#issue-6-pii-exposure-in-logs)
    - [Issue 7: Missing Rate Limiting on Dashboard Routes](#issue-7-missing-rate-limiting-on-dashboard-routes)
    - [## Issue 8: Session Fixation Vulnerability](#issue-8-session-fixation-vulnerability)
-4. [Testing Strategy](#testing-strategy)
-5. [Security Best Practices References](#security-best-practices-references)
+1. [Testing Strategy](#testing-strategy)
+1. [Security Best Practices References](#security-best-practices-references)
 
 ---
 
@@ -42,8 +42,8 @@ This document provides a comprehensive implementation plan for fixing 8 security
 This branch implements:
 
 1. **OAuth 2.0 Authentication** - Using Authlib with PKCE flow for dashboard access
-2. **Bundle Dashboard** - Web UI for searching and viewing FHIR bundle diagnostics
-3. **Role-Based Access Control** - Restricts dashboard to `hq_user` and `hq_admin` roles
+1. **Bundle Dashboard** - Web UI for searching and viewing FHIR bundle diagnostics
+1. **Role-Based Access Control** - Restricts dashboard to `hq_user` and `hq_admin` roles
 
 ### Security Model
 
@@ -144,8 +144,8 @@ The `organization` parameter is inserted directly into the jsonb_path string usi
 **Challenges:**
 
 1. SQLAlchemy's `func.jsonb_path_exists()` doesn't support bind parameters directly
-2. Need to escape regex special characters while preserving search functionality
-3. Must maintain case-insensitive partial matching behavior
+1. Need to escape regex special characters while preserving search functionality
+1. Must maintain case-insensitive partial matching behavior
 
 **Solutions Available:**
 
@@ -323,21 +323,21 @@ def test_organization_search_prevents_dos_regex(client, auth_headers):
 ### Files to Modify
 
 1. **NEW:** `app/fhir/validators.py` - Input validation helpers
-2. **MODIFY:** `app/fhir/service.py` - Add regex sanitization
-3. **MODIFY:** `app/fhir/routes.py` - Add input validation
-4. **NEW:** `tests/fhir/test_validators.py` - Unit tests
-5. **NEW:** `tests/fhir/test_search_security.py` - Integration tests
+1. **MODIFY:** `app/fhir/service.py` - Add regex sanitization
+1. **MODIFY:** `app/fhir/routes.py` - Add input validation
+1. **NEW:** `tests/fhir/test_validators.py` - Unit tests
+1. **NEW:** `tests/fhir/test_search_security.py` - Integration tests
 
 ### Verification Steps
 
 1. Run unit tests: `flask test tests/fhir/test_validators.py`
-2. Run integration tests: `flask test tests/fhir/test_search_security.py`
-3. Manual testing:
+1. Run integration tests: `flask test tests/fhir/test_search_security.py`
+1. Manual testing:
    - Search with special characters: `test@example.com`
    - Search with regex patterns: `.*`, `(a+)+`
    - Search with SQL injection attempts: `"); DROP TABLE--`
-4. Review application logs for errors
-5. Verify search functionality still works for legitimate queries
+1. Review application logs for errors
+1. Verify search functionality still works for legitimate queries
 
 ### References
 
@@ -414,8 +414,8 @@ Example 3: Future Risk (if POST added)
 ### Root Cause
 
 1. No Flask-WTF or CSRFProtect configured
-2. Session-based authentication without CSRF = vulnerable
-3. Logout uses GET instead of POST (should be state-changing POST)
+1. Session-based authentication without CSRF = vulnerable
+1. Logout uses GET instead of POST (should be state-changing POST)
 
 ### Feasibility Analysis
 
@@ -426,9 +426,9 @@ Example 3: Future Risk (if POST added)
 **Challenges:**
 
 1. Need to add Flask-WTF dependency
-2. Must exempt API endpoints (they use different auth)
-3. Logout button needs to change from link to form
-4. All forms need CSRF token injection
+1. Must exempt API endpoints (they use different auth)
+1. Logout button needs to change from link to form
+1. All forms need CSRF token injection
 
 **Solutions Available:**
 
@@ -635,27 +635,27 @@ def test_api_endpoints_exempt_from_csrf(client):
 ### Files to Modify
 
 1. **MODIFY:** `Pipfile` - Add flask-wtf dependency
-2. **MODIFY:** `app/extensions.py` - Add CSRFProtect configuration
-3. **MODIFY:** `app/app.py` - Initialize CSRF and add error handler
-4. **MODIFY:** `app/settings.py` - Add CSRF configuration
-5. **MODIFY:** `.env.example` - Add CSRF settings
-6. **MODIFY:** `app/auth_routes.py` - Change logout to POST
-7. **MODIFY:** `app/fhir/templates/search.html` - Add CSRF tokens
-8. **MODIFY:** `app/fhir/templates/detail.html` - Add CSRF tokens
-9. **NEW:** `tests/auth/test_csrf.py` - CSRF tests
+1. **MODIFY:** `app/extensions.py` - Add CSRFProtect configuration
+1. **MODIFY:** `app/app.py` - Initialize CSRF and add error handler
+1. **MODIFY:** `app/settings.py` - Add CSRF configuration
+1. **MODIFY:** `.env.example` - Add CSRF settings
+1. **MODIFY:** `app/auth_routes.py` - Change logout to POST
+1. **MODIFY:** `app/fhir/templates/search.html` - Add CSRF tokens
+1. **MODIFY:** `app/fhir/templates/detail.html` - Add CSRF tokens
+1. **NEW:** `tests/auth/test_csrf.py` - CSRF tests
 
 ### Verification Steps
 
 1. Install dependency: `pipenv install`
-2. Run tests: `flask test tests/auth/test_csrf.py`
-3. Manual testing:
+1. Run tests: `flask test tests/auth/test_csrf.py`
+1. Manual testing:
    - Load dashboard, verify CSRF token in HTML source
    - Try logout via GET (should fail)
    - Try logout via POST without token (should fail)
    - Try logout via POST with token (should succeed)
    - Verify API endpoints still work without CSRF
-4. Test in browser with DevTools Network tab
-5. Attempt CSRF attack from external page
+1. Test in browser with DevTools Network tab
+1. Attempt CSRF attack from external page
 
 ### References
 
@@ -711,8 +711,8 @@ Example 3: Data Exfiltration
 ### Root Cause
 
 1. Template variable in JavaScript context (onclick attribute)
-2. Jinja2 HTML escaping doesn't protect JavaScript context
-3. Direct string concatenation in event handler
+1. Jinja2 HTML escaping doesn't protect JavaScript context
+1. Direct string concatenation in event handler
 
 ### Feasibility Analysis
 
@@ -723,8 +723,8 @@ Example 3: Data Exfiltration
 **Challenges:**
 
 1. Need to maintain clickable row functionality
-2. Must work with pagination and filtering
-3. Should be accessible (keyboard navigation)
+1. Must work with pagination and filtering
+1. Should be accessible (keyboard navigation)
 
 **Solutions Available:**
 
@@ -973,22 +973,22 @@ db.session.commit()
 ### Files to Modify
 
 1. **MODIFY:** `app/fhir/templates/search.html` - Remove onclick, add data attributes and JavaScript
-2. **MODIFY:** `app/fhir/templates/base.html` - Add CSS for clickable rows
-3. **NEW:** `tests/fhir/test_dashboard_xss.py` - XSS prevention tests
+1. **MODIFY:** `app/fhir/templates/base.html` - Add CSS for clickable rows
+1. **NEW:** `tests/fhir/test_dashboard_xss.py` - XSS prevention tests
 
 ### Verification Steps
 
 1. Run tests: `flask test tests/fhir/test_dashboard_xss.py`
-2. Manual testing:
+1. Manual testing:
    - Create bundles with malicious IDs (see test cases above)
    - Load dashboard and verify no JavaScript executes
    - Click on rows and verify navigation works
    - Test keyboard navigation (Tab to row, press Enter)
    - Inspect HTML source for proper escaping
-3. Browser DevTools:
+1. Browser DevTools:
    - Check Console for JavaScript errors
    - Verify no inline event handlers in Elements tab
-4. Accessibility testing:
+1. Accessibility testing:
    - Test with keyboard only (no mouse)
    - Test with screen reader
    - Verify ARIA attributes
@@ -1018,10 +1018,10 @@ The dashboard lacks HTTP security headers that protect against common attacks in
 ### Missing Headers
 
 1. **Content-Security-Policy (CSP)** - Prevents XSS, data injection
-2. **X-Frame-Options** - Prevents clickjacking
-3. **X-Content-Type-Options** - Prevents MIME sniffing
-4. **Strict-Transport-Security (HSTS)** - Enforces HTTPS
-5. **Referrer-Policy** - Controls referrer information leakage
+1. **X-Frame-Options** - Prevents clickjacking
+1. **X-Content-Type-Options** - Prevents MIME sniffing
+1. **Strict-Transport-Security (HSTS)** - Enforces HTTPS
+1. **Referrer-Policy** - Controls referrer information leakage
 
 ### Affected Code
 
@@ -1057,9 +1057,9 @@ Existing `@app.after_request` handlers (lines 78-97) only handle logging and err
 **Challenges:**
 
 1. CSP must allow Bootstrap CDN and Font Awesome CDN
-2. CSP must allow inline styles in templates (or refactor to external CSS)
-3. HSTS only applicable in production with HTTPS
-4. Must not break existing functionality
+1. CSP must allow inline styles in templates (or refactor to external CSS)
+1. HSTS only applicable in production with HTTPS
+1. Must not break existing functionality
 
 ### Implementation Plan
 
@@ -1290,31 +1290,31 @@ curl -I https://your-app.com/v2/bundle/dashboard
 **Browser Testing:**
 
 1. Open dashboard in browser
-2. Open DevTools → Console
-3. Verify no CSP violations
-4. Try embedding dashboard in iframe (should be blocked)
-5. Check Network tab for security headers
+1. Open DevTools → Console
+1. Verify no CSP violations
+1. Try embedding dashboard in iframe (should be blocked)
+1. Check Network tab for security headers
 
 ### Files to Modify
 
 1. **MODIFY:** `app/app.py` - Add security headers handler
-2. **MODIFY:** `app/settings.py` - Add security configuration
-3. **MODIFY:** `.env.example` - Add security settings
-4. **NEW:** `app/static/css/dashboard.css` - External CSS (optional)
-5. **MODIFY:** `app/fhir/templates/base.html` - Link external CSS (optional)
-6. **NEW:** `tests/test_security_headers.py` - Security header tests
+1. **MODIFY:** `app/settings.py` - Add security configuration
+1. **MODIFY:** `.env.example` - Add security settings
+1. **NEW:** `app/static/css/dashboard.css` - External CSS (optional)
+1. **MODIFY:** `app/fhir/templates/base.html` - Link external CSS (optional)
+1. **NEW:** `tests/test_security_headers.py` - Security header tests
 
 ### Verification Steps
 
 1. Run tests: `flask test tests/test_security_headers.py`
-2. Use online security header checker: [Security Headers](https://securityheaders.com)
-3. Test with browser DevTools:
+1. Use online security header checker: [Security Headers](https://securityheaders.com)
+1. Test with browser DevTools:
    - Check Response Headers in Network tab
    - Verify no CSP violations in Console
-4. Test clickjacking protection:
+1. Test clickjacking protection:
    - Try embedding dashboard in iframe
    - Should be blocked by X-Frame-Options
-5. Test in production environment with HTTPS
+1. Test in production environment with HTTPS
 
 ### References
 
@@ -1396,10 +1396,10 @@ Example 4: Enum Value Injection
 ### Root Cause
 
 1. No length limits on text inputs
-2. No validation of enum values (status, source)
-3. No date format validation before parsing
-4. SQL wildcards (`%`, `_`) not escaped in ILIKE queries
-5. No sanitization of special characters
+1. No validation of enum values (status, source)
+1. No date format validation before parsing
+1. SQL wildcards (`%`, `_`) not escaped in ILIKE queries
+1. No sanitization of special characters
 
 ### Feasibility Analysis
 
@@ -1410,9 +1410,9 @@ Example 4: Enum Value Injection
 **Challenges:**
 
 1. Need to validate without breaking legitimate searches
-2. Must provide user-friendly error messages
-3. Date validation needs to handle multiple formats
-4. Enum validation must match database values
+1. Must provide user-friendly error messages
+1. Date validation needs to handle multiple formats
+1. Enum validation must match database values
 
 ### Implementation Plan
 
@@ -1831,24 +1831,24 @@ def test_search_escapes_sql_wildcards(client, auth_headers, db_session):
 ### Files to Modify
 
 1. **MODIFY:** `app/fhir/validators.py` - Add validation functions
-2. **MODIFY:** `app/fhir/routes.py` - Add comprehensive validation
-3. **MODIFY:** `app/fhir/templates/search.html` - Add HTML5 validation
-4. **MODIFY:** `tests/fhir/test_validators.py` - Add validation tests
-5. **NEW:** `tests/fhir/test_search_validation.py` - Integration tests
+1. **MODIFY:** `app/fhir/routes.py` - Add comprehensive validation
+1. **MODIFY:** `app/fhir/templates/search.html` - Add HTML5 validation
+1. **MODIFY:** `tests/fhir/test_validators.py` - Add validation tests
+1. **NEW:** `tests/fhir/test_search_validation.py` - Integration tests
 
 ### Verification Steps
 
 1. Run unit tests: `flask test tests/fhir/test_validators.py`
-2. Run integration tests: `flask test tests/fhir/test_search_validation.py`
-3. Manual testing:
+1. Run integration tests: `flask test tests/fhir/test_search_validation.py`
+1. Manual testing:
    - Try oversized inputs (>100 chars for bundle_id)
    - Try invalid enum values
    - Try invalid dates
    - Try SQL wildcards (`%`, `_`)
    - Try negative page numbers
    - Try excessive per_page values
-4. Verify error messages are user-friendly
-5. Verify legitimate searches still work
+1. Verify error messages are user-friendly
+1. Verify legitimate searches still work
 
 ### References
 
@@ -1889,9 +1889,9 @@ current_app.logger.warning(
 ### Privacy Risks
 
 1. **GDPR Violation:** Logging personal data without proper safeguards
-2. **HIPAA Concern:** User identifiers may be linked to PHI
-3. **Security Risk:** Compromised logs expose user identities
-4. **Audit Trail:** Difficult to anonymize logs for analysis
+1. **HIPAA Concern:** User identifiers may be linked to PHI
+1. **Security Risk:** Compromised logs expose user identities
+1. **Audit Trail:** Difficult to anonymize logs for analysis
 
 ### Root Cause
 
@@ -1906,8 +1906,8 @@ Direct logging of user identifiers without hashing or redaction. While commit `f
 **Challenges:**
 
 1. Need to maintain debuggability
-2. Must be consistent across all log statements
-3. Should allow correlation of events for same user
+1. Must be consistent across all log statements
+1. Should allow correlation of events for same user
 
 ### Implementation Plan
 
@@ -2201,26 +2201,26 @@ def test_successful_login_logs_hashed_identifier(client, caplog):
 ### Files to Modify
 
 1. **NEW:** `app/logging_utils.py` - Logging utilities
-2. **MODIFY:** `app/auth_routes.py` - Update all log statements
-3. **MODIFY:** `app/settings.py` - Add logging configuration
-4. **MODIFY:** `.env.example` - Add logging settings
-5. **NEW:** `docs/logging-policy.md` - Document policy
-6. **NEW:** `tests/test_logging_utils.py` - Unit tests
-7. **NEW:** `tests/auth/test_auth_logging.py` - Integration tests
+1. **MODIFY:** `app/auth_routes.py` - Update all log statements
+1. **MODIFY:** `app/settings.py` - Add logging configuration
+1. **MODIFY:** `.env.example` - Add logging settings
+1. **NEW:** `docs/logging-policy.md` - Document policy
+1. **NEW:** `tests/test_logging_utils.py` - Unit tests
+1. **NEW:** `tests/auth/test_auth_logging.py` - Integration tests
 
 ### Verification Steps
 
 1. Run tests: `flask test tests/test_logging_utils.py tests/auth/test_auth_logging.py`
-2. Manual testing:
+1. Manual testing:
    - Trigger authentication failure
    - Check logs for hashed identifiers
    - Verify no email addresses in logs
    - Verify hashes are consistent for same user
-3. Log analysis:
+1. Log analysis:
    - Search logs for `@` symbols (should only be in non-PII contexts)
    - Search for `email:` prefix (should be present)
    - Verify correlation of events for same user via hash
-4. Compliance review:
+1. Compliance review:
    - Review with legal/compliance team
    - Document in privacy policy
    - Update data retention policies
@@ -2310,8 +2310,8 @@ for page in range(1, 10000):
 ### Root Cause
 
 1. Flask-Limiter configured but not applied to dashboard routes
-2. No per-user rate limiting (only per-IP)
-3. No cost-based rate limiting for expensive queries
+1. No per-user rate limiting (only per-IP)
+1. No cost-based rate limiting for expensive queries
 
 ### Feasibility Analysis
 
@@ -2322,9 +2322,9 @@ for page in range(1, 10000):
 **Challenges:**
 
 1. Need different limits for different endpoints
-2. Must not impact legitimate users
-3. Should consider authenticated vs. unauthenticated
-4. Need to handle rate limit errors gracefully
+1. Must not impact legitimate users
+1. Should consider authenticated vs. unauthenticated
+1. Need to handle rate limit errors gracefully
 
 ### Implementation Plan
 
@@ -2616,27 +2616,27 @@ Run: `locust --host=http://localhost:5000`
 ### Files to Modify
 
 1. **MODIFY:** `app/fhir/routes.py` - Add rate limiting decorators
-2. **MODIFY:** `app/extensions.py` - Update limiter configuration
-3. **MODIFY:** `app/app.py` - Add rate limit error handler
-4. **MODIFY:** `app/settings.py` - Add rate limit configuration
-5. **MODIFY:** `.env.example` - Add rate limit settings
-6. **NEW:** `app/metrics.py` - Rate limit monitoring (if doesn't exist)
-7. **NEW:** `tests/test_rate_limiting.py` - Rate limit tests
-8. **NEW:** `locustfile.py` - Load testing script
+1. **MODIFY:** `app/extensions.py` - Update limiter configuration
+1. **MODIFY:** `app/app.py` - Add rate limit error handler
+1. **MODIFY:** `app/settings.py` - Add rate limit configuration
+1. **MODIFY:** `.env.example` - Add rate limit settings
+1. **NEW:** `app/metrics.py` - Rate limit monitoring (if doesn't exist)
+1. **NEW:** `tests/test_rate_limiting.py` - Rate limit tests
+1. **NEW:** `locustfile.py` - Load testing script
 
 ### Verification Steps
 
 1. Run tests: `flask test tests/test_rate_limiting.py`
-2. Manual testing:
+1. Manual testing:
    - Make 100 search requests rapidly
    - Verify 101st request returns 429
    - Wait 1 minute, verify requests work again
    - Check rate limit headers in response
-3. Load testing:
+1. Load testing:
    - Run locust with 10 concurrent users
    - Verify rate limits are enforced
    - Monitor Redis for rate limit keys
-4. Production monitoring:
+1. Production monitoring:
    - Set up alerts for rate limit exceeded events
    - Monitor DataDog for `rate_limit.exceeded` metric
    - Review logs for abuse patterns
@@ -2709,8 +2709,8 @@ Flask sessions are not regenerated after privilege escalation (authentication). 
 **Challenges:**
 
 1. Need to preserve `next_url` during regeneration
-2. Must clear old session completely
-3. Should set session as permanent after auth
+1. Must clear old session completely
+1. Should set session as permanent after auth
 
 ### Implementation Plan
 
@@ -3034,26 +3034,26 @@ def test_session_fixation_attack_prevented(client):
 ### Files to Modify
 
 1. **MODIFY:** `app/auth_routes.py` - Regenerate session in callback
-2. **NEW:** `app/session_security.py` - Session validation middleware
-3. **MODIFY:** `app/app.py` - Initialize session security
-4. **MODIFY:** `app/settings.py` - Add session security config
-5. **MODIFY:** `.env.example` - Add session settings
-6. **NEW:** `tests/auth/test_session_fixation.py` - Session fixation tests
-7. **NEW:** `tests/auth/test_session_security.py` - Session security tests
+1. **NEW:** `app/session_security.py` - Session validation middleware
+1. **MODIFY:** `app/app.py` - Initialize session security
+1. **MODIFY:** `app/settings.py` - Add session security config
+1. **MODIFY:** `.env.example` - Add session settings
+1. **NEW:** `tests/auth/test_session_fixation.py` - Session fixation tests
+1. **NEW:** `tests/auth/test_session_security.py` - Session security tests
 
 ### Verification Steps
 
 1. Run tests: `flask test tests/auth/test_session_fixation.py tests/auth/test_session_security.py`
-2. Manual testing:
+1. Manual testing:
    - Login and note session cookie
    - Verify session cookie changes after login
    - Try using old session cookie (should fail)
    - Verify session expires after timeout
-3. Security testing:
+1. Security testing:
    - Attempt session fixation attack
    - Test session hijacking scenarios
    - Verify IP validation (if enabled)
-4. Browser testing:
+1. Browser testing:
    - Test with multiple browsers
    - Test with incognito mode
    - Verify logout clears session
@@ -3273,12 +3273,12 @@ pipenv check
    - A03:2025 Injection
    - A04:2025 Insecure Design
 
-2. **[OWASP API Security Top 10 2023](https://owasp.org/API-Security/editions/2023/en/0x11-t10/)**
+1. **[OWASP API Security Top 10 2023](https://owasp.org/API-Security/editions/2023/en/0x11-t10/)**
    - API1:2023 Broken Object Level Authorization
    - API4:2023 Unrestricted Resource Consumption
    - API8:2023 Security Misconfiguration
 
-3. **[OWASP Cheat Sheet Series](https://cheatsheetseries.owasp.org/)**
+1. **[OWASP Cheat Sheet Series](https://cheatsheetseries.owasp.org/)**
    - [SQL Injection Prevention](https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html)
    - [Cross-Site Request Forgery Prevention](https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html)
    - [Cross-Site Scripting Prevention](https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html)
@@ -3286,7 +3286,7 @@ pipenv check
    - [Input Validation](https://cheatsheetseries.owasp.org/cheatsheets/Input_Validation_Cheat_Sheet.html)
    - [Logging](https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html)
 
-4. **[OWASP Secure Headers Project](https://owasp.org/www-project-secure-headers/)**
+1. **[OWASP Secure Headers Project](https://owasp.org/www-project-secure-headers/)**
 
 ### CWE (Common Weakness Enumeration)
 
@@ -3304,12 +3304,12 @@ pipenv check
    - [Flask Session Documentation](https://flask.palletsprojects.com/en/latest/api/#sessions)
    - [Jinja2 Autoescaping](https://jinja.palletsprojects.com/en/3.1.x/templates/#html-escaping)
 
-2. **Flask Extensions**
+1. **Flask Extensions**
    - [Flask-WTF CSRF Protection](https://flask-wtf.readthedocs.io/en/stable/csrf.html)
    - [Flask-Limiter Documentation](https://flask-limiter.readthedocs.io/)
    - [Authlib OAuth Documentation](https://docs.authlib.org/en/latest/client/flask.html)
 
-3. **SQLAlchemy Security**
+1. **SQLAlchemy Security**
    - [SQLAlchemy SQL Injection Protection](https://docs.sqlalchemy.org/en/20/faq/sqlexpressions.html#how-do-i-render-sql-expressions-as-strings-possibly-with-bound-parameters-inlined)
    - [PostgreSQL Security](https://www.postgresql.org/docs/current/sql-syntax.html)
 
@@ -3319,12 +3319,12 @@ pipenv check
    - [NIST SP 800-63B: Authentication and Lifecycle Management](https://pages.nist.gov/800-63-3/sp800-63b.html)
    - [NIST SP 800-122: Guide to Protecting PII](https://csrc.nist.gov/publications/detail/sp/800-122/final)
 
-2. **Privacy Regulations**
+1. **Privacy Regulations**
    - [GDPR Article 32: Security of Processing](https://gdpr-info.eu/art-32-gdpr/)
    - [HIPAA Security Rule](https://www.hhs.gov/hipaa/for-professionals/security/index.html)
    - [CCPA: California Consumer Privacy Act](https://oag.ca.gov/privacy/ccpa)
 
-3. **Web Standards**
+1. **Web Standards**
    - [RFC 6585: Additional HTTP Status Codes](https://tools.ietf.org/html/rfc6585)
    - [RFC 6749: OAuth 2.0 Authorization Framework](https://tools.ietf.org/html/rfc6749)
    - [RFC 7636: PKCE for OAuth Public Clients](https://tools.ietf.org/html/rfc7636)
@@ -3337,12 +3337,12 @@ pipenv check
    - [Safety](https://pyup.io/safety/) - Dependency vulnerability scanner
    - [Locust](https://locust.io/) - Load testing tool
 
-2. **Online Scanners**
+1. **Online Scanners**
    - [Security Headers](https://securityheaders.com/) - HTTP security header scanner
    - [CSP Evaluator](https://csp-evaluator.withgoogle.com/) - Content Security Policy validator
    - [SSL Labs](https://www.ssllabs.com/ssltest/) - SSL/TLS configuration tester
 
-3. **Browser Tools**
+1. **Browser Tools**
    - Chrome DevTools Security Panel
    - Firefox Developer Tools
    - Browser extensions for security testing
@@ -3353,11 +3353,11 @@ pipenv check
    - [OWASP WebGoat](https://owasp.org/www-project-webgoat/) - Interactive security training
    - [OWASP Juice Shop](https://owasp.org/www-project-juice-shop/) - Vulnerable web application for practice
 
-2. **Books**
+1. **Books**
    - "The Web Application Hacker's Handbook" by Dafydd Stuttard
    - "Flask Web Development" by Miguel Grinberg (Security chapter)
 
-3. **Online Courses**
+1. **Online Courses**
    - [PortSwigger Web Security Academy](https://portswigger.net/web-security)
    - [OWASP Top 10 Training](https://owasp.org/www-project-top-ten/)
 
@@ -3466,8 +3466,8 @@ This implementation plan addresses 8 security vulnerabilities (3 CRITICAL, 5 HIG
 
 **Implementation Order:**
 1. Critical issues first (SQL injection, CSRF, XSS)
-2. High priority issues second (headers, validation, PII, rate limiting, session fixation)
-3. Testing and verification throughout
+1. High priority issues second (headers, validation, PII, rate limiting, session fixation)
+1. Testing and verification throughout
 
 **Success Criteria:**
 - All tests passing

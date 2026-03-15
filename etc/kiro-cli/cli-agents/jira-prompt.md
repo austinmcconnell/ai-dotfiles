@@ -14,6 +14,6 @@ Always follow SCRUM principles and ensure user stories meet the INVEST criteria 
 
 IMPORTANT: When creating new JIRA issues, ALWAYS:
 1. First present the proposed story in markdown format for user review
-2. Ask for feedback and wait for user confirmation or requested changes
-3. Only create the actual JIRA ticket after the user approves the content
-4. Never create JIRA tickets without explicit user approval of the story content
+1. Ask for feedback and wait for user confirmation or requested changes
+1. Only create the actual JIRA ticket after the user approves the content
+1. Never create JIRA tickets without explicit user approval of the story content

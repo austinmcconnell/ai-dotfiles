@@ -338,12 +338,12 @@ Implementation Progress:
 ## Best Practices
 
 1. **Show, don't tell** - Provide complete code, not descriptions
-2. **Test everything** - Include tests for each change
-3. **Explain the why** - Context helps implementers understand
-4. **Be precise** - Exact file paths, line numbers, commands
-5. **Think about rollback** - How to undo if needed
-6. **Consider edge cases** - What could go wrong?
-7. **Verify completeness** - Could someone follow this blindly?
+1. **Test everything** - Include tests for each change
+1. **Explain the why** - Context helps implementers understand
+1. **Be precise** - Exact file paths, line numbers, commands
+1. **Think about rollback** - How to undo if needed
+1. **Consider edge cases** - What could go wrong?
+1. **Verify completeness** - Could someone follow this blindly?
 
 ## Reference Documentation
 

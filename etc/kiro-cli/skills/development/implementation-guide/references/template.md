@@ -20,7 +20,7 @@
 
 **Challenges:**
 1. [Challenge 1]
-2. [Challenge 2]
+1. [Challenge 2]
 
 **Solutions Available:**
 - Option A: [Description with trade-offs]
@@ -128,8 +128,8 @@ def test_end_to_end_flow(client):
 ### Manual Testing Steps
 
 1. [Step 1 with expected outcome]
-2. [Step 2 with expected outcome]
-3. [Step 3 with expected outcome]
+1. [Step 2 with expected outcome]
+1. [Step 3 with expected outcome]
 
 **Expected Results:**
 - [Specific observable outcome 1]
@@ -138,19 +138,19 @@ def test_end_to_end_flow(client):
 ## Files to Modify
 
 1. **NEW:** `path/to/new_file.py` - Description
-2. **MODIFY:** `path/to/existing_file.py` - What changes
-3. **DELETE:** `path/to/old_file.py` - Why removing
+1. **MODIFY:** `path/to/existing_file.py` - What changes
+1. **DELETE:** `path/to/old_file.py` - Why removing
 
 ## Verification Steps
 
 1. Run unit tests: `pytest tests/test_feature.py`
-2. Run integration tests: `pytest tests/integration/`
-3. Manual testing:
+1. Run integration tests: `pytest tests/integration/`
+1. Manual testing:
    - [Specific test case 1]
    - [Specific test case 2]
-4. Verify no regressions:
+1. Verify no regressions:
    - [Check related functionality]
-5. Performance check (if applicable):
+1. Performance check (if applicable):
    - [Measure before/after]
 
 **Success Criteria:**
@@ -164,8 +164,8 @@ def test_end_to_end_flow(client):
 **If something goes wrong:**
 
 1. [Step to revert change 1]
-2. [Step to revert change 2]
-3. [Command to rollback database if needed]
+1. [Step to revert change 2]
+1. [Command to rollback database if needed]
 
 **Verification after rollback:**
 - [How to confirm system is back to previous state]

@@ -5,16 +5,16 @@
 ### The Three Pillars of Scrum
 
 1. **Transparency**: All aspects of the process must be visible to those responsible for the outcome
-2. **Inspection**: Scrum artifacts and progress must be inspected frequently to detect variances
-3. **Adaptation**: If inspection reveals unacceptable deviations, adjustments must be made quickly
+1. **Inspection**: Scrum artifacts and progress must be inspected frequently to detect variances
+1. **Adaptation**: If inspection reveals unacceptable deviations, adjustments must be made quickly
 
 ### The Five Scrum Values
 
 1. **Commitment**: Team members commit to achieving the team's goals
-2. **Courage**: Team members have courage to do the right thing and work on tough problems
-3. **Focus**: Everyone focuses on the work of the Sprint and the goals of the Scrum Team
-4. **Openness**: Team members are open about their work and the challenges they face
-5. **Respect**: Team members respect each other to be capable, independent people
+1. **Courage**: Team members have courage to do the right thing and work on tough problems
+1. **Focus**: Everyone focuses on the work of the Sprint and the goals of the Scrum Team
+1. **Openness**: Team members are open about their work and the challenges they face
+1. **Respect**: Team members respect each other to be capable, independent people
 
 ## Scrum Roles
 
