@@ -30,6 +30,10 @@
         ],
         "preToolUse": [
             {
+                "matcher": "*",
+                "command": "~/.dotfiles/etc/kiro-cli/hooks/block-env-files.sh"
+            },
+            {
                 "matcher": "use_aws",
                 "command": "jq -c '{timestamp: now | strftime(\"%Y-%m-%d %H:%M:%S\"), tool: .tool_name, input: .tool_input}' >> ~/.kiro/logs/aws-audit.jsonl"
             },

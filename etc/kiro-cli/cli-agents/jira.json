@@ -33,6 +33,12 @@
     "description": "JIRA-focused agent with deep SCRUM and Agile knowledge, restricted to safe operations",
     "hooks": {
         "agentSpawn": [],
+        "preToolUse": [
+            {
+                "matcher": "*",
+                "command": "~/.dotfiles/etc/kiro-cli/hooks/block-env-files.sh"
+            }
+        ],
         "userPromptSubmit": []
     },
     "includeMcpJson": true,

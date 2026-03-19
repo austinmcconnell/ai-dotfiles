@@ -48,6 +48,12 @@
     "description": "GitHub-focused agent with comprehensive repository management and security restrictions",
     "hooks": {
         "agentSpawn": [],
+        "preToolUse": [
+            {
+                "matcher": "*",
+                "command": "~/.dotfiles/etc/kiro-cli/hooks/block-env-files.sh"
+            }
+        ],
         "userPromptSubmit": []
     },
 

@@ -36,7 +36,12 @@
 
     "hooks": {
         "agentSpawn": [],
-        "preToolUse": []
+        "preToolUse": [
+            {
+                "matcher": "*",
+                "command": "~/.dotfiles/etc/kiro-cli/hooks/block-env-files.sh"
+            }
+        ]
     },
 
     "toolsSettings": {
