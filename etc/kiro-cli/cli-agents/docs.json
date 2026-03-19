@@ -5,6 +5,7 @@
 
     "resources": [
         "file://~/.dotfiles/etc/kiro-cli/steering/documentation/**/*.md",
+        "file://~/.dotfiles/etc/kiro-cli/steering/security/env-file-protection.md",
         "file://.kiro/steering/**/*.md",
         "file://AGENTS.md",
         "file://README.md",
@@ -53,6 +54,12 @@
                 "wc .*"
             ],
             "deniedCommands": [
+                "awk .*\\.env.*",
+                "cat .*\\.env.*",
+                "grep .*\\.env.*",
+                "head .*\\.env.*",
+                "sed .*\\.env.*",
+                "tail .*\\.env.*",
                 "rm .*",
                 "sudo .*",
                 "chmod .*",
@@ -80,11 +87,11 @@
         },
         "grep": {
             "allowedPaths": ["~/projects/**", "~/repositories/**", "~/.dotfiles/**", "./**"],
-            "deniedPaths": ["/etc/**", "/usr/**", "/bin/**", "/sbin/**", "/System/**"]
+            "deniedPaths": ["/etc/**", "/usr/**", "/bin/**", "/sbin/**", "/System/**", "**/.env", "**/.env.*"]
         },
         "glob": {
             "allowedPaths": ["~/projects/**", "~/repositories/**", "~/.dotfiles/**", "./**"],
-            "deniedPaths": ["/etc/**", "/usr/**", "/bin/**", "/sbin/**", "/System/**"]
+            "deniedPaths": ["/etc/**", "/usr/**", "/bin/**", "/sbin/**", "/System/**", "**/.env", "**/.env.*"]
         },
         "web_fetch": {
             "trusted": [

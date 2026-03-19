@@ -80,6 +80,7 @@
     "prompt": "file://./github-prompt.md",
     "resources": [
         "file://AGENTS.md",
+        "file://~/.dotfiles/etc/kiro-cli/steering/security/env-file-protection.md",
         "file://.kiro/steering/**/*.md",
         "file://README.md",
         "file://docs/**/*.md",
@@ -117,6 +118,12 @@
                 "whoami"
             ],
             "deniedCommands": [
+                "awk .*\\.env.*",
+                "cat .*\\.env.*",
+                "grep .*\\.env.*",
+                "head .*\\.env.*",
+                "sed .*\\.env.*",
+                "tail .*\\.env.*",
                 "aws .*",
                 "chmod .*",
                 "chown .*",
@@ -159,11 +166,11 @@
         },
         "grep": {
             "allowedPaths": ["~/projects/**", "~/repositories/**", "~/.dotfiles/**", "./**"],
-            "deniedPaths": ["/etc/**", "/usr/**", "/bin/**", "/sbin/**", "/System/**"]
+            "deniedPaths": ["/etc/**", "/usr/**", "/bin/**", "/sbin/**", "/System/**", "**/.env", "**/.env.*"]
         },
         "glob": {
             "allowedPaths": ["~/projects/**", "~/repositories/**", "~/.dotfiles/**", "./**"],
-            "deniedPaths": ["/etc/**", "/usr/**", "/bin/**", "/sbin/**", "/System/**"]
+            "deniedPaths": ["/etc/**", "/usr/**", "/bin/**", "/sbin/**", "/System/**", "**/.env", "**/.env.*"]
         },
         "subagent": {
             "availableAgents": ["default", "github", "jira"],
