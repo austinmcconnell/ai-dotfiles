@@ -19,7 +19,6 @@ AGENTS.md is not included in the book — it is AI agent guidance, not reader co
 - [Introduction](INTRODUCTION.md)
 - [Planning](planning/README.md)
   - [Requirements](planning/requirements.md)
-  - [Constraints](planning/constraints.md)
 - [Components](components/README.md)
   - [Component A](components/component-a.md)
   - [Component B](components/component-b.md)
