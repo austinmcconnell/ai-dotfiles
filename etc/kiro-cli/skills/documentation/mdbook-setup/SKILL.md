@@ -83,27 +83,33 @@ build-dir = "book"
 
 [output.html]
 git-repository-url = "https://github.com/username/repo"
-git-repository-icon = "fa-github"
+git-repository-icon = "fab-github"
 ```
 
 ### SUMMARY.md
 
 Defines table of contents and navigation.
 
-**Location:** `src/SUMMARY.md` (or root if `src = "."`)
+**Location:** Root of the source directory (set by `src` in book.toml).
 
 **Format:**
 
 ```markdown
-# Summary
+# Table of Contents
 
 - [Introduction](INTRODUCTION.md)
-- [Chapter 1](chapter1.md)
+- [Chapter 1](chapter1/README.md)
   - [Section 1.1](chapter1/section1.md)
-- [Chapter 2](chapter2.md)
+- [Chapter 2](chapter2/README.md)
 ```
 
-**Important:** Only files in SUMMARY.md are included in the book.
+**Important:**
+
+- Only files in SUMMARY.md are included in the book.
+- Use a flat list under `# Table of Contents`. Do not use `# Section` headers as sidebar dividers.
+- SUMMARY.md requires `README.md` paths for navigation, but cross-references in content files should
+  link to directories instead (e.g., `../chapter1/` not `../chapter1/README.md`) because mdBook
+  compiles README.md to index.html.
 
 ### .gitignore
 
@@ -131,20 +137,32 @@ src = "."
 
 [build]
 build-dir = "book"
+create-missing = false
 
 [output.html]
 default-theme = "light"
 preferred-dark-theme = "navy"
+smart-punctuation = true
+definition-lists = true
+admonitions = true
 git-repository-url = "https://github.com/username/repo"
-git-repository-icon = "fa-github"
-additional-css = ["custom.css"]
+git-repository-icon = "fab-github"
+edit-url-template = "https://github.com/username/repo/edit/main/{path}"
+
+[output.html.search]
+enable = true
+limit-results = 30
+use-boolean-and = true
+boost-title = 2
+boost-hierarchy = 2
 
 [output.html.fold]
 enable = true
 level = 0
 
-[output.html.search]
+[output.html.print]
 enable = true
+page-break = true
 ```
 
 ### Custom Styling
@@ -269,8 +287,6 @@ Provides context before diving into subsections.
 
 **Solution:** Create file or remove from SUMMARY.md
 
-**Development tip:** Set `create-missing = true` in book.toml
-
 ### 5. Not Gitignoring book/
 
 **Problem:** Hundreds of generated HTML files committed
@@ -391,7 +407,7 @@ mdbook build
 ### Configuration Locations
 
 - `book.toml` - Project root
-- `SUMMARY.md` - src/ or root (if `src = "."`)
+- `SUMMARY.md` - Root of source directory (set by `src` in book.toml)
 - `custom.css` - Project root
 - `book/` - Generated output (gitignore)
 

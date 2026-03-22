@@ -266,7 +266,7 @@ Copy from `references/templates/` and customize:
 
 ### mdBook Configuration (10 minutes)
 
-- [ ] Create book.toml
+- [ ] Create book.toml (see `mdbook-setup` skill for recommended settings)
 - [ ] Test `mdbook serve`
 - [ ] Test `mdbook build`
 - [ ] Verify navigation
