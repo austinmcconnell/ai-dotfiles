@@ -47,7 +47,7 @@ project-root/
 
 ### Content Ownership
 
-See `references/templates.md` for complete templates.
+See `references/templates/agents.md` for the full AGENTS.md template.
 
 configuration/ = WHAT
 
@@ -90,7 +90,7 @@ components/ = SPECS
 mkdir -p planning components configuration procedures decisions
 touch README.md INTRODUCTION.md SUMMARY.md AGENTS.md
 
-# 2. Copy templates (see references/templates.md)
+# 2. Copy templates (see references/templates/)
 # 3. Create README.md in each subdirectory
 # 4. Set up pre-commit hooks
 # 5. Create SUMMARY.md
@@ -143,7 +143,8 @@ Done! Structure prevents 70% of common refactoring issues.
 
 **Cost:** Content had to be moved between directories
 
-**Solution:** Create README.md in each subdirectory on day 1 with:
+**Solution:** Create README.md in each subdirectory on day 1 with (see
+`references/templates/subdirectory-readme.md`):
 
 - Purpose statement
 - Content ownership (WHAT/HOW/WHY/SPECS)
@@ -161,7 +162,8 @@ Done! Structure prevents 70% of common refactoring issues.
 
 **Cost:** 3 major refactorings, 19 commits, ~500 lines deleted
 
-**Solution:** Create AGENTS.md on day 1 documenting content ownership
+**Solution:** Create AGENTS.md on day 1 documenting content ownership (see
+`references/templates/agents.md`)
 
 ## Best Practices
 
@@ -187,7 +189,7 @@ Automate quality checks with pre-commit hooks.
 
 ### 6. External References in RESEARCH.md
 
-Centralize external links to prevent link rot.
+Centralize external links to prevent link rot. See `references/templates/research.md`.
 
 ## Full Setup Checklist
 
@@ -216,10 +218,12 @@ Centralize external links to prevent link rot.
 
 ### Templates (20 minutes)
 
+Copy from `references/templates/` and customize:
+
 - [ ] Create decisions/adr-template.md
-- [ ] Create components/component-template.md
-- [ ] Create configuration/config-template.md
-- [ ] Create procedures/procedure-template.md
+- [ ] Create components/component-template.md (see `references/templates/component.md`)
+- [ ] Create configuration/config-template.md (see `references/templates/configuration.md`)
+- [ ] Create procedures/procedure-template.md (see `references/templates/procedure.md`)
 - [ ] Add HTML comments explaining WHAT vs HOW
 
 ### Quality Gates (15 minutes)
@@ -329,7 +333,14 @@ Plus eliminates mental overhead of "where does this belong?"
 
 ## Reference Documentation
 
-- `references/templates.md` - Complete file templates (AGENTS.md, README.md, configuration,
-  procedure, component, SUMMARY.md)
+- `references/directory-structure.md` - Recommended directory layout
+- `references/setup-checklist.md` - Day 1 setup checklist
+- `references/templates/agents.md` - AGENTS.md content ownership template
+- `references/templates/component.md` - Component specification template
+- `references/templates/configuration.md` - Configuration specification template
+- `references/templates/procedure.md` - Procedure (step-by-step) template
+- `references/templates/research.md` - RESEARCH.md external references template
+- `references/templates/subdirectory-readme.md` - Subdirectory README.md template
+- `references/templates/summary.md` - SUMMARY.md table of contents template
 
 For mdBook-specific setup, see the `mdbook-setup` skill.
