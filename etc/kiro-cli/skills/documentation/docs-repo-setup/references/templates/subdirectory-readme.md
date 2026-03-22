@@ -19,8 +19,8 @@ This directory contains [WHAT/HOW/WHY/SPECS]. See [AGENTS.md](../AGENTS.md) for 
 
 ## What Does NOT Belong Here
 
-- [Type of content that belongs elsewhere] → See [other directory]
-- [Type of content that belongs elsewhere] → See [other directory]
+- [Type of content that belongs elsewhere] → See [Other Section](../other-section/)
+- [Type of content that belongs elsewhere] → See [Other Section](../other-section/)
 
 ## Key Files
 

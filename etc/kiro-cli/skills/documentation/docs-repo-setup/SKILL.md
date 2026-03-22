@@ -118,6 +118,9 @@ Done! Structure prevents 70% of common refactoring issues.
 ### Cross-Referencing
 
 - Use descriptive link text: `[Configuration: System](../configuration/system.md)`
+- Link to directories, not README.md: `[Components](../components/)` not
+  `[Components](../components/README.md)` (mdBook compiles README.md to index.html)
+- SUMMARY.md is the exception — it requires `README.md` paths for navigation
 - Add "Related Documentation" section at end of files
 - Reference, never duplicate
 
