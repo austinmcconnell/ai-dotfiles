@@ -58,7 +58,7 @@ Review each file for proper content type separation:
 **Check components/ files (SPECS):**
 
 - [ ] Contains component specifications and capabilities
-- [ ] No network/system assignments (belongs in configuration/)
+- [ ] No system-level assignments (belongs in configuration/)
 - [ ] No implementation steps (belongs in procedures/)
 - [ ] References configuration/ for how component is used
 
@@ -67,16 +67,16 @@ Review each file for proper content type separation:
 Search for duplicate content across files:
 
 1. **Identify specification tables** - Look for tables in multiple files
-1. **Check IP addresses** - Search for IP addresses appearing in multiple places
+1. **Check for repeated values** - Values (IDs, addresses, names) appearing in multiple places
 1. **Look for repeated lists** - Component lists, feature lists, requirement lists
 1. **Find duplicate diagrams** - Same diagram in multiple files
 
 **Common duplication patterns:**
 
-- Network topology tables in both configuration/ and procedures/
+- Specification tables in both configuration/ and procedures/
 - Component specifications in both components/ and configuration/
-- Security rules in both configuration/ and procedures/
-- IP assignments scattered across multiple files
+- Policy or rule definitions in both configuration/ and procedures/
+- Configuration values scattered across multiple files
 
 **How to fix:**
 
@@ -118,10 +118,10 @@ mdbook build
 mdbook-linkcheck
 
 # Search for bare URLs
-grep -r "http" src/ | grep -v "\[.*\](http"
+grep -r "http" . | grep -v "\[.*\](http"
 
 # Find "click here" anti-pattern
-grep -ri "click here" src/
+grep -ri "click here" .
 ```
 
 ### Step 5: SUMMARY.md Accuracy
@@ -138,10 +138,10 @@ Verify SUMMARY.md matches actual file structure:
 
 ```bash
 # List all markdown files
-find src/ -name "*.md" | sort
+find . -name "*.md" | sort
 
 # Compare with SUMMARY.md entries
-grep "\.md" src/SUMMARY.md
+grep "\.md" SUMMARY.md
 ```
 
 ### Step 6: README.md Completeness
@@ -317,7 +317,7 @@ Before proceeding, review:
 
 ```bash
 # Find bare URLs
-grep -r "http" src/ | grep -v "\[.*\](http"
+grep -r "http" . | grep -v "\[.*\](http"
 
 # Replace with descriptive links
 [Resource Name](https://example.com)
@@ -337,33 +337,13 @@ grep -r "http" src/ | grep -v "\[.*\](http"
 
 ### Pre-commit Hooks
 
-Recommended hooks for documentation:
+Verify pre-commit hooks are configured and passing:
 
-```yaml
-# .pre-commit-config.yaml
-repos:
-  - repo: https://github.com/pre-commit/pre-commit-hooks
-    hooks:
-      - id: check-yaml
-      - id: check-added-large-files
-      - id: trailing-whitespace
-      - id: end-of-file-fixer
-
-  - repo: https://github.com/DavidAnson/markdownlint-cli2
-    hooks:
-      - id: markdownlint-cli2
+```bash
+pre-commit run --all-files
 ```
 
 ### mdBook Link Checker
-
-```toml
-# book.toml
-[output.linkcheck]
-follow-web-links = false
-exclude = ["^http://localhost"]
-```
-
-Run with:
 
 ```bash
 mdbook build

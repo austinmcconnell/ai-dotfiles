@@ -81,7 +81,7 @@ For each file in components/:
 - [ ] Contains component specifications and capabilities
 - [ ] Includes model numbers, versions, or identifiers
 - [ ] Documents performance metrics (if applicable)
-- [ ] No network/system assignments (belongs in configuration/)
+- [ ] No system-level assignments (belongs in configuration/)
 - [ ] No implementation steps (belongs in procedures/)
 - [ ] References configuration/ for how component is used
 - [ ] Links to vendor documentation (if applicable)
@@ -89,7 +89,6 @@ For each file in components/:
 
 **Common violations:**
 
-- Network topology or IP assignments
 - Configuration specifications
 - Setup procedures
 - Mixing component specs with system design
@@ -107,24 +106,16 @@ For each file in components/:
 
 ```bash
 # Find all tables
-grep -r "^|" src/
+grep -r "^|" .
 
 # Look for similar table structures in multiple files
 ```
 
-### IP Addresses and Network Configuration
+### Repeated Values
 
-- [ ] Search for IP addresses across all files
-- [ ] Verify IP assignments exist in only one place (usually configuration/)
-- [ ] Check that procedures/ reference network configuration
-- [ ] Confirm no scattered IP assignments
-
-**How to check:**
-
-```bash
-# Find IP addresses
-grep -r "[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}" src/
-```
+- [ ] Search for values (IDs, addresses, names) appearing in multiple files
+- [ ] Verify each value is defined in only one place (usually configuration/)
+- [ ] Check that procedures/ reference configuration/ instead of repeating values
 
 ### Component Lists
 
@@ -132,11 +123,11 @@ grep -r "[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}" src/
 - [ ] Verify canonical list exists (usually components/ or configuration/)
 - [ ] Confirm other files reference the canonical list
 
-### Security Rules and Policies
+### Policy and Rule Definitions
 
-- [ ] Search for security rules across files
-- [ ] Verify rules exist in configuration/ only
-- [ ] Check that procedures/ reference security configuration
+- [ ] Search for policy or rule definitions across files
+- [ ] Verify definitions exist in configuration/ only
+- [ ] Check that procedures/ reference configuration/
 
 ## Cross-Reference Validation
 
@@ -154,13 +145,13 @@ For each link in documentation:
 
 ```bash
 # Find "click here" anti-pattern
-grep -ri "click here" src/
+grep -ri "click here" .
 
 # Find "here" as link text
-grep -r "\[here\]" src/
+grep -r "\[here\]" .
 
 # Find bare URLs
-grep -r "http" src/ | grep -v "\[.*\](http"
+grep -r "http" . | grep -v "\[.*\](http"
 ```
 
 ### Link Targets
@@ -200,7 +191,7 @@ mdbook-linkcheck
 
 ### File Coverage
 
-- [ ] All markdown files in src/ are listed in SUMMARY.md
+- [ ] All markdown files are listed in SUMMARY.md
 - [ ] No orphaned files (exist but not in SUMMARY.md)
 - [ ] No dead links (SUMMARY.md references non-existent files)
 
@@ -208,10 +199,10 @@ mdbook-linkcheck
 
 ```bash
 # List all markdown files
-find src/ -name "*.md" | sort > /tmp/actual-files.txt
+find . -name "*.md" | sort > /tmp/actual-files.txt
 
 # Extract files from SUMMARY.md
-grep "\.md" src/SUMMARY.md | sed 's/.*(\(.*\))/\1/' | sort > /tmp/summary-files.txt
+grep "\.md" SUMMARY.md | sed 's/.*(\(.*\))/\1/' | sort > /tmp/summary-files.txt
 
 # Compare
 diff /tmp/actual-files.txt /tmp/summary-files.txt
@@ -222,7 +213,7 @@ diff /tmp/actual-files.txt /tmp/summary-files.txt
 - [ ] Files grouped logically by content type
 - [ ] Logical progression (planning → components → configuration → procedures → decisions)
 - [ ] Consistent indentation for hierarchy
-- [ ] Section headers for major content types
+- [ ] Flat list format under `# Table of Contents` (no `# Section` headers as dividers)
 
 ### Ordering
 
@@ -286,7 +277,7 @@ Each README.md should have:
 
 ```bash
 # Run markdownlint
-markdownlint src/
+markdownlint .
 
 # Or use pre-commit hooks
 pre-commit run --all-files
