@@ -363,6 +363,7 @@ Plus eliminates mental overhead of "where does this belong?"
 - `references/templates/component.md` - Component specification template
 - `references/templates/configuration.md` - Configuration specification template
 - `references/templates/procedure.md` - Procedure (step-by-step) template
+- `references/templates/readme.md` - Repo-level README.md template
 - `references/templates/research.md` - RESEARCH.md external references template
 - `references/templates/subdirectory-readme.md` - Subdirectory README.md template
 - `references/templates/summary.md` - SUMMARY.md table of contents template
