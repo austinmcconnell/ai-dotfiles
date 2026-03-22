@@ -73,12 +73,22 @@ components/ = SPECS
 - Physical/logical setup
 - Performance metrics
 
+### Root-level files
+
+- **README.md** — repo-level introduction for GitHub/contributors (getting started, how to build,
+  pre-commit setup). Not included in the book.
+- **INTRODUCTION.md** — book introduction for readers (project goals, documentation structure).
+  First entry in SUMMARY.md.
+- **AGENTS.md** — AI agent guidance for content ownership. Not included in the book.
+- **SUMMARY.md** — mdBook table of contents. Use a flat list under `# Table of Contents`. Do not use
+  `# Section` headers as sidebar dividers.
+
 ## Quick Start (30 Minutes)
 
 ```bash
 # 1. Create structure
 mkdir -p planning components configuration procedures decisions
-touch README.md SUMMARY.md AGENTS.md
+touch README.md INTRODUCTION.md SUMMARY.md AGENTS.md
 
 # 2. Copy templates (see references/templates.md)
 # 3. Create README.md in each subdirectory
@@ -185,7 +195,8 @@ Centralize external links to prevent link rot.
 
 - [ ] Initialize git: `git init`
 - [ ] Create .gitignore (exclude book/, .DS_Store)
-- [ ] Add README.md with project overview
+- [ ] Add README.md with repo-level getting started guide
+- [ ] Add INTRODUCTION.md with book introduction
 - [ ] Choose mdBook
 
 ### Directory Structure (5 minutes)
@@ -223,7 +234,6 @@ Centralize external links to prevent link rot.
 
 - [ ] Create RESEARCH.md
 - [ ] Create glossary.md
-- [ ] Create INTRODUCTION.md
 - [ ] Add custom.css (optional)
 
 ### mdBook Configuration (10 minutes)

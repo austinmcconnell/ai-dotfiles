@@ -4,48 +4,37 @@
 mdbook-setup skill (installation and configuration) with patterns for consistent content
 organization.
 
-## SUMMARY.md Structure
+## SUMMARY.md structure
 
-### Section Organization
+### Format
 
-Organize SUMMARY.md by content type following the stage-based architecture:
+Use a flat list under `# Table of Contents`. Do not use `# Section` headers as sidebar dividers.
+
+The introduction links to INTRODUCTION.md (the book intro), not README.md (the repo-level intro).
+AGENTS.md is not included in the book — it is AI agent guidance, not reader content.
 
 ```markdown
-# Summary
+# Table of Contents
 
-[Introduction](README.md)
-
-# Planning
-
-- [Requirements](planning/requirements.md)
-- [Constraints](planning/constraints.md)
-
-# Components
-
-- [Component Overview](components/README.md)
-  - [Gateway](components/gateway.md)
-  - [Switch](components/switch.md)
-
-# Configuration
-
-- [Configuration Overview](configuration/README.md)
-  - [Network Topology](configuration/network-topology.md)
-  - [Security Rules](configuration/security-rules.md)
-
-# Procedures
-
-- [Procedures Overview](procedures/README.md)
-  - [Initial Setup](procedures/initial-setup.md)
-  - [Gateway Setup](procedures/gateway-setup.md)
-
-# Decisions
-
-- [Decisions Overview](decisions/README.md)
-  - [ADR-001: Platform Selection](decisions/adr-001-platform-selection.md)
-  - [ADR-002: Security Strategy](decisions/adr-002-security-strategy.md)
+- [Introduction](INTRODUCTION.md)
+- [Planning](planning/README.md)
+  - [Requirements](planning/requirements.md)
+  - [Constraints](planning/constraints.md)
+- [Components](components/README.md)
+  - [Component A](components/component-a.md)
+  - [Component B](components/component-b.md)
+- [Configuration](configuration/README.md)
+  - [Config Topic A](configuration/config-topic-a.md)
+  - [Config Topic B](configuration/config-topic-b.md)
+- [Procedures](procedures/README.md)
+  - [Procedure A](procedures/procedure-a.md)
+  - [Procedure B](procedures/procedure-b.md)
+- [Decisions](decisions/README.md)
+  - [ADR-001: Decision Title](decisions/adr-001-decision-title.md)
+  - [ADR-002: Decision Title](decisions/adr-002-decision-title.md)
 ```
 
-### Ordering Conventions
+### Ordering conventions
 
 **Between sections:**
 
@@ -76,29 +65,13 @@ Organize SUMMARY.md by content type following the stage-based architecture:
     - [Detail](section/subsection/detail.md)
 ```
 
-### Section Headers
-
-Use `# Header` (H1 with space) for SUMMARY.md section dividers:
-
-```markdown
-# Configuration
-
-- [Network Topology](configuration/network-topology.md)
-
-# Procedures
-
-- [Initial Setup](procedures/initial-setup.md)
-```
-
-These render as sidebar section headers in mdBook.
-
 ## File Organization
 
 ### Directory Structure
 
 ```text
 src/
-├── README.md              # Book introduction
+├── INTRODUCTION.md        # Book introduction
 ├── SUMMARY.md             # Table of contents
 ├── planning/
 │   ├── README.md          # Planning overview
@@ -121,8 +94,8 @@ src/
 
 ### File Naming
 
-- Use kebab-case: `network-topology.md`
-- Be descriptive: `gateway-setup.md` not `setup.md`
+- Use kebab-case: `config-topic-a.md`
+- Be descriptive: `component-setup.md` not `setup.md`
 - ADRs: `adr-NNN-title-with-dashes.md`
 - README.md for directory overviews (always capitalized)
 
@@ -166,11 +139,11 @@ The H1 heading in each file should match its SUMMARY.md entry:
 ```markdown
 <!-- SUMMARY.md -->
 
-- [Network Topology](configuration/network-topology.md)
+- [Component A](components/component-a.md)
 
-<!-- configuration/network-topology.md -->
+<!-- components/component-a.md -->
 
-# Network Topology
+# Component A
 ```
 
 ## book.toml Configuration
@@ -237,13 +210,13 @@ exclude = ["^http://localhost"]
 Use relative paths from the current file:
 
 ```markdown
-<!-- From procedures/gateway-setup.md -->
+<!-- From procedures/procedure-a.md -->
 
-See [Configuration: Network Topology](../configuration/network-topology.md).
+See [Configuration: Config Topic A](../configuration/config-topic-a.md).
 
-<!-- From configuration/network-topology.md -->
+<!-- From configuration/config-topic-a.md -->
 
-For implementation, see [Procedure: Gateway Setup](../procedures/gateway-setup.md).
+For implementation, see [Procedure: Procedure A](../procedures/procedure-a.md).
 ```
 
 ### Section Links
@@ -251,13 +224,13 @@ For implementation, see [Procedure: Gateway Setup](../procedures/gateway-setup.m
 Link to specific sections using anchors:
 
 ```markdown
-[Configuration: Network Topology - VLAN Assignments](../configuration/network-topology.md#vlan-assignments)
+[Configuration: Config Topic A - Section Name](../configuration/config-topic-a.md#section-name)
 ```
 
 mdBook generates anchors from headings automatically:
 
-- `## VLAN Assignments` → `#vlan-assignments`
-- `### Step 1: Configure Gateway` → `#step-1-configure-gateway`
+- `## Section Name` → `#section-name`
+- `### Step 1: Configure component` → `#step-1-configure-component`
 
 ### Link Text Patterns
 
@@ -350,11 +323,11 @@ title = "My Documentation"
 Use consistent table formatting:
 
 ```markdown
-| Setting     | Value         | Description     |
-| ----------- | ------------- | --------------- |
-| IP Address  | 192.168.1.1   | Gateway address |
-| Subnet Mask | 255.255.255.0 | Network subnet  |
-| VLAN        | 10            | Management VLAN |
+| Setting | Value       | Description     |
+| ------- | ----------- | --------------- |
+| Key A   | value-1     | First setting   |
+| Key B   | value-2     | Second setting  |
+| Key C   | value-3     | Third setting   |
 ```
 
 **Conventions:**
