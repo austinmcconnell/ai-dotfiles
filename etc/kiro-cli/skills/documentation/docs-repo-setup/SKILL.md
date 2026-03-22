@@ -83,6 +83,27 @@ components/ = SPECS
 - **SUMMARY.md** — mdBook table of contents. Use a flat list under `# Table of Contents`. Do not use
   `# Section` headers as sidebar dividers.
 
+## Project Context (Before Setup)
+
+Before scaffolding, gather minimal project context. This input populates book.toml, INTRODUCTION.md,
+and planning/requirements.md with meaningful content instead of empty placeholders.
+
+**Required:**
+
+1. **Project name** — used in book.toml `title` and README.md heading
+1. **One-sentence description** — used in book.toml `description` and README.md overview
+1. **Key requirements or goals** (bullet list) — populates INTRODUCTION.md project goals and seeds
+   planning/requirements.md
+
+**Optional:**
+
+1. **Known constraints** (budget, space, power, noise, etc.) — populates the constraints section of
+   planning/requirements.md
+
+This is not a formal requirements analysis. A brief statement like "compact, quiet, power-efficient
+homelab with PCIe expansion, dual NVMe, and 2 DIMM slots" is enough to generate useful content
+across multiple files.
+
 ## Quick Start (30 Minutes)
 
 ```bash

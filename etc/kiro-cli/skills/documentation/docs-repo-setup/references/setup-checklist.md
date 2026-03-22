@@ -1,5 +1,11 @@
 # Day 1 Setup Checklist
 
+## Project context (5 minutes)
+
+- [ ] Project name and one-sentence description
+- [ ] Key requirements or goals (bullet list)
+- [ ] Known constraints (optional)
+
 ## Repository (10 minutes)
 
 - [ ] Initialize git, create .gitignore
