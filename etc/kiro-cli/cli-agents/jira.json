@@ -18,7 +18,7 @@
         "@git/git_show",
         "@git/git_status",
         "@filesystem/get_file_info",
-        "@filesystem/list_directory_with_sizes",
+        "@filesystem/list_allowed_directories",
         "@filesystem/read_media_file",
         "@filesystem/read_multiple_files",
         "@filesystem/read_text_file",
