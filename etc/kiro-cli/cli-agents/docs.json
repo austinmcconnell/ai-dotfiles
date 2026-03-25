@@ -52,6 +52,7 @@
                 "git status.*",
                 "ls .*",
                 "cat .*",
+                "cd .*",
                 "grep .*",
                 "awk .*",
                 "head .*",
