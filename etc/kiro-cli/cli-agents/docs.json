@@ -124,5 +124,5 @@
         }
     },
 
-    "includeMcpJson": false
+    "includeMcpJson": true
 }
