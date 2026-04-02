@@ -82,7 +82,7 @@
                 "grep .*",
                 "head .*",
                 "hostname",
-                "ls .*",
+                "ls( .*)?",
                 "man .*",
                 "pwd",
                 "sed .*",

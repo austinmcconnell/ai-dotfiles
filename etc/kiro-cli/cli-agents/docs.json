@@ -56,7 +56,7 @@
                 "mdbook .*",
                 "pre-commit .*",
                 "git status.*",
-                "ls .*",
+                "ls( .*)?",
                 "cat .*",
                 "cd .*",
                 "grep .*",
