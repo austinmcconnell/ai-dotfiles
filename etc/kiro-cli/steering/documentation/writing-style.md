@@ -497,10 +497,10 @@ well known port
 command line interface
 ```
 
-**Use em dash (—) for breaks in thought:**
+**Use hyphens for parenthetical breaks:**
 
 ```markdown
-The gateway—configured with default settings—routes all traffic.
+The gateway - configured with default settings - routes all traffic.
 ```
 
 ## Common Mistakes
