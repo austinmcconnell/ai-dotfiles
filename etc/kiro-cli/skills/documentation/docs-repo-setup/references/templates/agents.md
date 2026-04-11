@@ -10,9 +10,9 @@
 ## Documentation Structure
 ```
 
-planning/ # Requirements and constraints components/ # Physical/logical component specifications
-configuration/ # System specifications (WHAT) procedures/ # Implementation steps (HOW) decisions/ #
-Architecture decisions (WHY)
+planning/ # Requirements, constraints, and BOM components/ # Physical/logical component
+specifications configuration/ # System specifications (WHAT) procedures/ # Implementation steps
+(HOW) decisions/ # Architecture decisions (WHY)
 
 ```markdown
 ## Content Ownership Model
@@ -103,6 +103,7 @@ Architecture decisions (WHY)
 4. Create ADR if significant decision
 5. Update SUMMARY.md
 6. Add cross-references
+7. Update planning/bom.md if project uses a bill of materials
 
 ### Changing Specification
 

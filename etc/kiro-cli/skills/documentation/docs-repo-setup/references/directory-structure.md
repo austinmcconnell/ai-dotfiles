@@ -12,7 +12,8 @@ project-root/
 ├── glossary.md            # Terminology
 ├── planning/
 │   ├── README.md          # Planning overview
-│   └── requirements.md    # Requirements only
+│   ├── requirements.md    # Requirements only
+│   └── bom.md             # Bill of materials (optional)
 ├── components/            # Hardware, software, or system components
 │   ├── README.md
 │   └── [component].md     # One file per component

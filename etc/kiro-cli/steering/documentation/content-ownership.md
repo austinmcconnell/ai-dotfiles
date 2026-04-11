@@ -118,6 +118,33 @@ documenting this.
 **Why**: Component specs are physical/logical facts. Configuration specs are design decisions. Keep
 them separate.
 
+### planning/ = Requirements and Procurement
+
+**Purpose**: Project requirements, constraints, and procurement tracking
+
+**Contains**:
+
+- Project requirements and success criteria
+- Constraints (budget, space, power, noise)
+- Evaluation frameworks for comparing options
+- Bill of materials (optional) — consolidated procurement tracker
+
+**Format**: Tables, checklists
+
+**Example files**:
+
+- `requirements.md` - Project requirements and constraints
+- `bom.md` - Bill of materials linking to components/
+
+**What NOT to include**:
+
+- ❌ Component specifications (belongs in components/)
+- ❌ Decision rationale (belongs in decisions/)
+- ❌ Duplicate cost breakdowns from components/
+
+**Why**: Planning tracks what the project needs and where procurement stands. The BOM is a summary
+view — detailed specs and cost breakdowns stay in components/.
+
 ## Relationship Between Content Types
 
 ```text
@@ -154,6 +181,7 @@ WHY (decisions/)  →  WHAT (configuration/)  →  HOW (procedures/)
 1. Create ADR if significant decision
 1. Update SUMMARY.md
 1. Add cross-references
+1. Update planning/bom.md if project uses a bill of materials
 
 ### Changing Specification
 
