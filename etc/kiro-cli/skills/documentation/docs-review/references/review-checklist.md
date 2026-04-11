@@ -161,6 +161,8 @@ grep -r "http" . | grep -v "\[.*\](http"
 - [ ] Links point to existing files (no 404s)
 - [ ] Section anchors are correct (if used)
 - [ ] External links use absolute URLs
+- [ ] Links to subdirectory overviews use directory paths (`../section/`), not README.md paths —
+  mdBook compiles README.md to index.html, so README.md links break in the built HTML
 
 **How to check:**
 

@@ -100,6 +100,9 @@ Check that cross-references are complete and accurate:
 - [ ] Links point to existing files
 - [ ] Section anchors are correct
 - [ ] External links use absolute URLs
+- [ ] Links to subdirectory overviews use directory paths (`../configuration/`), not README.md paths
+  (`../configuration/README.md`) — mdBook compiles README.md to index.html, so README.md links
+  produce broken README.html references. SUMMARY.md is the only place that uses README.md paths.
 
 **Verify cross-reference completeness:**
 
