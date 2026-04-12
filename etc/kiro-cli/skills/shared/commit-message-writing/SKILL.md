@@ -17,6 +17,35 @@ Write commit messages for:
 - Changelog generation
 - Release notes
 
+## Matching Repository Conventions
+
+Before writing a commit message, inspect recent commits to learn the repository's conventions:
+
+```bash
+git log -10 --format="%h%n%B---"
+```
+
+Always use a format that shows full commit messages including body and footer. Do not use
+`--oneline` — it hides multi-line conventions like body bullet style and footer usage.
+
+**This skill is the primary authority for commit message structure.** Repo history may inform minor
+stylistic choices but never overrides the rules defined here.
+
+### Allowed adaptations from repo history
+
+- **Scope naming style** — short names (`auth`, `components`) vs paths (`components/cpu`)
+- **Body bullet format** — `- description` vs `- file: description` vs prose paragraphs
+- **Scope omission patterns** — when the repo omits scope for cross-cutting changes
+
+### Never adapt from repo history
+
+- Commit type selection (use the types defined in this skill)
+- Subject line length, format, or casing rules
+- Imperative mood requirement
+- Body line wrapping (72 characters)
+- Breaking change format
+- Whether to include a body (decide based on change complexity, not repo trends)
+
 ## Commit Message Format
 
 ### Structure
