@@ -6,6 +6,7 @@
         "@filesystem/read_media_file",
         "@filesystem/read_multiple_files",
         "@filesystem/read_text_file",
+        "@filesystem/read_file",
         "@filesystem/search_files",
         "@git/git_branch",
         "@git/git_diff",
@@ -17,6 +18,7 @@
         "fs_read",
         "glob",
         "grep",
+        "knowledge",
         "use_subagent",
         "web_fetch",
         "web_search"
