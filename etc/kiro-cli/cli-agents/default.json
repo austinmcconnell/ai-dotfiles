@@ -62,7 +62,43 @@
         "skill://.kiro/skills/shared/**/SKILL.md",
         "skill://~/.kiro/skills/development/**/SKILL.md",
         "skill://~/.kiro/skills/operations/**/SKILL.md",
-        "skill://~/.kiro/skills/shared/**/SKILL.md"
+        "skill://~/.kiro/skills/shared/**/SKILL.md",
+        {
+            "type": "knowledgeBase",
+            "source": "file://~/projects/unite-us/screenings-ingestion",
+            "name": "screenings-docs",
+            "indexType": "best",
+            "include": ["docs/**/*.md", "fhir-analysis/**/*.md", "analysis/**/*.md", "README.md"],
+            "exclude": [],
+            "autoUpdate": true
+        },
+        {
+            "type": "knowledgeBase",
+            "source": "file://~/projects/unite-us/screenings-ingestion/app",
+            "name": "screenings-app-code",
+            "indexType": "fast",
+            "include": ["**/*.py"],
+            "exclude": ["**/__pycache__/**"],
+            "autoUpdate": true
+        },
+        {
+            "type": "knowledgeBase",
+            "source": "file://~/projects/unite-us/screenings-ingestion/tests",
+            "name": "screenings-test-code",
+            "indexType": "fast",
+            "include": ["**/*.py"],
+            "exclude": ["**/__pycache__/**"],
+            "autoUpdate": true
+        },
+        {
+            "type": "knowledgeBase",
+            "source": "file://~/projects/unite-us/screenings-ingestion/infrastructure",
+            "name": "screenings-infra",
+            "indexType": "fast",
+            "include": ["**/*.tf", "**/*.yaml", "**/*.yml"],
+            "exclude": [".terraform/**", ".pre/**"],
+            "autoUpdate": true
+        }
     ],
     "tools": [
         "*"
