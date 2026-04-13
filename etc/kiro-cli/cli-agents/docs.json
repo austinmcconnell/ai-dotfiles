@@ -13,7 +13,43 @@
         "file://book.toml",
         "skill://.kiro/skills/**/SKILL.md",
         "skill://~/.kiro/skills/documentation/**/SKILL.md",
-        "skill://~/.kiro/skills/shared/**/SKILL.md"
+        "skill://~/.kiro/skills/shared/**/SKILL.md",
+        {
+            "type": "knowledgeBase",
+            "source": "file://~/projects/austinmcconnell/_documentation_/gaming-media-pc",
+            "name": "gaming-media-pc-docs",
+            "indexType": "best",
+            "include": ["**/*.md"],
+            "exclude": ["book/**", "scripts/**", "reports/**"],
+            "autoUpdate": true
+        },
+        {
+            "type": "knowledgeBase",
+            "source": "file://~/projects/austinmcconnell/_documentation_/tiny-lab",
+            "name": "tiny-lab-docs",
+            "indexType": "best",
+            "include": ["**/*.md"],
+            "exclude": ["book/**", "scripts/**", "reports/**"],
+            "autoUpdate": true
+        },
+        {
+            "type": "knowledgeBase",
+            "source": "file://~/projects/austinmcconnell/_documentation_/truenas-server",
+            "name": "truenas-server-docs",
+            "indexType": "best",
+            "include": ["**/*.md"],
+            "exclude": ["book/**", "scripts/**", "reports/**"],
+            "autoUpdate": true
+        },
+        {
+            "type": "knowledgeBase",
+            "source": "file://~/projects/austinmcconnell/_documentation_/ubiquiti-network-stack",
+            "name": "ubiquiti-network-docs",
+            "indexType": "best",
+            "include": ["**/*.md"],
+            "exclude": ["book/**", "scripts/**", "reports/**"],
+            "autoUpdate": true
+        }
     ],
 
     "allowedTools": [
