@@ -1,10 +1,6 @@
 ---
 name: implementation-guide
-description: >-
-  Create detailed implementation guides with step-by-step instructions, complete code examples,
-  testing procedures, and verification steps. Use for security vulnerabilities, complex refactoring,
-  database migrations, API upgrades, bug fixes, or any work requiring precise execution by
-  developers or AI agents.
+description: Create detailed implementation guides with step-by-step instructions, complete code examples, testing procedures, and verification steps. Use for security vulnerabilities, complex refactoring, database migrations, API upgrades, bug fixes, or any work requiring precise execution by developers or AI agents.
 ---
 
 # Implementation Guide

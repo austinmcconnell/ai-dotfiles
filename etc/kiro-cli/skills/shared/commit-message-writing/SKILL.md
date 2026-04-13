@@ -1,9 +1,6 @@
 ---
 name: commit-message-writing
-description: >-
-  Write clear, conventional commit messages following conventional commits format. Use when
-  writing commit messages, committing code, using git commit, reviewing commits, or asking
-  about commit message format, types, or conventions.
+description: Write clear, conventional commit messages following conventional commits format. IMPORTANT - Read full skill before running git log — never use --oneline. Use when writing commit messages, committing code, using git commit, reviewing commits, or asking about commit message format, types, or conventions.
 ---
 
 # Commit Message Writing

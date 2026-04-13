@@ -1,9 +1,6 @@
 ---
 name: user-story-writing
-description: >-
-  Write effective user stories following INVEST principles with acceptance criteria, story points,
-  and technical considerations. Use when writing user stories, creating stories, refining backlog
-  items, documenting feature requirements, or during sprint planning and backlog refinement.
+description: Write effective user stories following INVEST principles with acceptance criteria, story points, and technical considerations. Use when writing user stories, creating stories, refining backlog items, documenting feature requirements, or during sprint planning and backlog refinement.
 ---
 
 # User Story Writing

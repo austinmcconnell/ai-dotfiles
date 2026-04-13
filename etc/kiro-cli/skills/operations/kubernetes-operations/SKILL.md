@@ -1,9 +1,6 @@
 ---
 name: kubernetes-operations
-description: >-
-  Guide Kubernetes operations with permission flows and safety guardrails. Use when
-  accessing Kubernetes clusters, running kubectl commands, listing pods, describing
-  resources, or troubleshooting K8s issues.
+description: Guide Kubernetes operations with permission flows and safety guardrails. Use when accessing Kubernetes clusters, running kubectl commands, listing pods, describing resources, or troubleshooting K8s issues.
 ---
 
 # Kubernetes Operations

@@ -1,8 +1,6 @@
 ---
 name: spec-writing
-description: >-
-  Write clear, testable technical specifications for feature planning and implementation.
-  Use when planning features, documenting requirements, creating design docs, or writing RFCs.
+description: Write clear, testable technical specifications for feature planning and implementation. Use when planning features, documenting requirements, creating design docs, or writing RFCs.
 ---
 
 # Spec Writing
