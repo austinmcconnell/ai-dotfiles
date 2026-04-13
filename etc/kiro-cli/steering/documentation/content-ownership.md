@@ -96,7 +96,7 @@ documenting this.
 **Contains**:
 
 - Component specifications and model numbers
-- Purchase information and costs (if applicable)
+- Purchase information (authoritative source for price, date, quantity)
 - Physical/logical setup details
 - Performance metrics (actual measurements)
 - Upgrade paths
@@ -127,7 +127,7 @@ them separate.
 - Project requirements and success criteria
 - Constraints (budget, space, power, noise)
 - Evaluation frameworks for comparing options
-- Bill of materials (optional) — consolidated procurement tracker
+- Bill of materials — consolidated procurement tracker
 
 **Format**: Tables, checklists
 
@@ -140,10 +140,10 @@ them separate.
 
 - ❌ Component specifications (belongs in components/)
 - ❌ Decision rationale (belongs in decisions/)
-- ❌ Duplicate cost breakdowns from components/
+- ❌ Duplicate purchase data from components/ (BOM links, not copies)
 
 **Why**: Planning tracks what the project needs and where procurement stands. The BOM is a summary
-view — detailed specs and cost breakdowns stay in components/.
+view — detailed specs and purchase data stay in components/.
 
 ## Relationship Between Content Types
 
@@ -254,3 +254,41 @@ Every subdirectory must have README.md with:
 - [ ] Tables for structured data
 - [ ] Numbered lists for procedures
 - [ ] Bullet lists for specifications
+
+## Pricing Conventions
+
+### Authoritative location
+
+Component files in components/ are the single source of truth for purchase data (price, date,
+quantity). The BOM in planning/bom.md is a summary view that links to component files — it does not
+duplicate or override purchase details.
+
+### Standard fields for component files
+
+| Field         | Required    | Description                          |
+| ------------- | ----------- | ------------------------------------ |
+| Unit price    | Yes         | Pre-tax, pre-shipping price per unit |
+| Quantity      | Yes         | Number purchased or needed           |
+| Purchase date | When bought | ISO 8601 format (YYYY-MM-DD)         |
+| Status        | Yes         | Bought / Needed / On order           |
+
+### Price normalization
+
+Record prices as pre-tax, pre-shipping unit prices. This is the canonical price field.
+
+**Why pre-tax**: Tax varies by jurisdiction and changes over time. It is not a property of the
+component.
+
+**Why pre-shipping**: Shipping is per-order, not per-component. Splitting shipping across items is
+arbitrary and produces misleading per-unit costs.
+
+**Why unit price**: The comparable number when evaluating alternatives or checking current pricing.
+
+### BOM requirements
+
+Required when the project includes purchasable or acquirable components. Controlled by `include_bom`
+during cookiecutter project creation.
+
+- Every component in components/ should have a corresponding BOM entry
+- BOM links to component files for details — does not duplicate specifications
+- Status tracking should be kept current (Bought / Needed / On order)

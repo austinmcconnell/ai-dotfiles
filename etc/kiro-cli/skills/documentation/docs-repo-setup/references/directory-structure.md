@@ -13,7 +13,7 @@ project-root/
 ├── planning/
 │   ├── README.md          # Planning overview
 │   ├── requirements.md    # Requirements only
-│   └── bom.md             # Bill of materials (optional)
+│   └── bom.md             # Bill of materials
 ├── components/            # Hardware, software, or system components
 │   ├── README.md
 │   └── [component].md     # One file per component

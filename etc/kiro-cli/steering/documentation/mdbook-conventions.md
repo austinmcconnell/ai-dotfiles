@@ -49,6 +49,7 @@ AGENTS.md is not included in the book — it is AI agent guidance, not reader co
 - Alphabetical by default
 - Logical progression when order matters (e.g., initial-setup before advanced-setup)
 - ADRs by number (ascending)
+- Planning: requirements.md before bom.md (requirements define needs, BOM tracks procurement)
 
 ### Indentation
 

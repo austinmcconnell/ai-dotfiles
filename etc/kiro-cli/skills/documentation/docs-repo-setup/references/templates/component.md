@@ -26,6 +26,18 @@
 - **[Metric 1]**: [value]
 - **[Metric 2]**: [value]
 
+### Purchase information
+
+| Field         | Value                        |
+| ------------- | ---------------------------- |
+| Unit price    | $0.00                        |
+| Quantity      | 0                            |
+| Purchase date | YYYY-MM-DD                   |
+| Status        | [Bought / Needed / On order] |
+
+<!-- Prices are pre-tax, pre-shipping unit prices. -->
+<!-- See content-ownership.md for pricing conventions. -->
+
 ### Physical/Logical Setup
 
 [Description of physical location, mounting, power, or logical architecture]

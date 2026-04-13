@@ -361,6 +361,7 @@ Plus eliminates mental overhead of "where does this belong?"
 - `references/directory-structure.md` - Recommended directory layout
 - `references/setup-checklist.md` - Day 1 setup checklist
 - `references/templates/agents.md` - AGENTS.md content ownership template
+- `references/templates/bom.md` - Bill of materials template
 - `references/templates/component.md` - Component specification template
 - `references/templates/configuration.md` - Configuration specification template
 - `references/templates/procedure.md` - Procedure (step-by-step) template

@@ -66,8 +66,8 @@ Review each file for proper content type separation:
 
 - [ ] Links to components/ for details — does not duplicate specifications
 - [ ] Every component in components/ has a corresponding BOM entry
-- [ ] Status tracking is current (bought/needed)
-- [ ] Prices and dates match component files
+- [ ] Status tracking is current (Bought / Needed / On order)
+- [ ] Unit prices are pre-tax, pre-shipping per pricing conventions
 
 ### Step 3: Duplicate Specification Detection
 
