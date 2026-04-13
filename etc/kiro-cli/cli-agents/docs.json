@@ -16,6 +16,15 @@
         "skill://~/.kiro/skills/shared/**/SKILL.md",
         {
             "type": "knowledgeBase",
+            "source": "file://~/projects/unite-us/sdohcc-screening-observations",
+            "name": "sdohcc-screening-observations",
+            "indexType": "best",
+            "include": ["**/*.md"],
+            "exclude": ["book/**", "scripts/**", "reports/**", ".kiro/**"],
+            "autoUpdate": true
+        },
+        {
+            "type": "knowledgeBase",
             "source": "file://~/projects/austinmcconnell/_documentation_/gaming-media-pc",
             "name": "gaming-media-pc-docs",
             "indexType": "best",
