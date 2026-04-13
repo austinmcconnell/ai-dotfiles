@@ -72,11 +72,10 @@
         },
         "time": {
             "args": [
-                "-m",
-                "mcp_server_time",
+                "mcp-server-time",
                 "--local-timezone=America/Chicago"
             ],
-            "command": "python",
+            "command": "uvx",
             "disabled": false,
             "env": {},
             "timeout": 30000

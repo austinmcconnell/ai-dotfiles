@@ -10,18 +10,17 @@
             ],
             "command": "npx",
             "disabled": false,
-            "disabledTools": ["directory_tree", "list_directory"],
+            "disabledTools": ["directory_tree", "list_directory_with_sizes"],
             "env": {},
             "timeout": 120000
         },
         "git": {
             "args": [
-                "-m",
-                "mcp_server_git",
+                "mcp-server-git",
                 "--repository",
                 "."
             ],
-            "command": "python",
+            "command": "uvx",
             "disabled": false,
             "env": {},
             "timeout": 120000

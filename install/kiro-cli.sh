@@ -152,31 +152,25 @@ else
     echo "npm not found. Skipping Node.js MCP server installation."
 fi
 
-# Install Python MCP servers if pip is available
-if is-executable pip; then
-    print_header "Installing Python MCP servers"
+# Pre-cache Python MCP servers for uvx if uv is available
+if is-executable uv; then
+    print_header "Pre-caching Python MCP servers for uvx"
 
-    # List of Python MCP servers to install
     PYTHON_MCP_SERVERS=(
         "mcp-server-git"
         "mcp-server-time"
         "mcp-server-fetch"
     )
 
-    # Install each Python MCP server
     for server in "${PYTHON_MCP_SERVERS[@]}"; do
-        echo "Installing $server..."
-        if pip show "$server" >/dev/null 2>&1; then
-            echo "✓ $server is already installed"
-        else
-            pip install "$server"
-            echo "✓ $server installed successfully"
-        fi
+        echo "Pre-caching $server..."
+        uvx --quiet "$server" --help >/dev/null 2>&1 && echo "✓ $server cached" || echo "⚠️  $server may need manual verification"
     done
 
-    echo "✅ All Python MCP servers installed successfully"
+    echo "✅ All Python MCP servers pre-cached for uvx"
 else
-    echo "pip not found. Skipping Python MCP server installation."
+    echo "uv not found. Skipping Python MCP server pre-caching."
+    echo "Install uv (https://docs.astral.sh/uv/) for Python MCP server support."
 fi
 
 # Build official GitHub MCP Server from source if Go is available
