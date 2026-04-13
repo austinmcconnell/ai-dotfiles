@@ -80,6 +80,15 @@
             "include": ["**/*.md"],
             "exclude": [],
             "autoUpdate": true
+        },
+        {
+            "type": "knowledgeBase",
+            "source": "file://~/projects/unite-us",
+            "name": "analysis-all-projects",
+            "indexType": "best",
+            "include": ["*/analysis/*.md"],
+            "exclude": [],
+            "autoUpdate": false
         }
     ],
     "tools": [
