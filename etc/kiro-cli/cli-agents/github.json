@@ -97,6 +97,9 @@
         "*"
     ],
     "toolsSettings": {
+        "aws": {
+            "allowedServices": []
+        },
         "shell": {
             "allowedCommands": [
                 "awk .*",

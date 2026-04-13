@@ -49,6 +49,7 @@
             ],
             "command": "npx",
             "disabled": false,
+            "disabledTools": ["jira_delete_worklog"],
             "env": {},
             "timeout": 120000
         },
@@ -79,6 +80,9 @@
         "*"
     ],
     "toolsSettings": {
+        "aws": {
+            "allowedServices": []
+        },
         "shell": {
             "allowedCommands": [
                 "awk .*",
