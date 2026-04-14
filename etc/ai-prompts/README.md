@@ -90,6 +90,7 @@ Level 0 (No Dependencies - Can run anytime):
 ├── discover-previous-work    # Understand current implementation state
 ├── pr-description           # Generate pull request descriptions
 ├── refactor-plan            # Create refactoring plans
+├── run-all-analyses         # Orchestrate all 9 analyses in dependency order
 └── vim-practice-session     # Interactive vim skills practice
 
 Level 1 (Requires: project-analysis):
@@ -134,6 +135,7 @@ These prompts can be run at any time without prerequisites:
 - `discover-previous-work` - Understand work-in-progress state
 - `pr-description` - Generate pull request descriptions
 - `refactor-plan` - Create refactoring strategies
+- `run-all-analyses` - Run all 9 analysis prompts in dependency order (orchestrator)
 - `vim-practice-session` - Practice vim skills
 
 ## Example Prompts
@@ -165,6 +167,11 @@ These prompts can be run at any time without prerequisites:
 - `discover-previous-work` - Analyze previous work and determine next steps
 - `pr-description` - Generate pull request descriptions
 - `refactor-plan` - Create comprehensive refactoring plans (outputs to markdown file)
+
+### Orchestration
+
+- `run-all-analyses` - Run all 9 analysis prompts in dependency order, skipping analyses that are
+  already current (compares HEAD commit in metadata vs current HEAD)
 
 ### Skills Development
 
