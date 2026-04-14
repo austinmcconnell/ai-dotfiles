@@ -43,6 +43,26 @@ stylistic choices but never overrides the rules defined here.
 - Breaking change format
 - Whether to include a body (decide based on change complexity, not repo trends)
 
+## Atomic Commits
+
+Each commit should contain exactly one logical change. When staged or unstaged
+changes span multiple concerns, recommend separate commits rather than combining
+them into one.
+
+**Split into separate commits when changes have:**
+
+- Different commit types (e.g., a `fix` and a `feat`)
+- Different scopes (e.g., `auth` and `api`)
+- Independent motivations (could be reverted independently)
+
+**Keep as one commit when changes are:**
+
+- All required to achieve a single goal
+- Meaningless without each other (e.g., a feature and its config)
+
+When recommending multiple commits, present them in dependency order — the
+commit that others build on comes first.
+
 ## Commit Message Format
 
 ### Structure
