@@ -76,6 +76,35 @@ These prompts work with any AI chat service:
 1. **Use main branch** - Most analysis prompts require running from `main` or `master` branch for
    accurate results
 
+## Analysis Groups
+
+The analysis prompts serve two distinct purposes:
+
+**Core analyses** build cross-repo understanding — what a project does, how it's built, what data
+it uses, and how it integrates with other systems. Run these on any repo you want to understand,
+especially repos you don't actively develop in. These feed into knowledge bases for cross-platform
+troubleshooting and architectural questions.
+
+| Analysis     | Purpose                                       |
+| ------------ | --------------------------------------------- |
+| project      | What the repo does and its current state      |
+| architecture | System design, components, and tech stack     |
+| schema       | Data models, database schemas, API structures |
+| integration  | External APIs, services, and data flows       |
+
+**Deep analyses** are inward-facing — they help you improve a repo you're actively working in.
+Run these selectively on your primary development repositories when you need targeted insight.
+
+| Analysis       | Purpose                                    |
+| -------------- | ------------------------------------------ |
+| documentation  | Documentation quality and completeness     |
+| testing        | Test strategy, coverage, and gaps          |
+| technical-debt | Code quality issues and refactoring needs  |
+| performance    | Bottlenecks and optimization opportunities |
+| security       | Security posture and vulnerabilities       |
+
+Use `run-core-analyses` for the core set or `run-all-analyses` for the full suite.
+
 ## Prompt Dependencies
 
 Many analysis prompts have prerequisite requirements and must be run in a specific order. Each
@@ -91,6 +120,7 @@ Level 0 (No Dependencies - Can run anytime):
 ├── pr-description           # Generate pull request descriptions
 ├── refactor-plan            # Create refactoring plans
 ├── run-all-analyses         # Orchestrate all 9 analyses in dependency order
+├── run-core-analyses        # Orchestrate core 4 analyses (P/A/S/I)
 └── vim-practice-session     # Interactive vim skills practice
 
 Level 1 (Requires: project-analysis):
@@ -136,6 +166,7 @@ These prompts can be run at any time without prerequisites:
 - `pr-description` - Generate pull request descriptions
 - `refactor-plan` - Create refactoring strategies
 - `run-all-analyses` - Run all 9 analysis prompts in dependency order (orchestrator)
+- `run-core-analyses` - Run core 4 analyses: project, architecture, schema, integration
 - `vim-practice-session` - Practice vim skills
 
 ## Example Prompts
@@ -172,6 +203,8 @@ These prompts can be run at any time without prerequisites:
 
 - `run-all-analyses` - Run all 9 analysis prompts in dependency order, skipping analyses that are
   already current (compares HEAD commit in metadata vs current HEAD)
+- `run-core-analyses` - Run the 4 core analyses (project, architecture, schema, integration) for
+  cross-repo understanding
 
 ### Skills Development
 

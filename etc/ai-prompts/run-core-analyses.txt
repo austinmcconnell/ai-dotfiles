@@ -1,0 +1,58 @@
+# Run Core Analyses
+
+Run the 4 core analysis prompts (project, architecture, schema, integration)
+against this repository in dependency order. These build cross-repo
+understanding of what a project does and how it integrates with other systems.
+
+## Step 1: Validate branch
+
+Verify the current branch is `main` or `master`. If not, stop and tell the user.
+
+## Step 2: Check for stale analyses
+
+Get the current HEAD commit hash. Then check each of these files in `analysis/`:
+
+1. project-analysis.md
+2. architecture-analysis.md
+3. schema-analysis.md
+4. integration-analysis.md
+
+For each file that exists, read the `**HEAD Commit:**` line from its metadata
+header. If the commit matches current HEAD, that analysis is current.
+
+Report which analyses are current vs stale/missing, then proceed with only the
+stale or missing ones. Dependency ordering guarantees that prerequisites are
+current before any dependent analysis runs.
+
+If everything is current, inform the user and ask whether to force a refresh.
+
+## Step 3: Run analyses in dependency order
+
+Create the analysis directory if needed (`mkdir -p analysis`). For each
+analysis that needs updating, read the prompt file from
+`~/.dotfiles/etc/ai-prompts/` and follow its instructions completely. Each
+prompt contains its own output format, metadata header, and update strategy.
+
+Work through each level sequentially. Do not start a level until all analyses
+in the previous level are complete.
+
+### Level 0
+
+1. `project-analysis.txt`
+
+### Level 1
+
+2. `architecture-analysis.txt`
+3. `schema-analysis.txt`
+
+### Level 2
+
+4. `integration-analysis.txt`
+
+## Notes
+
+- Each prompt file contains complete instructions including output format and
+  metadata
+- The prerequisite checks in each prompt will pass since you are running them
+  in dependency order
+- Focus on thorough analysis at each step — quality over speed
