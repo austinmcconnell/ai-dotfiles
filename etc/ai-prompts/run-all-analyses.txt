@@ -1,6 +1,8 @@
 # Run Full Analysis Suite
 
-Run all 9 analysis prompts against this repository in dependency order.
+Run all 9 analysis prompts against the repository in the current working
+directory. Do not navigate to a different repository — use `pwd` to confirm
+your location before starting.
 
 ## Step 1: Validate branch
 

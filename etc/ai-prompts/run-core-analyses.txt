@@ -1,8 +1,10 @@
 # Run Core Analyses
 
 Run the 4 core analysis prompts (project, architecture, schema, integration)
-against this repository in dependency order. These build cross-repo
-understanding of what a project does and how it integrates with other systems.
+against the repository in the current working directory. Do not navigate to a
+different repository — use `pwd` to confirm your location before starting.
+These build cross-repo understanding of what a project does and how it
+integrates with other systems.
 
 ## Step 1: Validate branch
 

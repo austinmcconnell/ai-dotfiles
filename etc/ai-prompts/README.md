@@ -128,7 +128,7 @@ Level 1 (Requires: project-analysis):
 ├── schema-analysis          # Database schemas and data models
 └── documentation-analysis    # Documentation quality and completeness
 
-Level 2 (Requires: project-analysis + architecture-analysis + schema-analysis):
+Level 2 (Requires: project + architecture; integration also requires schema):
 ├── integration-analysis      # External APIs, databases, services
 ├── testing-analysis         # Testing strategy and coverage
 └── technical-debt-analysis  # Code quality and refactoring opportunities
