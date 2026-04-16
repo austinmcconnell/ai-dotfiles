@@ -19,6 +19,9 @@ AGENTS.md is not included in the book — it is AI agent guidance, not reader co
 - [Introduction](INTRODUCTION.md)
 - [Planning](planning/README.md)
   - [Requirements](planning/requirements.md)
+- [Decisions](decisions/README.md)
+  - [ADR-001: Decision Title](decisions/adr-001-decision-title.md)
+  - [ADR-002: Decision Title](decisions/adr-002-decision-title.md)
 - [Components](components/README.md)
   - [Component A](components/component-a.md)
   - [Component B](components/component-b.md)
@@ -28,9 +31,6 @@ AGENTS.md is not included in the book — it is AI agent guidance, not reader co
 - [Procedures](procedures/README.md)
   - [Procedure A](procedures/procedure-a.md)
   - [Procedure B](procedures/procedure-b.md)
-- [Decisions](decisions/README.md)
-  - [ADR-001: Decision Title](decisions/adr-001-decision-title.md)
-  - [ADR-002: Decision Title](decisions/adr-002-decision-title.md)
 ```
 
 ### Ordering conventions
@@ -39,10 +39,11 @@ AGENTS.md is not included in the book — it is AI agent guidance, not reader co
 
 1. Introduction/README
 1. Planning (if exists)
+1. Research (if directory format; single-file goes in appendix)
+1. Decisions
 1. Components
 1. Configuration
 1. Procedures
-1. Decisions
 
 **Within sections:**
 
@@ -76,6 +77,9 @@ src/
 ├── planning/
 │   ├── README.md          # Planning overview
 │   └── *.md               # Planning documents
+├── decisions/
+│   ├── README.md          # Decisions overview
+│   └── adr-*.md           # ADR files
 ├── components/
 │   ├── README.md          # Components overview
 │   └── *.md               # Component specs
@@ -85,9 +89,6 @@ src/
 ├── procedures/
 │   ├── README.md          # Procedures overview
 │   └── *.md               # Procedure docs
-├── decisions/
-│   ├── README.md          # Decisions overview
-│   └── adr-*.md           # ADR files
 └── images/                # Shared images
     └── *.png
 ```

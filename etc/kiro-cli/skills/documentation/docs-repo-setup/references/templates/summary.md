@@ -9,6 +9,11 @@
 
   - [Requirements](planning/requirements.md)
 
+- [Decisions](decisions/README.md)
+
+  - [ADR Template](decisions/adr-template.md)
+  - [ADR-001: Decision Title](decisions/adr-001-decision-title.md)
+
 - [Components](components/README.md)
 
   - [Component 1](components/component1.md)
@@ -24,10 +29,6 @@
   - [Initial Setup](procedures/initial-setup.md)
   - [Procedure 1](procedures/procedure1.md)
   - [Troubleshooting](procedures/troubleshooting.md)
-
-- [Architecture Decisions](decisions/README.md)
-  - [ADR Template](decisions/adr-template.md)
-  - [ADR-001: Decision Title](decisions/adr-001-decision-title.md)
 
 ---
 

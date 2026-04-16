@@ -30,10 +30,10 @@ Aligns with DITA framework (Darwin Information Typing Architecture):
 ```text
 project-root/
 ├── planning/          # Requirements, constraints, and BOM
+├── decisions/         # Architecture decisions (WHY)
 ├── components/        # Physical/logical component specs
 ├── configuration/     # System specifications (WHAT)
-├── procedures/        # Implementation steps (HOW)
-└── decisions/         # Architecture decisions (WHY)
+└── procedures/        # Implementation steps (HOW)
 ```
 
 **Why stage-based?**
@@ -108,7 +108,7 @@ across multiple files.
 
 ```bash
 # 1. Create structure
-mkdir -p planning components configuration procedures decisions
+mkdir -p planning decisions components configuration procedures
 touch README.md INTRODUCTION.md SUMMARY.md AGENTS.md
 
 # 2. Copy templates (see references/templates/)
@@ -212,9 +212,12 @@ Every subdirectory explains its purpose and content ownership.
 
 Automate quality checks with pre-commit hooks.
 
-### 6. External References in RESEARCH.md
+### 6. External References in RESEARCH.md or research/
 
-Centralize external links to prevent link rot. See `references/templates/research.md`.
+Centralize external links to prevent link rot. Start with a single `RESEARCH.md` file (see
+`references/templates/research.md`). Migrate to a `research/` directory when the file exceeds ~300
+lines or has five or more distinct topics (see `references/templates/research-readme.md` and
+`references/templates/research-topic.md`).
 
 ## Full Setup Checklist
 
@@ -228,7 +231,7 @@ Centralize external links to prevent link rot. See `references/templates/researc
 
 ### Directory Structure (5 minutes)
 
-- [ ] Create directories: `mkdir -p planning components configuration procedures decisions scripts`
+- [ ] Create directories: `mkdir -p planning decisions components configuration procedures scripts`
 - [ ] Create README.md in each subdirectory
 - [ ] Create SUMMARY.md
 
@@ -312,6 +315,7 @@ Copy from `references/templates/` and customize:
 1. Is it implementation steps? → procedures/
 1. Is it a decision rationale? → decisions/
 1. Is it component specs? → components/
+1. Is it external links, product evaluations, or comparison research? → RESEARCH.md or research/
 
 ### "Should I duplicate this spec?"
 
@@ -366,7 +370,9 @@ Plus eliminates mental overhead of "where does this belong?"
 - `references/templates/configuration.md` - Configuration specification template
 - `references/templates/procedure.md` - Procedure (step-by-step) template
 - `references/templates/readme.md` - Repo-level README.md template
-- `references/templates/research.md` - RESEARCH.md external references template
+- `references/templates/research.md` - Single-file RESEARCH.md template
+- `references/templates/research-readme.md` - Multi-file research/README.md index template
+- `references/templates/research-topic.md` - Multi-file research topic file template
 - `references/templates/subdirectory-readme.md` - Subdirectory README.md template
 - `references/templates/summary.md` - SUMMARY.md table of contents template
 

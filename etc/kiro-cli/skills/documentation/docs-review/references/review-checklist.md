@@ -101,6 +101,36 @@ For each file in components/:
 - [ ] Status tracking is current (Bought / Needed / On order)
 - [ ] Unit prices are pre-tax, pre-shipping per pricing conventions
 
+### RESEARCH.md or research/ (Reference Material)
+
+- [ ] Research content exists (RESEARCH.md or research/ directory)
+- [ ] External references are centralized in research content, not scattered across other files
+- [ ] Format is appropriate for scope (single file for 1–4 topics / under ~300 lines; directory for
+  5+ topics / over ~300 lines)
+- [ ] Getting started section links to requirements (and key ADR if applicable)
+- [ ] Entries follow standard format (URL, Purpose, Key Concepts for link entries)
+- [ ] Comparison tables used when evaluating multiple alternatives
+- [ ] Assessment or key findings sections state opinionated conclusions after comparison tables
+- [ ] Research files cross-reference the ADRs they informed
+- [ ] ADRs link back to relevant research entries for supporting evidence
+- [ ] No specifications embedded in research (belongs in configuration/)
+- [ ] No decision rationale embedded in research (belongs in decisions/)
+- [ ] No implementation steps embedded in research (belongs in procedures/)
+
+**Single-file specific:**
+
+- [ ] Entries numbered sequentially across all sections
+- [ ] Project-specific context section summarizes key parameters from internal docs
+- [ ] Quick reference section maps common questions to entries
+- [ ] Listed in SUMMARY.md below `---` separator
+
+**Directory specific:**
+
+- [ ] research/README.md serves as index with topic links
+- [ ] Each topic file is self-contained (readable without other research files)
+- [ ] Related documentation section at end of each topic file
+- [ ] Listed in SUMMARY.md as top-level section with children
+
 ## Duplicate Specification Detection
 
 ### Specification Tables
@@ -221,16 +251,19 @@ diff /tmp/actual-files.txt /tmp/summary-files.txt
 ### Organization
 
 - [ ] Files grouped logically by content type
-- [ ] Logical progression (planning → components → configuration → procedures → decisions)
+- [ ] Logical progression (planning → research → decisions → components → configuration →
+  procedures)
 - [ ] Consistent indentation for hierarchy
 - [ ] Flat list format under `# Table of Contents` (no `# Section` headers as dividers)
 
 ### Ordering
 
-- [ ] Planning files first (if exists)
-- [ ] Components before configuration (if applicable)
-- [ ] Configuration before procedures
-- [ ] Decisions can be anywhere (often at end)
+- [ ] Planning first (if exists)
+- [ ] Research after planning (if exists)
+- [ ] Decisions after research
+- [ ] Components after decisions
+- [ ] Configuration after components
+- [ ] Procedures last
 - [ ] Within each section, logical ordering (basic → advanced, or alphabetical)
 
 ## README.md Completeness

@@ -141,8 +141,8 @@ Verify SUMMARY.md matches actual file structure:
 1. **Check for missing files** - Files exist but not in SUMMARY.md
 1. **Check for dead links** - SUMMARY.md references non-existent files
 1. **Verify organization** - Files grouped logically by content type
-1. **Check ordering** - Logical progression (planning → components → configuration → procedures →
-   decisions)
+1. **Check ordering** - Logical progression (planning → research → decisions → components →
+   configuration → procedures)
 
 **Commands to help:**
 

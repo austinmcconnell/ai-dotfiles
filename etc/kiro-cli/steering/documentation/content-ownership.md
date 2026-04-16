@@ -3,7 +3,146 @@
 **Purpose**: Detailed guide for understanding and applying the WHAT/HOW/WHY/SPECS separation in
 documentation repositories.
 
-## The Four Content Types
+## The Content Types
+
+### planning/ = Requirements and Procurement
+
+**Purpose**: Project requirements, constraints, and procurement tracking
+
+**Contains**:
+
+- Project requirements and success criteria
+- Constraints (budget, space, power, noise)
+- Evaluation frameworks for comparing options
+- Bill of materials — consolidated procurement tracker
+
+**Format**: Tables, checklists
+
+**Example files**:
+
+- `requirements.md` - Project requirements and constraints
+- `bom.md` - Bill of materials linking to components/
+
+**What NOT to include**:
+
+- ❌ Component specifications (belongs in components/)
+- ❌ Decision rationale (belongs in decisions/)
+- ❌ Duplicate purchase data from components/ (BOM links, not copies)
+
+**Why**: Planning tracks what the project needs and where procurement stands. The BOM is a summary
+view — detailed specs and purchase data stay in components/.
+
+### research/ or RESEARCH.md = REFERENCE (External Research)
+
+**Purpose**: Curated external resources, product evaluations, and comparison research that inform
+decisions
+
+**Contains**:
+
+- External links with purpose and key concepts
+- Product and technology evaluations
+- Comparison tables assessing options against requirements
+- Assessment sections with opinionated conclusions
+- Community resources and references
+
+**Format**: Curated link entries (URL, Purpose, Key Concepts), comparison tables, assessments
+
+**Two formats** — choose based on scope:
+
+| Criteria                  | Single `RESEARCH.md`             | `research/` directory                   |
+| ------------------------- | -------------------------------- | --------------------------------------- |
+| Number of research topics | One to four topics               | Five or more topics                     |
+| Total content size        | Under ~300 lines                 | Over ~300 lines                         |
+| Research depth per topic  | Link collection with brief notes | Deep evaluations with comparison tables |
+| SUMMARY.md placement      | Below `---` separator (appendix) | Top-level section with children         |
+
+**Single-file format** (`RESEARCH.md` at project root):
+
+- Best for projects with a handful of research topics
+- Entries numbered sequentially across all sections for easy reference
+- Includes project-specific context section and quick reference
+- Listed in SUMMARY.md below a `---` separator as reference material
+
+**Directory format** (`research/` with topic files):
+
+- Best for projects with deep, multi-product evaluations across many topics
+- `research/README.md` serves as the index with getting started and topic links
+- Each topic file is self-contained with comparison table, findings, and deep-dives
+- Listed in SUMMARY.md as a top-level section with children
+
+**When to migrate** from single file to directory:
+
+- The file exceeds ~300 lines
+- Five or more distinct topic areas exist
+- Individual topics need comparison tables or multi-product evaluations
+- Multiple ADRs reference different sections of the same research file
+
+**What NOT to include**:
+
+- ❌ Specifications (belongs in configuration/)
+- ❌ Decision rationale (belongs in decisions/)
+- ❌ Implementation steps (belongs in procedures/)
+- ❌ Component specs or purchase data (belongs in components/)
+
+**Why**: Research is reference material that informs decisions. It sits outside the
+WHAT/HOW/WHY/SPECS hierarchy as curated input. Centralizing external links prevents link rot and
+scattered references.
+
+### decisions/ = WHY (Rationale)
+
+**Purpose**: Document architectural decisions and trade-offs
+
+**Contains**:
+
+- Decision context and problem statement
+- Alternatives considered
+- Decision made and rationale
+- Consequences (positive and negative)
+
+**Format**: ADR template (MADR format recommended)
+
+**Example files**:
+
+- `adr-001-use-platform-x.md` - Why this platform
+- `adr-002-component-selection.md` - Why this component
+- `adr-003-security-strategy.md` - Why this approach
+
+**What NOT to include**:
+
+- ❌ Implementation details (link to procedures/)
+- ❌ Detailed specifications (link to configuration/)
+
+**Why**: Decisions explain the "why" behind specifications. Future you will thank you for
+documenting this.
+
+### components/ = COMPONENT SPECS (Physical/Logical Inventory)
+
+**Purpose**: Document physical/logical components and their capabilities
+
+**Contains**:
+
+- Component specifications and model numbers
+- Purchase information (authoritative source for price, date, quantity)
+- Physical/logical setup details
+- Performance metrics (actual measurements)
+- Upgrade paths
+
+**Format**: Specifications, measurements, reference links
+
+**Example files**:
+
+- `gateway.md` - Gateway device specs (hardware example)
+- `auth-module.md` - Authentication module specs (software example)
+- `sensors.md` - Sensor specs and capabilities (IoT example)
+
+**What NOT to include**:
+
+- ❌ Configuration specifications (link to configuration/)
+- ❌ Implementation procedures (link to procedures/)
+- ❌ Network/system assignments (belongs in configuration/)
+
+**Why**: Component specs are physical/logical facts. Configuration specs are design decisions. Keep
+them separate.
 
 ### configuration/ = WHAT (Specifications)
 
@@ -62,101 +201,21 @@ require updating specs.
 **Why**: Procedures reference specifications. When specs change, procedures don't need updating
 (unless UI changed).
 
-### decisions/ = WHY (Rationale)
+### Relationship between research and decisions
 
-**Purpose**: Document architectural decisions and trade-offs
+Research feeds into ADRs. When research findings are significant enough to drive a choice, create an
+ADR that references the relevant research entries. ADRs should link back to research for supporting
+evidence. Research files should cross-reference the ADRs they informed.
 
-**Contains**:
-
-- Decision context and problem statement
-- Alternatives considered
-- Decision made and rationale
-- Consequences (positive and negative)
-
-**Format**: ADR template (MADR format recommended)
-
-**Example files**:
-
-- `adr-001-use-platform-x.md` - Why this platform
-- `adr-002-component-selection.md` - Why this component
-- `adr-003-security-strategy.md` - Why this approach
-
-**What NOT to include**:
-
-- ❌ Implementation details (link to procedures/)
-- ❌ Detailed specifications (link to configuration/)
-
-**Why**: Decisions explain the "why" behind specifications. Future you will thank you for
-documenting this.
-
-### components/ = COMPONENT SPECS (Physical/Logical Inventory)
-
-**Purpose**: Document physical/logical components and their capabilities
-
-**Contains**:
-
-- Component specifications and model numbers
-- Purchase information (authoritative source for price, date, quantity)
-- Physical/logical setup details
-- Performance metrics (actual measurements)
-- Upgrade paths
-
-**Format**: Specifications, measurements, reference links
-
-**Example files**:
-
-- `gateway.md` - Gateway device specs (hardware example)
-- `auth-module.md` - Authentication module specs (software example)
-- `sensors.md` - Sensor specs and capabilities (IoT example)
-
-**What NOT to include**:
-
-- ❌ Configuration specifications (link to configuration/)
-- ❌ Implementation procedures (link to procedures/)
-- ❌ Network/system assignments (belongs in configuration/)
-
-**Why**: Component specs are physical/logical facts. Configuration specs are design decisions. Keep
-them separate.
-
-### planning/ = Requirements and Procurement
-
-**Purpose**: Project requirements, constraints, and procurement tracking
-
-**Contains**:
-
-- Project requirements and success criteria
-- Constraints (budget, space, power, noise)
-- Evaluation frameworks for comparing options
-- Bill of materials — consolidated procurement tracker
-
-**Format**: Tables, checklists
-
-**Example files**:
-
-- `requirements.md` - Project requirements and constraints
-- `bom.md` - Bill of materials linking to components/
-
-**What NOT to include**:
-
-- ❌ Component specifications (belongs in components/)
-- ❌ Decision rationale (belongs in decisions/)
-- ❌ Duplicate purchase data from components/ (BOM links, not copies)
-
-**Why**: Planning tracks what the project needs and where procurement stands. The BOM is a summary
-view — detailed specs and purchase data stay in components/.
-
-## Relationship Between Content Types
+## Relationship between content types
 
 ```text
-WHY (decisions/)  →  WHAT (configuration/)  →  HOW (procedures/)
-     ↑                        ↑                          ↑
-     │                        │                          │
-     └────────────────────────┴──────────────────────────┘
-              Cross-reference and link between all
+planning/  →  research/  →  decisions/  →  components/  →  configuration/  →  procedures/
+(NEEDS)       (OPTIONS)     (WHY)          (SPECS)         (WHAT)             (HOW)
 
-                    COMPONENT SPECS (components/)
-                            ↓
-                References configuration/ and procedures/
+Cross-reference and link between all sections.
+Research informs decisions. Decisions drive component selection.
+Components feed into configuration. Configuration is implemented by procedures.
 ```
 
 ## File Naming Conventions
