@@ -100,22 +100,6 @@ else
     echo "No skills directory found in dotfiles"
 fi
 
-# Link prompts from dotfiles repository
-KIRO_PROMPTS_DIR="$HOME/.kiro/prompts"
-mkdir -p "$KIRO_PROMPTS_DIR"
-
-if [ -d "$DOTFILES_DIR/etc/kiro-cli/prompts" ]; then
-    for prompt_file in "$DOTFILES_DIR/etc/kiro-cli/prompts"/*.md; do
-        if [ -f "$prompt_file" ]; then
-            prompt_name=$(basename "$prompt_file")
-            ln -sfv "$prompt_file" "$KIRO_PROMPTS_DIR/$prompt_name"
-            echo "✓ Linked prompt: $prompt_name"
-        fi
-    done
-else
-    echo "No prompts directory found in dotfiles"
-fi
-
 # Install Kiro CLI integrations if the CLI is available
 if is-executable kiro-cli; then
     print_header "Installing Kiro CLI integrations"
