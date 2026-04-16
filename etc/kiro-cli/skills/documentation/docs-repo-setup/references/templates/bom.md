@@ -11,8 +11,8 @@
 
 | Component                                        | Qty | Unit price | Status |
 | ------------------------------------------------ | --- | ---------- | ------ |
-| [Specific Product Name](../components/name.md)   | 0   | $0.00      | Needed |
-| [Another Product Name](../components/name-2.md)  | 0   | $0.00      | Needed |
+| [Specific Product Name](name.md)   | 0   | $0.00      | Needed |
+| [Another Product Name](name-2.md)  | 0   | $0.00      | Needed |
 | **Total**                                        |     | **$0.00**  |        |
 
 ## Notes
@@ -22,8 +22,8 @@
 
 ## Related documentation
 
-- [Components](../components/) — authoritative purchase details per component
-- [Requirements](requirements.md) — project requirements and budget constraints
+- [Components](./) — authoritative purchase details per component
+- [Requirements](../planning/requirements.md) — project requirements and budget constraints
 ```
 
 ## Conventions

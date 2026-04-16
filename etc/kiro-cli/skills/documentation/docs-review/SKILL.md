@@ -62,7 +62,7 @@ Review each file for proper content type separation:
 - [ ] No implementation steps (belongs in procedures/)
 - [ ] References configuration/ for how component is used
 
-**Check planning/bom.md (if exists):**
+**Check components/bom.md (if exists):**
 
 - [ ] Links to components/ for details — does not duplicate specifications
 - [ ] Every component in components/ has a corresponding BOM entry

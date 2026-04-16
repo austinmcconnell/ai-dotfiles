@@ -23,7 +23,7 @@ After the compatibility review, identify:
 - Cross-references that should exist but don't
 - Use cases mentioned in decisions/ but missing from planning/requirements
 - Configuration specs that should exist based on the component selections
-- BOM completeness: verify all components in components/ appear in planning/bom.md (if it exists),
+- BOM completeness: verify all components in components/ appear in components/bom.md (if it exists),
   flag missing entries or stale prices/status
 
 ## 3. Future-proofing assessment

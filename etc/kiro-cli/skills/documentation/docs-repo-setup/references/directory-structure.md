@@ -14,15 +14,15 @@ project-root/
 ├── glossary.md            # Terminology
 ├── planning/
 │   ├── README.md          # Planning overview
-│   ├── requirements.md    # Requirements only
-│   └── bom.md             # Bill of materials
+│   └── requirements.md    # Requirements only
 ├── decisions/
 │   ├── README.md
 │   ├── adr-template.md
 │   └── adr-NNN-*.md       # Numbered ADRs
 ├── components/            # Hardware, software, or system components
 │   ├── README.md
-│   └── [component].md     # One file per component
+│   ├── [component].md     # One file per component
+│   └── bom.md             # Bill of materials
 ├── configuration/
 │   ├── README.md
 │   └── [config].md        # One file per config area
@@ -46,8 +46,7 @@ project-root/
 ├── glossary.md
 ├── planning/
 │   ├── README.md
-│   ├── requirements.md
-│   └── bom.md
+│   └── requirements.md
 ├── research/              # Top-level section in SUMMARY.md
 │   ├── README.md          # Research index with topic links
 │   └── [topic].md         # One file per research topic
@@ -56,7 +55,8 @@ project-root/
 │   └── adr-NNN-*.md
 ├── components/
 │   ├── README.md
-│   └── [component].md
+│   ├── [component].md
+│   └── bom.md
 ├── configuration/
 │   ├── README.md
 │   └── [config].md

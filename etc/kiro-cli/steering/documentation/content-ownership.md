@@ -14,23 +14,21 @@ documentation repositories.
 - Project requirements and success criteria
 - Constraints (budget, space, power, noise)
 - Evaluation frameworks for comparing options
-- Bill of materials — consolidated procurement tracker
 
 **Format**: Tables, checklists
 
 **Example files**:
 
 - `requirements.md` - Project requirements and constraints
-- `bom.md` - Bill of materials linking to components/
 
 **What NOT to include**:
 
 - ❌ Component specifications (belongs in components/)
 - ❌ Decision rationale (belongs in decisions/)
-- ❌ Duplicate purchase data from components/ (BOM links, not copies)
+- ❌ Bill of materials (belongs in components/)
 
-**Why**: Planning tracks what the project needs and where procurement stands. The BOM is a summary
-view — detailed specs and purchase data stay in components/.
+**Why**: Planning tracks what the project needs. Requirements define needs, research explores
+options.
 
 ### research/ or RESEARCH.md = REFERENCE (External Research)
 
@@ -126,6 +124,7 @@ documenting this.
 - Physical/logical setup details
 - Performance metrics (actual measurements)
 - Upgrade paths
+- Bill of materials — consolidated procurement summary linking to component files
 
 **Format**: Specifications, measurements, reference links
 
@@ -134,6 +133,7 @@ documenting this.
 - `gateway.md` - Gateway device specs (hardware example)
 - `auth-module.md` - Authentication module specs (software example)
 - `sensors.md` - Sensor specs and capabilities (IoT example)
+- `bom.md` - Bill of materials (summary view linking to component files)
 
 **What NOT to include**:
 
@@ -142,7 +142,8 @@ documenting this.
 - ❌ Network/system assignments (belongs in configuration/)
 
 **Why**: Component specs are physical/logical facts. Configuration specs are design decisions. Keep
-them separate.
+them separate. The BOM lives here because every BOM entry corresponds to a component file — it is a
+procurement summary of the directory's contents.
 
 ### configuration/ = WHAT (Specifications)
 
@@ -240,7 +241,7 @@ Components feed into configuration. Configuration is implemented by procedures.
 1. Create ADR if significant decision
 1. Update SUMMARY.md
 1. Add cross-references
-1. Update planning/bom.md if project uses a bill of materials
+1. Update components/bom.md if project uses a bill of materials
 
 ### Changing Specification
 
@@ -319,8 +320,8 @@ Every subdirectory must have README.md with:
 ### Authoritative location
 
 Component files in components/ are the single source of truth for purchase data (price, date,
-quantity). The BOM in planning/bom.md is a summary view that links to component files — it does not
-duplicate or override purchase details.
+quantity). The BOM in components/bom.md is a summary view that links to component files — it does
+not duplicate or override purchase details.
 
 ### Standard fields for component files
 

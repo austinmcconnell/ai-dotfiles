@@ -93,7 +93,7 @@ For each file in components/:
 - Setup procedures
 - Mixing component specs with system design
 
-### planning/bom.md (if exists)
+### components/bom.md (if exists)
 
 - [ ] Links to components/ for details — does not duplicate specifications
 - [ ] Every component in components/ has a corresponding BOM entry

@@ -29,7 +29,7 @@ Aligns with DITA framework (Darwin Information Typing Architecture):
 
 ```text
 project-root/
-├── planning/          # Requirements, constraints, and BOM
+├── planning/          # Requirements and constraints
 ├── decisions/         # Architecture decisions (WHY)
 ├── components/        # Physical/logical component specs
 ├── configuration/     # System specifications (WHAT)
@@ -129,7 +129,7 @@ Done! Structure prevents 70% of common refactoring issues.
 1. Create ADR if significant decision
 1. Update SUMMARY.md
 1. Add cross-references
-1. Update planning/bom.md if project uses a bill of materials
+1. Update components/bom.md if project uses a bill of materials
 
 ### Changing Specification
 
