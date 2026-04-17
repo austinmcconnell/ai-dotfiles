@@ -1,83 +1,103 @@
-**IMPORTANT: Branch Validation Required**
+# Testing Analysis
+
+**IMPORTANT: Branch Validation Required** -
 Before proceeding, verify the current git branch:
+
 ```bash
 git branch --show-current
 ```
 
-This analysis should ONLY be performed on `main` or `master` branches. If currently on a different branch, abort the analysis and inform the user that testing analysis should be done from the main branch.
+This analysis should ONLY be performed on `main` or `master` branches.
+If currently on a different branch, abort the analysis and inform the
+user that testing analysis should be done from the main branch.
 
 **Prerequisite Check:**
-This analysis requires the following prerequisite analyses to be completed first.
+This analysis requires the following prerequisite analyses to be
+completed first.
 
 Check for required files:
+
 - `analysis/project-analysis.md`
 - `analysis/architecture-analysis.md`
 
 If any files are missing, run the corresponding analysis prompts first:
+
 - Missing project-analysis.md? Run: `project-analysis`
 - Missing architecture-analysis.md? Run: `architecture-analysis`
 
-**If any prerequisite files are missing, abort this analysis and complete the prerequisites first.**
+**If any prerequisite files are missing, abort this analysis and
+complete the prerequisites first.**
 
 **Testing Analysis:**
-Analyze the testing strategy, coverage, quality assurance processes, and testing infrastructure of this repository.
+Analyze the testing strategy, coverage, quality assurance processes,
+and testing infrastructure of this repository.
 
 **Read Prerequisite Analyses:**
 Read the following files to understand the project context and architecture before proceeding:
+
 - `analysis/project-analysis.md` - For project context, purpose, and scope
 - `analysis/architecture-analysis.md` - For system design and components to be tested
 
 Please:
 
 1. **Test Strategy and Structure**
+
    - Identify the overall testing strategy and approach
    - Analyze test organization and directory structure
    - Review testing frameworks and libraries in use
    - Document test categorization (unit, integration, e2e, etc.)
 
-2. **Test Coverage and Quality**
+1. **Test Coverage and Quality**
+
    - Analyze test coverage across different parts of the codebase
    - Review test quality and comprehensiveness
    - Identify any gaps in test coverage or untested code paths
    - Document any code coverage tools or reporting mechanisms
 
-3. **Unit Testing**
+1. **Unit Testing**
+
    - Analyze unit test structure and patterns
    - Review test isolation and mocking strategies
    - Identify any test utilities or helper functions
    - Document unit testing best practices being followed
 
-4. **Integration and System Testing**
+1. **Integration and System Testing**
+
    - Identify integration test approaches and scope
    - Analyze database testing and data setup strategies
    - Review API testing and service integration tests
    - Document any system-level or end-to-end testing
 
-5. **Test Automation and CI/CD**
+1. **Test Automation and CI/CD**
+
    - Analyze test automation setup and execution
    - Review continuous integration testing workflows
    - Identify any automated testing pipelines or jobs
    - Document test execution environments and configurations
 
-6. **Performance and Load Testing**
+1. **Performance and Load Testing**
+
    - Identify any performance testing or benchmarking
    - Analyze load testing strategies and tools
    - Review any stress testing or capacity planning tests
    - Document performance test metrics and thresholds
 
-7. **Quality Assurance Processes**
+1. **Quality Assurance Processes**
+
    - Analyze code quality checks and linting
    - Review any static analysis or security scanning
    - Identify any manual testing processes or checklists
    - Document any quality gates or approval processes
 
-8. **Test Data and Environment Management**
+1. **Test Data and Environment Management**
+
    - Analyze test data management and setup strategies
    - Review test environment configuration and isolation
    - Identify any test fixtures, factories, or data builders
    - Document any database seeding or migration testing
 
 **Focus Areas:**
+
 - What is the overall testing strategy and coverage?
 - How comprehensive and reliable are the existing tests?
 - What testing frameworks and tools are being used?
@@ -88,7 +108,7 @@ Please:
 **Output Requirements:**
 
 1. **Save to File**: Write the complete analysis to `analysis/testing-analysis.md`
-2. **Metadata Header**: Include the following metadata at the top of the file:
+1. **Metadata Header**: Include the following metadata at the top of the file:
 
 ```markdown
 # Testing Analysis
@@ -101,7 +121,7 @@ Please:
 ---
 ```
 
-3. **Analysis Content**: Provide a comprehensive overview covering:
+1. **Analysis Content**: Provide a comprehensive overview covering:
    - Test strategy and structural organization
    - Test coverage and quality assessment
    - Unit testing patterns and practices
@@ -113,6 +133,7 @@ Please:
    - Testing improvement recommendations
 
 **Commands to Gather Metadata:**
+
 ```bash
 # Get current branch
 git branch --show-current
@@ -128,6 +149,7 @@ date -u +"%Y-%m-%d %H:%M:%S UTC"
 ```
 
 **Additional Testing Analysis Commands:**
+
 ```bash
 # Find test directories and files
 find . -type d -name "*test*" -o -name "*spec*" | head -10
@@ -145,14 +167,18 @@ find . -name ".github" -o -name ".gitlab-ci.yml" -o -name "Jenkinsfile" -o -name
 
 **Update Strategy:**
 If `analysis/testing-analysis.md` already exists:
+
 1. Read the existing file to understand previous testing analysis
-2. Note what has changed since the last analysis (compare commit hashes)
-3. Update the analysis with new testing insights while preserving valuable context
-4. Update the metadata header with new timestamp and commit hash
+1. Note what has changed since the last analysis (compare commit hashes)
+1. Update the analysis with new testing insights while preserving valuable context
+1. Update the metadata header with new timestamp and commit hash
 
 **File Management:**
+
 - The `analysis/*.md` files are automatically ignored by git (global gitignore)
 - This allows analysis files to be updated over time without cluttering the repository
 - Files can be manually committed if you want to track testing strategy evolution over time
 
-Focus on understanding the current testing landscape and identifying opportunities for improvement rather than implementing specific testing solutions.
+Focus on understanding the current testing landscape and identifying
+opportunities for improvement rather than implementing specific
+testing solutions.

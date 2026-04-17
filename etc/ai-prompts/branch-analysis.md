@@ -1,34 +1,42 @@
+# Branch Analysis
+
 Please analyze the current git branch and provide a comprehensive overview of the changes being made.
 
 **Analysis should include:**
 
 1. **Branch Overview**
+
    - Branch name and its relationship to main/master
    - Number of commits in this branch (since merge-base with main)
    - Overall purpose based on branch name and commit messages
 
-2. **Commit Analysis**
+1. **Commit Analysis**
+
    - Review commit messages for patterns and intent
    - Identify the logical progression of changes
    - Flag any commits that seem out of scope or unclear
 
-3. **Code Changes Review**
+1. **Code Changes Review**
+
    - Analyze changes since the common ancestor with main: `git diff $(git merge-base main HEAD) HEAD`
    - Summarize what files/modules are being modified
    - Identify the scope and impact of changes
    - Note any potential breaking changes or dependencies
 
-4. **Quality Assessment**
+1. **Quality Assessment**
+
    - Are the changes focused and cohesive?
    - Do commit messages clearly explain the "why" not just "what"?
    - Are there any obvious gaps or inconsistencies?
 
-5. **Recommendations**
+1. **Recommendations**
+
    - Suggest improvements to commit messages if needed
    - Identify any missing documentation or tests
    - Recommend if the branch is ready for review/merge
 
 **Commands to run:**
+
 ```bash
 # Find common ancestor
 MERGE_BASE=$(git merge-base main HEAD)

@@ -1,22 +1,30 @@
-**IMPORTANT: Branch Validation Required**
+# Project Analysis
+
+## Branch Validation
+
 Before proceeding, verify the current git branch:
+
 ```bash
 git branch --show-current
 ```
 
-This analysis should ONLY be performed on `main` or `master` branches. If currently on a different branch, abort the analysis and inform the user that project analysis should be done from the main branch.
+This analysis should ONLY be performed on `main` or `master` branches.
+If currently on a different branch, abort the analysis and inform the user
+that project analysis should be done from the main branch.
 
-**Repository Analysis:**
+## Repository Analysis
+
 Scan this repository to understand its structure, purpose, and current development direction. Please:
 
 1. Examine the repository structure and identify the main technology stack/framework
-2. Read the README and any top-level documentation to understand the project's purpose
-3. Check recent commit history (last 10-20 commits) to understand current development trajectory
-4. Look for documentation folders (docs/, documentation/, wiki/) for additional context
-5. Identify configuration files that indicate tooling, workflows, or development practices
-6. Check for planning documents, roadmaps, or TODO files that show future direction
+1. Read the README and any top-level documentation to understand the project's purpose
+1. Check recent commit history (last 10-20 commits) to understand current development trajectory
+1. Look for documentation folders (docs/, documentation/, wiki/) for additional context
+1. Identify configuration files that indicate tooling, workflows, or development practices
+1. Check for planning documents, roadmaps, or TODO files that show future direction
 
-**Focus Areas:**
+## Focus Areas
+
 - What problem does this project solve?
 - What is the current architecture/structure?
 - What major changes or improvements have been made recently?
@@ -24,10 +32,10 @@ Scan this repository to understand its structure, purpose, and current developme
 - What are the current priorities or next steps?
 - What is the maturity level of the project?
 
-**Output Requirements:**
+## Output Requirements
 
 1. **Save to File**: Write the complete analysis to `analysis/project-analysis.md`
-2. **Metadata Header**: Include the following metadata at the top of the file:
+1. **Metadata Header**: Include the following metadata at the top of the file:
 
 ```markdown
 # Project Analysis
@@ -40,7 +48,7 @@ Scan this repository to understand its structure, purpose, and current developme
 ---
 ```
 
-3. **Analysis Content**: Provide a comprehensive overview covering:
+1. **Analysis Content**: Provide a comprehensive overview covering:
    - Project purpose and scope
    - Current architecture/structure
    - Recent development activity and direction
@@ -48,7 +56,8 @@ Scan this repository to understand its structure, purpose, and current developme
    - Current status and next steps
    - Any notable patterns, decisions, or areas of focus
 
-**Commands to Gather Metadata:**
+## Metadata Commands
+
 ```bash
 # Get current branch
 git branch --show-current
@@ -63,14 +72,17 @@ basename "$(git rev-parse --show-toplevel)"
 date -u +"%Y-%m-%d %H:%M:%S UTC"
 ```
 
-**Update Strategy:**
-If `analysis/project-analysis.md` already exists:
-1. Read the existing file to understand previous analysis
-2. Note what has changed since the last analysis (compare commit hashes)
-3. Update the analysis with new information while preserving valuable historical context
-4. Update the metadata header with new timestamp and commit hash
+## Update Strategy
 
-**File Management:**
+If `analysis/project-analysis.md` already exists:
+
+1. Read the existing file to understand previous analysis
+1. Note what has changed since the last analysis (compare commit hashes)
+1. Update the analysis with new information while preserving valuable historical context
+1. Update the metadata header with new timestamp and commit hash
+
+## File Management
+
 - The `analysis/*.md` files are automatically ignored by git (global gitignore)
 - This allows analysis files to be updated over time without cluttering the repository
 - Files can be manually committed if you want to track analysis changes over time

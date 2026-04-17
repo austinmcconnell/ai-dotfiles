@@ -1,6 +1,10 @@
-Generate a comprehensive pull request description based on the current branch changes.
+# PR Description
+
+Generate a comprehensive pull request description based on the current
+branch changes.
 
 **Analysis Context:**
+
 ```bash
 git log --oneline main..HEAD
 git diff --stat main HEAD
@@ -8,17 +12,21 @@ git diff main HEAD
 ```
 
 **Template Instructions:**
+
 1. Check for a pull request template at `.github/PULL_REQUEST_TEMPLATE.md`
-2. If found, use that template as the base structure for the PR description
-3. If not found, start with the JIRA ticket format shown below
-4. **In both cases**, add the relevant conditional sections from the guidelines below based on what changes were made
+1. If found, use that template as the base structure for the PR description
+1. If not found, start with the JIRA ticket format shown below
+1. **In both cases**, add the relevant conditional sections from
+   the guidelines below based on what changes were made
 
 **Base Format (if no template found):**
 
-### **JIRA Ticket**
+## **JIRA Ticket**
+
 [SCRN-XXX](https://uniteus.atlassian.net/browse/SCRN-XXX)
 
-### **Implementation Details**
+## **Implementation Details**
+
 [2-3 sentence overview of what this PR accomplishes and why it's needed, focusing on business value]
 
 Key Benefits:
@@ -30,83 +38,107 @@ Key Benefits:
 ## Changes Made
 
 ### Features
+
 [Group features by logical functionality, not by file names]
 • [Feature description with brief technical context]
 • [Another feature with implementation details]
 
 **Conditional Sections (add these to ANY PR description when applicable):**
 
-[**ALWAYS INCLUDE if there are new API endpoints:**]
+\[**ALWAYS INCLUDE if there are new API endpoints:**\]
+
 ### API Changes
 
 New Endpoints:
+
 ```http
 GET /path/to/endpoint
 POST /path/to/endpoint
 ```
 
 Enhanced Endpoints:
+
 ```http
 POST /existing/endpoint?new_param=value
 ```
 
 Response Examples:
+
 ```json
 {
   "example": "response"
 }
 ```
 
-[**INCLUDE if there are infrastructure/config changes:**]
+\[**INCLUDE if there are infrastructure/config changes:**\]
+
 ### Infrastructure & Configuration
+
 • [Environment variables, dependencies, deployment changes]
 • [Docker, Kubernetes, Terraform updates]
 • [Database or infrastructure modifications]
 
-[**INCLUDE if there is new documentation:**]
+\[**INCLUDE if there is new documentation:**\]
+
 ### Documentation
+
 • [Documentation updates and additions]
 
-[**ALWAYS INCLUDE:**]
+\[**ALWAYS INCLUDE:**\]
+
 ## Testing
+
 • **X new test cases** covering [functionality] with comprehensive error handling
 • **Total tests passing** including edge cases and failure scenarios
 • [Brief summary of what was tested - avoid excessive detail]
 
-[**INCLUDE if there are deployment considerations:**]
+\[**INCLUDE if there are deployment considerations:**\]
+
 ## Deployment Notes
 
-[**INCLUDE if new environment variables are needed:**]
+\[**INCLUDE if new environment variables are needed:**\]
+
 ### Environment Variables
+
 New configuration options (with defaults):
+
 ```bash
 # [Category] Settings
 VARIABLE_NAME=default_value    # Description
 ANOTHER_VAR=value             # Purpose
 ```
 
-[**INCLUDE if there are infrastructure changes:**]
+\[**INCLUDE if there are infrastructure changes:**\]
+
 ### Infrastructure Changes
+
 • **New AWS Resources**: [list resources]
 • **Kubernetes**: [deployment changes]
 • **Networking**: [network changes]
 
-[**INCLUDE if there are monitoring/operational changes:**]
+\[**INCLUDE if there are monitoring/operational changes:**\]
+
 ### Monitoring
+
 • [Monitoring endpoints or dashboards]
 • [Operational considerations]
 
-[**INCLUDE if there are deployment considerations:**]
+\[**INCLUDE if there are deployment considerations:**\]
+
 ### Key Points
+
 • **Database migrations**: [required/not required with explanation]
 • **Backward compatibility**: [compatible/breaking with details]
 • **Deployment strategy**: [zero downtime/rolling/etc.]
 
-[**ALWAYS INCLUDE:**]
+\[**ALWAYS INCLUDE:**\]
+
 ## Breaking Changes
+
 [None if backward compatible, otherwise list specific breaking changes with migration guidance]
 
 **Content Guidelines:**
+
 - Use bullet points (•) instead of dashes (-)
 - Focus on functionality and business value over technical file details
 - Include code examples for API changes with proper formatting
@@ -120,4 +152,7 @@ ANOTHER_VAR=value             # Purpose
 - Provide JSON examples for new API endpoints
 - Include monitoring and operational considerations when applicable
 
-**Important**: Whether using a template or the base format, always evaluate the changes and include the relevant conditional sections above. The template provides structure, but these sections provide comprehensive change documentation.
+**Important**: Whether using a template or the base format, always
+evaluate the changes and include the relevant conditional sections
+above. The template provides structure, but these sections provide
+comprehensive change documentation.

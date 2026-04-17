@@ -51,7 +51,7 @@ _ai_prompt_names() {
     prompt_dir="$(_ai_prompt_dir)"
 
     if [[ -d "$prompt_dir" ]]; then
-        find "$prompt_dir" -name "*.txt" -type f 2>/dev/null | sed 's|.*/||; s|\.txt$||' | sort
+        find "$prompt_dir" -name "*.md" -not -name "README.md" -type f 2>/dev/null | sed 's|.*/||; s|\.md$||' | sort
     fi
 }
 
@@ -69,7 +69,7 @@ _ai_prompt_save() {
 
     mkdir -p "$prompt_dir"
     echo "Enter your prompt (press Ctrl+D when done):"
-    cat >"$prompt_dir/$name.txt"
+    cat >"$prompt_dir/$name.md"
     echo "Prompt saved as '$name'"
 }
 
@@ -101,7 +101,7 @@ _ai_prompt_use() {
     local name="$1"
     local prompt_dir
     prompt_dir="$(_ai_prompt_dir)"
-    local prompt_file="$prompt_dir/$name.txt"
+    local prompt_file="$prompt_dir/$name.md"
 
     if [[ -z "$name" ]]; then
         echo "Usage: ai-prompt use <prompt-name>"
@@ -138,7 +138,7 @@ _ai_prompt_edit() {
     local name="$1"
     local prompt_dir
     prompt_dir="$(_ai_prompt_dir)"
-    local prompt_file="$prompt_dir/$name.txt"
+    local prompt_file="$prompt_dir/$name.md"
 
     if [[ -z "$name" ]]; then
         echo "Usage: ai-prompt edit <prompt-name>"
@@ -156,7 +156,7 @@ _ai_prompt_show() {
     local name="$1"
     local prompt_dir
     prompt_dir="$(_ai_prompt_dir)"
-    local prompt_file="$prompt_dir/$name.txt"
+    local prompt_file="$prompt_dir/$name.md"
 
     if [[ -z "$name" ]]; then
         echo "Usage: ai-prompt show <prompt-name>"
@@ -179,7 +179,7 @@ _ai_prompt_delete() {
     local name="$1"
     local prompt_dir
     prompt_dir="$(_ai_prompt_dir)"
-    local prompt_file="$prompt_dir/$name.txt"
+    local prompt_file="$prompt_dir/$name.md"
 
     if [[ -z "$name" ]]; then
         echo "Usage: ai-prompt delete <prompt-name>"

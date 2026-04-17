@@ -1,18 +1,25 @@
+# Documentation Analysis
+
 **IMPORTANT: Branch Validation Required**
 Before proceeding, verify the current git branch:
+
 ```bash
 git branch --show-current
 ```
 
-This analysis should ONLY be performed on `main` or `master` branches. If currently on a different branch, abort the analysis and inform the user that documentation analysis should be done from the main branch.
+This analysis should ONLY be performed on `main` or `master` branches.
+If currently on a different branch, abort the analysis and inform
+the user that documentation analysis should be done from the main branch.
 
 **Prerequisite Check:**
 This analysis requires the following prerequisite analysis to be completed first.
 
 Check for required file:
+
 - `analysis/project-analysis.md`
 
 If the file is missing, run the prerequisite analysis first:
+
 - Missing project-analysis.md? Run: `project-analysis`
 
 **If the prerequisite file is missing, abort this analysis and complete the prerequisite first.**
@@ -21,59 +28,69 @@ If the file is missing, run the prerequisite analysis first:
 Analyze the documentation quality, completeness, maintenance, and accessibility of this repository.
 
 **Read Prerequisite Analysis:**
-Read `analysis/project-analysis.md` to understand the project context, purpose, and scope before proceeding with the documentation analysis.
+Read `analysis/project-analysis.md` to understand the project context, purpose,
+and scope before proceeding with the documentation analysis.
 
 Please:
 
 1. **Project Documentation Overview**
+
    - Analyze the main README.md and its completeness
    - Review project description, purpose, and value proposition
    - Identify any getting started guides or quick start documentation
    - Document any project roadmaps, changelogs, or release notes
 
-2. **Technical Documentation**
+1. **Technical Documentation**
+
    - Analyze API documentation and reference materials
    - Review architecture documentation and system diagrams
    - Identify any technical specifications or design documents
    - Document any database schemas or data model documentation
 
-3. **Developer Documentation**
+1. **Developer Documentation**
+
    - Analyze setup and installation instructions
    - Review development environment configuration guides
    - Identify any contributing guidelines or development workflows
    - Document any coding standards or style guide documentation
 
-4. **Code Documentation**
+1. **Code Documentation**
+
    - Analyze inline code comments and their quality
    - Review function and class documentation (docstrings, JSDoc, etc.)
    - Identify any auto-generated documentation from code
    - Document any code examples or usage demonstrations
 
-5. **User Documentation**
+1. **User Documentation**
+
    - Analyze end-user guides and tutorials
    - Review any user manuals or help documentation
    - Identify any FAQ sections or troubleshooting guides
    - Document any video tutorials or interactive documentation
 
-6. **Operational Documentation**
+1. **Operational Documentation**
+
    - Analyze deployment and operations guides
    - Review monitoring, logging, and troubleshooting documentation
    - Identify any runbooks or incident response procedures
    - Document any configuration management or environment setup guides
 
-7. **Documentation Maintenance and Quality**
+1. **Documentation Maintenance and Quality**
+
    - Analyze documentation freshness and accuracy
    - Review any documentation testing or validation processes
    - Identify any broken links or outdated information
    - Document any documentation review or approval workflows
 
-8. **Documentation Accessibility and Organization**
+1. **Documentation Accessibility and Organization**
+
    - Analyze documentation structure and navigation
    - Review search functionality and content discoverability
    - Identify any documentation hosting or publishing systems
    - Document any multi-language or internationalization support
 
 **Focus Areas:**
+
 - How comprehensive and up-to-date is the documentation?
 - Is the documentation well-organized and easy to navigate?
 - Are there any significant gaps in documentation coverage?
@@ -84,7 +101,7 @@ Please:
 **Output Requirements:**
 
 1. **Save to File**: Write the complete analysis to `analysis/documentation-analysis.md`
-2. **Metadata Header**: Include the following metadata at the top of the file:
+1. **Metadata Header**: Include the following metadata at the top of the file:
 
 ```markdown
 # Documentation Analysis
@@ -97,7 +114,7 @@ Please:
 ---
 ```
 
-3. **Analysis Content**: Provide a comprehensive overview covering:
+1. **Analysis Content**: Provide a comprehensive overview covering:
    - Project documentation overview and completeness
    - Technical documentation and specifications
    - Developer documentation and guides
@@ -109,6 +126,7 @@ Please:
    - Documentation improvement recommendations
 
 **Commands to Gather Metadata:**
+
 ```bash
 # Get current branch
 git branch --show-current
@@ -124,6 +142,7 @@ date -u +"%Y-%m-%d %H:%M:%S UTC"
 ```
 
 **Additional Documentation Analysis Commands:**
+
 ```bash
 # Find all documentation files
 find . -name "*.md" -o -name "*.rst" -o -name "*.txt" -o -name "*.adoc" | head -20
@@ -143,14 +162,17 @@ grep -r -i "sphinx\|jekyll\|gitbook\|mkdocs\|docusaurus\|jsdoc" package.json req
 
 **Update Strategy:**
 If `analysis/documentation-analysis.md` already exists:
+
 1. Read the existing file to understand previous documentation analysis
-2. Note what has changed since the last analysis (compare commit hashes)
-3. Update the analysis with new documentation insights while preserving valuable context
-4. Update the metadata header with new timestamp and commit hash
+1. Note what has changed since the last analysis (compare commit hashes)
+1. Update the analysis with new documentation insights while preserving valuable context
+1. Update the metadata header with new timestamp and commit hash
 
 **File Management:**
+
 - The `analysis/*.md` files are automatically ignored by git (global gitignore)
 - This allows analysis files to be updated over time without cluttering the repository
 - Files can be manually committed if you want to track documentation quality evolution over time
 
-Focus on assessing the current state of documentation and identifying areas for improvement rather than rewriting existing documentation.
+Focus on assessing the current state of documentation and identifying areas
+for improvement rather than rewriting existing documentation.

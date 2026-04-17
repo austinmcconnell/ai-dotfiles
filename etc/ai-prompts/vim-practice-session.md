@@ -1,21 +1,30 @@
-I want to practice and improve my vim skills through a structured quiz session. Please reference my vim configuration and documentation in `~/.dotfiles/obsidian/Knowledge Base/Languages/Vim/` to create personalized challenges.
+# Vim Practice Session
+
+I want to practice and improve my vim skills through a structured
+quiz session. Please reference my vim configuration and documentation
+in `~/.dotfiles/obsidian/Knowledge Base/Languages/Vim/` to create
+personalized challenges.
 
 **Session Tracking System:**
 
 1. **Read Previous Session Data**
+
    - Check for `~/.dotfiles/etc/vim/practice-sessions.csv`
-   - If file doesn't exist, create it with headers: `date,focus_area,difficulty,format,duration_min,questions_asked,correct_answers,accuracy_pct,weak_areas,strong_areas,notes`
+   - If file doesn't exist, create it with headers:
+     `date,focus_area,difficulty,format,duration_min,questions_asked,correct_answers,accuracy_pct,weak_areas,strong_areas,notes`
    - Review recent sessions to identify patterns and areas needing attention
    - Look for recurring mistakes or consistently weak areas
    - Note areas that haven't been practiced recently
 
-2. **Session History Analysis**
+1. **Session History Analysis**
+
    - Identify focus areas with low accuracy scores
    - Find topics that haven't been practiced in the last 2 weeks
    - Look for difficulty levels where performance is declining
    - Note any areas where I've shown consistent improvement
 
-3. **Adaptive Session Planning**
+1. **Adaptive Session Planning**
+
    - **IMPORTANT**: Do not assume areas are "strong" without recent testing data
    - Prioritize weak areas identified in previous sessions, but validate assumptions
    - Consider comprehensive baseline assessment if coverage has been narrow
@@ -26,16 +35,19 @@ I want to practice and improve my vim skills through a structured quiz session. 
 **Session Structure:**
 
 1. **MANDATORY Pre-Session Documentation Reading**
+
    - **FIRST**: Read the practice session history file `~/.dotfiles/etc/vim/practice-sessions.csv`
    - **SECOND**: Read the vim configuration file `~/.dotfiles/etc/vim/.vimrc`
-   - **THIRD**: Use fs_read to list ALL files in `~/.dotfiles/obsidian/Knowledge Base/Languages/Vim/` directory
+   - **THIRD**: Use fs_read to list ALL files in
+     `~/.dotfiles/obsidian/Knowledge Base/Languages/Vim/` directory
    - **FOURTH**: Read EVERY .md file found in the vim documentation directory, including:
      - All files in the main directory
      - All files in the `Modes/` subdirectory
      - Any other subdirectories that exist
    - **FIFTH**: Only after reading ALL documentation files, proceed with session planning
 
-2. **Pre-Session Setup** (only after completing mandatory reading)
+1. **Pre-Session Setup** (only after completing mandatory reading)
+
    - Summarize recent practice history from the CSV file
    - Catalog all available vim knowledge areas from the documentation
    - Identify comprehensive question topics from ALL documentation files read
@@ -43,28 +55,34 @@ I want to practice and improve my vim skills through a structured quiz session. 
    - Suggest difficulty level based on previous performance
    - Note any areas that need urgent attention
 
-2. **Skill Assessment**
+1. **Skill Assessment**
+
    - **Coverage Analysis**: Review what vim areas have been tested recently vs. untested areas
    - **Baseline Assessment**: If recent sessions have narrow focus, recommend comprehensive baseline
    - Ask me to specify focus areas or use data-driven recommendations
-   - Available focus areas: motions, operators, text objects, registers, substitution, buffers/windows, command-line mode, plugins, macros, folds, searching, visual mode, marks/jumps
+   - Available focus areas: motions, operators, text objects,
+     registers, substitution, buffers/windows, command-line mode,
+     plugins, macros, folds, searching, visual mode, marks/jumps
    - Determine difficulty level: beginner, intermediate, advanced, mixed, or baseline assessment
    - **Question Distribution**: Ensure broad coverage over time, not just weak area focus
 
-3. **Quiz Format Options**
+1. **Quiz Format Options**
+
    - **Command Recall**: Show me a result and ask what command produced it
    - **Efficiency Challenge**: Present a task and ask for the most efficient approach
    - **Scenario-Based**: Give me real-world editing problems to solve
    - **Plugin Integration**: Test knowledge of my specific plugin shortcuts and workflows
    - **Combination Skills**: Challenges requiring multiple vim concepts together
 
-4. **Question Types**
+1. **Question Types**
+
    - **Quick Fire** (5-10 questions): Rapid recall of basic commands
    - **Deep Dive** (3-5 questions): Complex scenarios requiring explanation
    - **Practical Application**: Multi-step editing tasks
    - **Troubleshooting**: "What went wrong?" scenarios
 
 **Question Delivery Method:**
+
 - Present questions individually in sequence
 - Each question should end with "What is your answer?" or similar prompt
 - Wait for user response before showing correct answer and explanation
@@ -73,8 +91,13 @@ I want to practice and improve my vim skills through a structured quiz session. 
 **Personalization Guidelines:**
 
 - Reference my actual vim configuration in `~/.dotfiles/etc/vim/.vimrc`
-- **Read and reference ALL files** in `~/.dotfiles/obsidian/Knowledge Base/Languages/Vim/` directory for comprehensive question coverage
-- Use content from all vim documentation files including: Motions.md, Operators.md, Text Objects.md, Registers.md, Substitution.md, Buffers Windows And Tabs.md, Searching.md, Plugins.md, and any other files in the directory
+- **Read and reference ALL files** in
+  `~/.dotfiles/obsidian/Knowledge Base/Languages/Vim/` directory
+  for comprehensive question coverage
+- Use content from all vim documentation files including:
+  Motions.md, Operators.md, Text Objects.md, Registers.md,
+  Substitution.md, Buffers Windows And Tabs.md, Searching.md,
+  Plugins.md, and any other files in the directory
 - Use my specific plugin mappings (`;d` for Fern, `;b` for buffers, `;S` for sessions, etc.)
 - Include my leader key (`;`) in relevant questions
 - Test knowledge of plugins I actually use: Fern, ALE, FZF, Grepper, GitGutter, etc.
@@ -84,17 +107,20 @@ I want to practice and improve my vim skills through a structured quiz session. 
 **Question Difficulty Progression:**
 
 1. **Basic Level**
+
    - Single motion/operator combinations
    - Simple plugin shortcuts
    - Basic buffer/window operations
 
-2. **Intermediate Level**
+1. **Intermediate Level**
+
    - Text object combinations
    - Multi-step editing sequences
    - Register usage scenarios
    - Search and replace patterns
 
-3. **Advanced Level**
+1. **Advanced Level**
+
    - Complex macro creation
    - Advanced substitution with ranges and regex
    - Efficient workflow combinations
@@ -103,11 +129,12 @@ I want to practice and improve my vim skills through a structured quiz session. 
 **Session Flow:**
 
 1. **Warm-up** (2-3 easy questions to build confidence)
-2. **Core Practice** (5-8 questions in chosen focus areas)
-3. **Challenge Round** (2-3 difficult scenarios combining multiple concepts)
-4. **Practical Application** (1-2 real-world editing tasks)
+1. **Core Practice** (5-8 questions in chosen focus areas)
+1. **Challenge Round** (2-3 difficult scenarios combining multiple concepts)
+1. **Practical Application** (1-2 real-world editing tasks)
 
-**CRITICAL: Interactive Question Format**
+**CRITICAL - Interactive Question Format:**
+
 - Ask ONE question at a time
 - Wait for the user's answer before proceeding
 - After receiving an answer, provide immediate feedback:
@@ -121,11 +148,13 @@ I want to practice and improve my vim skills through a structured quiz session. 
 **Interactive Session Rules:**
 
 1. **One Question at a Time**: Never present multiple questions simultaneously
-2. **Wait for Response**: Always pause after asking a question and wait for the user's answer
-3. **Immediate Feedback**: After each answer, immediately indicate correct/incorrect
-4. **Educational Explanations**: For wrong answers, explain why their answer was incorrect and what the right approach is
-5. **Score Tracking**: Keep a running tally and show progress (e.g., "Score: 4/7")
-6. **Engagement**: Use encouraging language and acknowledge good reasoning even for incorrect answers
+1. **Wait for Response**: Always pause after asking a question and wait for the user's answer
+1. **Immediate Feedback**: After each answer, immediately indicate correct/incorrect
+1. **Educational Explanations**: For wrong answers, explain why
+   their answer was incorrect and what the right approach is
+1. **Score Tracking**: Keep a running tally and show progress (e.g., "Score: 4/7")
+1. **Engagement**: Use encouraging language and acknowledge good
+   reasoning even for incorrect answers
 
 **Feedback and Learning:**
 
@@ -138,6 +167,7 @@ I want to practice and improve my vim skills through a structured quiz session. 
 **Session Tracking and Data Collection:**
 
 During the session, track:
+
 - **Questions asked**: Specific commands/concepts tested with vim area categorization
 - **Correct/incorrect responses**: For accuracy calculation
 - **Coverage tracking**: Which vim areas were tested vs. not tested
@@ -150,17 +180,28 @@ During the session, track:
 **Post-Session Analysis:**
 
 1. **Performance Summary**
+
    - Calculate accuracy percentage for the session
    - Identify specific commands/concepts that need work
    - Note any improvement from previous sessions on same topics
    - Highlight areas of strength to maintain confidence
 
-2. **Update Tracking File**
-   - Append new session data to `~/.dotfiles/etc/vim/practice-sessions.csv`
-   - Include: date, focus area, difficulty, format, duration, questions asked, correct answers, accuracy %, weak areas (comma-separated), strong areas (comma-separated), notes
-   - Example row: `2024-07-23,motions,intermediate,mixed,15,8,6,75,"f/t commands,word boundaries","basic navigation,line movement","struggled with character-wise motions"`
+1. **Update Tracking File**
 
-3. **Recommendations for Next Session**
+   - Append new session data to `~/.dotfiles/etc/vim/practice-sessions.csv`
+
+   - Include: date, focus area, difficulty, format, duration,
+     questions asked, correct answers, accuracy %, weak areas
+     (comma-separated), strong areas (comma-separated), notes
+
+   - Example row:
+
+     ```text
+     2024-07-23,motions,intermediate,mixed,15,8,6,75,"f/t commands,word boundaries","basic navigation,line movement","struggled with character-wise motions"
+     ```
+
+1. **Recommendations for Next Session**
+
    - Suggest specific focus areas based on current weaknesses
    - **Coverage recommendations**: Identify vim areas not tested recently
    - Recommend optimal difficulty level for continued growth
@@ -180,11 +221,14 @@ During the session, track:
 
 Always begin with an interactive approach like:
 
-"Let's begin your vim practice session! I'll ask you questions one at a time. After each question, give me your answer and I'll let you know if you're correct and explain why. Ready for Question 1?"
+"Let's begin your vim practice session! I'll ask you questions one
+at a time. After each question, give me your answer and I'll let you
+know if you're correct and explain why. Ready for Question 1?"
 
 Choose session focus based on my request or data analysis:
 
-- **"Comprehensive Baseline"**: Test broad range of vim skills to establish current proficiency across all areas
+- **"Comprehensive Baseline"**: Test broad range of vim skills to
+  establish current proficiency across all areas
 - **"Mixed Review"**: Cover all areas with varied difficulty
 - **"Motion Mastery"**: Focus on navigation and movement efficiency
 - **"Text Manipulation"**: Operators, text objects, and editing workflows
@@ -223,6 +267,7 @@ Choose session focus based on my request or data analysis:
 **Session Customization:**
 
 Ask me to specify:
+
 - **Time available**: 5 minutes (quick drill) to 30 minutes (comprehensive)
 - **Focus areas**: Specific topics, data-driven recommendations, or comprehensive review
 - **Difficulty preference**: Challenge me, reinforce basics, or adaptive based on history
@@ -236,4 +281,6 @@ Ask me to specify:
 - **Data privacy**: Only stores vim command performance, no personal information
 - **Analysis tools**: Can be opened in spreadsheet software for manual analysis
 
-**Goal**: Maintain and improve vim proficiency through regular, targeted practice that adapts to my specific configuration, tracks progress over time, and systematically addresses areas of weakness.
+**Goal**: Maintain and improve vim proficiency through regular,
+targeted practice that adapts to my specific configuration, tracks
+progress over time, and systematically addresses areas of weakness.

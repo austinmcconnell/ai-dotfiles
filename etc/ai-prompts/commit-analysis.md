@@ -1,39 +1,53 @@
-Analyze the commits on my current branch and identify which ones should be removed, split into smaller units, have improved commit messages, or (rarely) consolidated through interactive rebase.
+# Commit Analysis
 
-**Guiding Principle**: Optimize for reviewability and git bisect, not commit count. Granular commits (20-30) are better than consolidated commits (5-10) if each commit represents a logical, atomic unit of work. Each commit should be independently reviewable and revertable.
+Analyze the commits on my current branch and identify which ones
+should be removed, split into smaller units, have improved commit
+messages, or (rarely) consolidated through interactive rebase.
 
-**Step 1: Initial Analysis**
+**Guiding Principle**: Optimize for reviewability and git bisect,
+not commit count. Granular commits (20-30) are better than
+consolidated commits (5-10) if each commit represents a logical,
+atomic unit of work. Each commit should be independently reviewable
+and revertable.
+
+## Step 1: Initial Analysis
 
 Run these commands to understand the commit structure:
 
-bash
+```bash
 # Get all commits on this branch
+
 git log --oneline main..HEAD
 
 # Show detailed diff for each commit
-for commit in $(git log --oneline main..HEAD | awk '{print $1}'); do
- echo "=== $commit ==="
- git show --stat $commit
- echo ""
-done
 
-**Step 2: Analyze Each Commit**
+for commit in $(git log --oneline main..HEAD | awk '{print $1}'); do
+echo "=== $commit ==="
+git show --stat $commit
+echo ""
+done
+```
+
+## Step 2: Analyze Each Commit
 
 For each commit, examine:
-1. **Commit message quality**: Is it descriptive? Does it explain WHY, not just WHAT?
-2. **Scope**: Does it change multiple unrelated things that should be separate commits?
-3. **Atomic nature**: Is it a single logical unit of work?
-4. **Diff content**: Read the actual code changes to understand what the commit does
 
-**Step 3: Identify All Opportunities**
+1. **Commit message quality**: Is it descriptive? Does it explain WHY, not just WHAT?
+1. **Scope**: Does it change multiple unrelated things that should be separate commits?
+1. **Atomic nature**: Is it a single logical unit of work?
+1. **Diff content**: Read the actual code changes to understand what the commit does
+
+## Step 3: Identify All Opportunities
 
 Look for (in priority order):
 
 **A. Commits to Remove** (highest priority):
+
 - **Marked for removal**: Commits with "fixup", "DROP", "WIP", "TEMP", or debug/temporary language
 - **Accidental commits**: Debug logging, commented code, temporary testing changes
 
 **B. Split Candidates** (commits to break apart):
+
 - **Multiple concerns**: Commit changes unrelated files/features (e.g., "Add feature X and fix bug Y")
 - **Mixed refactoring**: Combines refactoring with new functionality
 - **Scope creep**: Commit message says one thing but diff shows additional unrelated changes
@@ -42,6 +56,7 @@ Look for (in priority order):
 - **Security changes bundled together**: Multiple distinct security improvements in one commit
 
 **C. Message Improvement Candidates**:
+
 - **Vague messages**: "Fix bug", "Update code", "Changes", "WIP"
 - **Missing context**: Doesn't explain WHY the change was made
 - **Inaccurate**: Message doesn't match what the diff actually does
@@ -49,50 +64,63 @@ Look for (in priority order):
 - **First line too long**: Exceeds 50 characters
 
 **D. Consolidation Candidates** (lowest priority - use sparingly):
-- **Bug fixes for bugs introduced in the branch**: Commits that fix issues introduced earlier in the same branch (not pre-existing bugs)
+
+- **Bug fixes for bugs introduced in the branch**: Commits that fix
+  issues introduced earlier in the same branch (not pre-existing bugs)
 - **Accidental splits**: Commits that were accidentally split (e.g., forgot to stage a file)
 - **True fixup commits**: Commits explicitly marked as "fixup!" or "squash!"
 
 **Do NOT consolidate:**
+
 - **Security changes**: Keep each security improvement separate for independent review
 - **Different concerns**: Even if touching the same files, keep separate if addressing different problems
-- **Would create large commits**: If consolidation would create a commit >300 lines of changes, keep separate
+- **Would create large commits**: If consolidation would create a
+  commit >300 lines of changes, keep separate
 - **Iterative fixes**: Configuration refinements discovered during deployment/testing should stay separate
 - **Feature + infrastructure**: Keep feature code separate from deployment/config changes
 - **Same file, different purposes**: Multiple commits touching the same file for different reasons
 
-**Step 4: Present Complete Analysis**
+## Step 4: Present Complete Analysis
 
 First, present a complete overview organized by action type:
 
 ### Commits to Remove
+
 List all commits marked for removal with:
+
 - Commit hash and message
 - Reason for removal
 - Impact on commit count
 
 ### Split Recommendations
+
 List all commits that should be split with:
+
 - Current commit message
 - Size metrics (lines changed, files affected)
 - Proposed split (e.g., "Split into: 1) Refactor X, 2) Add feature Y")
 - Rationale for split
 
 ### Message Improvements
+
 List all commits needing better messages with:
+
 - Current message
 - Analysis of what the diff actually does
 - Proposed improved message
 - Rationale for improvement
 
 ### Consolidation Opportunities (if any)
+
 List any groups with:
+
 - Group title (e.g., "Set 1: Fixup commits (2 commits)")
 - Brief rationale
 - Warning if consolidation would create a large commit
 - Total impact on commit count
 
 ### Summary
+
 - Total commits: X
 - Commits to remove: N (→ X-N commits)
 - Commits to split: Z (→ +W commits)
@@ -102,24 +130,26 @@ List any groups with:
 - **Ask for approval**: "Do you want to proceed with these changes?"
 - **Wait for user confirmation** before starting
 
-**Step 5: Work Through Changes Interactively**
+## Step 5: Work Through Changes Interactively
 
 After receiving approval, work through each change one at a time:
 
 1. **Show the specific change** (consolidation/split/message improvement)
-2. **Provide rebase/amend instructions**
-3. **Explain the rationale**
-4. **Ask for confirmation**: "Ready to proceed with this change?"
-5. **Wait for user response** before moving to the next change
+1. **Provide rebase/amend instructions**
+1. **Explain the rationale**
+1. **Ask for confirmation**: "Ready to proceed with this change?"
+1. **Wait for user response** before moving to the next change
 
-**Step 6: Verify Each Change**
+## Step 6: Verify Each Change
 
 After each modification:
+
 1. Show the resulting commit(s)
-2. Verify the diff matches expectations
-3. Check for any unintended side effects
+1. Verify the diff matches expectations
+1. Check for any unintended side effects
 
 **Important Guidelines:**
+
 - Work through ONE change at a time
 - Don't move to the next change until user confirms
 - For splits, check which files/lines are changed and if other commits touch the same code
@@ -133,13 +163,15 @@ After each modification:
 - Keep feature code separate from infrastructure/deployment changes
 
 **Commit Message Best Practices:**
-- First line: Imperative mood, <50 chars, no period (e.g., "Add user authentication")
+
+- First line: Imperative mood, \<50 chars, no period (e.g., "Add user authentication")
 - Body: Explain WHY, not just WHAT. Include context, trade-offs, alternatives considered
 - Reference issues/tickets if applicable
 - For complex changes, use bullet points to list key changes
 
 **Split Decision Criteria:**
 A commit should be split if:
+
 - It mixes refactoring with new features
 - It touches multiple unrelated subsystems
 - The commit message uses "and" to describe multiple distinct changes
@@ -151,15 +183,17 @@ A commit should be split if:
 
 **Consolidation Decision Criteria:**
 Only consolidate commits if:
+
 - They are true fixup/squash commits for the same logical change
 - They fix bugs introduced in the same branch (not pre-existing bugs)
 - They were accidentally split (e.g., forgot to stage files)
-- The resulting commit would be <300 lines of changes
+- The resulting commit would be \<300 lines of changes
 - They address the exact same concern (not just the same file)
 - Consolidation improves clarity (rare)
 
 **Output Format:**
 Present each change clearly with:
+
 - Change type (Consolidate/Split/Improve Message)
 - Current state
 - Proposed state

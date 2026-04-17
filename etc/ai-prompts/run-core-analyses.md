@@ -1,8 +1,10 @@
-# Run Full Analysis Suite
+# Run Core Analyses
 
-Run all 9 analysis prompts against the repository in the current working
-directory. Do not navigate to a different repository — use `pwd` to confirm
-your location before starting.
+Run the 4 core analysis prompts (project, architecture, schema, integration)
+against the repository in the current working directory. Do not navigate to a
+different repository — use `pwd` to confirm your location before starting.
+These build cross-repo understanding of what a project does and how it
+integrates with other systems.
 
 ## Step 1: Validate branch
 
@@ -13,14 +15,9 @@ Verify the current branch is `main` or `master`. If not, stop and tell the user.
 Get the current HEAD commit hash. Then check each of these files in `analysis/`:
 
 1. project-analysis.md
-2. architecture-analysis.md
-3. schema-analysis.md
-4. documentation-analysis.md
-5. integration-analysis.md
-6. testing-analysis.md
-7. technical-debt-analysis.md
-8. performance-analysis.md
-9. security-analysis.md
+1. architecture-analysis.md
+1. schema-analysis.md
+1. integration-analysis.md
 
 For each file that exists, read the `**HEAD Commit:**` line from its metadata
 header. If the commit matches current HEAD, that analysis is current.
@@ -29,8 +26,7 @@ Report which analyses are current vs stale/missing, then proceed with only the
 stale or missing ones. Dependency ordering guarantees that prerequisites are
 current before any dependent analysis runs.
 
-If everything is current, inform the user and ask whether to force a full
-refresh.
+If everything is current, inform the user and ask whether to force a refresh.
 
 ## Step 3: Run analyses in dependency order
 
@@ -48,25 +44,17 @@ in the previous level are complete.
 
 ### Level 1
 
-2. `architecture-analysis.txt`
-3. `schema-analysis.txt`
-4. `documentation-analysis.txt`
+1. `architecture-analysis.txt`
+1. `schema-analysis.txt`
 
 ### Level 2
 
-5. `integration-analysis.txt`
-6. `testing-analysis.txt`
-7. `technical-debt-analysis.txt`
-
-### Level 3
-
-8. `performance-analysis.txt`
-9. `security-analysis.txt`
+1. `integration-analysis.txt`
 
 ## Notes
 
+- Each prompt file contains complete instructions including output format and
+  metadata
 - The prerequisite checks in each prompt will pass since you are running them
   in dependency order
-- If context gets tight, use `/compact` between levels to free space while
-  preserving key findings
 - Focus on thorough analysis at each step — quality over speed

@@ -1,20 +1,27 @@
+# Integration Analysis
+
 **IMPORTANT: Branch Validation Required**
 Before proceeding, verify the current git branch:
+
 ```bash
 git branch --show-current
 ```
 
-This analysis should ONLY be performed on `main` or `master` branches. If currently on a different branch, abort the analysis and inform the user that integration analysis should be done from the main branch.
+This analysis should ONLY be performed on `main` or `master` branches.
+If currently on a different branch, abort the analysis and inform
+the user that integration analysis should be done from the main branch.
 
 **Prerequisite Check:**
 This analysis requires the following prerequisite analyses to be completed first.
 
 Check for required files:
+
 - `analysis/project-analysis.md`
 - `analysis/architecture-analysis.md`
 - `analysis/schema-analysis.md`
 
 If any files are missing, run the corresponding analysis prompts first:
+
 - Missing project-analysis.md? Run: `project-analysis`
 - Missing architecture-analysis.md? Run: `architecture-analysis`
 - Missing schema-analysis.md? Run: `schema-analysis`
@@ -26,6 +33,7 @@ Analyze how this system integrates with external services, APIs, databases, and 
 
 **Read Prerequisite Analyses:**
 Read the following files to understand the project context and architecture before proceeding:
+
 - `analysis/project-analysis.md` - For project context, purpose, and scope
 - `analysis/architecture-analysis.md` - For system design and component structure
 - `analysis/schema-analysis.md` - For data models, schemas, and API structures
@@ -33,48 +41,56 @@ Read the following files to understand the project context and architecture befo
 Please:
 
 1. **External API Integrations**
+
    - Identify all external APIs and services being consumed
    - Document API endpoints, authentication methods, and data formats
    - Analyze error handling and retry mechanisms for external calls
    - Note any rate limiting or throttling considerations
 
-2. **Database and Data Source Integrations**
+1. **Database and Data Source Integrations**
+
    - Identify all databases and data sources (SQL, NoSQL, caches, etc.)
    - Document connection patterns and connection pooling strategies
    - Analyze data access patterns and ORM/query frameworks used
    - Note any database migration or schema management approaches
 
-3. **Authentication and Authorization**
+1. **Authentication and Authorization**
+
    - Document authentication flows (OAuth, JWT, API keys, etc.)
    - Analyze authorization patterns and access control mechanisms
    - Identify any single sign-on (SSO) or identity provider integrations
    - Note security considerations for external integrations
 
-4. **Message Queues and Event Systems**
+1. **Message Queues and Event Systems**
+
    - Identify any message brokers or event streaming platforms
    - Document message formats and communication patterns
    - Analyze event-driven architecture components
    - Note any pub/sub or messaging patterns in use
 
-5. **Third-Party Services and Libraries**
+1. **Third-Party Services and Libraries**
+
    - Catalog major third-party dependencies and their purposes
    - Identify any SaaS integrations (payment processors, email services, etc.)
    - Document any webhook or callback mechanisms
    - Note any vendor-specific SDKs or libraries in use
 
-6. **Data Transformation and Mapping**
+1. **Data Transformation and Mapping**
+
    - Analyze how data is transformed between systems
    - Document any ETL processes or data pipelines
    - Identify data validation and sanitization approaches
    - Note any data format conversions (JSON, XML, CSV, etc.)
 
-7. **Integration Patterns and Protocols**
+1. **Integration Patterns and Protocols**
+
    - Identify communication protocols (REST, GraphQL, gRPC, WebSockets, etc.)
    - Document any integration patterns (adapter, facade, gateway, etc.)
    - Analyze synchronous vs asynchronous integration approaches
    - Note any circuit breaker or resilience patterns
 
 **Focus Areas:**
+
 - What external systems does this application depend on?
 - How are integrations implemented and managed?
 - What are the data flows between systems?
@@ -85,7 +101,7 @@ Please:
 **Output Requirements:**
 
 1. **Save to File**: Write the complete analysis to `analysis/integration-analysis.md`
-2. **Metadata Header**: Include the following metadata at the top of the file:
+1. **Metadata Header**: Include the following metadata at the top of the file:
 
 ```markdown
 # Integration Analysis
@@ -98,7 +114,7 @@ Please:
 ---
 ```
 
-3. **Analysis Content**: Provide a comprehensive overview covering:
+1. **Analysis Content**: Provide a comprehensive overview covering:
    - External API integrations and dependencies
    - Database and data source connections
    - Authentication and authorization flows
@@ -109,6 +125,7 @@ Please:
    - Security and error handling considerations
 
 **Commands to Gather Metadata:**
+
 ```bash
 # Get current branch
 git branch --show-current
@@ -124,6 +141,7 @@ date -u +"%Y-%m-%d %H:%M:%S UTC"
 ```
 
 **Additional Analysis Commands:**
+
 ```bash
 # Look for configuration files that might contain integration details
 find . -name "*.env*" -o -name "config.*" -o -name "*.yml" -o -name "*.yaml" -o -name "*.json" | head -20
@@ -137,14 +155,17 @@ find . -name "package.json" -o -name "requirements.txt" -o -name "Gemfile" -o -n
 
 **Update Strategy:**
 If `analysis/integration-analysis.md` already exists:
+
 1. Read the existing file to understand previous integration analysis
-2. Note what has changed since the last analysis (compare commit hashes)
-3. Update the analysis with new integration insights while preserving valuable context
-4. Update the metadata header with new timestamp and commit hash
+1. Note what has changed since the last analysis (compare commit hashes)
+1. Update the analysis with new integration insights while preserving valuable context
+1. Update the metadata header with new timestamp and commit hash
 
 **File Management:**
+
 - The `analysis/*.md` files are automatically ignored by git (global gitignore)
 - This allows analysis files to be updated over time without cluttering the repository
 - Files can be manually committed if you want to track integration evolution over time
 
-Focus on understanding the current integration landscape and patterns rather than suggesting major architectural changes.
+Focus on understanding the current integration landscape and patterns rather
+than suggesting major architectural changes.
