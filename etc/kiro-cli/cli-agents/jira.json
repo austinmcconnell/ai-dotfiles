@@ -93,7 +93,7 @@
                 "command -v .*",
                 "git branch.*",
                 "git diff.*",
-                "git log.*",
+                "(GIT_PAGER=cat )?git log.*",
                 "git show.*",
                 "git status.*",
                 "grep .*",

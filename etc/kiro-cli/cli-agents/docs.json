@@ -110,6 +110,7 @@
             "allowedCommands": [
                 "mdbook .*",
                 "pre-commit .*",
+                "(GIT_PAGER=cat )?git log.*",
                 "git status.*",
                 "ls( .*)?",
                 "cat .*",
@@ -118,6 +119,7 @@
                 "awk .*",
                 "head .*",
                 "tail .*",
+                "tree( .*)?",
                 "wc .*"
             ],
             "deniedCommands": [

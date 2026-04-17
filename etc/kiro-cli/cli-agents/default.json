@@ -86,8 +86,24 @@
             "name": "screenings-ingestion",
             "description": "Python app code, tests, Terraform infrastructure, and analysis docs for the FHIR screenings ingestion service",
             "indexType": "fast",
-            "include": ["app/**/*.py", "tests/**/*.py", "infrastructure/**/*.tf", "infrastructure/**/*.yaml", "infrastructure/**/*.yml", "docs/**/*.md", "fhir-analysis/**/*.md", "analysis/**/*.md", "README.md"],
-            "exclude": ["**/__pycache__/**", ".terraform/**", ".pre/**", ".venv/**", "node_modules/**"],
+            "include": [
+                "app/**/*.py",
+                "tests/**/*.py",
+                "infrastructure/**/*.tf",
+                "infrastructure/**/*.yaml",
+                "infrastructure/**/*.yml",
+                "docs/**/*.md",
+                "fhir-analysis/**/*.md",
+                "analysis/**/*.md",
+                "README.md"
+            ],
+            "exclude": [
+                "**/__pycache__/**",
+                ".terraform/**",
+                ".pre/**",
+                ".venv/**",
+                "node_modules/**"
+            ],
             "autoUpdate": true
         },
         {
@@ -111,9 +127,7 @@
             "autoUpdate": false
         }
     ],
-    "tools": [
-        "*"
-    ],
+    "tools": ["*"],
     "toolsSettings": {
         "shell": {
             "allowedCommands": [
@@ -123,7 +137,7 @@
                 "command -v .*",
                 "git branch.*",
                 "git diff.*",
-                "git log.*",
+                "(GIT_PAGER=cat )?git log.*",
                 "git show.*",
                 "git status.*",
                 "grep .*",
@@ -135,6 +149,7 @@
                 "sed .*",
                 "sort .*",
                 "tail .*",
+                "tree( .*)?",
                 "type .*",
                 "uniq .*",
                 "wc .*",
@@ -183,31 +198,48 @@
             ]
         },
         "aws": {
-            "allowedServices": ["s3", "lambda", "ec2", "ecs", "eks", "cloudformation", "cloudwatch", "logs", "iam", "sts", "ssm"],
+            "allowedServices": [
+                "s3",
+                "lambda",
+                "ec2",
+                "ecs",
+                "eks",
+                "cloudformation",
+                "cloudwatch",
+                "logs",
+                "iam",
+                "sts",
+                "ssm"
+            ],
             "autoAllowReadonly": true
         },
         "write": {
-            "allowedPaths": [
-                "~/projects/**",
-                "~/repositories/**",
-                "~/.dotfiles/**",
-                "./**"
-            ],
+            "allowedPaths": ["~/projects/**", "~/repositories/**", "~/.dotfiles/**", "./**"],
+            "deniedPaths": ["/etc/**", "/usr/**", "/bin/**", "/sbin/**", "/System/**"]
+        },
+        "grep": {
+            "allowedPaths": ["~/projects/**", "~/repositories/**", "~/.dotfiles/**", "./**"],
             "deniedPaths": [
                 "/etc/**",
                 "/usr/**",
                 "/bin/**",
                 "/sbin/**",
-                "/System/**"
+                "/System/**",
+                "**/.env",
+                "**/.env.*"
             ]
-        },
-        "grep": {
-            "allowedPaths": ["~/projects/**", "~/repositories/**", "~/.dotfiles/**", "./**"],
-            "deniedPaths": ["/etc/**", "/usr/**", "/bin/**", "/sbin/**", "/System/**", "**/.env", "**/.env.*"]
         },
         "glob": {
             "allowedPaths": ["~/projects/**", "~/repositories/**", "~/.dotfiles/**", "./**"],
-            "deniedPaths": ["/etc/**", "/usr/**", "/bin/**", "/sbin/**", "/System/**", "**/.env", "**/.env.*"]
+            "deniedPaths": [
+                "/etc/**",
+                "/usr/**",
+                "/bin/**",
+                "/sbin/**",
+                "/System/**",
+                "**/.env",
+                "**/.env.*"
+            ]
         },
         "subagent": {
             "availableAgents": ["default", "github", "jira"],
@@ -220,9 +252,7 @@
                 ".*stackoverflow\\.com.*",
                 ".*developer\\.mozilla\\.org.*"
             ],
-            "blocked": [
-                ".*pastebin\\.com.*"
-            ]
+            "blocked": [".*pastebin\\.com.*"]
         }
     }
 }
