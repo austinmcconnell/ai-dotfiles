@@ -30,6 +30,15 @@
   "knowledge.maxFiles": 2000,
   "knowledge.indexType": "best",
   "chat.diffTool": "delta --paging=never",
+  "chat.enableCheckpoint": true,
+  "chat.enableContextUsageIndicator": true,
+  "chat.enableHistoryHints": false,
+  "chat.enableNotifications": true,
+  "chat.enablePromptHints": false,
+  "chat.enableSubagent": true,
   "chat.enableThinking": true,
-  "chat.enableTodoList": true
+  "chat.enableTodoList": true,
+  "chat.greeting.enabled": false,
+  "cleanup.periodDays": 90,
+  "hooks.showStatus": true
 }
