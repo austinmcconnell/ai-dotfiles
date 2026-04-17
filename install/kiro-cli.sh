@@ -109,19 +109,12 @@ else
 fi
 
 # Install MCP servers if npm is available
+source "$DOTFILES_DIR/etc/kiro-cli/mcp-servers.conf"
+
 if is-executable npm; then
     print_header "Installing Kiro CLI MCP servers"
 
-    # List of Node.js MCP servers to install
-    MCP_SERVERS=(
-        "@modelcontextprotocol/server-filesystem"
-        "enhanced-postgres-mcp-server"
-        "@aashari/mcp-server-atlassian-jira"
-        "kubernetes-mcp-server"
-    )
-
-    # Install each MCP server
-    for server in "${MCP_SERVERS[@]}"; do
+    for server in "${NODE_MCP_SERVERS[@]}"; do
         echo "Installing $server..."
         if npm list -g "$server" >/dev/null 2>&1; then
             echo "✓ $server is already installed"
@@ -140,12 +133,6 @@ fi
 if is-executable uv; then
     print_header "Pre-caching Python MCP servers for uvx"
 
-    PYTHON_MCP_SERVERS=(
-        "mcp-server-git"
-        "mcp-server-time"
-        "mcp-server-fetch"
-    )
-
     for server in "${PYTHON_MCP_SERVERS[@]}"; do
         echo "Pre-caching $server..."
         uvx --quiet "$server" --help >/dev/null 2>&1 && echo "✓ $server cached" || echo "⚠️  $server may need manual verification"
@@ -161,9 +148,6 @@ fi
 if is-executable go; then
     print_header "Building official GitHub MCP Server from source"
 
-    GITHUB_MCP_REPO_DIR="$HOME/.repositories/github-mcp-server"
-    GITHUB_MCP_BINARY="$HOME/.local/bin/github-mcp-server"
-
     # Create directories
     mkdir -p "$HOME/.repositories"
     mkdir -p "$HOME/.local/bin"
@@ -175,7 +159,7 @@ if is-executable go; then
         git pull origin main
     else
         echo "Cloning GitHub MCP Server repository..."
-        git clone https://github.com/github/github-mcp-server.git "$GITHUB_MCP_REPO_DIR"
+        git clone "$GITHUB_MCP_REPO_URL" "$GITHUB_MCP_REPO_DIR"
         cd "$GITHUB_MCP_REPO_DIR"
     fi
 
