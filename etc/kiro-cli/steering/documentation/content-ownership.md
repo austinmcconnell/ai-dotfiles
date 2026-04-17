@@ -124,7 +124,7 @@ documenting this.
 - Physical/logical setup details
 - Performance metrics (actual measurements)
 - Upgrade paths
-- Bill of materials — consolidated procurement summary linking to component files
+- Bill of materials — procurement ledger linking to component files
 
 **Format**: Specifications, measurements, reference links
 
@@ -133,7 +133,7 @@ documenting this.
 - `gateway.md` - Gateway device specs (hardware example)
 - `auth-module.md` - Authentication module specs (software example)
 - `sensors.md` - Sensor specs and capabilities (IoT example)
-- `bom.md` - Bill of materials (summary view linking to component files)
+- `bom.md` - Bill of materials (procurement ledger linking to component files)
 
 **What NOT to include**:
 
@@ -143,7 +143,7 @@ documenting this.
 
 **Why**: Component specs are physical/logical facts. Configuration specs are design decisions. Keep
 them separate. The BOM lives here because every BOM entry corresponds to a component file — it is a
-procurement summary of the directory's contents.
+procurement ledger of the directory's contents.
 
 ### configuration/ = WHAT (Specifications)
 
@@ -320,8 +320,11 @@ Every subdirectory must have README.md with:
 ### Authoritative location
 
 Component files in components/ are the single source of truth for purchase data (price, date,
-quantity). The BOM in components/bom.md is a summary view that links to component files — it does
-not duplicate or override purchase details.
+quantity). The BOM in components/bom.md is a procurement ledger that records actual per-unit costs
+and links to component files — it does not duplicate specifications but must reflect the real prices
+from component files. The BOM is an intentional exception to the no-duplication rule: it repeats
+unit prices from component files for at-a-glance procurement totals, but component files remain
+authoritative. When prices conflict, component files win.
 
 ### Standard fields for component files
 

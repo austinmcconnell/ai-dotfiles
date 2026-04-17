@@ -3,9 +3,10 @@
 ```markdown
 # Bill of materials
 
-<!-- This file is a SUMMARY VIEW of components — not the source of truth. -->
+<!-- This file is a PROCUREMENT LEDGER — it records actual per-unit costs. -->
 <!-- Purchase details (price, date) live in individual component files. -->
 <!-- Prices are pre-tax, pre-shipping unit prices. -->
+<!-- BOM prices must match the real prices in component files. -->
 
 ## Components
 
@@ -18,7 +19,7 @@
 ## Notes
 
 - Unit prices are pre-tax, pre-shipping per component file conventions
-- Update component files first, then sync this summary
+- Update component files first, then sync this ledger
 
 ## Related documentation
 
@@ -31,7 +32,7 @@
 ### Component naming
 
 Use specific product or model names, not generic categories. The BOM should read as a procurement
-list — someone should be able to look at a row and know exactly what to order.
+ledger — someone should be able to look at a row and know exactly what was ordered and what it cost.
 
 | Use                       | Don't use   |
 | ------------------------- | ----------- |

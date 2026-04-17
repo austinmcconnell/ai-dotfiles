@@ -66,6 +66,7 @@ Review each file for proper content type separation:
 
 - [ ] Links to components/ for details — does not duplicate specifications
 - [ ] Every component in components/ has a corresponding BOM entry
+- [ ] BOM prices match the actual prices in component files (ledger accuracy)
 - [ ] Status tracking is current (Bought / Needed / On order)
 - [ ] Unit prices are pre-tax, pre-shipping per pricing conventions
 
