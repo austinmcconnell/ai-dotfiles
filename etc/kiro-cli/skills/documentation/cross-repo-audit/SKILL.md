@@ -57,6 +57,7 @@ assignments, main switch port assignments.
 | Main VLAN IPs       | `configuration/network-topology.md` | Main VLAN DHCP reservations                     |
 | VLAN definitions    | `configuration/vlans.md`            | VLAN table (ID, name, subnet)                   |
 | DNS architecture    | `configuration/network-topology.md` | DNS servers per VLAN, Pi-hole local DNS records |
+| Network rack layout | `configuration/rack-layout.md`      | DeskPi T0 unit assignments                      |
 | Physical topology   | `configuration/network-topology.md` | Text diagram and mermaid diagram                |
 
 ## Audit Workflow
