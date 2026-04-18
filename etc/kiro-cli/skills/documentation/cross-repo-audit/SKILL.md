@@ -179,6 +179,9 @@ After completing the audit, check whether this skill itself needs updating:
 - [ ] No new files contain shared resource assignments that are not listed
 - [ ] No new repos have been added that share resources with existing repos
 - [ ] Ownership rules still reflect the current repo responsibilities
+- [ ] If rack assignments now span three or more repos, or a device has moved between racks,
+  consider whether a dedicated rack infrastructure repo would reduce cross-repo coordination
+  overhead (see "Scaling: Dedicated rack infrastructure repo" below)
 
 If any of these are stale, suggest specific updates to this skill file.
 
@@ -227,3 +230,20 @@ file, or with the actual topology described across repos. Check diagrams against
 Apple devices hardcode `.local` to mDNS (Bonjour), which prevents standard DNS resolution and breaks
 VPN access. The ubiquiti-network-stack repo uses `.lan` for Pi-hole local DNS records. Other repos
 should use `.lan` for FQDNs, not `.local`. If a repo uses `.local`, flag it for correction.
+
+## Scaling: Dedicated rack infrastructure repo
+
+If the audit repeatedly surfaces rack-related conflicts, or the infrastructure grows beyond the
+current two-active-rack setup, consider extracting all physical rack assignments (U-slots, PDU
+ports, inter-rack cabling) into a dedicated repo. Device repos would reference it for physical
+placement.
+
+**Indicators that extraction is warranted:**
+
+- Three or more repos have devices in the same rack
+- Devices move between racks, requiring coordinated multi-repo updates
+- A new rack is added with devices from multiple existing repos
+- Cross-rack inventory questions come up regularly (e.g., "which U slots are free?")
+
+**Current state:** Two active racks with clear single owners (ubiquiti-network-stack → T0, tiny-lab
+→ T1). This structure works at current scale.
