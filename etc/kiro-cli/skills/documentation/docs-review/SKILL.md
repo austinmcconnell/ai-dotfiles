@@ -172,7 +172,33 @@ Check that each subdirectory has README.md with:
 - `components/`
 - `planning/` (if exists)
 
-### Step 7: Generate Review Report
+### Step 7: Cross-Repo Consistency Check
+
+If the repo references shared resources (IP addresses, switch ports, rack slots, PDU ports, VLAN
+assignments, DNS records), run a targeted check against the authoritative source for each resource
+the repo touches.
+
+**Ownership quick reference** (for full details, see the `cross-repo-audit` skill):
+
+| Resource                   | Authoritative repo → file                                      |
+| -------------------------- | -------------------------------------------------------------- |
+| IP addresses, VLANs, DNS   | ubiquiti-network-stack → `configuration/network-topology.md`   |
+| Rack slots, PDU ports      | tiny-lab → `configuration/rack-layout.md`, `components/pdu.md` |
+| Compute switch ports       | tiny-lab → `configuration/network.md`                          |
+| Main switch, gateway ports | ubiquiti-network-stack → `configuration/network-topology.md`   |
+
+**For each shared resource found in this repo:**
+
+- [ ] Read the authoritative source file listed above
+- [ ] Verify values in this repo match the authoritative source
+- [ ] Hostnames use `.lan` suffix, not `.local`
+- [ ] Cross-repo GitHub links point to valid files
+
+If conflicts are found, update this repo to match the authoritative source. If the authoritative
+source is wrong, fix it first. Never modify repos outside the current working directory without
+proposing the changes and receiving explicit approval first.
+
+### Step 8: Generate Review Report
 
 Create a structured report with findings:
 
@@ -388,3 +414,4 @@ mdbook build
 - `references/review-checklist.md` - Detailed review checklist
 - `steering/documentation/content-ownership.md` - Content ownership principles
 - `steering/documentation/link-conventions.md` - Cross-referencing standards
+- `cross-repo-audit` skill - Multi-repo consistency checks for shared resources

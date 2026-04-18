@@ -46,16 +46,18 @@ assignments.
 
 ### ubiquiti-network-stack (network owner)
 
-Owns: IP address assignments (all VLANs), gateway port assignments, main switch port assignments,
-VLAN definitions.
+Owns: IP address assignments (all VLANs), VLAN definitions, DNS architecture, gateway port
+assignments, main switch port assignments.
 
-| Resource            | File                                | Table/section to check            |
-| ------------------- | ----------------------------------- | --------------------------------- |
-| Gateway ports       | `configuration/network-topology.md` | Cloud Gateway Fiber port table    |
-| Main switch ports   | `configuration/network-topology.md` | Switch Flex 2.5G 8 PoE port table |
-| Management VLAN IPs | `configuration/network-topology.md` | Management VLAN DHCP reservations |
-| Main VLAN IPs       | `configuration/network-topology.md` | Main VLAN DHCP reservations       |
-| Physical topology   | `configuration/network-topology.md` | Text diagram and mermaid diagram  |
+| Resource            | File                                | Table/section to check                          |
+| ------------------- | ----------------------------------- | ----------------------------------------------- |
+| Gateway ports       | `configuration/network-topology.md` | Cloud Gateway Fiber port table                  |
+| Main switch ports   | `configuration/network-topology.md` | Switch Flex 2.5G 8 PoE port table               |
+| Management VLAN IPs | `configuration/network-topology.md` | Management VLAN DHCP reservations               |
+| Main VLAN IPs       | `configuration/network-topology.md` | Main VLAN DHCP reservations                     |
+| VLAN definitions    | `configuration/vlans.md`            | VLAN table (ID, name, subnet)                   |
+| DNS architecture    | `configuration/network-topology.md` | DNS servers per VLAN, Pi-hole local DNS records |
+| Physical topology   | `configuration/network-topology.md` | Text diagram and mermaid diagram                |
 
 ## Audit Workflow
 
@@ -100,7 +102,20 @@ Verify:
 - [ ] Main switch ports do not list devices that moved to the compute rack switch
 - [ ] Port speeds are consistent (e.g., 1 GbE device not assigned to 2.5 GbE-only description)
 
-### Step 5: Check IP address assignments
+### Step 5: Check DNS and hostname assignments
+
+**Owner**: ubiquiti-network-stack `configuration/network-topology.md` (DNS architecture, Pi-hole
+local DNS records, VLAN DNS settings)
+
+Verify:
+
+- [ ] Pi-hole local DNS records use `.lan` suffix (not `.local` — Apple devices hardcode `.local` to
+  mDNS, which breaks VPN and standard DNS resolution)
+- [ ] Hostnames in other repos match the DNS records in ubiquiti-network-stack
+- [ ] DNS server assignments per VLAN are current (no stale fallback entries)
+- [ ] Devices with static IPs in other repos have corresponding Pi-hole local DNS records
+
+### Step 6: Check IP address assignments
 
 **Owner**: ubiquiti-network-stack `configuration/network-topology.md` (authoritative for all VLANs)
 
@@ -114,7 +129,7 @@ Verify:
 - [ ] Compute rack switch management IP in ubiquiti repo's Management VLAN table exists
 - [ ] IP assignments fall within their designated range (Servers, Austin's devices, etc.)
 
-### Step 6: Check cross-references between repos
+### Step 7: Check cross-references between repos
 
 Verify that links between repos are valid and consistent:
 
@@ -124,7 +139,7 @@ Verify that links between repos are valid and consistent:
 - [ ] ubiquiti-network-stack links to tiny-lab GitHub URL are correct
 - [ ] No repo duplicates specifications owned by another repo (reference only)
 
-### Step 7: Generate audit report
+### Step 8: Generate audit report
 
 Report findings in this format:
 
@@ -156,7 +171,7 @@ Report findings in this format:
 - [ ] Cross-references valid
 ```
 
-### Step 8: Verify skill accuracy
+### Step 9: Verify skill accuracy
 
 After completing the audit, check whether this skill itself needs updating:
 
@@ -178,6 +193,8 @@ When a conflict is found, the **owner** repo is authoritative:
 | Proxmox node specs/IPs  | tiny-lab               | ubiquiti-network-stack            |
 | Gateway and main switch | ubiquiti-network-stack | tiny-lab                          |
 | All VLAN IP assignments | ubiquiti-network-stack | tiny-lab, truenas-server          |
+| VLAN definitions        | ubiquiti-network-stack | tiny-lab, truenas-server          |
+| DNS and hostnames       | ubiquiti-network-stack | tiny-lab, truenas-server          |
 | TrueNAS device specs    | truenas-server         | tiny-lab                          |
 
 **Resolution principle**: Update the non-owner repo to match the owner. If the owner is wrong, fix
@@ -204,3 +221,9 @@ the actual device name and a cross-reference.
 
 Text and mermaid diagrams in the ubiquiti repo can fall out of sync with port tables in the same
 file, or with the actual topology described across repos. Check diagrams against tables.
+
+### `.local` vs `.lan` hostname suffix
+
+Apple devices hardcode `.local` to mDNS (Bonjour), which prevents standard DNS resolution and breaks
+VPN access. The ubiquiti-network-stack repo uses `.lan` for Pi-hole local DNS records. Other repos
+should use `.lan` for FQDNs, not `.local`. If a repo uses `.local`, flag it for correction.

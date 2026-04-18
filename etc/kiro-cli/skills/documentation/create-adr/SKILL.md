@@ -73,6 +73,28 @@ If this ADR relates to existing ADRs:
 1. Consider updating related ADRs to reference the new ADR
 1. Use format: `[ADR-XXX](adr-XXX-title.md): Brief description`
 
+### Step 8: Check cross-repo impact
+
+If this ADR changes shared resource assignments (IP addresses, switch ports, rack slots, PDU ports,
+VLAN assignments, DNS records), run a targeted conflict check:
+
+1. Identify which shared resources the ADR affects
+1. Read only the authoritative source file for each affected resource (see ownership table below)
+1. Verify the ADR's values don't conflict with existing assignments
+1. Update the authoritative repo first, then update references in consumer repos. Never modify repos
+   outside the current working directory without proposing the changes and receiving explicit
+   approval first.
+1. Note affected repos in the ADR's consequences section
+
+**Ownership quick reference** (for full details, see the `cross-repo-audit` skill):
+
+| Resource                   | Authoritative repo → file                                      |
+| -------------------------- | -------------------------------------------------------------- |
+| IP addresses, VLANs, DNS   | ubiquiti-network-stack → `configuration/network-topology.md`   |
+| Rack slots, PDU ports      | tiny-lab → `configuration/rack-layout.md`, `components/pdu.md` |
+| Compute switch ports       | tiny-lab → `configuration/network.md`                          |
+| Main switch, gateway ports | ubiquiti-network-stack → `configuration/network-topology.md`   |
+
 ## Validation Checklist
 
 Before finalizing the ADR, verify:
@@ -88,6 +110,7 @@ Before finalizing the ADR, verify:
 - [ ] Alternatives show what was considered and why each was rejected
 - [ ] Project index is updated (if exists)
 - [ ] SUMMARY.md is updated (if using mdBook)
+- [ ] Cross-repo impact assessed (if shared resources affected)
 
 ## Tips for Writing Good ADRs
 

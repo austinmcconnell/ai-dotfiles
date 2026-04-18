@@ -262,6 +262,16 @@ Copy from `references/templates/` and customize:
 - [ ] Add validation scripts
 - [ ] Test pre-commit hooks
 
+### Shared Resource Registration (5 minutes)
+
+If this repo references or owns resources shared with other repos (IP addresses, switch ports, rack
+slots, PDU ports, VLAN assignments), register it in the `cross-repo-audit` skill:
+
+- [ ] Add the repo to the "Repositories and Source Files" section with its owned resources
+- [ ] Add any new resource types to the "Ownership Rules" table
+- [ ] Run a targeted conflict check: read the authoritative source file for each resource the new
+  repo touches and verify no assignments overlap (see the ownership table in `cross-repo-audit`)
+
 ### Reference Files (10 minutes)
 
 - [ ] Create RESEARCH.md
