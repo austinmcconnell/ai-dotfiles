@@ -49,6 +49,7 @@ Optional noun describing the section of codebase:
 - Wrap at 72 characters
 - Explain motivation and contrast with previous behavior
 - Separate from description with blank line
+- Include by default; omit only for trivial changes
 
 ## Footer
 

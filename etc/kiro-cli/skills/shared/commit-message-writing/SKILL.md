@@ -45,9 +45,8 @@ stylistic choices but never overrides the rules defined here.
 
 ## Atomic Commits
 
-Each commit should contain exactly one logical change. When staged or unstaged
-changes span multiple concerns, recommend separate commits rather than combining
-them into one.
+Each commit should contain exactly one logical change. When staged or unstaged changes span multiple
+concerns, recommend separate commits rather than combining them into one.
 
 **Split into separate commits when changes have:**
 
@@ -60,8 +59,8 @@ them into one.
 - All required to achieve a single goal
 - Meaningless without each other (e.g., a feature and its config)
 
-When recommending multiple commits, present them in dependency order — the
-commit that others build on comes first.
+When recommending multiple commits, present them in dependency order — the commit that others build
+on comes first.
 
 ## Commit Message Format
 
@@ -92,7 +91,17 @@ commit that others build on comes first.
 feat(auth): add OAuth2 login support
 ```
 
-### Body (Optional)
+### Body
+
+Include a body by default. Omit it only for trivial changes where the subject line tells the
+complete story (typo fixes, single-line config changes, version bumps).
+
+**Include a body when:**
+
+- The change touches multiple files or areas
+- The motivation is not obvious from the subject line alone
+- There are multiple distinct sub-changes within one logical commit
+- The change has side effects, implications, or trade-offs worth noting
 
 **Rules:**
 
@@ -284,17 +293,45 @@ See [references/examples.md](references/examples.md) for comprehensive real-worl
 
 ### Quick Reference
 
+Subject-only (trivial changes):
+
+```text
+docs(readme): fix typo in setup instructions
+style: format code with black
+chore(config): update linter rules
+```
+
+With body (most changes):
+
 ```text
 feat(dashboard): add real-time metrics display
+
+Show CPU, memory, and disk usage with auto-refresh every 5 seconds.
+Metrics exceeding 80% threshold are highlighted in red.
+
+- Add metrics API endpoint
+- Add client-side polling with 5s interval
+- Add threshold highlighting and empty states
+```
+
+```text
 fix(api): prevent null pointer in user lookup
-refactor(user): extract validation logic
-perf(db): add index to improve query speed
-docs(readme): add Docker setup instructions
-test(user): add validation edge case tests
-build(deps): update Flask to 3.0.0
-ci(actions): add automated security scanning
-chore(config): update linter rules
-revert: revert "feat(api): add pagination"
+
+External service occasionally returns empty responses. Add null
+check before accessing response.data to prevent crashes.
+
+Fixes #789
+```
+
+```text
+docs: add Docker setup instructions
+
+Include steps for running the application in a Docker container
+with environment variable configuration and volume mounts.
+
+- Add Dockerfile example
+- Document required environment variables
+- Add docker-compose.yml example
 ```
 
 ## Breaking Changes Examples
