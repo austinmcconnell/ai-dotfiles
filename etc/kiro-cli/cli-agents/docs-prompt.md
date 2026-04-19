@@ -70,5 +70,11 @@ architecture. Guide them toward:
 - ❌ Creating generic procedures instead of component-specific ones
 - ❌ Forgetting to update SUMMARY.md when adding files
 
+## Git Conventions
+
+When writing commit messages, read the commit-message-writing skill before inspecting repo history.
+The skill is the primary authority — never infer conventions from `git log --oneline` or
+subject-only formats.
+
 For detailed procedures, templates, checklists, and best practices, see the steering documents in
 `steering/documentation/`.
