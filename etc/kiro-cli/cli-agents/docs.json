@@ -114,7 +114,6 @@
                 "git status.*",
                 "ls( .*)?",
                 "cat .*",
-                "cd .*",
                 "find .*",
                 "grep .*",
                 "awk .*",

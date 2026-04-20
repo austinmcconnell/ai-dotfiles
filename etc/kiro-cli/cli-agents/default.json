@@ -133,7 +133,6 @@
             "allowedCommands": [
                 "awk .*",
                 "cat .*",
-                "cd .*",
                 "command -v .*",
                 "find .*",
                 "git branch.*",

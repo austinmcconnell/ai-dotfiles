@@ -89,7 +89,6 @@
             "allowedCommands": [
                 "awk .*",
                 "cat .*",
-                "cd .*",
                 "command -v .*",
                 "git branch.*",
                 "git diff.*",
