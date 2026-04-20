@@ -30,6 +30,7 @@ Aligns with DITA framework (Darwin Information Typing Architecture):
 ```text
 project-root/
 ├── planning/          # Requirements and constraints
+├── research/          # External research and evaluations
 ├── decisions/         # Architecture decisions (WHY)
 ├── components/        # Physical/logical component specs
 ├── configuration/     # System specifications (WHAT)
@@ -108,7 +109,7 @@ across multiple files.
 
 ```bash
 # 1. Create structure
-mkdir -p planning decisions components configuration procedures
+mkdir -p planning research decisions components configuration procedures
 touch README.md INTRODUCTION.md SUMMARY.md AGENTS.md
 
 # 2. Copy templates (see references/templates/)
@@ -212,12 +213,12 @@ Every subdirectory explains its purpose and content ownership.
 
 Automate quality checks with pre-commit hooks.
 
-### 6. External References in RESEARCH.md or research/
+### 6. External References in research/
 
-Centralize external links to prevent link rot. Start with a single `RESEARCH.md` file (see
-`references/templates/research.md`). Migrate to a `research/` directory when the file exceeds ~300
-lines or has five or more distinct topics (see `references/templates/research-readme.md` and
-`references/templates/research-topic.md`).
+Centralize external links to prevent link rot. Default to a `research/` directory with
+`research/README.md` as the index (see `references/templates/research-readme.md` and
+`references/templates/research-topic.md`). For very small projects with only a few research links, a
+single `RESEARCH.md` file is acceptable (see `references/templates/research.md`).
 
 ## Full Setup Checklist
 
@@ -231,7 +232,8 @@ lines or has five or more distinct topics (see `references/templates/research-re
 
 ### Directory Structure (5 minutes)
 
-- [ ] Create directories: `mkdir -p planning decisions components configuration procedures scripts`
+- [ ] Create directories:
+  `mkdir -p planning research decisions components configuration procedures scripts`
 - [ ] Create README.md in each subdirectory
 - [ ] Create SUMMARY.md
 
@@ -274,7 +276,7 @@ slots, PDU ports, VLAN assignments), register it in the `cross-repo-audit` skill
 
 ### Reference Files (10 minutes)
 
-- [ ] Create RESEARCH.md
+- [ ] Create research/README.md
 - [ ] Create glossary.md
 - [ ] Add custom.css (optional)
 
@@ -325,7 +327,7 @@ slots, PDU ports, VLAN assignments), register it in the `cross-repo-audit` skill
 1. Is it implementation steps? → procedures/
 1. Is it a decision rationale? → decisions/
 1. Is it component specs? → components/
-1. Is it external links, product evaluations, or comparison research? → RESEARCH.md or research/
+1. Is it external links, product evaluations, or comparison research? → research/
 
 ### "Should I duplicate this spec?"
 
@@ -380,6 +382,7 @@ Plus eliminates mental overhead of "where does this belong?"
 - `references/templates/configuration.md` - Configuration specification template
 - `references/templates/procedure.md` - Procedure (step-by-step) template
 - `references/templates/readme.md` - Repo-level README.md template
+- `references/templates/requirements.md` - Planning requirements template
 - `references/templates/research.md` - Single-file RESEARCH.md template
 - `references/templates/research-readme.md` - Multi-file research/README.md index template
 - `references/templates/research-topic.md` - Multi-file research topic file template

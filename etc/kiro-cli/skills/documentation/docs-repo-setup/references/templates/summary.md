@@ -9,6 +9,11 @@
 
   - [Requirements](planning/requirements.md)
 
+- [Research](research/README.md)
+
+  - [Topic 1](research/topic-1.md)
+  - [Topic 2](research/topic-2.md)
+
 - [Decisions](decisions/README.md)
 
   - [ADR Template](decisions/adr-template.md)
@@ -33,5 +38,4 @@
 ---
 
 - [Glossary](glossary.md)
-- [Research & References](RESEARCH.md)
 ```
