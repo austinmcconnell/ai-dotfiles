@@ -1,120 +1,68 @@
 # AGENTS.md Template
 
 ```markdown
-# AI Agent Instructions
+# Content ownership
 
-## Project Overview
+This document defines the content ownership model for this documentation. Each content type has a
+single home — reference, don't duplicate.
 
-[Brief description of what this documentation covers]
+## Content types
 
-## Documentation Structure
-```
+### planning/ — Requirements
 
-planning/ # Requirements and constraints components/ # Physical/logical component specifications
-configuration/ # System specifications (WHAT) procedures/ # Implementation steps (HOW) decisions/ #
-Architecture decisions (WHY)
+- Project requirements and constraints
+- Research criteria and evaluation frameworks
+- Budget and timeline considerations
 
-```markdown
-## Content Ownership Model
+### research/ — Reference Material
 
-### configuration/ = WHAT (Specifications)
+- External links with purpose and key concepts
+- Product and technology evaluations
+- Comparison tables and assessments
 
-**Purpose**: Single source of truth for all specifications
+**Not here:** Specifications (use configuration/). Decision rationale (use decisions/).
 
-**Contains**: Design, schemas, policies, specifications
+### components/ — SPECS (physical/logical inventory)
 
-**Format**: Tables, diagrams, reference docs
+- Component specifications and model numbers
+- Purchase information and costs (authoritative source for price, vendor, date)
+- Physical setup details and measurements
+- Performance metrics
+- Bill of materials — summary view linking to component files (not a source of truth for prices)
 
-**Update when**: Design changes, specs modified
+**Not here:** Configuration specifications (use configuration/). Implementation steps (use
+procedures/).
 
-**What NOT to include**: Implementation steps (belongs in procedures/)
+### configuration/ — WHAT (specifications)
 
-### procedures/ = HOW (Implementation)
+- System design and architecture
+- Configuration schemas and policies
+- Network topology and assignments
+- Security policies
 
-**Purpose**: Step-by-step instructions to implement configuration
+**Not here:** Step-by-step instructions (use procedures/). Decision rationale (use decisions/).
 
-**Contains**: UI navigation, field-by-field instructions, verification
+### procedures/ — HOW (implementation)
 
-**Format**: Numbered steps, checklists
+- Step-by-step setup instructions
+- Verification checklists
+- Troubleshooting steps
 
-**Update when**: UI changes, process improves
+**Not here:** Specifications or design (reference configuration/). Component specs (reference
+components/).
 
-**What NOT to include**: Specifications (belongs in configuration/)
+### decisions/ — WHY (rationale)
 
-### decisions/ = WHY (Rationale)
+- Architecture Decision Records (ADRs)
+- Context, alternatives considered, and consequences
+- Trade-off analysis
 
-**Purpose**: Document architectural decisions and trade-offs
+**Not here:** Implementation details (link to procedures/). Specifications (link to configuration/).
 
-**Contains**: Decision context, alternatives, rationale, consequences
+## Key rules
 
-**Format**: ADR template
-
-**Update when**: Significant decisions made
-
-### components/ = COMPONENT SPECS (Physical/Logical Inventory)
-
-**Purpose**: Document components and capabilities
-
-**Contains**: Component specs, setup details, performance
-
-**Format**: Specifications, measurements
-
-**Update when**: New components added, performance measured
-
-## Common Mistakes to Avoid
-
-### ❌ Duplicating Specs in Procedures
-
-**Wrong**: Including full spec table in procedures file
-
-**Right**: "For complete specifications, see [Configuration: X](../configuration/x.md)"
-
-### ❌ Adding Implementation Steps to Configuration
-
-**Wrong**: Step-by-step UI instructions in configuration files
-
-**Right**: "For implementation steps, see [Procedure: X](../procedures/x.md)"
-
-### ❌ Forgetting Single Source of Truth
-
-**Wrong**: Specifications in multiple files
-
-**Right**: All related specifications in single configuration file only
-
-## File Naming Conventions
-
-- Use kebab-case: `system-configuration.md` not `System_Configuration.md`
-- Be specific: `gateway-controller-setup.md` not `setup.md`
-- Match content: `security-rules.md` (specs) vs `security-configuration.md` (steps)
-
-## Cross-Referencing Standards
-
-- Always link to canonical source
-- Use descriptive link text: `[Configuration: X](../configuration/x.md)`
-- Add "Related Documentation" section at end of major files
-
-## Common Tasks
-
-### Adding New Component
-
-1. Create components/[component].md with specifications
-2. Add to configuration/[relevant-config].md if needed
-3. Create procedures/[component]-setup.md
-4. Create ADR if significant decision
-5. Update SUMMARY.md
-6. Add cross-references
-7. Update components/bom.md if project uses a bill of materials
-
-### Changing Specification
-
-1. Update configuration/[spec].md (single source of truth)
-2. Verify procedures/ still reference correctly
-3. Update any affected ADRs
-
-## Questions to Ask
-
-- Is this WHAT (configuration/) or HOW (procedures/)?
-- Does this specification already exist elsewhere?
-- Am I duplicating content that should be referenced?
-- Is there a related ADR that should be referenced?
+1. Each specification exists in exactly one place
+1. Reference, don't duplicate
+1. Procedures reference configuration/ for specs — never copy them inline
+1. ADRs link to related configuration/ and procedures/ files
 ```
