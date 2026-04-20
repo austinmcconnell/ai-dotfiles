@@ -73,6 +73,10 @@ If this ADR relates to existing ADRs:
 1. Consider updating related ADRs to reference the new ADR
 1. Use format: `[ADR-XXX](adr-XXX-title.md): Brief description`
 
+If `research/` contains evaluations relevant to this decision, link to them in the References or
+Related Documentation section. Research entries that informed this ADR should also cross-reference
+back to it.
+
 ### Step 8: Check cross-repo impact
 
 If this ADR changes shared resource assignments (IP addresses, switch ports, rack slots, PDU ports,

@@ -37,6 +37,17 @@ System design, configuration schemas, policies, specifications. Never include im
 
 Step-by-step instructions, UI navigation, verification steps. Never duplicate specifications.
 
+## Documentation Lifecycle
+
+```text
+planning/ → research/ → decisions/ → components/ → configuration/ → procedures/
+(NEEDS)     (OPTIONS)   (WHY)        (SPECS)       (WHAT)           (HOW)
+```
+
+Requirements define needs. Research explores options. Decisions record choices. Components document
+what was selected. Configuration specifies the design. Procedures implement it. Cross-reference and
+link between all sections.
+
 ## Approach
 
 1. **Read before writing**: Read AGENTS.md, SUMMARY.md, and relevant existing files before creating

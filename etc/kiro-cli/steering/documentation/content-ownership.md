@@ -30,7 +30,7 @@ documentation repositories.
 **Why**: Planning tracks what the project needs. Requirements define needs, research explores
 options.
 
-### research/ or RESEARCH.md = REFERENCE (External Research)
+### research/ = REFERENCE (External Research)
 
 **Purpose**: Curated external resources, product evaluations, and comparison research that inform
 decisions
@@ -45,35 +45,18 @@ decisions
 
 **Format**: Curated link entries (URL, Purpose, Key Concepts), comparison tables, assessments
 
-**Two formats** — choose based on scope:
+**Default format** (`research/` directory):
 
-| Criteria                  | Single `RESEARCH.md`             | `research/` directory                   |
-| ------------------------- | -------------------------------- | --------------------------------------- |
-| Number of research topics | One to four topics               | Five or more topics                     |
-| Total content size        | Under ~300 lines                 | Over ~300 lines                         |
-| Research depth per topic  | Link collection with brief notes | Deep evaluations with comparison tables |
-| SUMMARY.md placement      | Below `---` separator (appendix) | Top-level section with children         |
-
-**Single-file format** (`RESEARCH.md` at project root):
-
-- Best for projects with a handful of research topics
-- Entries numbered sequentially across all sections for easy reference
-- Includes project-specific context section and quick reference
-- Listed in SUMMARY.md below a `---` separator as reference material
-
-**Directory format** (`research/` with topic files):
-
-- Best for projects with deep, multi-product evaluations across many topics
 - `research/README.md` serves as the index with getting started and topic links
 - Each topic file is self-contained with comparison table, findings, and deep-dives
 - Listed in SUMMARY.md as a top-level section with children
 
-**When to migrate** from single file to directory:
+**Alternative** (`RESEARCH.md` single file):
 
-- The file exceeds ~300 lines
-- Five or more distinct topic areas exist
-- Individual topics need comparison tables or multi-product evaluations
-- Multiple ADRs reference different sections of the same research file
+Some older repos use a single `RESEARCH.md` at the project root. This is acceptable for very small
+projects with only a few research links. Listed in SUMMARY.md below a `---` separator as reference
+material. Migrate to the directory format when the file exceeds ~300 lines or has five or more
+distinct topics.
 
 **What NOT to include**:
 
