@@ -47,16 +47,18 @@ decisions
 
 **Default format** (`research/` directory):
 
+New projects should use the directory format. It aligns with the documentation lifecycle (planning →
+research → decisions) and scales naturally as research grows.
+
 - `research/README.md` serves as the index with getting started and topic links
 - Each topic file is self-contained with comparison table, findings, and deep-dives
 - Listed in SUMMARY.md as a top-level section with children
 
-**Alternative** (`RESEARCH.md` single file):
+**Legacy** (`RESEARCH.md` single file):
 
-Some older repos use a single `RESEARCH.md` at the project root. This is acceptable for very small
-projects with only a few research links. Listed in SUMMARY.md below a `---` separator as reference
-material. Migrate to the directory format when the file exceeds ~300 lines or has five or more
-distinct topics.
+Acceptable only for projects with fewer than three research topics and no expectation of growth.
+Listed in SUMMARY.md below a `---` separator as reference material. Migrate to the directory format
+when adding a fourth topic.
 
 **What NOT to include**:
 

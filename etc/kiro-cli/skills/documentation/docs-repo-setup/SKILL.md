@@ -84,6 +84,12 @@ components/ = SPECS
 - **SUMMARY.md** — mdBook table of contents. Use a flat list under `# Table of Contents`. Do not use
   `# Section` headers as sidebar dividers.
 
+### Optional: .kiro/ directory
+
+A `.kiro/` directory is optional. It is only needed for project-specific skill overrides (e.g., a
+local `create-adr` skill with project-specific ADR conventions). The global docs agent loads its
+skills from `~/.kiro/skills/` — local `.kiro/skills/` takes precedence when present.
+
 ## Project Context (Before Setup)
 
 Before scaffolding, gather minimal project context. This input populates book.toml, INTRODUCTION.md,

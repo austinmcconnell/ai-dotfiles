@@ -70,7 +70,7 @@ AGENTS.md is not included in the book — it is AI agent guidance, not reader co
 ### Directory Structure
 
 ```text
-src/
+.
 ├── INTRODUCTION.md        # Book introduction
 ├── SUMMARY.md             # Table of contents
 ├── planning/
@@ -101,7 +101,7 @@ src/
 
 ### Image Organization
 
-- Store images in `src/images/` or alongside their document
+- Store images in `images/` or alongside their document
 - Use descriptive filenames: `network-topology-diagram.png`
 - Reference with relative paths: `![Alt text](../images/diagram.png)`
 
@@ -156,7 +156,7 @@ title = "Project Documentation"
 authors = ["Author Name"]
 language = "en"
 multilingual = false
-src = "src"
+src = "."
 
 [build]
 build-dir = "book"

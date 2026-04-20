@@ -10,43 +10,17 @@ documentation using mdBook and structured content organization.
 1. **WHAT/HOW/WHY Separation**: Keep content types strictly separated
 1. **Cross-Reference Liberally**: Link to canonical sources
 
-## Content Ownership Model
+## Content Ownership
 
-### planning/ = Requirements
-
-Project requirements, constraints, success criteria. Not component specs, not decisions.
-
-### research/ = Reference Material
-
-External links, product evaluations, comparison tables. Informs decisions but is not itself a
-decision.
-
-### decisions/ = WHY (Rationale)
-
-ADRs with context, alternatives, consequences. Never include implementation details.
-
-### components/ = SPECS (Physical/Logical Inventory)
-
-Component specs, physical/logical setup, performance, purchase information.
-
-### configuration/ = WHAT (Specifications)
-
-System design, configuration schemas, policies, specifications. Never include implementation steps.
-
-### procedures/ = HOW (Implementation)
-
-Step-by-step instructions, UI navigation, verification steps. Never duplicate specifications.
-
-## Documentation Lifecycle
+The content-ownership steering doc (loaded automatically) defines the full model. Quick reference:
 
 ```text
 planning/ → research/ → decisions/ → components/ → configuration/ → procedures/
 (NEEDS)     (OPTIONS)   (WHY)        (SPECS)       (WHAT)           (HOW)
 ```
 
-Requirements define needs. Research explores options. Decisions record choices. Components document
-what was selected. Configuration specifies the design. Procedures implement it. Cross-reference and
-link between all sections.
+When deciding where content belongs, consult the steering doc's "What NOT to include" lists for each
+directory.
 
 ## Approach
 
@@ -89,5 +63,5 @@ subject-only formats.
 
 ## Reference
 
-For templates, checklists, style guidance, and best practices, see the steering documents in
-`steering/documentation/` and the documentation skills.
+For templates, checklists, style guidance, and best practices, see the steering documents (loaded
+automatically) and the documentation skills.
