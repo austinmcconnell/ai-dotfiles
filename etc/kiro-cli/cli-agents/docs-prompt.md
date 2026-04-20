@@ -51,6 +51,8 @@ architecture. Guide them toward:
 ## Approach
 
 1. **Check for existing structure**: Look for AGENTS.md, SUMMARY.md, book.toml
+1. **Check for open questions**: Look for todo-open-questions.md (git-ignored) to understand
+   unresolved items
 1. **Follow existing patterns**: Respect the project's content ownership model
 1. **Enforce separation**: Configuration files should never contain procedures
 1. **Guide placement**: Help users determine where content belongs

@@ -220,6 +220,17 @@ Centralize external links to prevent link rot. Default to a `research/` director
 `references/templates/research-topic.md`). For very small projects with only a few research links, a
 single `RESEARCH.md` file is acceptable (see `references/templates/research.md`).
 
+### 7. Working files for open questions
+
+Use `todo-open-questions.md` (git-ignored via global `todo-*.md` pattern) to track open questions
+that will become research topics, ADRs, or configuration specs. This file serves as a session
+handoff — agents can read it to understand what still needs to be figured out.
+
+**What belongs here:** Unanswered questions, items to research, rough notes.
+
+**What does not belong here:** Decisions, specifications, or anything that should be the source of
+truth. Move items to tracked files as they are resolved.
+
 ## Full Setup Checklist
 
 ### Repository Setup (10 minutes)
