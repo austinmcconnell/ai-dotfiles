@@ -216,7 +216,7 @@ Deep nesting makes navigation difficult.
 ---
 
 - [Glossary](glossary.md)
-- [References](RESEARCH.md)
+- [References](research/README.md)
 ```
 
 Separates primary content from reference material.

@@ -1,7 +1,8 @@
 # research/README.md Template
 
-Use this template when research content has outgrown a single `RESEARCH.md` file. See the migration
-criteria in `references/templates/research.md` for when to switch.
+Use this template for the research directory index. This is the default research format for new
+projects. Some older repos may use a single `RESEARCH.md` file instead — see
+`references/templates/research.md` for that format.
 
 ```markdown
 # Research & reference materials

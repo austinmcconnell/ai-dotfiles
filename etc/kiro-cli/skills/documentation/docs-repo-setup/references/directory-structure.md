@@ -2,7 +2,7 @@
 
 Recommended directory layout for documentation repositories.
 
-## Standard layout (single-file research)
+## Standard layout
 
 ```text
 project-root/
@@ -10,11 +10,13 @@ project-root/
 ├── README.md              # Repo-level getting started guide (not in book)
 ├── INTRODUCTION.md        # Book introduction (first SUMMARY.md entry)
 ├── SUMMARY.md             # mdBook navigation
-├── RESEARCH.md            # External references (appendix in SUMMARY.md)
 ├── glossary.md            # Terminology
 ├── planning/
 │   ├── README.md          # Planning overview
 │   └── requirements.md    # Requirements only
+├── research/              # Top-level section in SUMMARY.md
+│   ├── README.md          # Research index with topic links
+│   └── [topic].md         # One file per research topic
 ├── decisions/
 │   ├── README.md
 │   ├── adr-template.md
@@ -32,35 +34,8 @@ project-root/
     └── [procedure].md     # One file per procedure
 ```
 
-## Expanded layout (directory research)
+## Single-file research (alternative)
 
-When research outgrows a single file (~300 lines or 5+ topics), replace `RESEARCH.md` with a
-`research/` directory:
-
-```text
-project-root/
-├── AGENTS.md
-├── README.md
-├── INTRODUCTION.md
-├── SUMMARY.md
-├── glossary.md
-├── planning/
-│   ├── README.md
-│   └── requirements.md
-├── research/              # Top-level section in SUMMARY.md
-│   ├── README.md          # Research index with topic links
-│   └── [topic].md         # One file per research topic
-├── decisions/
-│   ├── README.md
-│   └── adr-NNN-*.md
-├── components/
-│   ├── README.md
-│   ├── [component].md
-│   └── bom.md
-├── configuration/
-│   ├── README.md
-│   └── [config].md
-└── procedures/
-    ├── README.md
-    └── [procedure].md
-```
+For very small projects with only a few research links, a single `RESEARCH.md` at the project root
+is acceptable. List it in SUMMARY.md below a `---` separator as appendix material. Migrate to the
+directory format when the file exceeds ~300 lines or has five or more distinct topics.

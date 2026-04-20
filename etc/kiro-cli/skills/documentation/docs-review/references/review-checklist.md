@@ -102,9 +102,10 @@ For each file in components/:
 - [ ] Status tracking is current (Bought / Needed / On order)
 - [ ] Unit prices are pre-tax, pre-shipping per pricing conventions
 
-### RESEARCH.md or research/ (Reference Material)
+### research/ (Reference Material)
 
-- [ ] Research content exists (RESEARCH.md or research/ directory)
+- [ ] Research content exists (research/ directory preferred; some older repos use single
+  RESEARCH.md)
 - [ ] External references are centralized in research content, not scattered across other files
 - [ ] Format is appropriate for scope (single file for 1–4 topics / under ~300 lines; directory for
   5+ topics / over ~300 lines)

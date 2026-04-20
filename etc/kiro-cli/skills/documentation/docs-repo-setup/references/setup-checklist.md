@@ -15,14 +15,14 @@
 
 ## Directories (5 minutes)
 
-- [ ] Create planning/, decisions/, components/, configuration/, procedures/
+- [ ] Create planning/, research/, decisions/, components/, configuration/, procedures/
 - [ ] Create README.md in each subdirectory
 - [ ] Create SUMMARY.md
 
 ## Core Files (15 minutes)
 
 - [ ] Create AGENTS.md with content ownership model
-- [ ] Create RESEARCH.md for external links (or research/ directory for 5+ topics)
+- [ ] Create research/README.md for external links
 - [ ] Create glossary.md for terminology
 
 ## Templates (20 minutes)
