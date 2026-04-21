@@ -6,6 +6,7 @@
                 "~/.dotfiles",
                 "~/projects",
                 "~/.repositories",
+                "~/.kiro",
                 "."
             ],
             "command": "npx",
