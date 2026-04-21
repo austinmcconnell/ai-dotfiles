@@ -1,20 +1,5 @@
 {
     "mcpServers": {
-        "filesystem": {
-            "args": [
-                "@modelcontextprotocol/server-filesystem",
-                "~/.dotfiles",
-                "~/projects",
-                "~/.repositories",
-                "~/.kiro",
-                "."
-            ],
-            "command": "npx",
-            "disabled": false,
-            "disabledTools": ["directory_tree", "list_directory", "list_directory_with_sizes"],
-            "env": {},
-            "timeout": 120000
-        },
         "git": {
             "args": [
                 "mcp-server-git",
