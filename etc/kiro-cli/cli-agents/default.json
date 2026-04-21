@@ -79,7 +79,18 @@
         "skill://.kiro/skills/shared/**/SKILL.md",
         "skill://~/.kiro/skills/development/**/SKILL.md",
         "skill://~/.kiro/skills/operations/**/SKILL.md",
+        "skill://~/.kiro/skills/research/**/SKILL.md",
         "skill://~/.kiro/skills/shared/**/SKILL.md",
+        {
+            "type": "knowledgeBase",
+            "source": "file://~/projects/austinmcconnell/_research_",
+            "name": "research",
+            "description": "Structured research files covering product evaluations, technology comparisons, and technical investigations with cited sources and verification dates",
+            "indexType": "best",
+            "include": ["**/*.md"],
+            "exclude": [],
+            "autoUpdate": false
+        },
         {
             "type": "knowledgeBase",
             "source": "file://~/projects/unite-us/screenings-ingestion",
