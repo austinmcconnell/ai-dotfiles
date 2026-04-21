@@ -135,6 +135,11 @@ Before finalizing the ADR, verify:
 - Using placeholders instead of actual values
 - Mixing multiple decisions in one ADR
 - Ignoring the project template in favor of generic MADR format
+- Including market conditions or procurement timing in ADR context. ADR context should focus on
+  technical decision drivers (workload requirements, constraints, trade-offs). Prices are
+  appropriate when comparing alternatives — cost is a legitimate trade-off factor. But current
+  market shortages, deal-watching strategy, and "buy now vs later" reasoning are procurement
+  concerns that belong in planning/ or components/, not in the decision rationale.
 
 ## Fallback: MADR Format
 

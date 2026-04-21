@@ -94,6 +94,9 @@ scattered references.
 
 - ❌ Implementation details (link to procedures/)
 - ❌ Detailed specifications (link to configuration/)
+- ❌ Market conditions or procurement timing (belongs in planning/ or components/). Prices are
+  appropriate when comparing alternatives — cost is a trade-off factor. But market shortages,
+  deal-watching, and "buy now vs later" reasoning are procurement concerns, not decision rationale.
 
 **Why**: Decisions explain the "why" behind specifications. Future you will thank you for
 documenting this.

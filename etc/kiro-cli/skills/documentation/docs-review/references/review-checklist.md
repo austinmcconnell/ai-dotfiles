@@ -64,6 +64,7 @@ For each file in decisions/:
 - [ ] Includes consequences (positive and negative)
 - [ ] No implementation details (links to procedures/ instead)
 - [ ] No duplicate specifications (links to configuration/ instead)
+- [ ] No market conditions or procurement timing (belongs in planning/ or components/)
 - [ ] Cross-references related ADRs
 - [ ] Has proper ADR number and filename
 
@@ -71,6 +72,8 @@ For each file in decisions/:
 
 - Implementation steps in ADR
 - Duplicate specifications from configuration/
+- Market conditions, pricing trends, or deal-watching strategy in context (procurement concerns
+  belong in planning/ or components/; prices are fine when comparing alternatives as a trade-off)
 - Missing consequences section
 - No cross-references to related decisions
 
