@@ -74,6 +74,16 @@ on comes first.
 <footer>
 ```
 
+### Semantic roles
+
+- **Subject line** — WHAT changed (high-level summary)
+- **Context paragraph** — WHY it changed (motivation, problem, context)
+- **Change list** — WHAT specifically (scope of changes, when multi-file)
+- **Footer** — META (issue references, breaking changes, co-authors)
+
+Each section serves a different purpose. The context paragraph is the part most often missing and
+most valuable to future readers.
+
 ### Subject Line (Required)
 
 **Format:** `<type>(<scope>): <subject>`
@@ -93,8 +103,18 @@ feat(auth): add OAuth2 login support
 
 ### Body
 
-Include a body by default. Omit it only for trivial changes where the subject line tells the
-complete story (typo fixes, single-line config changes, version bumps).
+The body has two parts:
+
+1. **Context paragraph** (required when body is included) — One to two sentences explaining WHY this
+   change was made. What motivated it? What problem does it solve? This is the part that
+   subject-only formats lose.
+
+1. **Change list** (optional) — Bullet points with `-` summarizing WHAT specifically changed, when
+   the commit touches multiple files or areas. Omit when the context paragraph already tells the
+   full story.
+
+**Omit the entire body** only for trivial changes where the subject line tells the complete story
+(typo fixes, single-line config changes, version bumps).
 
 **Include a body when:**
 
@@ -106,9 +126,7 @@ complete story (typo fixes, single-line config changes, version bumps).
 **Rules:**
 
 - Wrap at 72 characters per line
-- Explain **what** and **why**, not **how**
 - Separate from subject with blank line
-- Use bullet points with `-` for multiple items
 
 **Example:**
 
@@ -358,6 +376,29 @@ BREAKING CHANGE: Basic auth is no longer supported
 
 ❌ Wrong breaking change format: `Breaking change: removes endpoint` → ✅ Correct:
 `BREAKING CHANGE: removes endpoint` or use `!`
+
+❌ Bullets without context:
+
+```text
+fix(kiro-cli): refine research skill
+
+- Switch knowledge base to autoUpdate
+- Remove manual reindex steps
+- Add freshness cross-references
+```
+
+→ ✅ Context paragraph first:
+
+```text
+fix(kiro-cli): refine research skill
+
+Address review feedback on knowledge base config and skill
+workflow.
+
+- Switch knowledge base to autoUpdate
+- Remove manual reindex steps
+- Add freshness cross-references
+```
 
 ## Reference Documentation
 
