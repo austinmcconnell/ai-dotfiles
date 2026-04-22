@@ -98,6 +98,7 @@
                 "README.md"
             ],
             "exclude": [
+                ".git/**",
                 "**/__pycache__/**",
                 ".terraform/**",
                 ".pre/**",
@@ -113,7 +114,7 @@
             "description": "Markdown documentation for the screenings ingestion service including architecture, data flows, and operational guides",
             "indexType": "best",
             "include": ["**/*.md"],
-            "exclude": [],
+            "exclude": [".git/**"],
             "autoUpdate": true
         },
         {
@@ -123,7 +124,7 @@
             "description": "Cross-project analysis documents covering architecture decisions, research findings, and technical comparisons across all Unite Us projects",
             "indexType": "best",
             "include": ["*/analysis/*.md"],
-            "exclude": [],
+            "exclude": [".git/**"],
             "autoUpdate": false
         }
     ],
