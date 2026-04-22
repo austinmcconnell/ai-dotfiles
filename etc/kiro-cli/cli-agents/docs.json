@@ -26,9 +26,49 @@
         },
         {
             "type": "knowledgeBase",
+            "source": "file://~/projects/austinmcconnell/_documentation_/automatic-ripping-machine",
+            "name": "automatic-ripping-machine-docs",
+            "description": "Multi-drive Automatic Ripping Machine build documentation covering drive selection, compute platform, NVMe storage, rack enclosure research, and component specifications. References ubiquiti-network-stack for IP address and VLAN assignments. References tiny-lab for rack slot, PDU port, and compute switch port assignments",
+            "indexType": "best",
+            "include": ["**/*.md"],
+            "exclude": ["book/**", "scripts/**", "reports/**"],
+            "autoUpdate": true
+        },
+        {
+            "type": "knowledgeBase",
+            "source": "file://~/projects/austinmcconnell/_documentation_/email-provider-selection",
+            "name": "email-provider-selection-docs",
+            "description": "Privacy-conscious email provider evaluation documentation covering provider comparisons (Fastmail, Mailbox.org, Migadu, StartMail), evaluation criteria, migration procedures, and architecture decisions. Isolated project with no shared infrastructure dependencies",
+            "indexType": "best",
+            "include": ["**/*.md"],
+            "exclude": ["book/**", "scripts/**", "reports/**"],
+            "autoUpdate": true
+        },
+        {
+            "type": "knowledgeBase",
+            "source": "file://~/projects/austinmcconnell/_documentation_/family-dashboard",
+            "name": "family-dashboard-docs",
+            "description": "Family wall calendar and chore management system documentation covering display hardware, software platform research (MagicMirror², Home Assistant), kiosk software, mounting options, and component selection. References ubiquiti-network-stack for IP address and VLAN assignments",
+            "indexType": "best",
+            "include": ["**/*.md"],
+            "exclude": ["book/**", "scripts/**", "reports/**"],
+            "autoUpdate": true
+        },
+        {
+            "type": "knowledgeBase",
             "source": "file://~/projects/austinmcconnell/_documentation_/gaming-media-pc",
             "name": "gaming-media-pc-docs",
             "description": "Gaming and media PC build documentation covering component selection, BIOS/Windows configuration, game streaming setup, and architecture decisions. Isolated project with no shared infrastructure dependencies",
+            "indexType": "best",
+            "include": ["**/*.md"],
+            "exclude": ["book/**", "scripts/**", "reports/**"],
+            "autoUpdate": true
+        },
+        {
+            "type": "knowledgeBase",
+            "source": "file://~/projects/austinmcconnell/_documentation_/home-assistant-server",
+            "name": "home-assistant-server-docs",
+            "description": "Dedicated Home Assistant server documentation covering HA Yellow (PoE) platform, Raspberry Pi CM5 compute module, HAOS installation, and component specifications. Operates independently from homelab. References ubiquiti-network-stack for IP address and VLAN assignments. References tiny-lab for rack slot, PDU port, and compute switch port assignments",
             "indexType": "best",
             "include": ["**/*.md"],
             "exclude": ["book/**", "scripts/**", "reports/**"],
