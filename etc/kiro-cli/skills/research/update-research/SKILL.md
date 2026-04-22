@@ -49,11 +49,10 @@ Update `verified` dates only on sources that were actually re-fetched during thi
 1. Update the topic `README.md` if the summary table or links need changes
 1. Update the root `_research_/README.md` master index if a new topic or file was added
 
-### Step 6: Offer to reindex
+## Freshness
 
-After updating research files, remind the user:
-
-> Research files updated. Run `knowledge update` to reindex the _research_ knowledge base.
+See [create-research freshness policy](../create-research/SKILL.md#freshness-policy) for the 90-day
+staleness threshold.
 
 ## Scope Boundaries
 

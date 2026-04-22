@@ -88,8 +88,8 @@
             "description": "Structured research files covering product evaluations, technology comparisons, and technical investigations with cited sources and verification dates",
             "indexType": "best",
             "include": ["**/*.md"],
-            "exclude": [],
-            "autoUpdate": false
+            "exclude": [".git/**"],
+            "autoUpdate": true
         },
         {
             "type": "knowledgeBase",

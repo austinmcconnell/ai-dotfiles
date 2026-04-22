@@ -101,12 +101,20 @@ The H4+ is $139 [hardkernel-h4p]. It supports up to 48 GB DDR5 [cnx-h4-review].
 1. Update the topic `README.md` with a summary table and links to all files
 1. Update the root `_research_/README.md` master index with the new topic
 
-### Step 6: Offer to reindex
+## Unresolved Items
 
-After creating research files, remind the user to reindex the `_research_` knowledge base if one is
-configured:
+Use a git-ignored `todo-open-questions.md` file in the topic directory for unresolved questions and
+session handoff notes. This is consistent with the documentation repos and keeps open questions out
+of version control.
 
-> Research files created. Run `knowledge update` to reindex the _research_ knowledge base.
+## Cross-Cutting vs. Project-Specific Research
+
+- **Project-specific research** (e.g., evaluating NVMe drives for a specific build) belongs in the
+  project's own `research/` directory. The docs agent creates this.
+- **Cross-project research** (e.g., ODROID product lineup, RAM pricing trends) belongs in
+  `_research_/`. The default agent creates this using the research skill.
+- The docs agent **reads** `_research_` via its knowledge base but does **not write** to it. This
+  keeps the docs agent focused on its primary documentation repo.
 
 ## Freshness Policy
 

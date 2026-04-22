@@ -8,7 +8,8 @@ description: Verify and fact-check existing research files by re-fetching source
 ## When to Verify
 
 - User explicitly asks to verify or fact-check research
-- `last_verified` in frontmatter is older than 90 days
+- `last_verified` in frontmatter is older than 90 days (see
+  [create-research freshness policy](../create-research/SKILL.md#freshness-policy))
 - User is about to make a purchase or decision based on research
 - A source URL has changed or returned errors during a previous session
 

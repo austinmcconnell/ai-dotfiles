@@ -48,11 +48,3 @@ Specific, opinionated guidance: which option for which use case. Be direct.
 
 - **For use case X:** Option A because...
 - **For use case Y:** Option B because...
-
-## Open Questions
-
-Items that need further investigation or couldn't be resolved during initial research. Remove this
-section when all questions are answered.
-
-- Question 1
-- Question 2
