@@ -32,11 +32,11 @@
         "@github/search_users",
         "@time/convert_time",
         "@time/get_current_time",
-        "fs_read",
+        "read",
         "glob",
         "grep",
         "knowledge",
-        "use_subagent",
+        "subagent",
         "web_fetch",
         "web_search"
     ],

@@ -17,11 +17,11 @@
         "@git/git_log",
         "@git/git_show",
         "@git/git_status",
-        "fs_read",
+        "read",
         "glob",
         "grep",
         "knowledge",
-        "use_subagent",
+        "subagent",
         "web_fetch",
         "web_search"
     ],
