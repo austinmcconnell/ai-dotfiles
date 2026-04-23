@@ -56,11 +56,6 @@ Components feed into configuration. Configuration is implemented by procedures.
 - Be specific: `gateway-controller-setup.md` not `setup.md`
 - Match content type: `security-rules.md` (specs) vs `security-configuration.md` (steps)
 
-## Cross-Referencing Standards
-
-- Use descriptive link text: `[Configuration: System](../configuration/system.md)`
-- Add "Related Documentation" section at end of major files
-
 ## Pricing Conventions
 
 Component files are the single source of truth for purchase data. BOM is a procurement ledger that
