@@ -66,12 +66,13 @@
     "prompt": "file://./jira-prompt.md",
     "resources": [
         "file://AGENTS.md",
-        "file://~/.dotfiles/etc/kiro-cli/steering/jira-scrum/**/*.md",
+        "file://~/.dotfiles/etc/kiro-cli/steering/scrum/**/*.md",
         "file://~/.dotfiles/etc/kiro-cli/steering/security/env-file-protection.md",
         "file://.kiro/steering/**/*.md",
         "file://README.md",
         "skill://.kiro/skills/**/SKILL.md",
         "skill://~/.kiro/skills/development/**/SKILL.md",
+        "skill://~/.kiro/skills/scrum/**/SKILL.md",
         "skill://~/.kiro/skills/shared/**/SKILL.md"
     ],
     "tools": [
