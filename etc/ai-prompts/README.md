@@ -172,6 +172,7 @@ These prompts can be run at any time without prerequisites:
 - `run-all-analyses` - Run all 9 analysis prompts in dependency order (orchestrator)
 - `run-core-analyses` - Run core 4 analyses: project, architecture, schema, integration
 - `steering-gap-analysis` - Analyze kiro-cli agent steering docs for gaps
+- `steering-vs-skill-review` - Evaluate steering doc placement vs skill conversion
 - `summarize-jira-ticket` - Fetch and summarize JIRA tickets
 - `vim-practice-session` - Practice vim skills
 
@@ -218,6 +219,8 @@ These prompts can be run at any time without prerequisites:
 - `docs-review` - Review documentation repository using the docs-review skill workflow
 - `kiro-analysis` - Research recent Kiro CLI releases and evaluate configuration updates
 - `steering-gap-analysis` - Analyze kiro-cli agent steering docs for missing conventions
+- `steering-vs-skill-review` - Evaluate whether steering docs are correctly placed or should be
+  skills
 
 ### JIRA
 
