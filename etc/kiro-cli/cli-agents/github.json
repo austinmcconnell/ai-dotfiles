@@ -83,7 +83,8 @@
     "prompt": "file://./github-prompt.md",
     "resources": [
         "file://AGENTS.md",
-        "file://~/.dotfiles/etc/kiro-cli/steering/security/env-file-protection.md",
+        "file://~/.dotfiles/etc/kiro-cli/steering/github/**/*.md",
+        "file://~/.dotfiles/etc/kiro-cli/steering/security/**/*.md",
         "file://.kiro/steering/**/*.md",
         "file://README.md",
         "file://docs/**/*.md",
