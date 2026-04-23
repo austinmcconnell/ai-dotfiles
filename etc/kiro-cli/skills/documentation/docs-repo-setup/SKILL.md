@@ -226,13 +226,21 @@ Centralize external links to prevent link rot. Default to a `research/` director
 `references/templates/research-topic.md`). For very small projects with only a few research links, a
 single `RESEARCH.md` file is acceptable (see `references/templates/research.md`).
 
-### 7. Working files for open questions
+### 7. Working file for open questions, blockers, and tasks
 
-Use `todo-open-questions.md` (git-ignored via global `todo-*.md` pattern) to track open questions
-that will become research topics, ADRs, or configuration specs. This file serves as a session
-handoff — agents can read it to understand what still needs to be figured out.
+Use `todo.md` (git-ignored via global `todo*.md` pattern) to track items the repo structure can't
+express. This file serves as a session handoff — agents can read it to understand what still needs
+to be figured out. See `references/templates/todo.md` for the template.
 
-**What belongs here:** Unanswered questions, items to research, rough notes.
+Three sections:
+
+- **Open questions** — unresolved questions that will become research topics, ADRs, or configuration
+  specs
+- **Blockers** — external dependencies or waits that prevent progress
+- **Tasks** — internal action items (docs review, cleanup, procedures to write)
+
+Resolved items stay with a link to the outcome (e.g., `[x] Question → [ADR-001](...)`) until
+actively cleaned out.
 
 **What does not belong here:** Decisions, specifications, or anything that should be the source of
 truth. Move items to tracked files as they are resolved.
@@ -405,5 +413,6 @@ Plus eliminates mental overhead of "where does this belong?"
 - `references/templates/research-topic.md` - Multi-file research topic file template
 - `references/templates/subdirectory-readme.md` - Subdirectory README.md template
 - `references/templates/summary.md` - SUMMARY.md table of contents template
+- `references/templates/todo.md` - Working file template (open questions, blockers, tasks)
 
 For mdBook-specific setup, see the `mdbook-setup` skill.

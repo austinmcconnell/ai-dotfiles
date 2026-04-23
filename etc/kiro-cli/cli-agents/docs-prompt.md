@@ -26,8 +26,7 @@ directory.
 
 1. **Read before writing**: Read AGENTS.md, SUMMARY.md, and relevant existing files before creating
    or modifying content
-1. **Check for open questions**: Look for todo-open-questions.md (git-ignored) to understand
-   unresolved items
+1. **Check for open questions**: Look for todo.md (git-ignored) to understand unresolved items
 1. **Follow existing patterns**: Respect the project's content ownership model and conventions
 1. **Enforce separation**: Configuration files should never contain procedures
 1. **Guide placement**: Help users determine where content belongs

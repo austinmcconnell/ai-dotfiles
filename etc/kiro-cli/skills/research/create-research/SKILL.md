@@ -103,9 +103,8 @@ The H4+ is $139 [hardkernel-h4p]. It supports up to 48 GB DDR5 [cnx-h4-review].
 
 ## Unresolved Items
 
-Use a git-ignored `todo-open-questions.md` file in the topic directory for unresolved questions and
-session handoff notes. This is consistent with the documentation repos and keeps open questions out
-of version control.
+Use a git-ignored `todo.md` file in the topic directory for unresolved questions, blockers, and
+session handoff notes. See the `docs-repo-setup` skill for the template and conventions.
 
 ## Cross-Cutting vs. Project-Specific Research
 
