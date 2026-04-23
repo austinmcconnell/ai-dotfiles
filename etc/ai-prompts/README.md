@@ -80,8 +80,8 @@ These prompts work with any AI chat service:
 
 The analysis prompts serve two distinct purposes:
 
-**Core analyses** build cross-repo understanding — what a project does, how it's built, what data
-it uses, and how it integrates with other systems. Run these on any repo you want to understand,
+**Core analyses** build cross-repo understanding — what a project does, how it's built, what data it
+uses, and how it integrates with other systems. Run these on any repo you want to understand,
 especially repos you don't actively develop in. These feed into knowledge bases for cross-platform
 troubleshooting and architectural questions.
 
@@ -92,8 +92,8 @@ troubleshooting and architectural questions.
 | schema       | Data models, database schemas, API structures |
 | integration  | External APIs, services, and data flows       |
 
-**Deep analyses** are inward-facing — they help you improve a repo you're actively working in.
-Run these selectively on your primary development repositories when you need targeted insight.
+**Deep analyses** are inward-facing — they help you improve a repo you're actively working in. Run
+these selectively on your primary development repositories when you need targeted insight.
 
 | Analysis       | Purpose                                    |
 | -------------- | ------------------------------------------ |
@@ -162,11 +162,17 @@ For comprehensive project analysis, run prompts in this order:
 These prompts can be run at any time without prerequisites:
 
 - `branch-analysis` - Analyze current git branch changes
+- `commit-analysis` - Analyze commit history patterns and quality
+- `component-compatibility-review` - Review hardware component compatibility
 - `discover-previous-work` - Understand work-in-progress state
+- `docs-review` - Review documentation repository structure and quality
+- `kiro-analysis` - Research Kiro CLI releases and evaluate config updates
 - `pr-description` - Generate pull request descriptions
 - `refactor-plan` - Create refactoring strategies
 - `run-all-analyses` - Run all 9 analysis prompts in dependency order (orchestrator)
 - `run-core-analyses` - Run core 4 analyses: project, architecture, schema, integration
+- `steering-gap-analysis` - Analyze kiro-cli agent steering docs for gaps
+- `summarize-jira-ticket` - Fetch and summarize JIRA tickets
 - `vim-practice-session` - Practice vim skills
 
 ## Example Prompts
@@ -205,6 +211,21 @@ These prompts can be run at any time without prerequisites:
   already current (compares HEAD commit in metadata vs current HEAD)
 - `run-core-analyses` - Run the 4 core analyses (project, architecture, schema, integration) for
   cross-repo understanding
+
+### Configuration and Tooling
+
+- `component-compatibility-review` - Review hardware component compatibility and specifications
+- `docs-review` - Review documentation repository using the docs-review skill workflow
+- `kiro-analysis` - Research recent Kiro CLI releases and evaluate configuration updates
+- `steering-gap-analysis` - Analyze kiro-cli agent steering docs for missing conventions
+
+### JIRA
+
+- `summarize-jira-ticket` - Fetch and summarize a JIRA ticket with comments and linked issues
+
+### Git and Commit Analysis
+
+- `commit-analysis` - Analyze commit history patterns and quality
 
 ### Skills Development
 
