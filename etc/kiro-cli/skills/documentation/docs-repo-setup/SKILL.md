@@ -48,7 +48,9 @@ project-root/
 
 ### Content Ownership
 
-See `references/templates/agents.md` for the full AGENTS.md template.
+The AGENTS.md template is maintained in the
+[cookiecutter-docs](https://github.com/austinmcconnell/cookiecutter-docs) repo and scaffolded during
+project creation.
 
 configuration/ = WHAT
 
@@ -111,18 +113,18 @@ This is not a formal requirements analysis. A brief statement like "compact, qui
 homelab with PCIe expansion, dual NVMe, and 2 DIMM slots" is enough to generate useful content
 across multiple files.
 
-## Quick Start (30 Minutes)
+## Quick Start
+
+Use the [cookiecutter-docs](https://github.com/austinmcconnell/cookiecutter-docs) repo to scaffold a
+new documentation project. It creates the full directory structure, root-level files, subdirectory
+READMEs, book.toml, pre-commit hooks, and validation scripts.
 
 ```bash
-# 1. Create structure
-mkdir -p planning research decisions components configuration procedures
-touch README.md INTRODUCTION.md SUMMARY.md AGENTS.md
-
-# 2. Copy templates (see references/templates/)
-# 3. Create README.md in each subdirectory
-# 4. Set up pre-commit hooks
-# 5. Create SUMMARY.md
+cookiecutter gh:austinmcconnell/cookiecutter-docs
 ```
+
+After scaffolding, use the content templates in `references/templates/` to add new content as the
+project grows (components, configuration specs, procedures, research topics).
 
 Done! Structure prevents 70% of common refactoring issues.
 
@@ -175,12 +177,13 @@ Done! Structure prevents 70% of common refactoring issues.
 
 **Cost:** Content had to be moved between directories
 
-**Solution:** Create README.md in each subdirectory on day 1 with (see
-`references/templates/subdirectory-readme.md`):
+**Solution:** Create README.md in each subdirectory on day 1 with:
 
 - Purpose statement
 - Content ownership (WHAT/HOW/WHY/SPECS)
 - What belongs here vs elsewhere
+
+The cookiecutter-docs repo scaffolds these automatically.
 
 ### ❌ Generic Procedures
 
@@ -194,8 +197,8 @@ Done! Structure prevents 70% of common refactoring issues.
 
 **Cost:** 3 major refactorings, 19 commits, ~500 lines deleted
 
-**Solution:** Create AGENTS.md on day 1 documenting content ownership (see
-`references/templates/agents.md`)
+**Solution:** Create AGENTS.md on day 1 documenting content ownership. The cookiecutter-docs repo
+scaffolds this automatically.
 
 ## Best Practices
 
@@ -247,47 +250,30 @@ truth. Move items to tracked files as they are resolved.
 
 ## Full Setup Checklist
 
-### Repository Setup (10 minutes)
+### Scaffold with Cookiecutter (5 minutes)
 
+- [ ] Run `cookiecutter gh:austinmcconnell/cookiecutter-docs`
 - [ ] Initialize git: `git init`
-- [ ] Create .gitignore (exclude book/, .DS_Store)
-- [ ] Add README.md with repo-level getting started guide
-- [ ] Add INTRODUCTION.md with book introduction
-- [ ] Choose mdBook
+- [ ] Review generated AGENTS.md, SUMMARY.md, README.md, and subdirectory READMEs
 
-### Directory Structure (5 minutes)
+### Content Ownership (5 minutes)
 
-- [ ] Create directories:
-  `mkdir -p planning research decisions components configuration procedures scripts`
-- [ ] Create README.md in each subdirectory
-- [ ] Create SUMMARY.md
+- [ ] Verify AGENTS.md content ownership model matches project needs
+- [ ] Confirm configuration/ = WHAT, procedures/ = HOW, decisions/ = WHY, components/ = SPECS
 
-### Content Ownership (15 minutes)
+### Templates (10 minutes)
 
-- [ ] Create AGENTS.md with content ownership model
-- [ ] Document configuration/ = WHAT
-- [ ] Document procedures/ = HOW
-- [ ] Document decisions/ = WHY
-- [ ] Document components/ = SPECS
-- [ ] Add "Common Mistakes to Avoid" section
+Content templates in `references/templates/` are used on demand as the project grows:
 
-### Templates (20 minutes)
+- [ ] Familiarize with component template (`references/templates/component.md`)
+- [ ] Familiarize with configuration template (`references/templates/configuration.md`)
+- [ ] Familiarize with procedure template (`references/templates/procedure.md`)
 
-Copy from `references/templates/` and customize:
+### Quality Gates (10 minutes)
 
-- [ ] Create decisions/adr-template.md
-- [ ] Create components/component-template.md (see `references/templates/component.md`)
-- [ ] Create configuration/config-template.md (see `references/templates/configuration.md`)
-- [ ] Create procedures/procedure-template.md (see `references/templates/procedure.md`)
-- [ ] Add HTML comments explaining WHAT vs HOW
-
-### Quality Gates (15 minutes)
-
-- [ ] Create .pre-commit-config.yaml
 - [ ] Run `pip install pre-commit`
 - [ ] Run `pre-commit install`
-- [ ] Add validation scripts
-- [ ] Test pre-commit hooks
+- [ ] Test pre-commit hooks: `pre-commit run --all-files`
 
 ### Shared Resource Registration (5 minutes)
 
@@ -299,20 +285,14 @@ slots, PDU ports, VLAN assignments), register it in the `cross-repo-audit` skill
 - [ ] Run a targeted conflict check: read the authoritative source file for each resource the new
   repo touches and verify no assignments overlap (see the ownership table in `cross-repo-audit`)
 
-### Reference Files (10 minutes)
+### mdBook Configuration (5 minutes)
 
-- [ ] Create research/README.md
-- [ ] Create glossary.md
-- [ ] Add custom.css (optional)
-
-### mdBook Configuration (10 minutes)
-
-- [ ] Create book.toml (see `mdbook-setup` skill for recommended settings)
+- [ ] Review generated book.toml (see `mdbook-setup` skill for recommended settings)
 - [ ] Test `mdbook serve`
 - [ ] Test `mdbook build`
 - [ ] Verify navigation
 
-**Total time:** ~90 minutes
+**Total time:** ~45 minutes
 
 ## Validation After Setup
 
@@ -390,29 +370,37 @@ After setup:
 
 ## Time Investment
 
-- **Quick start:** 30 minutes
-- **Full setup:** 90 minutes
+- **Quick start:** 5 minutes (cookiecutter scaffold)
+- **Full setup:** 45 minutes
 - **Refactoring avoided:** 10+ hours
-- **Net savings:** 8-10 hours
+- **Net savings:** 9-10 hours
 
 Plus eliminates mental overhead of "where does this belong?"
 
 ## Reference Documentation
 
-- `references/directory-structure.md` - Recommended directory layout
-- `references/setup-checklist.md` - Day 1 setup checklist
-- `references/templates/agents.md` - AGENTS.md content ownership template
-- `references/templates/bom.md` - Bill of materials template
+### Scaffolding
+
+New documentation repositories are scaffolded with
+[cookiecutter-docs](https://github.com/austinmcconnell/cookiecutter-docs). It generates the
+directory structure, root-level files (README.md, AGENTS.md, SUMMARY.md, INTRODUCTION.md),
+subdirectory READMEs, book.toml, pre-commit hooks, and validation scripts.
+
+### Content templates
+
+Templates for adding new content to existing repos:
+
 - `references/templates/component.md` - Component specification template
 - `references/templates/configuration.md` - Configuration specification template
 - `references/templates/procedure.md` - Procedure (step-by-step) template
-- `references/templates/readme.md` - Repo-level README.md template
-- `references/templates/requirements.md` - Planning requirements template
-- `references/templates/research.md` - Single-file RESEARCH.md template
+- `references/templates/research.md` - Single-file RESEARCH.md template (small projects)
 - `references/templates/research-readme.md` - Multi-file research/README.md index template
 - `references/templates/research-topic.md` - Multi-file research topic file template
-- `references/templates/subdirectory-readme.md` - Subdirectory README.md template
-- `references/templates/summary.md` - SUMMARY.md table of contents template
 - `references/templates/todo.md` - Working file template (open questions, blockers, tasks)
+
+### Other references
+
+- `references/directory-structure.md` - Recommended directory layout
+- `references/setup-checklist.md` - Day 1 setup checklist
 
 For mdBook-specific setup, see the `mdbook-setup` skill.

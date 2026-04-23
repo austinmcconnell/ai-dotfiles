@@ -1,41 +1,37 @@
 # Day 1 Setup Checklist
 
-## Project context (5 minutes)
+## Scaffold (5 minutes)
 
-- [ ] Project name and one-sentence description
-- [ ] Key requirements or goals (bullet list)
-- [ ] Known constraints (optional)
+- [ ] Run `cookiecutter gh:austinmcconnell/cookiecutter-docs`
+- [ ] Initialize git, review .gitignore
 
-## Repository (10 minutes)
+## Review generated files (5 minutes)
 
-- [ ] Initialize git, create .gitignore
-- [ ] Create README.md with repo-level getting started guide
-- [ ] Create INTRODUCTION.md with book introduction
-- [ ] Choose mdBook, create book.toml
+- [ ] Verify AGENTS.md content ownership model
+- [ ] Verify SUMMARY.md structure
+- [ ] Verify README.md and INTRODUCTION.md
+- [ ] Verify subdirectory READMEs
 
-## Directories (5 minutes)
+## Quality gates (10 minutes)
 
-- [ ] Create planning/, research/, decisions/, components/, configuration/, procedures/
-- [ ] Create README.md in each subdirectory
-- [ ] Create SUMMARY.md
-
-## Core Files (15 minutes)
-
-- [ ] Create AGENTS.md with content ownership model
-- [ ] Create research/README.md for external links
-- [ ] Create glossary.md for terminology
-
-## Templates (20 minutes)
-
-- [ ] Create decisions/adr-template.md
-- [ ] Create components/component-template.md
-- [ ] Create configuration/config-template.md
-- [ ] Create procedures/procedure-template.md
-- [ ] Add HTML comments explaining WHAT vs HOW
-
-## Quality Gates (15 minutes)
-
-- [ ] Create .pre-commit-config.yaml
+- [ ] Run `pip install pre-commit`
 - [ ] Run `pre-commit install`
-- [ ] Add validation scripts
+- [ ] Test `pre-commit run --all-files`
 - [ ] Test `mdbook serve` and `mdbook build`
+
+## Shared resource registration (5 minutes)
+
+If this repo references shared resources (IP addresses, switch ports, rack slots, PDU ports):
+
+- [ ] Add the repo to the `cross-repo-audit` skill
+- [ ] Run a targeted conflict check against authoritative sources
+
+## Start adding content
+
+Use content templates from `references/templates/` as the project grows:
+
+- `component.md` — new component specifications
+- `configuration.md` — new configuration specs
+- `procedure.md` — new step-by-step procedures
+- `research-readme.md` / `research-topic.md` — research directory content
+- `todo.md` — working file for open questions and blockers
