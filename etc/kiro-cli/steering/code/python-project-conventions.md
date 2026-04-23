@@ -11,6 +11,12 @@ and activate the project's virtual environment:
 
 If no venv exists and a Python command fails, suggest creating one before retrying.
 
+## String Quoting
+
+Use single quotes for Python strings. Only use double quotes when the string contains a single quote
+(e.g., `"it's a test"`). The `double-quote-string-fixer` pre-commit hook enforces this across all
+repositories.
+
 ## Pre-commit
 
 After modifying files, run `pre-commit run --files <changed-files>` to validate. If hooks modify
