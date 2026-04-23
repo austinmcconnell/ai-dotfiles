@@ -123,8 +123,9 @@ READMEs, book.toml, pre-commit hooks, and validation scripts.
 cookiecutter gh:austinmcconnell/cookiecutter-docs
 ```
 
-After scaffolding, use the content templates in `references/templates/` to add new content as the
-project grows (components, configuration specs, procedures, research topics).
+After scaffolding, use the dedicated content-creation skills to add new content as the project grows
+(see `create-component`, `create-configuration`, `create-procedure`, `create-docs-research`,
+`create-adr`).
 
 Done! Structure prevents 70% of common refactoring issues.
 
@@ -224,16 +225,14 @@ Automate quality checks with pre-commit hooks.
 
 ### 6. External References in research/
 
-Centralize external links to prevent link rot. Default to a `research/` directory with
-`research/README.md` as the index (see `references/templates/research-readme.md` and
-`references/templates/research-topic.md`). For very small projects with only a few research links, a
-single `RESEARCH.md` file is acceptable (see `references/templates/research.md`).
+Centralize external links to prevent link rot. Use a `research/` directory with `research/README.md`
+as the index. See the `create-docs-research` skill for templates and workflow.
 
 ### 7. Working file for open questions, blockers, and tasks
 
 Use `todo.md` (git-ignored via global `todo*.md` pattern) to track items the repo structure can't
 express. This file serves as a session handoff — agents can read it to understand what still needs
-to be figured out. See `references/templates/todo.md` for the template.
+to be figured out. See the `todo` skill for the template and conventions.
 
 Three sections:
 
@@ -261,13 +260,15 @@ truth. Move items to tracked files as they are resolved.
 - [ ] Verify AGENTS.md content ownership model matches project needs
 - [ ] Confirm configuration/ = WHAT, procedures/ = HOW, decisions/ = WHY, components/ = SPECS
 
-### Templates (10 minutes)
+### Templates (5 minutes)
 
-Content templates in `references/templates/` are used on demand as the project grows:
+Content is added on demand using dedicated skills:
 
-- [ ] Familiarize with component template (`references/templates/component.md`)
-- [ ] Familiarize with configuration template (`references/templates/configuration.md`)
-- [ ] Familiarize with procedure template (`references/templates/procedure.md`)
+- [ ] `create-component` — component specifications
+- [ ] `create-configuration` — configuration specs
+- [ ] `create-procedure` — step-by-step procedures
+- [ ] `create-docs-research` — research topics and evaluations
+- [ ] `create-adr` — architecture decision records
 
 ### Quality Gates (10 minutes)
 
@@ -386,21 +387,20 @@ New documentation repositories are scaffolded with
 directory structure, root-level files (README.md, AGENTS.md, SUMMARY.md, INTRODUCTION.md),
 subdirectory READMEs, book.toml, pre-commit hooks, and validation scripts.
 
-### Content templates
+### Content-creation skills
 
-Templates for adding new content to existing repos:
+Dedicated skills for adding content to existing repos:
 
-- `references/templates/component.md` - Component specification template
-- `references/templates/configuration.md` - Configuration specification template
-- `references/templates/procedure.md` - Procedure (step-by-step) template
-- `references/templates/research.md` - Single-file RESEARCH.md template (small projects)
-- `references/templates/research-readme.md` - Multi-file research/README.md index template
-- `references/templates/research-topic.md` - Multi-file research topic file template
-- `references/templates/todo.md` - Working file template (open questions, blockers, tasks)
+- `create-component` — component specification files
+- `create-configuration` — configuration specification files
+- `create-procedure` — step-by-step procedure files
+- `create-docs-research` — project-specific research topics and evaluations
+- `create-adr` — architecture decision records
 
 ### Other references
 
 - `references/directory-structure.md` - Recommended directory layout
 - `references/setup-checklist.md` - Day 1 setup checklist
+- `todo` skill (shared) - Working file template and conventions
 
 For mdBook-specific setup, see the `mdbook-setup` skill.

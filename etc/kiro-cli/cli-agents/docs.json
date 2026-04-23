@@ -13,7 +13,6 @@
         "file://book.toml",
         "skill://.kiro/skills/**/SKILL.md",
         "skill://~/.kiro/skills/documentation/**/SKILL.md",
-        "skill://~/.kiro/skills/research/**/SKILL.md",
         "skill://~/.kiro/skills/shared/**/SKILL.md",
         {
             "type": "knowledgeBase",

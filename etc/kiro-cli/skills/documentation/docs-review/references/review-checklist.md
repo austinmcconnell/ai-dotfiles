@@ -107,11 +107,8 @@ For each file in components/:
 
 ### research/ (Reference Material)
 
-- [ ] Research content exists (research/ directory preferred; some older repos use single
-  RESEARCH.md)
+- [ ] Research content uses the `research/` directory format
 - [ ] External references are centralized in research content, not scattered across other files
-- [ ] Format is appropriate for scope (single file for 1–4 topics / under ~300 lines; directory for
-  5+ topics / over ~300 lines)
 - [ ] Getting started section links to requirements (and key ADR if applicable)
 - [ ] Entries follow standard format (URL, Purpose, Key Concepts for link entries)
 - [ ] Comparison tables used when evaluating multiple alternatives
@@ -121,16 +118,6 @@ For each file in components/:
 - [ ] No specifications embedded in research (belongs in configuration/)
 - [ ] No decision rationale embedded in research (belongs in decisions/)
 - [ ] No implementation steps embedded in research (belongs in procedures/)
-
-**Single-file specific:**
-
-- [ ] Entries numbered sequentially across all sections
-- [ ] Project-specific context section summarizes key parameters from internal docs
-- [ ] Quick reference section maps common questions to entries
-- [ ] Listed in SUMMARY.md below `---` separator
-
-**Directory specific:**
-
 - [ ] research/README.md serves as index with topic links
 - [ ] Each topic file is self-contained (readable without other research files)
 - [ ] Related documentation section at end of each topic file

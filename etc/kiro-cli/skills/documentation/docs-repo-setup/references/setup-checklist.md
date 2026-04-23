@@ -28,10 +28,10 @@ If this repo references shared resources (IP addresses, switch ports, rack slots
 
 ## Start adding content
 
-Use content templates from `references/templates/` as the project grows:
+Use dedicated skills as the project grows:
 
-- `component.md` — new component specifications
-- `configuration.md` — new configuration specs
-- `procedure.md` — new step-by-step procedures
-- `research-readme.md` / `research-topic.md` — research directory content
-- `todo.md` — working file for open questions and blockers
+- `create-component` — component specifications
+- `create-configuration` — configuration specs
+- `create-procedure` — step-by-step procedures
+- `create-docs-research` — research topics and evaluations
+- `create-adr` — architecture decision records

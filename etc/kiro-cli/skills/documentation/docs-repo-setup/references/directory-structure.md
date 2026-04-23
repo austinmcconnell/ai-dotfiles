@@ -34,8 +34,8 @@ project-root/
     └── [procedure].md     # One file per procedure
 ```
 
-## Single-file research (alternative)
+## Notes
 
-For very small projects with only a few research links, a single `RESEARCH.md` at the project root
-is acceptable. List it in SUMMARY.md below a `---` separator as appendix material. Migrate to the
-directory format when the file exceeds ~300 lines or has five or more distinct topics.
+- The `research/` directory format is the standard for all new projects
+- The cookiecutter-docs repo scaffolds this structure automatically
+- See the `create-docs-research` skill for templates when adding research topics
