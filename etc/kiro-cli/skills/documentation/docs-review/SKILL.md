@@ -412,6 +412,6 @@ mdbook build
 ## Reference Documentation
 
 - `references/review-checklist.md` - Detailed review checklist
-- `steering/documentation/content-ownership.md` - Content ownership principles
-- `steering/documentation/link-conventions.md` - Cross-referencing standards
+- `references/content-ownership-reference.md` - Content ownership principles
+- `references/link-conventions-reference.md` - Cross-referencing standards
 - `cross-repo-audit` skill - Multi-repo consistency checks for shared resources
