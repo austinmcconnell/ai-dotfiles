@@ -62,5 +62,5 @@ subject-only formats.
 
 ## Reference
 
-For templates, checklists, style guidance, and best practices, see the steering documents (loaded
-automatically) and the documentation skills.
+Steering docs (loaded automatically) contain principles and conventions. For detailed examples,
+templates, checklists, and workflows, read the relevant documentation skill before acting.

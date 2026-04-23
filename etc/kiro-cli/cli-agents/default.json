@@ -64,7 +64,6 @@
     "prompt": "file://./default-prompt.md",
     "resources": [
         "file://AGENTS.md",
-        "file://~/.dotfiles/etc/kiro-cli/steering/workflow/**/*.md",
         "file://~/.dotfiles/etc/kiro-cli/steering/code/**/*.md",
         "file://~/.dotfiles/etc/kiro-cli/steering/security/**/*.md",
         "file://.kiro/steering/**/*.md",

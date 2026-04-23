@@ -55,6 +55,7 @@ assignments don't conflict. See the `cross-repo-audit` skill for ownership rules
 - [ ] File is in `components/` directory with kebab-case name
 - [ ] Specifications are factual (not configuration or procedures)
 - [ ] Purchase information uses pre-tax, pre-shipping unit prices
+- [ ] Purchase info includes all required fields: unit price, quantity, purchase date, status
 - [ ] No configuration specs included (those belong in `configuration/`)
 - [ ] No implementation steps included (those belong in `procedures/`)
 - [ ] Cross-references use descriptive link text
