@@ -7,8 +7,9 @@ description: Create structured research files with cited sources, YAML frontmatt
 
 ## Research Output Location
 
-All research lives in `~/projects/austinmcconnell/_research_/`. Each topic gets its own subdirectory
-with a README.md index. The root `_research_/README.md` is a master index of all topics.
+All research lives in `$PROJECTS_DIR/austinmcconnell/_research_/`. Each topic gets its own
+subdirectory with a README.md index. The root `_research_/README.md` is a master index of all
+topics.
 
 ```text
 _research_/

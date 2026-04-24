@@ -50,7 +50,7 @@ For each agent, consider:
 Verify proposed conventions against `.pre-commit-config.yaml` and any associated linter config files
 (`.markdownlintrc`, `.yamllint.yaml`, `.prettierrc`, `.editorconfig`, `shellcheckrc`, shfmt args,
 etc.). Steering docs must not contradict what pre-commit hooks enforce. Check the dotfiles repo and
-2-3 documentation repos in `~/projects/austinmcconnell/_documentation_/` for shared hook configs.
+2-3 documentation repos in `$PROJECTS_DIR/austinmcconnell/_documentation_/` for shared hook configs.
 
 ## What NOT to recommend
 

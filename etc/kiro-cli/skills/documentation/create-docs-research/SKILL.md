@@ -12,7 +12,7 @@ for **project-specific** research — evaluations and comparisons that inform de
 particular project.
 
 **Cross-cutting research** (product lineups, technology comparisons useful across projects) lives in
-`~/projects/austinmcconnell/_research_/` and is managed by the `create-research` skill via the
+`$PROJECTS_DIR/austinmcconnell/_research_/` and is managed by the `create-research` skill via the
 default agent. The docs agent can search cross-cutting research via its knowledge base but does not
 write to it.
 
