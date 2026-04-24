@@ -144,54 +144,15 @@ else
     echo "Install uv (https://docs.astral.sh/uv/) for Python MCP server support."
 fi
 
-# Build official GitHub MCP Server from source if Go is available
+# Install GitHub MCP Server via go install if Go is available
 if is-executable go; then
-    print_header "Building official GitHub MCP Server from source"
-
-    # Create directories
-    mkdir -p "$HOME/.repositories"
-    mkdir -p "$HOME/.local/bin"
-
-    # Clone or update the repository
-    if [ -d "$GITHUB_MCP_REPO_DIR" ]; then
-        echo "Updating existing GitHub MCP Server repository..."
-        cd "$GITHUB_MCP_REPO_DIR"
-        git pull origin main
+    print_header "Installing GitHub MCP Server"
+    echo "Installing $GITHUB_MCP_SERVER_PKG..."
+    if go install "$GITHUB_MCP_SERVER_PKG"; then
+        echo "✅ GitHub MCP Server installed to $(go env GOPATH)/bin/"
     else
-        echo "Cloning GitHub MCP Server repository..."
-        git clone "$GITHUB_MCP_REPO_URL" "$GITHUB_MCP_REPO_DIR"
-        cd "$GITHUB_MCP_REPO_DIR"
-    fi
-
-    # Build the binary with proper version information
-    echo "Building GitHub MCP Server binary..."
-    VERSION=$(git describe --tags --always --dirty 2>/dev/null || echo "dev")
-    COMMIT=$(git rev-parse --short HEAD 2>/dev/null || echo "unknown")
-    DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-
-    if go build -ldflags "-s -w -X main.version=$VERSION -X main.commit=$COMMIT -X main.date=$DATE" -o "$GITHUB_MCP_BINARY" ./cmd/github-mcp-server; then
-        echo "✅ GitHub MCP Server built successfully at: $GITHUB_MCP_BINARY"
-
-        # Make sure it's executable
-        chmod +x "$GITHUB_MCP_BINARY"
-
-        # Test the binary
-        if "$GITHUB_MCP_BINARY" --help >/dev/null 2>&1; then
-            echo "✅ GitHub MCP Server binary is working correctly"
-        else
-            echo "⚠️  GitHub MCP Server binary built but may have issues"
-        fi
-    else
-        echo "❌ Failed to build GitHub MCP Server"
-        echo "   You may need to build it manually:"
-        echo "   cd $GITHUB_MCP_REPO_DIR"
-        echo "   VERSION=\$(git describe --tags --always --dirty 2>/dev/null || echo \"dev\")"
-        echo "   COMMIT=\$(git rev-parse --short HEAD 2>/dev/null || echo \"unknown\")"
-        echo "   DATE=\$(date -u +\"%Y-%m-%dT%H:%M:%SZ\")"
-        echo "   go build -ldflags \"-s -w -X main.version=\$VERSION -X main.commit=\$COMMIT -X main.date=\$DATE\" -o $GITHUB_MCP_BINARY ./cmd/github-mcp-server"
+        echo "❌ Failed to install GitHub MCP Server"
     fi
 else
-    echo "Go not found. Skipping GitHub MCP Server build."
-    echo "To use the GitHub agent, install Go and run this script again, or use Docker:"
-    echo "   docker pull ghcr.io/github/github-mcp-server"
+    echo "Go not found. Skipping GitHub MCP Server installation."
 fi
