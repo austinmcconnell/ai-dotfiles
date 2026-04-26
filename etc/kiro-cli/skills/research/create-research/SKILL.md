@@ -39,6 +39,49 @@ as needed.
 
 ## Workflow
 
+### Step 0: Plan file layout and subagent delegation
+
+Before creating any files, decide the full directory structure and file list for the topic. This is
+the orchestrator's responsibility — subagents must never decide where files go.
+
+**When to use subagents:** The topic has research areas that can be investigated independently.
+Subagents keep the orchestrator's context clean for synthesis, cross-referencing, and any follow-up
+research — even a 2-file topic benefits if the research involves heavy web fetching.
+
+**When to skip subagents:** The topic needs a single file, or all files are tightly interdependent
+(each file's content depends on what the others find).
+
+#### Orchestrator responsibilities
+
+1. Decide the topic directory: `_research_/<topic>/`
+1. Plan the complete file list with exact filenames
+1. Classify each file as **self-contained** (one subagent has everything it needs) or
+   **cross-cutting** (requires knowledge from multiple subagents)
+1. Assign self-contained files to subagents with exact output paths
+1. Reserve cross-cutting files for the orchestrator to write after subagents complete:
+   - Topic `README.md`
+   - Comparison/recommendation files
+   - Master index updates
+   - Any file that cross-references multiple subagent outputs
+
+#### Subagent prompt requirements
+
+Each subagent prompt must include:
+
+- **Exact output path:** "Write your findings to `_research_/networking-nics/25gbe-nics.md`"
+- **Negative constraint:** "Do not create any other files, directories, or README files"
+- **Frontmatter template:** Include the required YAML frontmatter structure so formatting is
+  consistent across subagents
+- **Citation format:** Remind subagents to use `[source-key]` inline citations and include source
+  URLs in the YAML `sources` block
+
+#### After subagents complete
+
+1. Read the files subagents created
+1. Write cross-cutting files (README, comparison, etc.) with correct cross-references
+1. Update the topic `README.md` and root `_research_/README.md`
+1. Verify all relative links between files are correct
+
 ### Step 1: Set up the topic directory
 
 1. Create `_research_/<topic>/` if it doesn't exist
