@@ -131,6 +131,16 @@
             "include": ["*/analysis/*.md"],
             "exclude": [".git/**"],
             "autoUpdate": false
+        },
+        {
+            "type": "knowledgeBase",
+            "source": "file://~/projects/austinmcconnell",
+            "name": "analysis-personal-projects",
+            "description": "Cross-project analysis documents covering architecture decisions, research findings, and technical comparisons across personal projects",
+            "indexType": "best",
+            "include": ["*/analysis/*.md"],
+            "exclude": [".git/**"],
+            "autoUpdate": false
         }
     ],
     "tools": ["*"],
