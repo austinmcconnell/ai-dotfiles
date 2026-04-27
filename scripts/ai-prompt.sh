@@ -45,7 +45,7 @@ _ai_prompt_dir() {
     echo "$HOME/.dotfiles/etc/ai-prompts"
 }
 
-# Get list of available prompts (without .txt extension)
+# Get list of available prompts (without .md extension)
 _ai_prompt_names() {
     local prompt_dir
     prompt_dir="$(_ai_prompt_dir)"
@@ -105,14 +105,12 @@ _ai_prompt_use() {
 
     if [[ -z "$name" ]]; then
         echo "Usage: ai-prompt use <prompt-name>"
-        echo "Available prompts:"
         _ai_prompt_list
         return 1
     fi
 
     if [[ ! -f "$prompt_file" ]]; then
         echo "Prompt '$name' not found."
-        echo "Available prompts:"
         _ai_prompt_list
         return 1
     fi
@@ -142,7 +140,6 @@ _ai_prompt_edit() {
 
     if [[ -z "$name" ]]; then
         echo "Usage: ai-prompt edit <prompt-name>"
-        echo "Available prompts:"
         _ai_prompt_list
         return 1
     fi
@@ -160,7 +157,6 @@ _ai_prompt_show() {
 
     if [[ -z "$name" ]]; then
         echo "Usage: ai-prompt show <prompt-name>"
-        echo "Available prompts:"
         _ai_prompt_list
         return 1
     fi
@@ -183,7 +179,6 @@ _ai_prompt_delete() {
 
     if [[ -z "$name" ]]; then
         echo "Usage: ai-prompt delete <prompt-name>"
-        echo "Available prompts:"
         _ai_prompt_list
         return 1
     fi
