@@ -36,10 +36,10 @@ For each city with a program, cover:
 
 ## International Schools
 
-| City   | School Name | Curriculum | Grades | Annual Tuition | Capacity      | Notes |
-| ------ | ----------- | ---------- | ------ | -------------- | ------------- | ----- |
-| City A | Name        | IB/US/UK   | K–12   | €XX,XXX        | Open/Waitlist |       |
-| City B | Name        | IB/US/UK   | K–12   | €XX,XXX        | Open/Waitlist |       |
+| City   | School Name | Curriculum | Grades | Annual Tuition | EU/Non-EU Difference | Capacity      | Notes |
+| ------ | ----------- | ---------- | ------ | -------------- | -------------------- | ------------- | ----- |
+| City A | Name        | IB/US/UK   | K–12   | €XX,XXX        | Yes/No/Unknown       | Open/Waitlist |       |
+| City B | Name        | IB/US/UK   | K–12   | €XX,XXX        | Yes/No/Unknown       | Open/Waitlist |       |
 
 For cities with no international school, note the nearest option and distance.
 

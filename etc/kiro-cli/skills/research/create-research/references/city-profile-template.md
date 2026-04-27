@@ -75,8 +75,9 @@ tracks. Note whether the city has experience with foreign students or if it's ra
 ### International Schools
 
 List each school with: name, curriculum (IB, American, British, other), language of instruction, age
-range, annual tuition, capacity/waitlist status. If no international schools exist, state that
-clearly and note the nearest city that has one.
+range, annual tuition, capacity/waitlist status. Note whether tuition differs for EU vs non-EU
+citizens. If no international schools exist, state that clearly and note the nearest city that has
+one.
 
 ## Internet Infrastructure
 

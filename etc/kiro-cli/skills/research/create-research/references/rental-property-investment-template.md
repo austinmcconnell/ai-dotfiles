@@ -20,6 +20,9 @@ Can US citizens purchase property? Any restrictions (reciprocity requirements, E
 company formation needed)? Approval process and timeline. Note any recent changes or pending
 legislation.
 
+**With EU citizenship:** Note which restrictions are removed. EU citizens typically purchase on the
+same terms as locals — state this explicitly if true for this country.
+
 ## Purchase Process
 
 Typical steps from offer to closing. Required professionals (lawyer, notary, real estate agent).
