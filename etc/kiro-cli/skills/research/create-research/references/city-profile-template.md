@@ -58,8 +58,9 @@ Walkability of city centre vs suburbs. Bike infrastructure. Car necessity assess
 ## Expat Community
 
 Size and character of the expat community. American/anglophone families specifically — are there
-any? Expat groups, coworking spaces, social infrastructure. Be honest if the community is tiny or
-nonexistent.
+any? Expat groups, social infrastructure. Coworking spaces: names, day/month rates, quality — these
+double as the primary social network for remote workers new to the city. Be honest if the community
+is tiny or nonexistent.
 
 ## Education
 

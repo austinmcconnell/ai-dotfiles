@@ -43,6 +43,13 @@ For each city with a program, cover:
 
 For cities with no international school, note the nearest option and distance.
 
+## Homeschooling & Online School
+
+Legal status (from country overview) and practical viability as a fallback. Cover: registration
+requirements, curriculum options (US online schools, accredited homeschool programs), any local
+homeschool communities or co-ops, socialization opportunities. Note whether this is a realistic
+long-term option or only a stopgap while children learn the local language.
+
 ## Extracurricular Activities
 
 Sports clubs, music/art programs, scouting, language classes, summer camps — availability across
