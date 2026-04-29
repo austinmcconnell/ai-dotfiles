@@ -116,6 +116,7 @@ prompt checks for required analysis files and will abort if prerequisites are mi
 Level 0 (No Dependencies - Can run anytime):
 ├── project-analysis          # Foundation for all other analyses
 ├── branch-analysis           # Git branch and commit analysis
+├── branch-inventory          # All-branch inventory and triage
 ├── discover-previous-work    # Understand current implementation state
 ├── pr-description           # Generate pull request descriptions
 ├── refactor-plan            # Create refactoring plans
@@ -162,6 +163,7 @@ For comprehensive project analysis, run prompts in this order:
 These prompts can be run at any time without prerequisites:
 
 - `branch-analysis` - Analyze current git branch changes
+- `branch-inventory` - Inventory all local branches with maturity and triage recommendations
 - `commit-analysis` - Analyze commit history patterns and quality
 - `component-compatibility-review` - Review hardware component compatibility
 - `discover-previous-work` - Understand work-in-progress state
@@ -202,6 +204,8 @@ These prompts can be run at any time without prerequisites:
 ### Git and Code Review
 
 - `branch-analysis` - Analyze git branch differences and changes
+- `branch-inventory` - Inventory all local branches with maturity assessment and triage
+  recommendations
 - `discover-previous-work` - Analyze previous work and determine next steps
 - `pr-description` - Generate pull request descriptions
 - `refactor-plan` - Create comprehensive refactoring plans (outputs to markdown file)
