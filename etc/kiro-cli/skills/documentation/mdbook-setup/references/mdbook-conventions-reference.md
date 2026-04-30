@@ -127,7 +127,7 @@ AGENTS.md is not included in the book — it is AI agent guidance, not reader co
 
 <!-- Bad -->
 
-# Title
+## Title
 
 ### Subsection (skipped H2)
 ```
@@ -251,7 +251,7 @@ mdBook doesn't have native admonitions. Use HTML or a preprocessor:
 
 ```markdown
 > **Note:** This is important information.
-
+>
 > **Warning:** This action cannot be undone.
 ```
 
@@ -357,11 +357,10 @@ Use consistent table formatting:
 ```yaml
 # .pre-commit-config.yaml
 repos:
-  - repo: https://github.com/DavidAnson/markdownlint-cli2
-    rev: v0.12.1
+  - repo: https://github.com/rvben/rumdl-pre-commit
+    rev: v0.1.84
     hooks:
-      - id: markdownlint-cli2
-        args: ["--config", ".markdownlint.yaml"]
+      - id: rumdl-fmt
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.5.0
@@ -373,14 +372,18 @@ repos:
       - id: check-yaml
 ```
 
-### Markdownlint Configuration
+### rumdl Configuration
 
-```yaml
-# .markdownlint.yaml
-default: true
-MD013: false # Line length (disabled for docs)
-MD033: false # Inline HTML (needed for mdBook)
-MD041: false # First line heading (frontmatter conflicts)
+```toml
+# rumdl.toml
+[MD013]
+line-length = false
+
+[MD033]
+enabled = false
+
+[MD041]
+enabled = false
 ```
 
 ## Quality Checklist

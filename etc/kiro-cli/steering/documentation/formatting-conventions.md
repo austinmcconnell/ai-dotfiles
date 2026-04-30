@@ -1,6 +1,6 @@
 # Formatting Conventions
 
-Rules aligned with pre-commit hooks (mdformat, markdownlint, yamllint, prettier) shared across
+Rules aligned with pre-commit hooks (mdformat, rumdl, yamllint, prettier) shared across
 documentation repositories.
 
 ## Markdown

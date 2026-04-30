@@ -353,7 +353,7 @@ slots, PDU ports, VLAN assignments), register it in the `cross-repo-audit` skill
 ### "Pre-commit hooks fail"
 
 - Run hooks individually to identify issue
-- Check .markdownlintrc configuration
+- Check rumdl.toml configuration
 - Verify all links are valid
 - Fix spelling errors or add to ignore list
 

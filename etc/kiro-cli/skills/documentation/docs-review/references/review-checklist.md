@@ -311,8 +311,8 @@ Each README.md should have:
 **How to check:**
 
 ```bash
-# Run markdownlint
-markdownlint .
+# Run rumdl
+rumdl .
 
 # Or use pre-commit hooks
 pre-commit run --all-files
@@ -340,7 +340,7 @@ pre-commit run --all-files
 ### Pre-commit Hooks
 
 - [ ] Pre-commit hooks configured (`.pre-commit-config.yaml`)
-- [ ] Markdownlint enabled
+- [ ] rumdl enabled
 - [ ] Link checker enabled
 - [ ] Trailing whitespace check enabled
 - [ ] YAML validation enabled
@@ -417,20 +417,20 @@ After completing checklist, generate report:
 ### High Priority
 
 1. Fix content ownership violations
-2. Remove duplicate specifications
-3. Add missing cross-references
+1. Remove duplicate specifications
+1. Add missing cross-references
 
 ### Medium Priority
 
 1. Fix broken links
-2. Update SUMMARY.md
-3. Add missing README.md files
+1. Update SUMMARY.md
+1. Add missing README.md files
 
 ### Low Priority
 
 1. Improve link text patterns
-2. Add section links for specificity
-3. Enhance accessibility
+1. Add section links for specificity
+1. Enhance accessibility
 
 ## Positive Findings
 
@@ -441,8 +441,8 @@ After completing checklist, generate report:
 ## Next Steps
 
 1. [Action item 1]
-2. [Action item 2]
-3. Schedule follow-up review: [Date]
+1. [Action item 2]
+1. Schedule follow-up review: [Date]
 ```
 
 ## Review Frequency Guidelines
