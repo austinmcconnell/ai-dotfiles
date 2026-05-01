@@ -32,7 +32,7 @@ install_integration_if_needed() {
     fi
 }
 
-print_header "Installing Kiro CLI"
+print_section_header "Installing Kiro CLI"
 
 # Initialize Homebrew cache
 init_brew_cache
@@ -102,7 +102,7 @@ fi
 
 # Install Kiro CLI integrations if the CLI is available
 if is-executable kiro-cli; then
-    print_header "Installing Kiro CLI integrations"
+    print_section_header "Installing Kiro CLI integrations"
     install_integration_if_needed "ssh"
 else
     echo "Kiro CLI not found. Skipping integrations installation."
@@ -112,7 +112,7 @@ fi
 source "$DOTFILES_DIR/etc/kiro-cli/mcp-servers.conf"
 
 if is-executable npm; then
-    print_header "Installing Kiro CLI MCP servers"
+    print_section_header "Installing Kiro CLI MCP servers"
 
     for server in "${NODE_MCP_SERVERS[@]}"; do
         echo "Installing $server..."
@@ -131,7 +131,7 @@ fi
 
 # Pre-cache Python MCP servers for uvx if uv is available
 if is-executable uv; then
-    print_header "Pre-caching Python MCP servers for uvx"
+    print_section_header "Pre-caching Python MCP servers for uvx"
 
     for server in "${PYTHON_MCP_SERVERS[@]}"; do
         echo "Pre-caching $server..."
@@ -146,7 +146,7 @@ fi
 
 # Install GitHub MCP Server via go install if Go is available
 if is-executable go; then
-    print_header "Installing GitHub MCP Server"
+    print_section_header "Installing GitHub MCP Server"
     echo "Installing $GITHUB_MCP_SERVER_PKG..."
     if go install "$GITHUB_MCP_SERVER_PKG"; then
         echo "✅ GitHub MCP Server installed to $(go env GOPATH)/bin/"
