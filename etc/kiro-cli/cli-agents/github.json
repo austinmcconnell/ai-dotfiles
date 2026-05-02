@@ -106,6 +106,10 @@
                 "command -v .*",
                 "echo .*",
                 "find .*",
+                "gh api .*",
+                "gh issue .*",
+                "gh pr .*",
+                "gh run .*",
                 "git branch.*",
                 "git diff.*",
                 "(GIT_PAGER=cat )?git log.*",
@@ -150,6 +154,10 @@
                 "docker rm .*",
                 "docker rmi .*",
                 "docker run .*",
+                "gh auth .*",
+                "gh repo delete.*",
+                "gh secret .*",
+                "gh variable .*",
                 "git add.*",
                 "git commit.*",
                 "kill .*",
@@ -189,7 +197,7 @@
             "deniedPaths": ["/etc/**", "/usr/**", "/bin/**", "/sbin/**", "/System/**", "**/.env", "**/.env.*"]
         },
         "subagent": {
-            "availableAgents": ["default", "github", "jira"],
+            "availableAgents": ["default", "docs", "github", "jira"],
             "trustedAgents": ["default"]
         },
         "web_fetch": {

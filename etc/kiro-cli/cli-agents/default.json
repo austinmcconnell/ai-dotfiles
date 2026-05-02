@@ -268,7 +268,7 @@
             ]
         },
         "subagent": {
-            "availableAgents": ["default", "github", "jira"],
+            "availableAgents": ["default", "docs", "github", "jira"],
             "trustedAgents": ["default"]
         },
         "web_fetch": {
