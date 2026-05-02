@@ -166,6 +166,7 @@
                 "hostname",
                 "ls( .*)?",
                 "man .*",
+                "mkdir -p .*",
                 "pre-commit run .*",
                 "pwd",
                 "pylint .*",

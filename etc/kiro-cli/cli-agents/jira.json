@@ -103,6 +103,7 @@
                 "hostname",
                 "ls( .*)?",
                 "man .*",
+                "mkdir -p .*",
                 "pwd",
                 "readlink .*",
                 "sed .*",
