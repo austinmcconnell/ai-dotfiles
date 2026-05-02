@@ -48,8 +48,12 @@ the orchestrator's responsibility — subagents must never decide where files go
 Subagents keep the orchestrator's context clean for synthesis, cross-referencing, and any follow-up
 research — even a 2-file topic benefits if the research involves heavy web fetching.
 
-**When to skip subagents:** The topic needs a single file, or all files are tightly interdependent
-(each file's content depends on what the others find).
+**When to skip subagents:** All files are tightly interdependent (each file's content depends on
+what the others find), or the topic is small enough that a single agent can research and write it
+without heavy web fetching. A single output file does **not** automatically mean "skip subagents" —
+if the file covers many independent research domains with heavy web fetching, delegate the research
+to subagents using the temp-file assembly pattern (see below and relocation-research-conventions for
+an example).
 
 #### Orchestrator responsibilities
 
@@ -78,6 +82,12 @@ Each subagent prompt must include:
 #### After subagents complete
 
 1. Read the files subagents created
+1. If subagents wrote temp files (`.tmp-<topic>.md` + `.tmp-<topic>-sources.yaml`) for a single
+   output file, **assemble** via shell concat — read only the small `-sources.yaml` files to build
+   frontmatter, then `cat` the body files in template order. Do not read the body temp files into
+   context. Do not rewrite, re-summarize, or re-synthesize subagent sections. Verify the assembled
+   file (`wc -l` vs sum of temp files) before deleting `.tmp-*` files. See
+   `relocation-research-conventions` for the full pattern.
 1. Write cross-cutting files (README, comparison, etc.) with correct cross-references
 1. Update the topic `README.md` and root `_research_/README.md`
 1. Verify all relative links between files are correct
