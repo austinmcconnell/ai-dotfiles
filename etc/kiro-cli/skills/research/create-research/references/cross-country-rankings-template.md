@@ -18,10 +18,10 @@ defines the decision.
 
 ## Rankings Table
 
-| Rank | Country | Overall | Education | Livability | Internet | Investment | COL  |
-| ---- | ------- | ------- | --------- | ---------- | -------- | ---------- | ---- |
-| 1    | —       | X.XX    | X.XX      | X.XX       | X.XX     | X.XX       | X.XX |
-| 2    | —       | X.XX    | X.XX      | X.XX       | X.XX     | X.XX       | X.XX |
+| Rank | Country | Overall | Education | Livability | Internet Infrastructure | Rental Investment | Cost of Living |
+| ---- | ------- | ------- | --------- | ---------- | ----------------------- | ----------------- | -------------- |
+| 1    | —       | X.XX    | X.XX      | X.XX       | X.XX                    | X.XX              | X.XX           |
+| 2    | —       | X.XX    | X.XX      | X.XX       | X.XX                    | X.XX              | X.XX           |
 
 Scores are 1–10. Overall = weighted sum using the scoring weights defined in Phase 5 of the
 `relocation-research-conventions` steering doc. Read that section to get the current percentages.
@@ -34,7 +34,7 @@ For each scoring dimension, which country wins and why. One subsection per dimen
 
 ### Livability
 
-### Internet Reliability
+### Internet Infrastructure
 
 ### Rental Investment
 
