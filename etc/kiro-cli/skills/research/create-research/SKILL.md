@@ -50,6 +50,15 @@ only the missing parts.
 Before creating any files, decide the full directory structure and file list for the topic. This is
 the orchestrator's responsibility — subagents must never decide where files go.
 
+**Large product ecosystems:** If the topic covers a large product ecosystem (multiple product
+categories, tiers, or generations from a single vendor), check the knowledge base first — existing
+research on the same vendor may already have the category structure mapped. Then survey the
+manufacturer's store or product pages to fill gaps and confirm the current lineup. If the prompt
+does not define a clear scope boundary, propose a file layout and scope boundary to the user before
+proceeding — which categories/tiers are in scope, approximate product count per file, and anything
+you'd recommend excluding. Wait for user confirmation before delegating to subagents. Split by
+product category (products a buyer would compare against each other) rather than individual product.
+
 **When to use subagents:** The topic has research areas that can be investigated independently.
 Subagents keep the orchestrator's context clean for synthesis, cross-referencing, and any follow-up
 research — even a 2-file topic benefits if the research involves heavy web fetching.
@@ -166,11 +175,21 @@ The H4+ is $139 [hardkernel-h4p]. It supports up to 48 GB DDR5 [cnx-h4-review].
 - One file per product family, concept, or comparison
 - Cross-reference between files using relative markdown links: `[H-series](odroid-h.md)`
 - Aggregation and comparison belongs in dedicated comparison files or the topic README, not inline
+- For multi-file topics covering a single vendor or ecosystem, cross-reference related files where
+  specs interact (e.g., link AP PoE requirements to the switches file's PoE budget table, link
+  gateway built-in ports to the switches file for expansion options)
 
 ### Step 5: Update indexes
 
 1. Update the topic `README.md` with a summary table and links to all files
 1. Update the root `_research_/README.md` master index with the new topic
+
+**Recommendations:** If the research has an explicit or implicit decision context (e.g., "which
+switch for my home network"), add recommendations. For lightweight topics, a brief section in the
+topic README after the file index table is sufficient. For topics with enough cross-cutting analysis
+to warrant it (4+ files, multiple competing options, weighted criteria), use a separate
+`recommendations.md` and link it from the README. If the research is purely informational with no
+decision context, the file index table alone is sufficient.
 
 ## Unresolved Items
 

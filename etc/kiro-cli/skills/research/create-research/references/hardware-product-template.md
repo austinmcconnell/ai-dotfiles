@@ -14,7 +14,9 @@ sources:
 ## Overview
 
 Brief description of the product family: what it is, who makes it, what niche it fills. Include
-manufacturer, country of origin, and how long the product line has existed if relevant.
+manufacturer, country of origin, and how long the product line has existed if relevant. If covering
+a subset of a larger product family, briefly describe the full lineup hierarchy and state which
+tiers are in scope and why.
 
 ## Variants
 
@@ -24,7 +26,10 @@ manufacturer, country of origin, and how long the product line has existed if re
 | Model B | Chip    | X GB | What makes it unique | Active / Discontinued |
 
 Adjust columns to fit the product type. For non-compute hardware (switches, drives, etc.), replace
-SoC/CPU and RAM with relevant specs.
+SoC/CPU and RAM with relevant specs. Include actively sold legacy/previous-gen models if they remain
+relevant alternatives (e.g., budget picks) — mark them in the Status column (e.g., "Active —
+Legacy", "Vintage"). Exclude fully discontinued products unless they fill a niche no current model
+covers.
 
 ## Target Use Cases
 
@@ -55,11 +60,13 @@ variant and why.
 - **Source/forum 2:** Summary of sentiment
 - **Criticism:** Common complaints
 
-## vs. [Primary Competitor]
+## vs. [Primary Competitor(s)]
 
-Direct comparison with the most relevant competing product. Include price, performance, ecosystem,
-and use-case fit. Rename the heading to match the competitor (e.g., "vs. Raspberry Pi", "vs.
-Synology").
+Direct comparison with the most relevant competing product(s). Include price, performance,
+ecosystem, and use-case fit. Rename the heading to match the competitor (e.g., "vs. Raspberry Pi",
+"vs. Synology"). If the product family competes against a category rather than a single product
+(e.g., mesh systems, unmanaged switches), use a comparison table with 2–3 representative
+competitors.
 
 ## Pricing & Availability
 
@@ -68,4 +75,6 @@ Synology").
 | Model A | $XX         | Store 1, Store 2 |
 | Model B | $XX         | Store 1, Store 2 |
 
-Note total build cost if the product is board-only or requires additional components.
+Note total build cost if the product is board-only or requires additional components. For ecosystem
+products that require companion devices (e.g., controllers, PoE sources, adapters), include total
+system cost examples for common configurations.
