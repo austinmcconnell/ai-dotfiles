@@ -10,6 +10,8 @@ that have explicit skills.
 | Updating existing research       | `update-research`                                              |
 | Verifying/fact-checking research | `verify-research`                                              |
 | Researching countries/relocation | `create-research` + `relocation-research-conventions` steering |
+| Updating relocation research     | `update-research` + `relocation-research-conventions` steering |
+| Verifying relocation research    | `verify-research` + `relocation-research-conventions` steering |
 | Writing specs or design docs     | `spec-writing`                                                 |
 | Writing implementation guides    | `implementation-guide`                                         |
 | Running pre-commit hooks         | `pre-commit-validation`                                        |

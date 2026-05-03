@@ -17,7 +17,15 @@ description: Update existing research files with new information, additional sou
 
 ### Step 1: Read the existing file
 
-Read the target file and understand its current content, frontmatter, and source registry.
+Read the target file and understand its current content, frontmatter, and sources block. Check
+`last_updated` vs file content consistency — if frontmatter dates suggest a recent update but
+content appears stale or incomplete, flag to the user before proceeding.
+
+For updates spanning multiple files, delegate each file to a parallel subagent. Unlike
+create-research (where subagents write fresh files from templates), update subagents must read the
+existing file, fetch updated data for that file's sources, and apply changes following Steps 2–4.
+Each subagent prompt must include the file path, what to update, and "return only the filename and a
+one-line summary of changes — do not return file content as text."
 
 ### Step 2: Fetch new data
 
@@ -30,8 +38,8 @@ Follow the same web fetching discipline as create-research:
 ### Step 3: Integrate changes
 
 - Add new content in the appropriate section (follow the existing template structure)
-- Add new sources to the frontmatter `sources` registry
-- Add inline citations for all new factual claims
+- Add new sources to the frontmatter `sources` block
+- Add inline `[source-key]` citations for all new factual claims
 - Maintain scope control: if new content doesn't belong in this file, create a new file instead
 
 ### Step 4: Update frontmatter

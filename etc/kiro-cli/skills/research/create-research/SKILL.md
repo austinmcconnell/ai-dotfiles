@@ -39,6 +39,12 @@ as needed.
 
 ## Workflow
 
+Before starting any step, check the topic directory (`_research_/<topic>/`) for existing files. If
+the directory exists, read what's already there. If prior files exist, build on them — don't
+overwrite completed work. If orphaned `.tmp-*` files exist from a failed assembly, clean them up
+before proceeding. If the topic is partially complete (some files written, others not), complete
+only the missing parts.
+
 ### Step 0: Plan file layout and subagent delegation
 
 Before creating any files, decide the full directory structure and file list for the topic. This is
@@ -74,14 +80,19 @@ Each subagent prompt must include:
 
 - **Exact output path:** "Write your findings to `_research_/networking-nics/25gbe-nics.md`"
 - **Negative constraint:** "Do not create any other files, directories, or README files"
-- **Frontmatter template:** Include the required YAML frontmatter structure so formatting is
-  consistent across subagents
+- **Template path:** Include the path to the appropriate template file (e.g.,
+  `references/hardware-product-template.md`) and instruct the subagent to read it and use its exact
+  section headings
+- **Frontmatter template:** Include the YAML frontmatter example from Step 3 in the subagent prompt
+  so each subagent produces consistent frontmatter without needing to read the skill file
 - **Citation format:** Remind subagents to use `[source-key]` inline citations and include source
   URLs in the YAML `sources` block
+- **Return value:** "Return only the output filename(s) — do not return file content as text"
 
 #### After subagents complete
 
-1. Read the files subagents created
+1. Read the files subagents created. For large files, prefer reading specific sections (e.g.,
+   summary tables, recommendations) over full content when writing cross-cutting files.
 1. If subagents wrote temp files (`.tmp-<topic>.md` + `.tmp-<topic>-sources.yaml`) for a single
    output file, **assemble** via shell concat — read only the small `-sources.yaml` files to build
    frontmatter, then `cat` the body files in template order. Do not read the body temp files into
@@ -91,6 +102,11 @@ Each subagent prompt must include:
 1. Write cross-cutting files (README, comparison, etc.) with correct cross-references
 1. Update the topic `README.md` and root `_research_/README.md`
 1. Verify all relative links between files are correct
+
+**Step responsibilities when using subagents:** Steps 1–4 describe the research and writing process.
+When using subagents, each subagent executes Steps 2–3 for its assigned file(s). The orchestrator
+handles Steps 0 (planning/delegation), 1 (directory setup), 4 (scope control review), and 5 (index
+updates) directly.
 
 ### Step 1: Set up the topic directory
 
@@ -118,7 +134,8 @@ Each subagent prompt must include:
 ### Step 3: Create research files
 
 Each file covers ONE thing — one product family, one concept, one comparison. Use the appropriate
-template from `references/`.
+template from `references/` — see the [Templates](#templates) section for selection criteria.
+Include the chosen template path in subagent prompts (see Step 0).
 
 **Required YAML frontmatter for every research file:**
 
@@ -180,7 +197,7 @@ older than 90 days, warn the user:
 
 - [ ] Every file has complete YAML frontmatter (created, last_updated, last_verified,
   update_summary, sources)
-- [ ] Every factual claim has an inline source citation
+- [ ] Every factual claim has an inline `[source-key]` citation
 - [ ] Unfetchable data points are marked `[UNVERIFIED]` with reason
 - [ ] Each file covers exactly one subject
 - [ ] Cross-references use relative markdown links

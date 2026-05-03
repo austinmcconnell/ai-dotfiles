@@ -17,11 +17,13 @@ description: Verify and fact-check existing research files by re-fetching source
 
 ### Step 1: Read the research file
 
-Read the file and extract the `sources` registry from YAML frontmatter.
+Read the file and extract the `sources` block from YAML frontmatter. Check `last_verified` vs actual
+source `verified` dates — if `last_verified` was bumped recently but individual source dates are
+old, a prior verification session may have failed mid-way. Flag to the user before proceeding.
 
 ### Step 2: Re-fetch primary sources
 
-For each source in the registry:
+For each source in the `sources` block:
 
 1. Fetch the URL using `web_fetch`
 1. Compare key facts (prices, specs, availability, status) against what the file states
@@ -67,7 +69,9 @@ the file.
 
 When verifying an entire topic directory:
 
-1. List all `.md` files in the topic directory
+1. List all `.md` files in the topic directory (excluding `README.md`)
 1. Sort by `last_verified` (oldest first)
-1. Verify each file following the workflow above
+1. Delegate each file's verification to a parallel subagent — each file is independent. Each
+   subagent follows Steps 1–5 for its assigned file and returns only the verification summary and
+   filename.
 1. Update the topic README.md if any file statuses changed
