@@ -113,6 +113,7 @@
                 "git branch.*",
                 "git diff.*",
                 "(GIT_PAGER=cat )?git log.*",
+                "git ls-files.*",
                 "git ls-tree .*",
                 "git merge-base .*",
                 "git rev-list .*",
