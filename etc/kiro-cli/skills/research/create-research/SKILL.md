@@ -30,12 +30,19 @@ Choose the template that fits the research subject:
 - **[hardware-product-template.md](references/hardware-product-template.md)** — for product lineup
   or product family research (e.g., ODROID SBCs, Ubiquiti switches, NVMe drives). Includes variants
   table, pricing, use cases, limitations, community reception, comparisons, accessories/ecosystem.
-- **[general-research-template.md](references/general-research-template.md)** — for concept,
-  technology, or comparison research (e.g., ZFS vs Btrfs, Zigbee vs Z-Wave, container runtimes).
-  Includes overview, options/alternatives, tradeoffs, recommendations, sources.
+- **[comparison-template.md](references/comparison-template.md)** — for evaluating multiple options
+  against each other (e.g., ZFS vs Btrfs, Zigbee vs Z-Wave, container runtimes, NAS software).
+  Includes options table, per-option analysis, tradeoffs matrix, recommendations.
+- **[technology-integration-template.md](references/technology-integration-template.md)** — for
+  technology deep-dives with platform-specific configuration and troubleshooting (e.g., Sonos
+  networking on UniFi, WireGuard on OPNsense). Includes requirements, platform configuration,
+  troubleshooting decision trees, known issues.
 
-If neither template fits, adapt the closest one. Additional templates can be added to `references/`
-as needed.
+If none of the templates fit, check whether the research matches a different pattern entirely (e.g.,
+historical analysis, market trends, regulatory landscape). If so, propose a new template to the user
+or design a custom structure that matches the content's natural organization. Do not force content
+into an ill-fitting template — a well-organized custom structure is better than a template used
+wrong. Additional templates can be added to `references/` as needed.
 
 ## Workflow
 
@@ -58,6 +65,11 @@ does not define a clear scope boundary, propose a file layout and scope boundary
 proceeding — which categories/tiers are in scope, approximate product count per file, and anything
 you'd recommend excluding. Wait for user confirmation before delegating to subagents. Split by
 product category (products a buyer would compare against each other) rather than individual product.
+
+**Multi-file non-product research:** If the topic will require 3+ files or covers both a technology
+deep-dive and platform-specific configuration, propose the file layout to the user before proceeding
+— which files, what each covers, and the dependency order between them. This prevents scope creep
+and ensures the user agrees with the split before subagents start writing.
 
 **When to use subagents:** The topic has research areas that can be investigated independently.
 Subagents keep the orchestrator's context clean for synthesis, cross-referencing, and any follow-up
@@ -140,6 +152,12 @@ updates) directly.
 - Mark the data point with `[UNVERIFIED]` and note why
 - Example: `The H4+ is $180 [UNVERIFIED — hardkernel.com returned 403]`
 
+**Research depth:** For technology integration topics, official documentation alone is rarely
+sufficient. Community sources (forums, GitHub repos, blog posts) often contain the practical
+knowledge that official docs omit — workarounds, firmware-specific bugs, configuration gotchas. A
+good heuristic: if you've only found official sources, you haven't researched enough. If community
+sources contradict official sources, document both positions and note the conflict.
+
 ### Step 3: Create research files
 
 Each file covers ONE thing — one product family, one concept, one comparison. Use the appropriate
@@ -179,18 +197,53 @@ The H4+ is $139 [hardkernel-h4p]. It supports up to 48 GB DDR5 [cnx-h4-review].
   specs interact (e.g., link AP PoE requirements to the switches file's PoE budget table, link
   gateway built-in ports to the switches file for expansion options). Link on first mention per
   section — do not re-link the same target within the same `##` section.
+- Cross-referencing means linking, not copying. When a sibling file already documents a
+  configuration or spec, link to it with a brief context note (e.g., "see
+  [STP configuration](unifi-sonos-configuration.md#6-stp--spanning-tree) for the full settings")
+  rather than re-listing the same information. Duplication creates maintenance burden — when the
+  data changes, every copy must be updated.
+- For multi-file topics, each file should open with a one-sentence scope statement ("This file
+  covers X — not Y") and link to sibling files for out-of-scope content. This prevents readers from
+  searching the wrong file and makes the file boundaries clear.
+
+**When to split into multiple files:** Split when the research has clearly separable audiences or
+use cases. Signs that splitting is appropriate:
+
+- A reader might need file A (reference) without file B (configuration) — e.g., someone on pfSense
+  doesn't need the UniFi config file
+- A file exceeds ~500 lines and has natural seam points between sections
+- The topic has a platform-independent layer and a platform-specific layer
+
+Signs that splitting is NOT appropriate:
+
+- Every file constantly cross-references every other file for basic comprehension
+- The "files" are really just chapters of one document
+- Splitting would force readers to open 3 tabs to understand one concept
 
 ### Step 5: Update indexes
 
 1. Update the topic `README.md` with a summary table and links to all files
 1. Update the root `_research_/README.md` master index with the new topic
 
-**Recommendations:** If the research has an explicit or implicit decision context (e.g., "which
-switch for my home network"), add recommendations. For lightweight topics, a brief section in the
-topic README after the file index table is sufficient. For topics with enough cross-cutting analysis
-to warrant it (4+ files, multiple competing options, weighted criteria), use a separate
-`recommendations.md` and link it from the README. If the research is purely informational with no
-decision context, the file index table alone is sufficient.
+**Key findings:** For topics with 3+ files, include a "Key Findings" or "Summary" section in the
+topic README before the file index table. This gives readers the bottom line without requiring them
+to open every file. Keep it to 3–6 bullet points covering the most important takeaways.
+
+**Recommendations:** If the research has a decision context — whether "which product to buy," "which
+approach to take," or "how to configure this" — add recommendations. The format should match the
+decision type:
+
+- **Product selection:** "For use case X, choose Y because..."
+- **Configuration:** A ranked list of approaches with tradeoffs (complexity, reliability, security)
+  — this can live in the troubleshooting file as a "fallback approaches" section rather than a
+  separate file
+- **Comparison:** Per-use-case picks with reasoning
+
+For lightweight topics, a brief section in the topic README after the file index table is
+sufficient. For topics with enough cross-cutting analysis to warrant it (4+ files, multiple
+competing options, weighted criteria), use a separate `recommendations.md` and link it from the
+README. If the research is purely informational with no decision context, the file index table alone
+is sufficient.
 
 ## Unresolved Items
 

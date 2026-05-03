@@ -25,6 +25,13 @@ When citing KB results, check `last_verified` in YAML frontmatter:
 - Distinguish verified facts from conclusions/opinions
 - If partial overlap exists, present what's available and identify remaining gaps
 
+## Source Type Awareness
+
+When citing KB results that mix official and community sources, note the source type if it affects
+reliability. Official vendor documentation is authoritative for specs and supported configurations.
+Community sources (forums, blogs, GitHub repos) are authoritative for workarounds, real-world
+behavior, and undocumented features — but may be version-specific or anecdotal.
+
 ## Updating Research
 
 When new information contradicts or supplements existing research, load the `update-research` skill
