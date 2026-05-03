@@ -177,7 +177,8 @@ The H4+ is $139 [hardkernel-h4p]. It supports up to 48 GB DDR5 [cnx-h4-review].
 - Aggregation and comparison belongs in dedicated comparison files or the topic README, not inline
 - For multi-file topics covering a single vendor or ecosystem, cross-reference related files where
   specs interact (e.g., link AP PoE requirements to the switches file's PoE budget table, link
-  gateway built-in ports to the switches file for expansion options)
+  gateway built-in ports to the switches file for expansion options). Link on first mention per
+  section — do not re-link the same target within the same `##` section.
 
 ### Step 5: Update indexes
 
