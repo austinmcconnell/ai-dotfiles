@@ -15,8 +15,6 @@
 - Run pre-commit hooks before committing (see `pre-commit-validation` skill)
 - If pre-commit modifies files, re-read them before proceeding
 
-## Push and PR Workflow
+## Push Workflow
 
 - Push to a feature branch, not directly to main
-- Check for PR templates in `.github/` before drafting PR descriptions
-- PR title: conventional commit format, under 70 characters

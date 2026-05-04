@@ -46,7 +46,7 @@ Implements PKCE flow for public clients with secure session cookies.
 - Add session management with HttpOnly cookies
 - Add role-based access control
 
-Breaking change: Removes /api/login endpoint. Clients must migrate
+BREAKING CHANGE: Removes /api/login endpoint. Clients must migrate
 to /api/auth/login with OAuth2 flow.
 
 Jira issue: AUTH-123
