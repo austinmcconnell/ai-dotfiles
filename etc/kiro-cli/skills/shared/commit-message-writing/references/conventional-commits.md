@@ -41,7 +41,7 @@ Optional noun describing the section of codebase:
 - Use imperative, present tense: "change" not "changed" nor "changes"
 - Don't capitalize first letter
 - No period at the end
-- Maximum 72 characters
+- Maximum 72 characters for the entire subject line (type + scope + description)
 
 ## Body
 
@@ -63,6 +63,9 @@ Indicate breaking changes in two ways:
 
 1. Add `!` after type/scope: `feat(api)!: remove deprecated endpoint`
 1. Add footer: `BREAKING CHANGE: description of what broke`
+
+`BREAKING-CHANGE:` (hyphen) is synonymous with `BREAKING CHANGE:` (space) per the spec. Prefer the
+space form — it is what the spec examples use and what most tooling expects.
 
 ## Examples
 

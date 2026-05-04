@@ -14,7 +14,7 @@ Before drafting a PR description, check for project-specific templates:
 ### Title
 
 - Conventional commit format: `type(scope): description`
-- Under 70 characters, lowercase after prefix
+- Under 72 characters, lowercase after prefix
 
 ### Body
 

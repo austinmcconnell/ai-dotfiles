@@ -90,7 +90,7 @@ most valuable to future readers.
 
 **Rules:**
 
-- Maximum 72 characters
+- Maximum 72 characters for the entire subject line (type + scope + description)
 - Use imperative mood ("add" not "added" or "adds")
 - No period at the end
 - Lowercase after colon
@@ -304,6 +304,9 @@ Breaking changes can be indicated in two ways:
 
    BREAKING CHANGE: Response now uses data envelope
    ```
+
+`BREAKING-CHANGE:` (hyphen) is synonymous with `BREAKING CHANGE:` (space) per the spec. Both forms
+are accepted by the commit-msg hook.
 
 ## Examples
 
