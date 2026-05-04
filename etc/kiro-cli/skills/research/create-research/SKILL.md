@@ -37,12 +37,17 @@ Choose the template that fits the research subject:
   technology deep-dives with platform-specific configuration and troubleshooting (e.g., Sonos
   networking on UniFi, WireGuard on OPNsense). Includes requirements, platform configuration,
   troubleshooting decision trees, known issues.
+- **[analytical-research-template.md](references/analytical-research-template.md)** — for
+  framework-based analytical research that synthesizes academic or institutional data around a
+  question (e.g., language learning timelines, education system analysis, tax regime comparisons).
+  Includes framework/taxonomy, summary table, deep-dives, contextual analysis, key takeaways.
 
 If none of the templates fit, check whether the research matches a different pattern entirely (e.g.,
-historical analysis, market trends, regulatory landscape). If so, propose a new template to the user
-or design a custom structure that matches the content's natural organization. Do not force content
-into an ill-fitting template — a well-organized custom structure is better than a template used
-wrong. Additional templates can be added to `references/` as needed.
+historical analysis, market trends, regulatory landscape). If so, propose a custom structure to the
+user — section headings, file layout, and rationale for the organization. **Wait for user
+confirmation before proceeding.** Do not force content into an ill-fitting template — a
+well-organized custom structure is better than a template used wrong. Additional templates can be
+added to `references/` as needed.
 
 ## Workflow
 
@@ -70,6 +75,11 @@ product category (products a buyer would compare against each other) rather than
 deep-dive and platform-specific configuration, propose the file layout to the user before proceeding
 — which files, what each covers, and the dependency order between them. This prevents scope creep
 and ensures the user agrees with the split before subagents start writing.
+
+**Custom structure (no template fit):** If none of the existing templates match the research
+subject, propose the custom section structure and file layout to the user before proceeding. Explain
+why existing templates don't fit and what the custom structure covers. Wait for user confirmation
+before delegating to subagents.
 
 **When to use subagents:** The topic has research areas that can be investigated independently.
 Subagents keep the orchestrator's context clean for synthesis, cross-referencing, and any follow-up
@@ -101,14 +111,33 @@ Each subagent prompt must include:
 
 - **Exact output path:** "Write your findings to `_research_/networking-nics/25gbe-nics.md`"
 - **Negative constraint:** "Do not create any other files, directories, or README files"
-- **Template path:** Include the path to the appropriate template file (e.g.,
-  `references/hardware-product-template.md`) and instruct the subagent to read it and use its exact
-  section headings
-- **Frontmatter template:** Include the YAML frontmatter example from Step 3 in the subagent prompt
-  so each subagent produces consistent frontmatter without needing to read the skill file
+- **Template path:** Include the path to the appropriate template file and instruct the subagent to
+  read it. The template defines section names and order.
 - **Citation format:** Remind subagents to use `[source-key]` inline citations and include source
   URLs in the YAML `sources` block
+- **Shared source keys:** If the orchestrator knows multiple subagents will cite the same source,
+  specify canonical source keys in each subagent prompt so they produce consistent keys without
+  deduplication at assembly time.
 - **Return value:** "Return only the output filename(s) — do not return file content as text"
+- **No pseudo-headings:** Subagents must never use bold text as pseudo-headings — always use proper
+  markdown headings.
+
+**Additional requirements by output mode:**
+
+**Standalone files** (one subagent → one complete file):
+
+- Subagent uses the template's exact heading structure and levels
+- Include the YAML frontmatter example from Step 3 so the subagent produces complete frontmatter
+
+**Temp files for assembly** (multiple subagents → one file):
+
+- Specify which template sections the subagent owns
+- Specify the exact heading depth (e.g., "Your top-level sections are `###`, subsections are
+  `####`") — the template shows section names and order, but the heading level may differ from the
+  template if the subagent's output will be nested under a parent heading
+- Subagent writes two files: `.tmp-<topic>.md` (body only, no YAML frontmatter) and
+  `.tmp-<topic>-sources.yaml` (source keys and URLs only). Do not include the frontmatter example in
+  the subagent prompt — the orchestrator builds frontmatter during assembly.
 
 #### After subagents complete
 
@@ -118,8 +147,14 @@ Each subagent prompt must include:
    output file, **assemble** via shell concat — read only the small `-sources.yaml` files to build
    frontmatter, then `cat` the body files in template order. Do not read the body temp files into
    context. Do not rewrite, re-summarize, or re-synthesize subagent sections. Verify the assembled
-   file (`wc -l` vs sum of temp files) before deleting `.tmp-*` files. See
-   `relocation-research-conventions` for the full pattern.
+   file (`wc -l` vs sum of temp files) before deleting `.tmp-*` files. Also verify heading hierarchy
+   — if heading levels are wrong at this stage, the subagent prompt was underspecified (missing
+   heading level guidance). Fix the prompt pattern for next time rather than manually adjusting
+   assembled output. See `relocation-research-conventions` for the full pattern.
+1. **Deduplicate source keys.** After merging `-sources.yaml` files, check for duplicate URLs across
+   subagents. If two keys point to the same URL, keep one and update inline citations in the
+   assembled body file accordingly. This is a post-assembly step that requires reading the file.
+   (Specifying shared source keys in subagent prompts — see above — prevents most duplicates.)
 1. Write cross-cutting files (README, comparison, etc.) with correct cross-references
 1. Update the topic `README.md` and root `_research_/README.md`
 1. Verify all relative links between files are correct
@@ -277,3 +312,5 @@ older than 90 days, warn the user:
 - [ ] Topic README.md index is updated
 - [ ] Root _research_/README.md master index is updated
 - [ ] Primary sources preferred over secondary for prices/specs/availability
+- [ ] Heading hierarchy is correct (no skipped levels, subsections nest under their parent)
+- [ ] No duplicate source URLs across different keys in frontmatter
