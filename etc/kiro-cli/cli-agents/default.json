@@ -15,9 +15,6 @@
     "hooks": {
         "agentSpawn": [
             {
-                "command": "git status --short --branch 2>/dev/null || echo 'Not a git repository'"
-            },
-            {
                 "command": "~/.dotfiles/etc/kiro-cli/hooks/check-research-kb.sh default"
             }
         ],
