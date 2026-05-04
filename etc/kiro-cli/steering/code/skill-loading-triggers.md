@@ -15,6 +15,7 @@ that have explicit skills.
 | Writing specs or design docs     | `spec-writing`                                                 |
 | Writing implementation guides    | `implementation-guide`                                         |
 | Running pre-commit hooks         | `pre-commit-validation`                                        |
+| Creating or editing skills       | `kiro-skill-authoring`                                         |
 
 When citing existing research from a knowledge base, check `last_verified` in the file's YAML
 frontmatter. If older than 90 days, warn the user before presenting the data as current.
