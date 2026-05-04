@@ -41,7 +41,7 @@ Optional noun describing the section of codebase:
 - Use imperative, present tense: "change" not "changed" nor "changes"
 - Don't capitalize first letter
 - No period at the end
-- Maximum 50 characters
+- Maximum 72 characters
 
 ## Body
 

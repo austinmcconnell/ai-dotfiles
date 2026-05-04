@@ -37,7 +37,7 @@ stylistic choices but never overrides the rules defined here.
 ### Never adapt from repo history
 
 - Commit type selection (use the types defined in this skill)
-- Subject line length, format, or casing rules
+- Subject line length (72 characters), format, or casing rules
 - Imperative mood requirement
 - Body line wrapping (72 characters)
 - Breaking change format
@@ -90,7 +90,7 @@ most valuable to future readers.
 
 **Rules:**
 
-- Maximum 50 characters
+- Maximum 72 characters
 - Use imperative mood ("add" not "added" or "adds")
 - No period at the end
 - Lowercase after colon
@@ -368,7 +368,8 @@ BREAKING CHANGE: Basic auth is no longer supported
 
 ❌ Past tense: `feat: added new feature` → ✅ Imperative: `feat: add new feature`
 
-❌ Too long: `feat: add a new dashboard that shows real-time system metrics including CPU and memory`
+❌ Too long:
+`feat: add a new dashboard component that shows real-time system metrics including CPU memory and disk`
 → ✅ Concise: `feat(dashboard): add real-time system metrics`
 
 ❌ No context: `fix: change timeout value` → ✅ With context:
