@@ -16,6 +16,9 @@
         "agentSpawn": [
             {
                 "command": "git status --short --branch 2>/dev/null || echo 'Not a git repository'"
+            },
+            {
+                "command": "~/.dotfiles/etc/kiro-cli/hooks/check-research-kb.sh default"
             }
         ],
         "preToolUse": [
@@ -34,6 +37,12 @@
             {
                 "matcher": "execute_bash",
                 "command": "~/.dotfiles/etc/kiro-cli/hooks/audit-shell-commands.sh"
+            }
+        ],
+        "postToolUse": [
+            {
+                "matcher": "knowledge",
+                "command": "~/.dotfiles/etc/kiro-cli/hooks/clear-research-kb-stale.sh default"
             }
         ]
     },
@@ -76,7 +85,7 @@
             "indexType": "best",
             "include": ["**/*.md"],
             "exclude": [".git/**"],
-            "autoUpdate": true
+            "autoUpdate": false
         },
         {
             "type": "knowledgeBase",

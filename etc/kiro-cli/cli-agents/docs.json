@@ -22,7 +22,7 @@
             "indexType": "best",
             "include": ["**/*.md"],
             "exclude": [".git/**"],
-            "autoUpdate": true
+            "autoUpdate": false
         },
         {
             "type": "knowledgeBase",
@@ -132,11 +132,21 @@
     "tools": ["*"],
 
     "hooks": {
-        "agentSpawn": [],
+        "agentSpawn": [
+            {
+                "command": "~/.dotfiles/etc/kiro-cli/hooks/check-research-kb.sh docs"
+            }
+        ],
         "preToolUse": [
             {
                 "matcher": "*",
                 "command": "~/.dotfiles/etc/kiro-cli/hooks/block-env-files.sh"
+            }
+        ],
+        "postToolUse": [
+            {
+                "matcher": "knowledge",
+                "command": "~/.dotfiles/etc/kiro-cli/hooks/clear-research-kb-stale.sh docs"
             }
         ]
     },

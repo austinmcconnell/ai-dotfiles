@@ -58,3 +58,10 @@ directory.
 
 Steering docs (loaded automatically) contain principles and conventions. For detailed examples,
 templates, checklists, and workflows, read the relevant documentation skill before acting.
+
+## First-Response Obligations
+
+Your first response in every session must begin with any applicable notices before answering the
+user's question:
+
+- Knowledge base staleness warning from startup context

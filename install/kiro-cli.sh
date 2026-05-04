@@ -156,3 +156,10 @@ if is-executable go; then
 else
     echo "Go not found. Skipping GitHub MCP Server installation."
 fi
+
+# Configure git hooks for the research repo (KB staleness detection)
+RESEARCH_REPO="$HOME/projects/austinmcconnell/_research_"
+if [ -d "$RESEARCH_REPO/.git" ]; then
+    git -C "$RESEARCH_REPO" config core.hooksPath .githooks
+    echo "✓ Configured core.hooksPath for research repo"
+fi
