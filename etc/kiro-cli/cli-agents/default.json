@@ -168,6 +168,7 @@
                 "grep .*",
                 "head .*",
                 "hostname",
+                "jq( .*)?",
                 "ls( .*)?",
                 "man .*",
                 "mkdir -p .*",

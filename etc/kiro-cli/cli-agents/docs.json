@@ -176,6 +176,7 @@
                 "grep .*",
                 "head .*",
                 "hostname",
+                "jq( .*)?",
                 "ls( .*)?",
                 "man .*",
                 "mdbook .*",
