@@ -1,7 +1,5 @@
 {
     "allowedTools": [
-        "@time/convert_time",
-        "@time/get_current_time",
         "@jira/jira_get_create_meta",
         "@jira/jira_get_issue",
         "@jira/jira_get_project",
@@ -43,16 +41,6 @@
             "disabledTools": ["jira_delete_worklog"],
             "env": {},
             "timeout": 120000
-        },
-        "time": {
-            "args": [
-                "mcp-server-time",
-                "--local-timezone=America/Chicago"
-            ],
-            "command": "uvx",
-            "disabled": false,
-            "env": {},
-            "timeout": 30000
         }
     },
     "name": "jira",
