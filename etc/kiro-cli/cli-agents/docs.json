@@ -117,13 +117,6 @@
     ],
 
     "allowedTools": [
-        "@git/git_branch",
-        "@git/git_diff",
-        "@git/git_diff_staged",
-        "@git/git_diff_unstaged",
-        "@git/git_log",
-        "@git/git_show",
-        "@git/git_status",
         "code",
         "glob",
         "grep",
@@ -202,8 +195,9 @@
                 "sudo .*",
                 "chmod .*",
                 "chown .*",
-                "git add.*",
-                "git commit.*",
+                "git add \\.",
+                "git add -A.*",
+                "git add --all.*",
                 "docker .*",
                 "kubectl .*"
             ]
