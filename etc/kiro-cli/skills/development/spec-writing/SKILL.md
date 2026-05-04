@@ -159,6 +159,8 @@ apply to your feature.
 
 ## Reference Documentation
 
-- [references/spec-template.md](references/spec-template.md) - Complete template with examples
-- [references/adr-format.md](references/adr-format.md) - Architecture Decision Record format
-- [references/verification-patterns.md](references/verification-patterns.md) - Testing strategies
+- Read `references/spec-template.md` when starting a new spec — use it as the skeleton and delete
+  sections that don't apply
+- Read `references/adr-format.md` when the spec includes an architectural decision that should be
+  recorded as a standalone ADR
+- Read `references/verification-patterns.md` when writing the verification/testing section of a spec

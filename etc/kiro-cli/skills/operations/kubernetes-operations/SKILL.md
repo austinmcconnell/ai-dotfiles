@@ -5,7 +5,9 @@ description: Guide Kubernetes operations with permission flows and safety guardr
 
 # Kubernetes Operations
 
-Follow the complete operational guidance in `references/kubernetes-operations-guidance.md`.
+Read `references/kubernetes-operations-guidance.md` before performing any cluster operation — it
+contains the required permission flow, context selection steps, allowed/prohibited operations, and
+safety guardrails.
 
 ## Key Principles
 
@@ -13,5 +15,3 @@ Follow the complete operational guidance in `references/kubernetes-operations-gu
 - Present context options and wait for selection
 - Only perform read-only operations
 - Never delete, modify, or execute into pods
-
-See the reference file for complete permission flows, allowed operations, and safety guardrails.

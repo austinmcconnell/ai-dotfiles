@@ -206,6 +206,7 @@ Create a structured report with findings:
 # Documentation Review Report
 
 ## Summary
+
 - Total files reviewed: X
 - Issues found: Y
 - Critical issues: Z
@@ -213,14 +214,17 @@ Create a structured report with findings:
 ## Content Ownership Violations
 
 ### configuration/ Issues
+
 - [ ] File X contains implementation steps (lines A-B)
 - [ ] File Y duplicates specifications from Z
 
 ### procedures/ Issues
+
 - [ ] File X duplicates specification table from Y
 - [ ] File Y missing reference to configuration/Z
 
 ### decisions/ Issues
+
 - [ ] ADR-NNN contains implementation details
 - [ ] ADR-MMM missing consequences section
 
@@ -255,12 +259,12 @@ Create a structured report with findings:
    - Remove duplicate specifications
    - Add missing cross-references
 
-2. **Medium Priority:**
+1. **Medium Priority:**
    - Fix broken links
    - Update SUMMARY.md
    - Add missing README.md files
 
-3. **Low Priority:**
+1. **Low Priority:**
    - Improve link text patterns
    - Add section links for specificity
 ```
@@ -343,6 +347,7 @@ For implementation, see [Procedure: X](../procedures/x.md).
 ## Prerequisites
 
 Before proceeding, review:
+
 - [Configuration: System Settings](../configuration/system-settings.md)
 ```
 
@@ -411,7 +416,10 @@ mdbook build
 
 ## Reference Documentation
 
-- `references/review-checklist.md` - Detailed review checklist
-- `references/content-ownership-reference.md` - Content ownership principles
-- `references/link-conventions-reference.md` - Cross-referencing standards
-- `cross-repo-audit` skill - Multi-repo consistency checks for shared resources
+- Read `references/review-checklist.md` when performing a full documentation review — it expands on
+  the quick checklist above
+- Read `references/content-ownership-reference.md` when evaluating whether content is in the correct
+  directory or when flagging ownership violations
+- Read `references/link-conventions-reference.md` when checking cross-references between files or
+  validating link formats
+- Load the `cross-repo-audit` skill when the review involves shared resources across multiple repos

@@ -18,6 +18,6 @@ query patterns, SCRUM ceremony integration, reporting metrics, and troubleshooti
 
 ## Reference
 
-See [jira-operations-reference.md](references/jira-operations-reference.md) for the full operations
-guide covering story management workflows, JQL best practices, ceremony integration, reporting
-metrics, and troubleshooting.
+Read `references/jira-operations-reference.md` before performing any JIRA operation — it contains
+allowed/prohibited operations, safety guardrails, the mandatory preview process for issue creation,
+story management workflows, JQL query patterns, ceremony integration, and troubleshooting guides.

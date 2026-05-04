@@ -389,18 +389,18 @@ subdirectory READMEs, book.toml, pre-commit hooks, and validation scripts.
 
 ### Content-creation skills
 
-Dedicated skills for adding content to existing repos:
+Load the appropriate skill when adding content to an existing repo:
 
-- `create-component` — component specification files
-- `create-configuration` — configuration specification files
-- `create-procedure` — step-by-step procedure files
-- `create-docs-research` — project-specific research topics and evaluations
-- `create-adr` — architecture decision records
+- `create-component` — when adding a component specification file
+- `create-configuration` — when adding a configuration specification file
+- `create-procedure` — when adding a step-by-step procedure file
+- `create-docs-research` — when adding a research topic or product evaluation
+- `create-adr` — when recording an architecture decision
 
 ### Other references
 
-- `references/directory-structure.md` - Recommended directory layout
-- `references/setup-checklist.md` - Day 1 setup checklist
-- `todo` skill (shared) - Working file template and conventions
-
-For mdBook-specific setup, see the `mdbook-setup` skill.
+- Read `references/directory-structure.md` when setting up a new repo or evaluating whether an
+  existing repo follows the recommended layout
+- Read `references/setup-checklist.md` when performing day-1 setup of a new documentation repo
+- Load the `todo` skill when unresolved questions arise during setup
+- Load the `mdbook-setup` skill for mdBook-specific installation and configuration

@@ -5,7 +5,9 @@ description: Guide AWS operations with permission flows and safety guardrails. U
 
 # AWS Operations
 
-Follow the complete operational guidance in `references/aws-operations-guidance.md`.
+Read `references/aws-operations-guidance.md` before performing any AWS operation — it contains the
+required permission flow, profile selection steps, allowed/prohibited operations, and safety
+guardrails.
 
 ## Key Principles
 
@@ -13,5 +15,3 @@ Follow the complete operational guidance in `references/aws-operations-guidance.
 - Present profile options and wait for selection
 - Only perform read-only operations
 - Never delete, modify, or create resources
-
-See the reference file for complete permission flows, allowed operations, and safety guardrails.

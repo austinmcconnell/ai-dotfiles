@@ -402,6 +402,7 @@ workflow.
 
 ## Reference Documentation
 
-- [references/conventional-commits.md](references/conventional-commits.md) - Full conventional
-  commits specification
-- [references/examples.md](references/examples.md) - Real-world commit message examples
+- Read `references/conventional-commits.md` when the user asks about the conventional commits spec,
+  allowed types, or formatting rules beyond what's covered above
+- Read `references/examples.md` when the user asks for examples or you need a model for an
+  unfamiliar commit scenario

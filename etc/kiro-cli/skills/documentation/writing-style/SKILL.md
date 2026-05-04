@@ -10,5 +10,5 @@ detailed examples and the quality checklist.
 
 ## Reference
 
-- `references/writing-style-reference.md` — Complete guide with examples, common mistakes, and
-  quality checklist
+- Read `references/writing-style-reference.md` when reviewing documentation for style compliance,
+  when you need examples of correct vs incorrect usage, or when running the quality checklist

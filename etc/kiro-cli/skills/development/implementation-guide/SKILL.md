@@ -125,7 +125,7 @@ Analyze the implementation before starting:
 **Challenges:**
 
 1. Need to escape regex special characters while preserving search functionality
-2. Must maintain case-insensitive partial matching behavior
+1. Must maintain case-insensitive partial matching behavior
 
 **Solutions Available:**
 
@@ -181,12 +181,12 @@ Specific steps to confirm the fix works:
 
 ```markdown
 1. Run unit tests: `pytest tests/test_validators.py`
-2. Run integration tests: `pytest tests/test_search_security.py`
-3. Manual testing:
+1. Run integration tests: `pytest tests/test_search_security.py`
+1. Manual testing:
    - Search with special characters: `test@example.com`
    - Search with regex patterns: `.*`, `(a+)+`
    - Verify no SQL errors in logs
-4. Security scan: `bandit -r app/`
+1. Security scan: `bandit -r app/`
 
 **Success Criteria:**
 
@@ -353,6 +353,6 @@ Implementation Progress:
 
 ## Reference Documentation
 
-- [references/template.md](references/template.md) - Blank implementation guide template
-- [references/security-fix-example.md](references/security-fix-example.md) - Comprehensive security
-  vulnerability fix example (8 issues, 50+ pages)
+- Read `references/template.md` when starting a new implementation guide — use it as the skeleton
+- Read `references/security-fix-example.md` when writing a security vulnerability fix or when you
+  need a model for a complex multi-issue guide

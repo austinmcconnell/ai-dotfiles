@@ -16,6 +16,7 @@ Reference material for the SCRUM framework, covering core principles and detaile
 
 ## Reference Files
 
-- `references/scrum-framework.md` — Core SCRUM principles, roles, artifacts, estimation
-- `references/sprint-ceremonies.md` — Detailed ceremony guidance (Planning, Daily, Review, Retro,
-  Refinement)
+- Read `references/scrum-framework.md` when answering questions about SCRUM roles, artifacts,
+  estimation, or core principles
+- Read `references/sprint-ceremonies.md` when facilitating or preparing for a specific ceremony
+  (Planning, Daily, Review, Retro, Refinement)
