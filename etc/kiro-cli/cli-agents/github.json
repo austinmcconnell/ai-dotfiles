@@ -1,28 +1,5 @@
 {
     "allowedTools": [
-        "@github/get_commit",
-        "@github/get_file_contents",
-        "@github/get_label",
-        "@github/get_latest_release",
-        "@github/get_me",
-        "@github/get_release_by_tag",
-        "@github/get_tag",
-        "@github/get_team_members",
-        "@github/get_teams",
-        "@github/issue_read",
-        "@github/list_branches",
-        "@github/list_commits",
-        "@github/list_issue_types",
-        "@github/list_issues",
-        "@github/list_pull_requests",
-        "@github/list_releases",
-        "@github/list_tags",
-        "@github/pull_request_read",
-        "@github/search_code",
-        "@github/search_issues",
-        "@github/search_pull_requests",
-        "@github/search_repositories",
-        "@github/search_users",
         "code",
         "glob",
         "grep",
@@ -47,19 +24,7 @@
     },
 
     "includeMcpJson": true,
-    "mcpServers": {
-        "github": {
-            "args": [
-                "stdio"
-            ],
-            "command": "github-mcp-server",
-            "disabled": false,
-            "env": {
-                "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_PAT}"
-            },
-            "timeout": 120000
-        }
-    },
+    "mcpServers": {},
     "name": "github",
     "prompt": "file://./github-prompt.md",
     "resources": [
@@ -144,9 +109,25 @@
                 "docker rmi .*",
                 "docker run .*",
                 "gh auth .*",
+                "gh issue close .*",
+                "gh issue delete .*",
+                "gh label create .*",
+                "gh label delete .*",
+                "gh label edit .*",
+                "gh pr close .*",
+                "gh pr merge .*",
+                "gh release create .*",
+                "gh release delete .*",
+                "gh repo create .*",
                 "gh repo delete.*",
+                "gh repo edit .*",
+                "gh repo fork .*",
+                "gh run cancel .*",
+                "gh run rerun .*",
                 "gh secret .*",
                 "gh variable .*",
+                "gh workflow disable .*",
+                "gh workflow run .*",
                 "git add \\.",
                 "git add -A.*",
                 "git add --all.*",
