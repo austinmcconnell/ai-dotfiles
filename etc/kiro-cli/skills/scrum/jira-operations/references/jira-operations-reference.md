@@ -49,6 +49,21 @@ tool takes a `path` parameter (the Jira REST API endpoint) and optional `queryPa
 Responses use TOON (Token-Oriented Object Notation) by default for 30-60% token savings. Set
 `outputFormat: "json"` in tool calls to get standard JSON instead.
 
+### Search Query Requirements
+
+Always include a `fields` query param when using `/rest/api/3/search/jql`:
+
+```text
+queryParams: {"jql": "...", "maxResults": "10", "fields": "summary,status,assignee,priority,issuetype"}
+```
+
+Without `fields`, the response only contains issue IDs — no summary, status, or other field data.
+Common field sets:
+
+- **Sprint overview**: `summary,status,assignee,priority,issuetype,customfield_10004`
+- **Backlog triage**: `summary,status,priority,labels,components,created`
+- **Standup**: `summary,status,assignee`
+
 ## Prohibited Operations
 
 The JIRA SCRUM agent must **NEVER** perform the following:
@@ -169,7 +184,7 @@ Before creating a user story, ensure:
 - **Components**: Relevant system components
 - **Labels**: For categorization and filtering
 - **Epic Link**: If story is part of an epic
-- **Story Points**: Estimation (if team uses story points)
+- **Story Points**: Estimation — field ID `customfield_10004` (if team uses story points)
 - **Sprint**: If assigning to current sprint
 
 ### Updating User Stories
@@ -264,7 +279,7 @@ project = "PROJ" AND assignee = "john.doe" AND status in ("In Progress", "In Rev
 Use when starting a session or when the user asks about the current sprint:
 
 1. Query active sprint issues: `project = {KEY} AND sprint in openSprints()` with fields
-   `summary,status,assignee,priority,issuetype,customfield_XXXXX` (story points)
+   `summary,status,assignee,priority,issuetype,customfield_10004` (story points)
 1. Summarize: total issues, breakdown by status (To Do / In Progress / Done), by assignee
 1. Note the sprint goal if available (from board/sprint metadata)
 
@@ -350,7 +365,7 @@ decides what to do.
 Recently created issues with no sprint assignment or priority:
 
 ```jql
-project = {KEY} AND created >= -7d AND sprint is EMPTY AND priority = None
+project = {KEY} AND created >= -7d AND sprint is EMPTY AND priority = "Not Set"
 ORDER BY created DESC
 ```
 

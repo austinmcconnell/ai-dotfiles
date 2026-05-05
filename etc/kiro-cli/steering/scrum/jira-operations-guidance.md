@@ -116,7 +116,7 @@ Link related issues using `jira_post` → `/rest/api/3/issueLink`:
 }
 ```
 
-Common link types: `Blocks`, `Cloners`, `Duplicate`, `Relates`.
+Common link types: `Blocks`, `Cloners`, `Depends`, `Duplicate`, `Relates`.
 
 **Workflow:**
 

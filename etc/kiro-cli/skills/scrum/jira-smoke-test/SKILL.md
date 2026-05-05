@@ -86,7 +86,7 @@ Run against the target project:
 
 ```text
 jira_get → /rest/api/3/search/jql
-  queryParams: {"jql": "project = {KEY} AND sprint in openSprints()", "maxResults": "5"}
+  queryParams: {"jql": "project = {KEY} AND sprint in openSprints()", "maxResults": "5", "fields": "summary,status"}
 ```
 
 Confirm: returns issues (or empty if no active sprint — note this). If it errors, the project may
@@ -106,7 +106,7 @@ Confirm: returns a list of available transitions with IDs and names.
 
 ```text
 jira_get → /rest/api/3/search/jql
-  queryParams: {"jql": "project = {KEY} AND status = \"Backlog\" AND type = Story", "maxResults": "5"}
+  queryParams: {"jql": "project = {KEY} AND status = \"Backlog\" AND type = Story", "maxResults": "5", "fields": "summary,status"}
 ```
 
 If "Backlog" status doesn't exist (from Step 3), substitute the actual To Do/backlog status name.
