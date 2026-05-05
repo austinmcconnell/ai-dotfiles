@@ -1,13 +1,6 @@
 {
     "allowedTools": [
-        "@jira/jira_get_create_meta",
-        "@jira/jira_get_issue",
-        "@jira/jira_get_project",
-        "@jira/jira_ls_comments",
-        "@jira/jira_ls_issues",
-        "@jira/jira_ls_projects",
-        "@jira/jira_ls_statuses",
-        "@jira/jira_ls_worklogs",
+        "@jira/jira_get",
         "code",
         "glob",
         "grep",
@@ -38,7 +31,7 @@
             ],
             "command": "npx",
             "disabled": false,
-            "disabledTools": ["jira_delete_worklog"],
+            "disabledTools": ["jira_delete"],
             "env": {},
             "timeout": 120000
         }

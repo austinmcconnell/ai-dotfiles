@@ -3,48 +3,59 @@
 This document defines how the JIRA SCRUM agent should interact with JIRA, including allowed
 operations, safety guardrails, and best practices for managing user stories and other work items.
 
-## Allowed Operations
+## Available Tools (v3.x)
 
-The JIRA SCRUM agent is authorized to perform the following operations:
+The MCP server (`@aashari/mcp-server-atlassian-jira` v3.x) exposes 5 generic HTTP method tools. Each
+tool takes a `path` parameter (the Jira REST API endpoint) and optional `queryParams` or `body`.
 
-### Read Operations
+| Tool          | HTTP Method | Purpose                    | Approval Required |
+| ------------- | ----------- | -------------------------- | ----------------- |
+| `jira_get`    | GET         | Read any Jira API endpoint | No (allowedTools) |
+| `jira_post`   | POST        | Create resources           | Yes               |
+| `jira_put`    | PUT         | Replace resources          | Yes               |
+| `jira_patch`  | PATCH       | Partial updates            | Yes               |
+| `jira_delete` | DELETE      | Remove resources           | **Blocked**       |
 
-- `jira_ls_projects` - List available projects
-- `jira_get_project` - Get detailed project information
-- `jira_ls_issues` - Search and list issues using JQL
-- `jira_get_issue` - Get detailed issue information
-- `jira_ls_comments` - List comments on issues
-- `jira_ls_worklogs` - List work logs on issues
-- `jira_ls_statuses` - List available statuses
-- `jira_get_create_meta` - Get metadata for creating issues
+### Common API Paths
 
-### Create Operations
+**Read (jira_get):**
 
-- `jira_create_issue` - Create new issues (stories, bugs, tasks, etc.)
-- `jira_add_comment` - Add comments to existing issues
-- `jira_add_worklog` - Add work log entries to issues
+- `/rest/api/3/project/search` — list projects (paginated)
+- `/rest/api/3/project/{key}` — get project details
+- `/rest/api/3/search/jql` — search issues with JQL (use `jql` query param)
+- `/rest/api/3/issue/{key}` — get issue details
+- `/rest/api/3/issue/{key}/comment` — list comments
+- `/rest/api/3/issue/{key}/worklog` — list worklogs
+- `/rest/api/3/issue/{key}/transitions` — list available transitions
+- `/rest/api/3/status` — list all statuses
+- `/rest/api/3/issuetype` — list issue types
+- `/rest/api/3/priority` — list priorities
+- `/rest/api/3/issue/createmeta` — get create metadata
 
-### Update Operations
+**Create (jira_post):**
 
-- `jira_add_comment` - Add comments (which can include updates/clarifications)
-- `jira_add_worklog` - Log work time
-- `jira_update_worklog` - Update existing work log entries
+- `/rest/api/3/issue` — create issue
+- `/rest/api/3/issue/{key}/comment` — add comment
+- `/rest/api/3/issue/{key}/worklog` — add worklog
+- `/rest/api/3/issue/{key}/transitions` — transition issue (body: `{"transition": {"id": "X"}}`)
+
+**Update (jira_put / jira_patch):**
+
+- `/rest/api/3/issue/{key}` — update issue fields
+- `/rest/api/3/issue/{key}/worklog/{id}` — update worklog
+
+### Response Format
+
+Responses use TOON (Token-Oriented Object Notation) by default for 30-60% token savings. Set
+`outputFormat: "json"` in tool calls to get standard JSON instead.
 
 ## Prohibited Operations
 
-The JIRA SCRUM agent must **NEVER** perform the following operations:
+The JIRA SCRUM agent must **NEVER** perform the following:
 
-### Deletion Operations
-
-- `jira_delete_worklog` - Delete work log entries
-- Any other deletion operations (even if they become available)
-- Permanently removing or destroying any JIRA data
-
-### Destructive Modifications
-
-- Changing issue types in ways that lose data
-- Modifying historical data inappropriately
-- Making changes that cannot be easily reversed
+- **Deletion**: `jira_delete` is disabled in the MCP server config — never delete JIRA data
+- **Destructive modifications**: Changing issue types in ways that lose data, modifying historical
+  data inappropriately, making changes that cannot be easily reversed
 
 ## Safety Guardrails
 
@@ -77,8 +88,8 @@ When creating new JIRA issues (stories, bugs, tasks, etc.), the agent MUST:
    adjustments before I create the JIRA ticket"
 1. **Wait for Feedback**: Do not proceed until user provides feedback or approval
 1. **Incorporate Changes**: Make any requested modifications and show updated version if needed
-1. **Create Only After Approval**: Only call `jira_create_issue` after receiving explicit user
-   confirmation
+1. **Create Only After Approval**: Only call `jira_post` to `/rest/api/3/issue` after receiving
+   explicit user confirmation
 
 ##### Example Interaction Flow
 
@@ -378,7 +389,7 @@ format in URLs:
 
 #### Implementation Guidelines
 
-When the `jira_create_issue` tool returns response data:
+When the `jira_post` tool returns response data:
 
 1. **Extract the Issue Key**: Use the returned issue key (e.g., "SCRN-936") for user-facing URLs
 1. **Format Browse URL**: Construct the browse URL as

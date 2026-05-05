@@ -3,24 +3,46 @@
 Safety guardrails and allowed operations for JIRA interactions. For story management, JQL queries,
 ceremony integration, and troubleshooting, see the `jira-operations` skill.
 
-## Allowed Operations
+## Available Tools (v3.x)
 
-### Read
+The MCP server exposes generic HTTP method tools — not operation-specific tools:
 
-`jira_ls_projects`, `jira_get_project`, `jira_ls_issues`, `jira_get_issue`, `jira_ls_comments`,
-`jira_ls_worklogs`, `jira_ls_statuses`, `jira_get_create_meta`
+| Tool          | HTTP Method | Purpose                    | Approval Required |
+| ------------- | ----------- | -------------------------- | ----------------- |
+| `jira_get`    | GET         | Read any Jira API endpoint | No (allowedTools) |
+| `jira_post`   | POST        | Create resources           | Yes               |
+| `jira_put`    | PUT         | Replace resources          | Yes               |
+| `jira_patch`  | PATCH       | Partial updates            | Yes               |
+| `jira_delete` | DELETE      | Remove resources           | **Blocked**       |
 
-### Create
+### Common API Paths
 
-`jira_create_issue`, `jira_add_comment`, `jira_add_worklog`
+**Read (jira_get):**
 
-### Update
+- `/rest/api/3/project/search` — list projects
+- `/rest/api/3/search/jql` — search issues with JQL (use `jql` query param)
+- `/rest/api/3/issue/{key}` — get issue details
+- `/rest/api/3/issue/{key}/comment` — list comments
+- `/rest/api/3/issue/{key}/worklog` — list worklogs
+- `/rest/api/3/issue/{key}/transitions` — list available transitions
+- `/rest/api/3/status` — list all statuses
+- `/rest/api/3/issue/createmeta` — get create metadata
 
-`jira_add_comment`, `jira_add_worklog`, `jira_update_worklog`
+**Create (jira_post):**
+
+- `/rest/api/3/issue` — create issue
+- `/rest/api/3/issue/{key}/comment` — add comment
+- `/rest/api/3/issue/{key}/worklog` — add worklog
+- `/rest/api/3/issue/{key}/transitions` — transition issue
+
+**Update (jira_put / jira_patch):**
+
+- `/rest/api/3/issue/{key}` — update issue fields
+- `/rest/api/3/issue/{key}/worklog/{id}` — update worklog
 
 ## Prohibited Operations
 
-- **Deletion**: `jira_delete_worklog` and any other deletion operations — never delete JIRA data
+- **Deletion**: `jira_delete` is disabled in the MCP server config — never delete JIRA data
 - **Destructive modifications**: Changing issue types in ways that lose data, modifying historical
   data, making irreversible changes
 
@@ -47,7 +69,7 @@ When creating any JIRA issue, the agent MUST:
    JIRA ticket"
 1. Wait for feedback — do not proceed until user responds
 1. Incorporate any requested changes and show the updated version
-1. Only call `jira_create_issue` after receiving explicit confirmation
+1. Only call `jira_post` to `/rest/api/3/issue` after receiving explicit confirmation
 
 **There are NO exceptions to this workflow.** Always preview-first for every new issue, regardless
 of user experience level or story complexity.
@@ -83,5 +105,5 @@ Always use issue key format in URLs, never internal IDs:
 - **Correct**: `https://uniteus.atlassian.net/browse/SCRN-936` ✅
 - **Incorrect**: `https://uniteus.atlassian.net/browse/461282` ❌
 
-Extract the issue key from `jira_create_issue` response and construct the browse URL as
+Extract the issue key from the `jira_post` response and construct the browse URL as
 `https://uniteus.atlassian.net/browse/{ISSUE-KEY}`.
