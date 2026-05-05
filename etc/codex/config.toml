@@ -1,0 +1,11 @@
+model = "gpt-5.5"
+personality = "pragmatic"
+model_reasoning_effort = "medium"
+
+[profiles.fast]
+  model = "gpt-5.4-mini"
+  model_reasoning_effort = "low"
+
+[profiles.deep]
+  model = "gpt-5.5"
+  model_reasoning_effort = "high"
