@@ -158,8 +158,14 @@ else
 fi
 
 # Configure git hooks for the research repo (KB staleness detection)
+# Uses git 2.54+ config-based hooks — coexists with pre-commit framework
+# without needing core.hooksPath (which overrides .git/hooks/ entirely).
 RESEARCH_REPO="$HOME/projects/austinmcconnell/_research_"
 if [ -d "$RESEARCH_REPO/.git" ]; then
-    git -C "$RESEARCH_REPO" config core.hooksPath .githooks
-    echo "✓ Configured core.hooksPath for research repo"
+    HOOK_CMD="$HOME/.dotfiles/etc/kiro-cli/hooks/kb-staleness.sh"
+    git -C "$RESEARCH_REPO" config set hook.kb-staleness.command "$HOOK_CMD"
+    git -C "$RESEARCH_REPO" config set hook.kb-staleness.event post-commit
+    git -C "$RESEARCH_REPO" config set --append hook.kb-staleness.event post-merge
+    git -C "$RESEARCH_REPO" config set --append hook.kb-staleness.event post-rewrite
+    echo "✓ Configured KB staleness hooks for research repo"
 fi
