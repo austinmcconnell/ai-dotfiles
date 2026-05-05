@@ -79,6 +79,53 @@ of user experience level or story complexity.
 Handle authentication errors gracefully. Provide clear error messages without exposing sensitive
 information. Suggest corrective actions when operations fail.
 
+## Issue Transitions
+
+Moving issues through workflow states (e.g., To Do → In Progress → Done) uses a two-step process:
+
+1. **Get available transitions**: `jira_get` → `/rest/api/3/issue/{key}/transitions`
+1. **Present options** to the user — never guess a transition ID
+1. **Execute after confirmation**: `jira_post` → `/rest/api/3/issue/{key}/transitions` with body
+   `{"transition": {"id": "{transitionId}"}}`
+
+Never hardcode transition IDs — they vary by project workflow. Always fetch first.
+
+## Pre-Creation Duplicate Check
+
+Before presenting a new ticket preview, search for potential duplicates:
+
+1. Extract 2-4 keywords from the proposed summary
+1. Search: `jira_get` → `/rest/api/3/search/jql` with
+   `jql=project = {KEY} AND summary ~ "{keywords}" AND status != Done`
+1. If matches found, present them (key, summary, status, assignee) and ask: "Should I proceed with
+   creation, or does one of these cover it?"
+1. Only proceed to the mandatory preview step if user confirms no duplicate
+
+This check applies to all issue types (stories, bugs, tasks). Skip only if the user explicitly says
+they already checked.
+
+## Issue Linking
+
+Link related issues using `jira_post` → `/rest/api/3/issueLink`:
+
+```json
+{
+  "type": {"name": "Blocks"},
+  "inwardIssue": {"key": "PROJ-123"},
+  "outwardIssue": {"key": "PROJ-456"}
+}
+```
+
+Common link types: `Blocks`, `Cloners`, `Duplicate`, `Relates`.
+
+**Workflow:**
+
+1. Confirm both issue keys exist (fetch each with `jira_get`)
+1. Preview: "Link PROJ-123 → blocks → PROJ-456"
+1. Create link after user confirms
+
+To discover available link types: `jira_get` → `/rest/api/3/issueLinkType`.
+
 ## Bug Ticket Creation Guidelines
 
 ### Structure

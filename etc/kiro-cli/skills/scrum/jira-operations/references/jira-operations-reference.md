@@ -259,12 +259,63 @@ project = "PROJ" AND assignee = "john.doe" AND status in ("In Progress", "In Rev
 
 ## Integration with SCRUM Ceremonies
 
-### Sprint Planning Support
+### Sprint Context Lookup
 
-- Query stories ready for sprint planning
-- Retrieve story details and acceptance criteria
-- Check story estimates and dependencies
-- Validate Definition of Ready compliance
+Use when starting a session or when the user asks about the current sprint:
+
+1. Query active sprint issues: `project = {KEY} AND sprint in openSprints()` with fields
+   `summary,status,assignee,priority,issuetype,customfield_XXXXX` (story points)
+1. Summarize: total issues, breakdown by status (To Do / In Progress / Done), by assignee
+1. Note the sprint goal if available (from board/sprint metadata)
+
+**JQL patterns:**
+
+```jql
+# All current sprint work
+project = "PROJ" AND sprint in openSprints()
+
+# Current sprint filtered by assignee
+project = "PROJ" AND sprint in openSprints() AND assignee = currentUser()
+
+# Flagged/blocked items in sprint
+project = "PROJ" AND sprint in openSprints() AND flagged = impediment
+```
+
+### Standup Summary
+
+Generate a standup-ready update for a user or team:
+
+1. **Done** (since last standup): `status changed to "Done" after -1d AND sprint in openSprints()`
+1. **In Progress**: `status = "In Progress" AND sprint in openSprints()`
+1. **Blocked**: `flagged = impediment AND sprint in openSprints()` or issues with "Blocked" status
+
+**Output format:**
+
+```text
+## Standup — {date}
+
+### Done (since yesterday)
+- PROJ-123: Summary text
+
+### In Progress
+- PROJ-456: Summary text (assignee)
+
+### Blocked
+- PROJ-789: Summary text — [reason if in comments]
+```
+
+Include issue keys as clickable links. Filter by assignee when generating a personal update.
+
+### Sprint Planning Workflow
+
+Support sprint planning by providing velocity and candidate data:
+
+1. **Calculate velocity** — sum story points from last 2-3 completed sprints:
+   `project = {KEY} AND sprint in closedSprints() AND status = Done AND resolved >= -30d`
+1. **Identify candidates** — refined backlog items with estimates:
+   `project = {KEY} AND status = "Ready for Sprint" ORDER BY priority DESC, rank ASC`
+1. **Present capacity summary**: average velocity, total candidate points, recommended selection
+1. **Help select stories** that fit within velocity, respecting priority order
 
 ### Daily Scrum Support
 
