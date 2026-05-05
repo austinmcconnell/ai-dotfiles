@@ -13,3 +13,5 @@ that have explicit skills.
 | SCRUM ceremony questions                     | `scrum-reference`        |
 | Sprint context, standup, or planning queries | `jira-operations`        |
 | Transitioning, linking, or searching issues  | `jira-operations`        |
+| Backlog health or triage review              | `jira-operations`        |
+| Validating Jira setup or API connectivity    | `jira-smoke-test`        |

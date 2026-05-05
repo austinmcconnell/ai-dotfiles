@@ -338,6 +338,84 @@ Support sprint planning by providing velocity and candidate data:
 - Identify patterns in story completion
 - Track improvement action items
 
+## Backlog Health Report
+
+Surface backlog hygiene issues for human triage. The agent queries and categorizes — the user
+decides what to do.
+
+### Categories
+
+#### New / Untriaged
+
+Recently created issues with no sprint assignment or priority:
+
+```jql
+project = {KEY} AND created >= -7d AND sprint is EMPTY AND priority = None
+ORDER BY created DESC
+```
+
+#### Missing Metadata
+
+Issues lacking labels, story points, or components:
+
+```jql
+project = {KEY} AND status != Done
+  AND (labels is EMPTY OR "Story Points" is EMPTY OR component is EMPTY)
+ORDER BY priority DESC
+```
+
+Adjust field names based on `jira-smoke-test` results (e.g., story points custom field).
+
+#### Stale Candidates (Promote or Close)
+
+Open issues that have never been in a sprint and are older than 30 days:
+
+```jql
+project = {KEY} AND status != Done AND sprint is EMPTY AND created <= -30d
+ORDER BY created ASC
+```
+
+Present with age in days. Suggest: "These have been in the backlog 30+ days without making it to a
+sprint. Promote to an upcoming sprint or close?"
+
+#### Drift Risk
+
+Old issues whose descriptions may no longer be accurate:
+
+```jql
+project = {KEY} AND status != Done AND updated <= -60d
+ORDER BY updated ASC
+```
+
+Flag: "These haven't been updated in 60+ days. Descriptions may have drifted from current reality."
+
+### Output Format
+
+```text
+## Backlog Health — {project} — {date}
+
+### New / Untriaged ({count})
+| Key | Summary | Created | Reporter |
+| --- | ------- | ------- | -------- |
+
+### Missing Metadata ({count})
+| Key | Summary | Missing |
+| --- | ------- | ------- |
+
+### Stale (30+ days, no sprint) ({count})
+| Key | Summary | Age (days) | Priority |
+| --- | ------- | ---------- | -------- |
+
+### Drift Risk (60+ days since update) ({count})
+| Key | Summary | Last Updated | Status |
+| --- | ------- | ------------ | ------ |
+```
+
+### Usage
+
+Run on demand — useful before refinement sessions or as a periodic hygiene check. The agent presents
+the report; the user decides which items to promote, close, or update.
+
 ## Reporting and Metrics
 
 ### Story Quality Metrics
