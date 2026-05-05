@@ -454,6 +454,28 @@ the report; the user decides which items to promote, close, or update.
 - Stakeholder satisfaction with delivered stories
 - Retrospective action item completion
 
+## Issue Linking
+
+Link related issues using `jira_post` → `/rest/api/3/issueLink`:
+
+```json
+{
+  "type": {"name": "Blocks"},
+  "inwardIssue": {"key": "PROJ-123"},
+  "outwardIssue": {"key": "PROJ-456"}
+}
+```
+
+Common link types: `Blocks`, `Cloners`, `Depends`, `Duplicate`, `Relates`.
+
+**Workflow:**
+
+1. Confirm both issue keys exist (fetch each with `jira_get`)
+1. Preview: "Link PROJ-123 → blocks → PROJ-456"
+1. Create link after user confirms
+
+To discover available link types: `jira_get` → `/rest/api/3/issueLinkType`.
+
 ## Troubleshooting Common Issues
 
 ### Authentication Problems
