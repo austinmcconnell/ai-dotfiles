@@ -25,6 +25,7 @@ specifications, broken cross-references, and structural issues.
 
 1. Read `AGENTS.md` or `README.md` for project-specific conventions
 1. Check `SUMMARY.md` to understand intended structure
+1. Check for `todo.md` — if it exists, read it to understand prior unresolved items
 1. Identify content directories: `configuration/`, `procedures/`, `decisions/`, `components/`
 1. Note any project-specific naming conventions or patterns
 
@@ -198,7 +199,41 @@ If conflicts are found, update this repo to match the authoritative source. If t
 source is wrong, fix it first. Never modify repos outside the current working directory without
 proposing the changes and receiving explicit approval first.
 
-### Step 8: Generate Review Report
+### Step 8: Write Actionable Findings to todo.md
+
+**Skip this step if the review found no actionable items** (all findings are informational or
+already resolved).
+
+Persist actionable items from the review to the project's `todo.md` so they survive across sessions.
+Follow the `todo` skill conventions.
+
+**Rules:**
+
+1. If `todo.md` does not exist in the project root, create it using the template from the `todo`
+   skill (three sections: `## Open questions`, `## Blockers`, `## Tasks`)
+1. If `todo.md` already exists, read it first — append new items to the appropriate sections without
+   removing or modifying existing content. Do not re-open resolved items (marked `[x]`).
+1. Do not duplicate items already present — use the `todo.md` content read in Step 1 as the baseline
+   and check whether an existing item covers the same file and issue type before adding a new one
+1. Only write items that require follow-up action — skip informational observations
+
+**What goes where:**
+
+| Finding type                                      | Section        | Example                                                                               |
+| ------------------------------------------------- | -------------- | ------------------------------------------------------------------------------------- |
+| Unanswered design question surfaced during review | Open questions | `- [ ] Should component specs live in components/ or configuration/?`                 |
+| Cross-repo conflict needing upstream fix first    | Blockers       | `- [ ] IP conflict with ubiquiti-network-stack — needs resolution there first`        |
+| Content ownership violation to fix                | Tasks          | `- [ ] Move implementation steps from configuration/x.md to procedures/`              |
+| Broken link to repair                             | Tasks          | `- [ ] Fix broken link in procedures/setup.md → configuration/network.md`             |
+| Missing cross-reference                           | Tasks          | `- [ ] Add prerequisite link from procedures/deploy.md to configuration/env.md`       |
+| Missing README.md                                 | Tasks          | `- [ ] Add README.md to configuration/ directory`                                     |
+| SUMMARY.md drift                                  | Tasks          | `- [ ] Add procedures/new-file.md to SUMMARY.md`                                      |
+| Duplicate specification to consolidate            | Tasks          | `- [ ] Remove duplicate spec table from procedures/x.md — keep in configuration/y.md` |
+
+**Cross-repo issues (from Step 7):** If the review found conflicts with authoritative sources in
+other repos, write them as blockers referencing the upstream repo and file that needs correction.
+
+### Step 9: Generate Review Report
 
 Create a structured report with findings:
 
@@ -267,6 +302,12 @@ Create a structured report with findings:
 1. **Low Priority:**
    - Improve link text patterns
    - Add section links for specificity
+
+## Tracking
+
+Actionable items written to `todo.md` — X open questions, Y blockers, Z tasks.
+
+> Omit this section if Step 8 was skipped (no actionable items).
 ```
 
 ## Review Checklist
