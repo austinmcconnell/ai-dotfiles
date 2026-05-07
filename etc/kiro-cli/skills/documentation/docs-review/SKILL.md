@@ -175,9 +175,12 @@ Check that each subdirectory has README.md with:
 
 ### Step 7: Cross-Repo Consistency Check
 
+**Scope**: Only check *outbound* references — resources this repo references that are owned by a
+different repo. Do not check whether other repos correctly reference this repo; that is handled by
+docs-review runs in those repos.
+
 If the repo references shared resources (IP addresses, switch ports, rack slots, PDU ports, VLAN
-assignments, DNS records), run a targeted check against the authoritative source for each resource
-the repo touches.
+assignments, DNS records), verify this repo's values match the authoritative source.
 
 **Ownership quick reference** (for full details, see the `cross-repo-audit` skill):
 
@@ -188,7 +191,20 @@ the repo touches.
 | Compute switch ports       | tiny-lab → `configuration/network.md`                          |
 | Main switch, gateway ports | ubiquiti-network-stack → `configuration/network-topology.md`   |
 
-**For each shared resource found in this repo:**
+**How to determine what to check:**
+
+If the repo has no shared infrastructure dependencies (check AGENTS.md, README.md, or the knowledge
+base description), skip this step.
+
+1. Identify which resources this repo is authoritative for — check the ownership table above, the
+   repo's AGENTS.md, and relevant steering docs or knowledge base descriptions. Skip those
+   resources; this repo is the source of truth for them.
+1. Find references to resources owned by other repos (IP addresses, port numbers, rack slot values,
+   VLAN IDs mentioned in configuration or procedure files) — these are the outbound references to
+   verify
+1. Read the authoritative source for each outbound reference and compare
+
+**For each outbound shared resource found in this repo:**
 
 - [ ] Read the authoritative source file listed above
 - [ ] Verify values in this repo match the authoritative source
