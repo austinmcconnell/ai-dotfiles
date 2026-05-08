@@ -182,5 +182,18 @@ Before an issue enters a sprint, it should have:
 - Acceptance criteria defined (for stories/bugs)
 - Assignee identified
 - Priority set (not "Not Set")
+- No unresolved blockers or open questions
+- Fits within a single sprint (if not, split it)
 
 Backlog items are NOT expected to have story points or assignees.
+
+### Acceptance Criteria by Issue Type
+
+- **Stories**: 3–8 testable criteria describing observable user behavior. Use Given/When/Then for
+  workflows, bullet points for rules/constraints. Never include implementation details.
+- **Bugs**: Describe the corrected behavior (what should happen after the fix), include regression
+  guard, specify the environment where the bug occurred.
+- **Tasks**: Completion conditions and verification steps (e.g., "CI passes", "health check returns
+  200 for 24h").
+- **Spikes**: Define the deliverable (document, POC, decision), questions to answer, and timebox. Do
+  not estimate spikes with story points — timebox only.

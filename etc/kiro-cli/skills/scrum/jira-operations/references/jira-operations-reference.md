@@ -266,11 +266,22 @@ project = "PROJ" AND assignee = "john.doe" AND status in ("In Progress", "In Rev
 
 ### Query Optimization
 
-- Use specific project keys to limit scope
-- Include relevant issue types to filter results
-- Use appropriate date ranges for time-based queries
-- Order results by priority or other relevant fields
-- Limit results when appropriate to improve performance
+- **Always scope to a project** — unscoped queries search ALL issues in the instance and are slow
+- **Always include `fields` parameter** in search API calls — without it, responses contain only
+  issue IDs (no summary, status, or other data). Common field sets:
+  - Sprint overview: `summary,status,assignee,priority,issuetype,customfield_10004`
+  - Backlog triage: `summary,status,priority,labels,created,updated`
+  - Standup: `summary,status,assignee`
+- **Avoid `text ~ "term"` on large projects** — full-text search is expensive. Prefer
+  `summary ~ "term"` which searches only the summary field
+- **Use `status != Done` not `status not in (Done, Closed, ...)`** — simpler and faster when you
+  just want open items
+- **Pagination**: The v3 `/rest/api/3/search/jql` endpoint uses `nextPageToken` and `isLast` instead
+  of `total`. Do not rely on `total` for loop termination — use `isLast: true` or empty results. The
+  server may return fewer results than `maxResults` without being on the last page.
+- **`maxResults` must be between 1 and 5000** — passing 0 causes an error
+- **ORDER BY indexed fields** — `created`, `updated`, `priority`, `status` are fast. Custom fields
+  may not be indexed.
 
 ## Integration with SCRUM Ceremonies
 

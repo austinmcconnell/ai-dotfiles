@@ -106,6 +106,23 @@ For bullet lists:
 **Common mistake:** Passing a plain string as `description` — the API accepts it but renders
 nothing. Always use the ADF structure.
 
+For code blocks:
+
+```json
+{"type": "codeBlock", "attrs": {"language": "python"}, "content": [{"type": "text", "text": "print('hello')"}]}
+```
+
+**ADF Gotchas:**
+
+1. **Text must be inside a paragraph.** You cannot put `{"type": "text"}` directly under `doc` — it
+   must be wrapped in a `paragraph`, `heading`, or other block node.
+1. **`version` must be the integer `1`**, not the string `"1"`.
+1. **List items require paragraph nesting.** A `listItem` must contain a `paragraph` node — you
+   cannot put text directly inside a `listItem`.
+1. **Code blocks contain only text nodes.** No paragraphs, no marks (bold/italic) inside `codeBlock`
+   — only plain `{"type": "text", "text": "..."}`.
+1. **Headings require `attrs.level`.** Missing `attrs` or `level` causes validation failure.
+
 ### Priority Field
 
 Priority is set by name, not ID. The name must match exactly (including spaces):

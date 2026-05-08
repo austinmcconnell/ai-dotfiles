@@ -97,6 +97,43 @@ Every story should be:
 - Include positive and negative scenarios
 - Cover edge cases and error conditions
 
+## Acceptance Criteria Guidelines
+
+### Count
+
+- **3–8 criteria per story** — fewer means under-specified, more means split the story
+- Each criterion covers one condition — no compound "and" statements
+
+### Format
+
+- **Given/When/Then** for user workflows with preconditions or multiple paths
+- **Bullet points** for validation rules, constraints, and non-functional requirements
+- **Hybrid** (recommended): Given/When/Then for the primary flow, bullets for rules/edge cases
+
+### Rules
+
+- Every criterion must be binary pass/fail — no subjective language ("fast", "user-friendly")
+- Describe observable behavior, not implementation ("user sees error" not "system throws exception")
+- Use specific numbers over adjectives ("under 2 seconds" not "fast")
+- Never include implementation details (no "use Redis", "add a LEFT JOIN")
+- Never duplicate Definition of Done items (no "tests written", "code reviewed")
+- Always cover the unhappy path — errors, empty states, permission denied, invalid input
+
+### Anti-Patterns to Avoid
+
+- Restating the user story as a criterion
+- Mixing development tasks with acceptance criteria
+- Overly prescriptive UI specs (pixel values, exact colors)
+- Missing edge cases (only happy path covered)
+- Vague language: "should work correctly", "handles errors gracefully"
+
+### By Issue Type
+
+- **Stories**: Observable user behavior and outcomes (3–8 criteria)
+- **Bugs**: Corrected behavior + regression guard + environment context
+- **Tasks**: Completion conditions and verification steps
+- **Spikes**: Deliverable definition + questions to answer + timebox (no story points)
+
 **Technical stories:**
 
 - Use specific technical roles (not "developer")
