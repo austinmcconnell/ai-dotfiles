@@ -46,6 +46,39 @@ Before presenting a new ticket preview, search for potential duplicates:
 This check applies to all issue types (stories, bugs, tasks). Skip only if the user explicitly says
 they already checked.
 
+## JQL Search — Pagination & Counting
+
+The `/rest/api/3/search/jql` endpoint uses **cursor-based pagination**, not offset-based. Key
+differences from the deprecated `/rest/api/3/search`:
+
+1. **No `total` field** — responses contain `nextPageToken` and `isLast` instead. You cannot get a
+   count in a single call.
+1. **`startAt` is ignored** — pagination only works via `nextPageToken`. Passing `startAt` returns
+   the first page every time.
+1. **`maxResults` minimum is 1** — passing `"0"` returns a 400 error. Use `"1"` if you only need
+   metadata.
+1. **To count issues** — fetch with `maxResults: "1"` and iterate using `nextPageToken` until
+   `isLast: true`, or accept an approximate count from the number of pages. For practical purposes,
+   use a reasonable `maxResults` (e.g., `"50"`) and note whether `isLast` is true.
+1. **To paginate** — pass the `nextPageToken` value from the previous response as a query parameter
+   in the next request: `{"nextPageToken": "<token>"}`.
+
+**Example — fetching all results:**
+
+```text
+# First page
+GET /rest/api/3/search/jql?jql=project=SCRN&maxResults=50
+
+# Next page (use nextPageToken from previous response)
+GET /rest/api/3/search/jql?jql=project=SCRN&maxResults=50&nextPageToken=<token>
+
+# Stop when response contains "isLast": true
+```
+
+**Practical guidance:** For triage and reporting, fetching 50–100 results per category (stale epics,
+blocked items, etc.) with targeted JQL is more efficient than trying to count or paginate the entire
+backlog.
+
 ## Issue Transitions
 
 Moving issues through workflow states uses a two-step process:
