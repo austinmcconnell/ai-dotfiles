@@ -57,6 +57,109 @@ Moving issues through workflow states uses a two-step process:
 
 Never hardcode transition IDs — they vary by project workflow. Always fetch first.
 
+## Issue Creation — Field Formatting
+
+The Jira v3 API has specific formatting requirements that cause silent failures or validation errors
+if not followed exactly.
+
+### Description Field (Atlassian Document Format)
+
+Descriptions use ADF (Atlassian Document Format), not markdown. A plain text description:
+
+```json
+{
+  "description": {
+    "type": "doc",
+    "version": 1,
+    "content": [
+      {
+        "type": "paragraph",
+        "content": [{"type": "text", "text": "First paragraph of description."}]
+      },
+      {
+        "type": "paragraph",
+        "content": [{"type": "text", "text": "Second paragraph."}]
+      }
+    ]
+  }
+}
+```
+
+For headings within the description:
+
+```json
+{"type": "heading", "attrs": {"level": 3}, "content": [{"type": "text", "text": "Section Title"}]}
+```
+
+For bullet lists:
+
+```json
+{
+  "type": "bulletList",
+  "content": [
+    {"type": "listItem", "content": [{"type": "paragraph", "content": [{"type": "text", "text": "Item 1"}]}]},
+    {"type": "listItem", "content": [{"type": "paragraph", "content": [{"type": "text", "text": "Item 2"}]}]}
+  ]
+}
+```
+
+**Common mistake:** Passing a plain string as `description` — the API accepts it but renders
+nothing. Always use the ADF structure.
+
+### Priority Field
+
+Priority is set by name, not ID. The name must match exactly (including spaces):
+
+```json
+{"priority": {"name": "1 - Must Have"}}
+```
+
+Valid values for SCRN: `"0 - Critical"`, `"1 - Must Have"`, `"2 - Should Have"`,
+`"3 - Nice to Have"`, `"Not Set"`. Note the trailing space in `"Not Set "` that the API sometimes
+returns — when setting priority, use `"Not Set"` without trailing space.
+
+**Do not set priority during issue creation.** Priority is set by the Product Owner or Engineering
+Manager during triage/refinement. Only include this field if the user explicitly requests a specific
+priority.
+
+### Parent (Epic Link)
+
+To assign an issue to an epic, use the `parent` field with the epic's key:
+
+```json
+{"parent": {"key": "SCRN-928"}}
+```
+
+**Not** `customfield_10014` or `epicLink` — those are deprecated in v3.
+
+### Labels
+
+Labels is a simple string array:
+
+```json
+{"labels": ["tech-debt", "accessibility"]}
+```
+
+To add a label to an existing issue without removing others, use `jira_put` with the `update` field:
+
+```json
+{
+  "update": {
+    "labels": [{"add": "maybe-delete"}]
+  }
+}
+```
+
+### Story Points
+
+Story points use `customfield_10004` and accept a number:
+
+```json
+{"customfield_10004": 5}
+```
+
+Only set this for sprint-ready items. Backlog items should not have story points.
+
 ## Issue Link Direction
 
 The Jira API for creating issue links uses `outwardIssue` and `inwardIssue` based on the link type's
