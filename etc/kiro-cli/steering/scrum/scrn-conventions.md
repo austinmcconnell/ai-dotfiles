@@ -110,10 +110,10 @@ These exist on old issues but should not be applied to new work:
 
 ### Set Only When Explicitly Asked
 
-| Field               | Notes                                                         |
-| ------------------- | ------------------------------------------------------------- |
-| `priority`          | Set by PO/EM during triage — do not set during creation       |
-| `customfield_10004` | Story points — set by team during refinement, not at creation |
+| Field               | Notes                                                                     |
+| ------------------- | ------------------------------------------------------------------------- |
+| `priority`          | Set by PO/EM during triage — do not set during creation                   |
+| `customfield_10004` | Story points — never set or suggest; the team estimates during refinement |
 
 ### Unused Fields (never set)
 
@@ -185,7 +185,8 @@ Before an issue enters a sprint, it should have:
 - No unresolved blockers or open questions
 - Fits within a single sprint (if not, split it)
 
-Backlog items are NOT expected to have story points or assignees.
+Backlog items may or may not have story points depending on whether they've been through refinement.
+They are not expected to have assignees.
 
 ### Acceptance Criteria by Issue Type
 
