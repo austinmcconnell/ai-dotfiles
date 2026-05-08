@@ -103,6 +103,8 @@ Issues in "Approved for Production" or "Ready to Test" for 30+ days:
 
 ### 4. Code Verification (Subagent Strategy)
 
+**Default codebase:** `~/projects/unite-us/screenings-ingestion`
+
 When you suspect a ticket's work has been completed, spawn a `default` subagent to verify:
 
 ```text
