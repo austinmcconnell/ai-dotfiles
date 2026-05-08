@@ -56,3 +56,29 @@ Moving issues through workflow states uses a two-step process:
    `{"transition": {"id": "{transitionId}"}}`
 
 Never hardcode transition IDs — they vary by project workflow. Always fetch first.
+
+## Issue Link Direction
+
+The Jira API for creating issue links uses `outwardIssue` and `inwardIssue` based on the link type's
+directional labels. For the "Blocks" link type:
+
+- `outward` label = "blocks"
+- `inward` label = "is blocked by"
+
+To create "A blocks B" (B is blocked by A):
+
+```json
+{
+  "outwardIssue": {"key": "A"},
+  "inwardIssue": {"key": "B"},
+  "type": {"name": "Blocks"}
+}
+```
+
+**Memory aid:** `outwardIssue` is the blocker (the one doing the blocking). `inwardIssue` is the
+blocked ticket (the one waiting).
+
+When reading links back from the API on a specific issue:
+
+- If the linked issue appears as `outwardIssue`, the queried issue "is blocked by" it
+- If the linked issue appears as `inwardIssue`, the queried issue "blocks" it
