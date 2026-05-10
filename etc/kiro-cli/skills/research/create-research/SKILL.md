@@ -41,6 +41,9 @@ Choose the template that fits the research subject:
   framework-based analytical research that synthesizes academic or institutional data around a
   question (e.g., language learning timelines, education system analysis, tax regime comparisons).
   Includes framework/taxonomy, summary table, deep-dives, contextual analysis, key takeaways.
+- **[clothing-brand-template.md](references/clothing-brand-template.md)** — for clothing brand
+  research (e.g., Alex Crane, Taylor Stitch, Buck Mason). Includes brand overview, materials,
+  product lineup with comparison table, sales/discounts, customer reception.
 
 If none of the templates fit, check whether the research matches a different pattern entirely (e.g.,
 historical analysis, market trends, regulatory landscape). If so, propose a custom structure to the
