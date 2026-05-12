@@ -64,6 +64,7 @@
     "resources": [
         "file://AGENTS.md",
         "file://~/.dotfiles/etc/kiro-cli/steering/code/**/*.md",
+        "file://~/.dotfiles/etc/kiro-cli/steering/github/**/*.md",
         "file://~/.dotfiles/etc/kiro-cli/steering/security/**/*.md",
         "file://.kiro/steering/**/*.md",
         "file://README.md",
@@ -305,13 +306,15 @@
             ]
         },
         "subagent": {
-            "availableAgents": ["default", "docs", "github", "jira"],
+            "availableAgents": ["default", "docs", "jira"],
             "trustedAgents": ["default"]
         },
         "web_fetch": {
             "trusted": [
                 ".*docs\\.aws\\.amazon\\.com.*",
+                ".*docs\\.github\\.com.*",
                 ".*github\\.com.*",
+                ".*raw\\.githubusercontent\\.com.*",
                 ".*stackoverflow\\.com.*",
                 ".*developer\\.mozilla\\.org.*"
             ],
