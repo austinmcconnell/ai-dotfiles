@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # ---------------------------------------------------------------
-# Agent Skills Distribution Script
+# AI Tools Distribution Script
 # Symlinks skills from the dotfiles repo to each AI agent's
 # expected discovery path, enabling multi-agent portability.
 # Also generates steering adapter files for agents that support them.
@@ -14,6 +14,21 @@
 set -euo pipefail
 
 source "$DOTFILES_DIR/install/utils.sh"
+
+# ---------------------------------------------------------------
+# Enable the agents you actively use. Others are defined in the
+# agent_config registry below but won't be linked until added here.
+# ---------------------------------------------------------------
+ENABLED_AGENTS=(
+    # "claude-code"
+    "codex"
+    "cursor"
+    # "gemini-cli"
+    # "github-copilot"
+    # "windsurf"
+)
+
+# ---------------------------------------------------------------
 
 print_section_header "Distributing Agent Skills"
 
@@ -97,19 +112,6 @@ agent_config() {
     windsurf:steering) echo "none" ;;
     esac
 }
-
-# ---------------------------------------------------------------
-# Enable the agents you actively use. Others are defined above
-# but won't be linked until added here.
-# ---------------------------------------------------------------
-ENABLED_AGENTS=(
-    # "claude-code"
-    "codex"
-    "cursor"
-    # "gemini-cli"
-    # "github-copilot"
-    # "windsurf"
-)
 
 # ---------------------------------------------------------------
 # Distribution
