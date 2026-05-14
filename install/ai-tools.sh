@@ -20,7 +20,7 @@ source "$DOTFILES_DIR/install/utils.sh"
 # agent_config registry below but won't be linked until added here.
 # ---------------------------------------------------------------
 ENABLED_AGENTS=(
-    # "claude-code"
+    "claude-code"
     "codex"
     "cursor"
     # "gemini-cli"
@@ -48,10 +48,15 @@ generate_single_steering() {
 # Coding Guidelines
 
 Auto-generated from dotfiles steering docs. Do not edit directly.
-Source: `~/.dotfiles/etc/ai/steering/{code,security}/`
+Source: `~/.dotfiles/etc/ai/steering/{code,github,security}/`
 
 HEADER
         for f in "$STEERING_SOURCE/code"/*.md; do
+            [ -f "$f" ] || continue
+            cat "$f"
+            printf '\n\n'
+        done
+        for f in "$STEERING_SOURCE/github"/*.md; do
             [ -f "$f" ] || continue
             cat "$f"
             printf '\n\n'
@@ -74,13 +79,14 @@ generate_mdc_steering() {
     rm -f "${output_dir:?}/${prefix}"*.mdc
     find "$output_dir" -maxdepth 1 -name "*.mdc" -type l ! -exec test -e {} \; -delete 2>/dev/null || true
 
-    for f in "$STEERING_SOURCE/code"/*.md "$STEERING_SOURCE/security"/*.md; do
+    for f in "$STEERING_SOURCE/code"/*.md "$STEERING_SOURCE/github"/*.md "$STEERING_SOURCE/security"/*.md; do
         [ -f "$f" ] || continue
-        local basename
+        local basename desc
         basename="$(basename "$f" .md)"
+        desc="$(grep -m1 '^# ' "$f" | sed 's/^# //')"
         local mdc_file="$output_dir/${prefix}${basename}.mdc"
         {
-            printf -- '---\ndescription: \nglobs: \nalwaysApply: true\n---\n\n'
+            printf -- '---\ndescription: %s\nalwaysApply: true\n---\n\n' "$desc"
             cat "$f"
         } >"$mdc_file"
     done
