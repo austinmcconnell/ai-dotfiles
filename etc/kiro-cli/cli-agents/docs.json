@@ -140,7 +140,7 @@
         "preToolUse": [
             {
                 "matcher": "*",
-                "command": "~/.dotfiles/etc/kiro-cli/hooks/block-env-files.sh"
+                "command": "~/.dotfiles/etc/ai/hooks/block-env-files.sh"
             }
         ],
         "postToolUse": [

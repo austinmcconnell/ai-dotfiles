@@ -1,5 +1,6 @@
 #!/bin/bash
 # Block any tool from accessing .env files
+# Shared hook: works with kiro-cli (preToolUse) and Claude Code (PreToolUse)
 
 TOOL_INPUT=$(cat)
 

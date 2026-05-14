@@ -21,7 +21,7 @@
         "preToolUse": [
             {
                 "matcher": "*",
-                "command": "~/.dotfiles/etc/kiro-cli/hooks/block-env-files.sh"
+                "command": "~/.dotfiles/etc/ai/hooks/block-env-files.sh"
             },
             {
                 "matcher": "use_aws",
@@ -33,7 +33,7 @@
             },
             {
                 "matcher": "execute_bash",
-                "command": "~/.dotfiles/etc/kiro-cli/hooks/audit-shell-commands.sh"
+                "command": "~/.dotfiles/etc/ai/hooks/audit-shell-commands.sh"
             }
         ],
         "postToolUse": [

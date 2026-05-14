@@ -111,5 +111,54 @@
             "Bash(trash *)",
             "Bash(umount *)"
         ]
+    },
+    "hooks": {
+        "PreToolUse": [
+            {
+                "matcher": "*",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "~/.dotfiles/etc/ai/hooks/block-env-files.sh",
+                        "timeout": 5
+                    }
+                ]
+            }
+        ],
+        "PostToolUse": [
+            {
+                "matcher": "Bash",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "~/.dotfiles/etc/ai/hooks/audit-shell-commands.sh",
+                        "async": true,
+                        "timeout": 10
+                    }
+                ]
+            }
+        ],
+        "Stop": [
+            {
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "~/.dotfiles/etc/ai/hooks/notify-stop.sh",
+                        "timeout": 5
+                    }
+                ]
+            }
+        ],
+        "Notification": [
+            {
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "~/.dotfiles/etc/ai/hooks/notify-attention.sh",
+                        "timeout": 5
+                    }
+                ]
+            }
+        ]
     }
 }
