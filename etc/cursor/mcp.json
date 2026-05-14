@@ -2,7 +2,7 @@
     "mcpServers": {
         "jira": {
             "command": "npx",
-            "args": ["@aashari/mcp-server-atlassian-jira"],
+            "args": ["-y", "@aashari/mcp-server-atlassian-jira"],
             "env": {
                 "ATLASSIAN_SITE_NAME": "${ATLASSIAN_SITE_NAME}",
                 "ATLASSIAN_USER_EMAIL": "${ATLASSIAN_USER_EMAIL}",

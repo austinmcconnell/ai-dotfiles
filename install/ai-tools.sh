@@ -55,8 +55,9 @@ generate_mdc_steering() {
     local output_dir="$1"
     local prefix="steering-"
 
-    # Clean previously generated steering rules
+    # Clean previously generated steering rules and stale symlinks
     rm -f "${output_dir:?}/${prefix}"*.mdc
+    find "$output_dir" -maxdepth 1 -name "*.mdc" -type l ! -exec test -e {} \; -delete 2>/dev/null || true
 
     for f in "$STEERING_SOURCE/code"/*.md "$STEERING_SOURCE/security"/*.md; do
         [ -f "$f" ] || continue
@@ -79,26 +80,23 @@ generate_mdc_steering() {
 #                  "single:PATH" = single concatenated file
 #                  "mdc:DIR"     = .mdc files with frontmatter
 # ---------------------------------------------------------------
-declare -A AGENT_SKILLS_PATH
-declare -A AGENT_STEERING
-
-AGENT_SKILLS_PATH[claude - code]="$HOME/.claude/skills"
-AGENT_STEERING[claude - code]="single:$HOME/.claude/CLAUDE.md"
-
-AGENT_SKILLS_PATH[codex]="$HOME/.codex/skills"
-AGENT_STEERING[codex]="none"
-
-AGENT_SKILLS_PATH[cursor]="$HOME/.cursor/skills"
-AGENT_STEERING[cursor]="mdc:$HOME/.cursor/rules"
-
-AGENT_SKILLS_PATH[gemini - cli]="$HOME/.gemini/skills"
-AGENT_STEERING[gemini - cli]="single:$HOME/.gemini/GEMINI.md"
-
-AGENT_SKILLS_PATH[github - copilot]="$HOME/.agents/skills"
-AGENT_STEERING[github - copilot]="none"
-
-AGENT_SKILLS_PATH[windsurf]="$HOME/.codeium/windsurf/skills"
-AGENT_STEERING[windsurf]="none"
+agent_config() {
+    local agent="$1" field="$2"
+    case "$agent:$field" in
+    claude-code:skills_path) echo "$HOME/.claude/skills" ;;
+    claude-code:steering) echo "single:$HOME/.claude/CLAUDE.md" ;;
+    codex:skills_path) echo "$HOME/.codex/skills" ;;
+    codex:steering) echo "none" ;;
+    cursor:skills_path) echo "$HOME/.cursor/skills" ;;
+    cursor:steering) echo "mdc:$HOME/.cursor/rules" ;;
+    gemini-cli:skills_path) echo "$HOME/.gemini/skills" ;;
+    gemini-cli:steering) echo "single:$HOME/.gemini/GEMINI.md" ;;
+    github-copilot:skills_path) echo "$HOME/.agents/skills" ;;
+    github-copilot:steering) echo "none" ;;
+    windsurf:skills_path) echo "$HOME/.codeium/windsurf/skills" ;;
+    windsurf:steering) echo "none" ;;
+    esac
+}
 
 # ---------------------------------------------------------------
 # Enable the agents you actively use. Others are defined above
@@ -117,8 +115,8 @@ ENABLED_AGENTS=(
 # Distribution
 # ---------------------------------------------------------------
 for agent in "${ENABLED_AGENTS[@]}"; do
-    skills_path="${AGENT_SKILLS_PATH[$agent]}"
-    steering="${AGENT_STEERING[$agent]}"
+    skills_path="$(agent_config "$agent" skills_path)"
+    steering="$(agent_config "$agent" steering)"
 
     # Symlink skills
     mkdir -p "$(dirname "$skills_path")"
