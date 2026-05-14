@@ -28,15 +28,19 @@ git diff main HEAD
 
 [2-3 sentence overview of what this PR accomplishes and why it's needed, focusing on business value]
 
-Key Benefits: • [Performance/scalability/reliability improvements] • [System improvements] • \[User
-experience improvements\] • [Operational improvements]
+Key Benefits:
+• [Performance/scalability/reliability improvements]
+• [System improvements]
+• [User experience improvements]
+• [Operational improvements]
 
 ## Changes Made
 
 ### Features
 
-[Group features by logical functionality, not by file names] • \[Feature description with brief
-technical context\] • [Another feature with implementation details]
+[Group features by logical functionality, not by file names]
+• [Feature description with brief technical context]
+• [Another feature with implementation details]
 
 **Conditional Sections (add these to ANY PR description when applicable):**
 
@@ -69,8 +73,9 @@ Response Examples:
 
 ### Infrastructure & Configuration
 
-• [Environment variables, dependencies, deployment changes] • \[Docker, Kubernetes, Terraform
-updates\] • [Database or infrastructure modifications]
+• [Environment variables, dependencies, deployment changes]
+• [Docker, Kubernetes, Terraform updates]
+• [Database or infrastructure modifications]
 
 \[**INCLUDE if there is new documentation:**\]
 
@@ -82,9 +87,9 @@ updates\] • [Database or infrastructure modifications]
 
 ## Testing
 
-• **X new test cases** covering [functionality] with comprehensive error handling • **Total tests
-passing** including edge cases and failure scenarios • \[Brief summary of what was tested - avoid
-excessive detail\]
+• **X new test cases** covering [functionality] with comprehensive error handling
+• **Total tests passing** including edge cases and failure scenarios
+• [Brief summary of what was tested - avoid excessive detail]
 
 \[**INCLUDE if there are deployment considerations:**\]
 
@@ -106,21 +111,24 @@ ANOTHER_VAR=value             # Purpose
 
 ### Infrastructure Changes
 
-• **New AWS Resources**: [list resources] • **Kubernetes**: [deployment changes] • **Networking**:
-[network changes]
+• **New AWS Resources**: [list resources]
+• **Kubernetes**: [deployment changes]
+• **Networking**: [network changes]
 
 \[**INCLUDE if there are monitoring/operational changes:**\]
 
 ### Monitoring
 
-• [Monitoring endpoints or dashboards] • [Operational considerations]
+• [Monitoring endpoints or dashboards]
+• [Operational considerations]
 
 \[**INCLUDE if there are deployment considerations:**\]
 
 ### Key Points
 
-• **Database migrations**: [required/not required with explanation] • **Backward compatibility**:
-[compatible/breaking with details] • **Deployment strategy**: [zero downtime/rolling/etc.]
+• **Database migrations**: [required/not required with explanation]
+• **Backward compatibility**: [compatible/breaking with details]
+• **Deployment strategy**: [zero downtime/rolling/etc.]
 
 \[**ALWAYS INCLUDE:**\]
 

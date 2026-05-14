@@ -171,7 +171,6 @@ quick lookup.
 # Current (incorrect)
 if user.type == 'premum':  # ← Missing 'i' in 'premium'
 ```
-````
 
 ### Current Impact
 
@@ -198,6 +197,4 @@ FROM users WHERE type = 'premium';
 • New premium users have preferences populated correctly • User dashboard displays saved preferences
 • Recommendation engine uses actual user preferences • Premium feature toggles work based on user
 settings
-
-```text
-```
+````
