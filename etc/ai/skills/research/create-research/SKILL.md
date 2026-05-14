@@ -92,7 +92,7 @@ research — even a 2-file topic benefits if the research involves heavy web fet
 what the others find), or the topic is small enough that a single agent can research and write it
 without heavy web fetching. A single output file does **not** automatically mean "skip subagents" —
 if the file covers many independent research domains with heavy web fetching, delegate the research
-to subagents using the temp-file assembly pattern (see below and relocation-research-conventions for
+to subagents using the temp-file assembly pattern (see below and the `relocation-research` skill for
 an example).
 
 #### Orchestrator responsibilities
@@ -153,7 +153,7 @@ Each subagent prompt must include:
    file (`wc -l` vs sum of temp files) before deleting `.tmp-*` files. Also verify heading hierarchy
    — if heading levels are wrong at this stage, the subagent prompt was underspecified (missing
    heading level guidance). Fix the prompt pattern for next time rather than manually adjusting
-   assembled output. See `relocation-research-conventions` for the full pattern.
+   assembled output. See the `relocation-research` skill for the full pattern.
 1. **Deduplicate source keys.** After merging `-sources.yaml` files, check for duplicate URLs across
    subagents. If two keys point to the same URL, keep one and update inline citations in the
    assembled body file accordingly. This is a post-assembly step that requires reading the file.
