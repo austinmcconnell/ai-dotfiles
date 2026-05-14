@@ -81,15 +81,51 @@ generate_mdc_steering() {
 
     for f in "$STEERING_SOURCE/code"/*.md "$STEERING_SOURCE/github"/*.md "$STEERING_SOURCE/security"/*.md; do
         [ -f "$f" ] || continue
-        local basename desc
+        local basename desc content
         basename="$(basename "$f" .md)"
-        desc="$(grep -m1 '^# ' "$f" | sed 's/^# //')"
+        # Strip any existing YAML frontmatter before extracting content
+        if head -1 "$f" | grep -q '^---$'; then
+            content="$(sed '1{/^---$/!q}; 1,/^---$/d' "$f")"
+        else
+            content="$(cat "$f")"
+        fi
+        desc="$(echo "$content" | grep -m1 '^# ' | sed 's/^# //')"
         local mdc_file="$output_dir/${prefix}${basename}.mdc"
         {
             printf -- '---\ndescription: %s\nalwaysApply: true\n---\n\n' "$desc"
-            cat "$f"
+            echo "$content"
         } >"$mdc_file"
     done
+}
+
+# Generate individual rule files from steering docs.
+# Used by: Claude Code (one .md per steering doc in ~/.claude/rules/)
+# Files with paths: frontmatter get conditional loading; others load unconditionally.
+generate_rules_steering() {
+    local output_dir="$1"
+    local claude_md="$2"
+
+    # Clean previously generated rules
+    rm -rf "${output_dir:?}"/{code,github,security}
+
+    # Copy each steering doc preserving subdirectory structure
+    for domain in code github security; do
+        for f in "$STEERING_SOURCE/$domain"/*.md; do
+            [ -f "$f" ] || continue
+            mkdir -p "$output_dir/$domain"
+            cp "$f" "$output_dir/$domain/"
+        done
+    done
+
+    # Write slim CLAUDE.md
+    cat >"$claude_md" <<'EOF'
+# Coding Guidelines
+
+Steering rules are loaded from ~/.claude/rules/ (auto-generated from dotfiles).
+See ~/.dotfiles/etc/ai/steering/ for source files.
+
+Skills are available in ~/.claude/skills/ (symlinked from dotfiles).
+EOF
 }
 
 # ---------------------------------------------------------------
@@ -100,12 +136,13 @@ generate_mdc_steering() {
 #                  "none"        = relies on AGENTS.md (no adapter needed)
 #                  "single:PATH" = single concatenated file
 #                  "mdc:DIR"     = .mdc files with frontmatter
+#                  "rules:DIR"   = individual .md files (Claude Code rules/)
 # ---------------------------------------------------------------
 agent_config() {
     local agent="$1" field="$2"
     case "$agent:$field" in
     claude-code:skills_path) echo "$HOME/.claude/skills" ;;
-    claude-code:steering) echo "single:$HOME/.claude/CLAUDE.md" ;;
+    claude-code:steering) echo "rules:$HOME/.claude/rules:$HOME/.claude/CLAUDE.md" ;;
     codex:skills_path) echo "$HOME/.codex/skills" ;;
     codex:steering) echo "none" ;;
     cursor:skills_path) echo "$HOME/.cursor/skills" ;;
@@ -145,6 +182,15 @@ for agent in "${ENABLED_AGENTS[@]}"; do
         mkdir -p "$output_dir"
         generate_mdc_steering "$output_dir"
         echo "✓ Generated steering for $agent ($output_dir/)"
+        ;;
+    rules:*)
+        # Format: rules:DIR:CLAUDE_MD_PATH
+        rules_spec="${steering#rules:}"
+        rules_dir="${rules_spec%%:*}"
+        claude_md="${rules_spec#*:}"
+        mkdir -p "$rules_dir"
+        generate_rules_steering "$rules_dir" "$claude_md"
+        echo "✓ Generated steering for $agent ($rules_dir/)"
         ;;
     esac
 done

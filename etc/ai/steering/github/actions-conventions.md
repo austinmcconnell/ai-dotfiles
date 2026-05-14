@@ -1,3 +1,9 @@
+---
+paths:
+  - .github/**/*.yml
+  - .github/**/*.yaml
+---
+
 # GitHub Actions Conventions
 
 ## Security

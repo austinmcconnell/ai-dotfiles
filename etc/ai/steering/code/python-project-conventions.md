@@ -1,3 +1,8 @@
+---
+paths:
+  - '**/*.py'
+---
+
 # Python Project Conventions
 
 ## Virtual Environment

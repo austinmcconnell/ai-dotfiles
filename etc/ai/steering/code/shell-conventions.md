@@ -1,3 +1,10 @@
+---
+paths:
+  - '**/*.sh'
+  - '**/*.bash'
+  - install/**
+---
+
 # Shell Conventions
 
 ## Agent Shell Tool Usage
