@@ -3,9 +3,13 @@
 Project-specific context for the Screenings (SCRN) Jira project. This supplements the generic
 guidance in `jira-operations-guidance.md`.
 
+For statuses, API body examples, sprint entry criteria, and acceptance criteria templates, load the
+`jira-operations` skill. For legacy labels, `maybe-delete` workflow, and epic lifecycle rules, load
+the `scrn-backlog-triage` skill.
+
 ## Priority Values
 
-SCRN uses a numbered priority scheme. When creating issues, set priority based on:
+SCRN uses a numbered priority scheme:
 
 | Priority           | When to Use                                                       |
 | ------------------ | ----------------------------------------------------------------- |
@@ -19,38 +23,6 @@ SCRN uses a numbered priority scheme. When creating issues, set priority based o
 Manager during triage/refinement. Leave it as `Not Set` unless the user explicitly asks for a
 specific priority.
 
-## Statuses
-
-### Active Workflow Statuses (for stories/tasks/bugs)
-
-| Status                  | Meaning                                                 |
-| ----------------------- | ------------------------------------------------------- |
-| Backlog                 | Unrefined or not yet sprint-ready                       |
-| In Progress             | Actively being worked                                   |
-| Code Review             | PR submitted, awaiting review                           |
-| Ready to Test           | Code merged, awaiting QA verification                   |
-| Approved for Production | Verified, awaiting deploy                               |
-| Done                    | Deployed and verified                                   |
-| Closed                  | Resolved without completion (won't do, duplicate, etc.) |
-| Blocked                 | Cannot proceed — requires external action               |
-
-### Epic-Only Statuses
-
-| Status                | Meaning                                   |
-| --------------------- | ----------------------------------------- |
-| Discovery             | Research/requirements phase               |
-| Requirements          | Detailed requirements being gathered      |
-| Development & Testing | Active development (children in progress) |
-
-**Important:** `Development & Testing` is only meaningful for epics. Never use it for stories,
-tasks, or bugs. Many legacy epics are stuck in this status — it does not mean active work is
-happening.
-
-### Statuses to Avoid in Queries
-
-- `To Do` — legacy status, equivalent to Backlog. A few old issues use it.
-- `Reopened` — not used in SCRN.
-
 ## Labels
 
 ### Active Labels (use these)
@@ -59,7 +31,7 @@ happening.
 | --------------- | ---------------------------------------------------------------------- |
 | `screenings-v1` | Legacy V1 ingestion pipeline work                                      |
 | `tech-debt`     | Technical debt items                                                   |
-| `maybe-delete`  | Triage marker — item may be obsolete (see workflow below)              |
+| `maybe-delete`  | Triage marker — item may be obsolete (see `scrn-backlog-triage` skill) |
 | `low-context`   | Self-contained work a new engineer can pick up without deep background |
 | `schema-change` | Involves database migrations                                           |
 
@@ -71,16 +43,6 @@ happening.
 | `bi-weekly-report` | Items included in bi-weekly stakeholder reports |
 | `accessibility`    | Accessibility/a11y work                         |
 | `flex-queue`       | Available for pickup when capacity allows       |
-
-### Legacy Labels (do not use on new issues)
-
-These exist on old issues but should not be applied to new work:
-
-- `NY1115`, `NY1115-PO-Workflow1`, `NY1115-Go-Live`, `NY1115-Phase2`, `NY1115-Test-Case-Bug`,
-  `NY1115-E2ETesting` — use epic parent relationships instead
-- `roadmap` — superseded by `2026_roadmap`
-- `Customer:NY1115`, `Domain:Screenings/Coordination` — cross-project taxonomy, not useful in SCRN
-- `CC-UAT`, `Product_Reviewed`, `V5_EA`, `frontend`, `forms` — single-use or too generic
 
 ### When Creating Issues
 
@@ -121,80 +83,3 @@ These exist on old issues but should not be applied to new work:
 | ------------- | ---------------------------------------- |
 | `components`  | Not used in SCRN — all values are empty  |
 | `fixVersions` | Not used in SCRN — no release versioning |
-
-## Issue Creation API Body
-
-Minimal valid body for creating a story:
-
-```json
-{
-  "fields": {
-    "project": {"key": "SCRN"},
-    "issuetype": {"name": "Story"},
-    "summary": "Clear summary here",
-    "description": {
-      "type": "doc",
-      "version": 1,
-      "content": [...]
-    }
-  }
-}
-```
-
-With optional fields:
-
-```json
-{
-  "fields": {
-    "project": {"key": "SCRN"},
-    "issuetype": {"name": "Story"},
-    "summary": "Clear summary here",
-    "description": {"type": "doc", "version": 1, "content": [...]},
-    "parent": {"key": "SCRN-1200"},
-    "labels": ["tech-debt"]
-  }
-}
-```
-
-**Do not include** `components`, `fixVersions`, `priority`, or `customfield_10004` (story points)
-unless the user explicitly asks.
-
-## The `maybe-delete` Workflow
-
-For issues suspected to be obsolete:
-
-1. Add the `maybe-delete` label
-1. Add a comment explaining why it may be obsolete
-1. If the issue belongs to another team, ask in the comment whether they want it transferred
-1. After 2 weeks with no response, close the issue
-
-## Epic Lifecycle
-
-- Epics should be closed when all child work is Done or the initiative is abandoned
-- An epic with no children and no updates in 60+ days should be reviewed for closure
-- "Development & Testing" epics that haven't been updated in 90+ days are likely stale — flag them
-
-## Sprint Entry Criteria
-
-Before an issue enters a sprint, it should have:
-
-- Story points estimated
-- Acceptance criteria defined (for stories/bugs)
-- Assignee identified
-- Priority set (not "Not Set")
-- No unresolved blockers or open questions
-- Fits within a single sprint (if not, split it)
-
-Backlog items may or may not have story points depending on whether they've been through refinement.
-They are not expected to have assignees.
-
-### Acceptance Criteria by Issue Type
-
-- **Stories**: 3–8 testable criteria describing observable user behavior. Use Given/When/Then for
-  workflows, bullet points for rules/constraints. Never include implementation details.
-- **Bugs**: Describe the corrected behavior (what should happen after the fix), include regression
-  guard, specify the environment where the bug occurred.
-- **Tasks**: Completion conditions and verification steps (e.g., "CI passes", "health check returns
-  200 for 24h").
-- **Spikes**: Define the deliverable (document, POC, decision), questions to answer, and timebox. Do
-  not estimate spikes with story points — timebox only.

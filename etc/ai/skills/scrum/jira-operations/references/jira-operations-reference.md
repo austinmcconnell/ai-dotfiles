@@ -767,3 +767,97 @@ When reading links back from the API on a specific issue:
 
 - If the linked issue appears as `outwardIssue`, the queried issue "is blocked by" it
 - If the linked issue appears as `inwardIssue`, the queried issue "blocks" it
+
+## SCRN Statuses
+
+### Active Workflow Statuses (for stories/tasks/bugs)
+
+| Status                  | Meaning                                                 |
+| ----------------------- | ------------------------------------------------------- |
+| Backlog                 | Unrefined or not yet sprint-ready                       |
+| In Progress             | Actively being worked                                   |
+| Code Review             | PR submitted, awaiting review                           |
+| Ready to Test           | Code merged, awaiting QA verification                   |
+| Approved for Production | Verified, awaiting deploy                               |
+| Done                    | Deployed and verified                                   |
+| Closed                  | Resolved without completion (won't do, duplicate, etc.) |
+| Blocked                 | Cannot proceed — requires external action               |
+
+### Epic-Only Statuses
+
+| Status                | Meaning                                   |
+| --------------------- | ----------------------------------------- |
+| Discovery             | Research/requirements phase               |
+| Requirements          | Detailed requirements being gathered      |
+| Development & Testing | Active development (children in progress) |
+
+**Important:** `Development & Testing` is only meaningful for epics. Never use it for stories,
+tasks, or bugs. Many legacy epics are stuck in this status — it does not mean active work is
+happening.
+
+### Statuses to Avoid in Queries
+
+- `To Do` — legacy status, equivalent to Backlog. A few old issues use it.
+- `Reopened` — not used in SCRN.
+
+## SCRN Issue Creation API Body
+
+Minimal valid body for creating a story:
+
+```json
+{
+  "fields": {
+    "project": {"key": "SCRN"},
+    "issuetype": {"name": "Story"},
+    "summary": "Clear summary here",
+    "description": {
+      "type": "doc",
+      "version": 1,
+      "content": [...]
+    }
+  }
+}
+```
+
+With optional fields:
+
+```json
+{
+  "fields": {
+    "project": {"key": "SCRN"},
+    "issuetype": {"name": "Story"},
+    "summary": "Clear summary here",
+    "description": {"type": "doc", "version": 1, "content": [...]},
+    "parent": {"key": "SCRN-1200"},
+    "labels": ["tech-debt"]
+  }
+}
+```
+
+**Do not include** `components`, `fixVersions`, `priority`, or `customfield_10004` (story points)
+unless the user explicitly asks.
+
+## Sprint Entry Criteria
+
+Before an issue enters a sprint, it should have:
+
+- Story points estimated
+- Acceptance criteria defined (for stories/bugs)
+- Assignee identified
+- Priority set (not "Not Set")
+- No unresolved blockers or open questions
+- Fits within a single sprint (if not, split it)
+
+Backlog items may or may not have story points depending on whether they've been through refinement.
+They are not expected to have assignees.
+
+### Acceptance Criteria by Issue Type
+
+- **Stories**: 3–8 testable criteria describing observable user behavior. Use Given/When/Then for
+  workflows, bullet points for rules/constraints. Never include implementation details.
+- **Bugs**: Describe the corrected behavior (what should happen after the fix), include regression
+  guard, specify the environment where the bug occurred.
+- **Tasks**: Completion conditions and verification steps (e.g., "CI passes", "health check returns
+  200 for 24h").
+- **Spikes**: Define the deliverable (document, POC, decision), questions to answer, and timebox. Do
+  not estimate spikes with story points — timebox only.
