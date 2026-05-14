@@ -1,6 +1,7 @@
 # Branch Analysis
 
-Please analyze the current git branch and provide a comprehensive overview of the changes being made.
+Please analyze the current git branch and provide a comprehensive overview of the changes being
+made.
 
 **Analysis should include:**
 
@@ -18,7 +19,8 @@ Please analyze the current git branch and provide a comprehensive overview of th
 
 1. **Code Changes Review**
 
-   - Analyze changes since the common ancestor with main: `git diff $(git merge-base main HEAD) HEAD`
+   - Analyze changes since the common ancestor with main:
+     `git diff $(git merge-base main HEAD) HEAD`
    - Summarize what files/modules are being modified
    - Identify the scope and impact of changes
    - Note any potential breaking changes or dependencies

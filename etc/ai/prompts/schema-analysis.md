@@ -1,18 +1,17 @@
 # Schema Analysis
 
-**IMPORTANT: Branch Validation Required**
-Before proceeding, verify the current git branch:
+**IMPORTANT: Branch Validation Required** Before proceeding, verify the current git branch:
 
 ```bash
 git branch --show-current
 ```
 
-This analysis should ONLY be performed on `main` or `master` branches.
-If currently on a different branch, abort the analysis and inform the
-user that schema analysis should be done from the main branch.
+This analysis should ONLY be performed on `main` or `master` branches. If currently on a different
+branch, abort the analysis and inform the user that schema analysis should be done from the main
+branch.
 
-**Prerequisite Check:**
-This analysis requires the following prerequisite analysis to be completed first.
+**Prerequisite Check:** This analysis requires the following prerequisite analysis to be completed
+first.
 
 Check for required file:
 
@@ -24,13 +23,11 @@ If the file is missing, run the prerequisite analysis first:
 
 **If the prerequisite file is missing, abort this analysis and complete the prerequisite first.**
 
-**Schema and Data Model Analysis:**
-Analyze the data models, database schemas, and API data structures in this repository.
+**Schema and Data Model Analysis:** Analyze the data models, database schemas, and API data
+structures in this repository.
 
-**Read Prerequisite Analysis:**
-Read `analysis/project-analysis.md` to understand the project context,
-purpose, and technology stack before proceeding with the schema
-analysis.
+**Read Prerequisite Analysis:** Read `analysis/project-analysis.md` to understand the project
+context, purpose, and technology stack before proceeding with the schema analysis.
 
 Please:
 
@@ -160,8 +157,7 @@ grep -r -i "class.*model\|table\|schema\|migration" \
 find . -name "*.json" -o -name "*.yaml" -o -name "*.yml" | grep -i "schema\|api\|spec" | head -10
 ```
 
-**Update Strategy:**
-If `analysis/schema-analysis.md` already exists:
+**Update Strategy:** If `analysis/schema-analysis.md` already exists:
 
 1. Read the existing file to understand previous schema analysis
 1. Note what has changed since the last analysis (compare commit hashes)
@@ -174,5 +170,5 @@ If `analysis/schema-analysis.md` already exists:
 - This allows analysis files to be updated over time without cluttering the repository
 - Files can be manually committed if you want to track schema evolution over time
 
-Focus on understanding the current data model structure and
-relationships rather than suggesting major schema changes.
+Focus on understanding the current data model structure and relationships rather than suggesting
+major schema changes.

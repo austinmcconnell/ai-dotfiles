@@ -1,18 +1,17 @@
 # Architecture Analysis
 
-**IMPORTANT: Branch Validation Required**
-Before proceeding, verify the current git branch:
+**IMPORTANT: Branch Validation Required** Before proceeding, verify the current git branch:
 
 ```bash
 git branch --show-current
 ```
 
-This analysis should ONLY be performed on `main` or `master` branches.
-If currently on a different branch, abort the analysis and inform the
-user that architecture analysis should be done from the main branch.
+This analysis should ONLY be performed on `main` or `master` branches. If currently on a different
+branch, abort the analysis and inform the user that architecture analysis should be done from the
+main branch.
 
-**Prerequisite Check:**
-This analysis requires the following prerequisite analysis to be completed first.
+**Prerequisite Check:** This analysis requires the following prerequisite analysis to be completed
+first.
 
 Check for required file:
 
@@ -24,13 +23,11 @@ If the file is missing, run the prerequisite analysis first:
 
 **If the prerequisite file is missing, abort this analysis and complete the prerequisite first.**
 
-**Architecture Analysis:**
-Analyze the technical architecture and system design of this repository.
+**Architecture Analysis:** Analyze the technical architecture and system design of this repository.
 
-**Read Prerequisite Analysis:**
-Read `analysis/project-analysis.md` to understand the project context,
-purpose, and current development direction before proceeding with the
-architecture analysis.
+**Read Prerequisite Analysis:** Read `analysis/project-analysis.md` to understand the project
+context, purpose, and current development direction before proceeding with the architecture
+analysis.
 
 Please:
 
@@ -83,8 +80,7 @@ Please:
 - What are the key architectural decisions and trade-offs?
 - How does the architecture support the system's requirements?
 - What are the strengths and potential weaknesses of the current architecture?
-- How well does the architecture support maintainability and
-  extensibility?
+- How well does the architecture support maintainability and extensibility?
 
 **Output Requirements:**
 
@@ -127,8 +123,7 @@ basename "$(git rev-parse --show-toplevel)"
 date -u +"%Y-%m-%d %H:%M:%S UTC"
 ```
 
-**Update Strategy:**
-If `analysis/architecture-analysis.md` already exists:
+**Update Strategy:** If `analysis/architecture-analysis.md` already exists:
 
 1. Read the existing file to understand previous architectural analysis
 1. Note what has changed since the last analysis (compare commit hashes)
@@ -141,5 +136,5 @@ If `analysis/architecture-analysis.md` already exists:
 - This allows analysis files to be updated over time without cluttering the repository
 - Files can be manually committed if you want to track architectural evolution over time
 
-Focus on understanding the current architectural state and design
-decisions rather than suggesting major changes.
+Focus on understanding the current architectural state and design decisions rather than suggesting
+major changes.

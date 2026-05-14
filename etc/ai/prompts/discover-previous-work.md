@@ -1,15 +1,15 @@
 # Discover Previous Work
 
-Help me understand the current state of a feature implementation or
-refactoring effort and determine the next steps.
+Help me understand the current state of a feature implementation or refactoring effort and determine
+the next steps.
 
 **Analysis Process:**
 
 1. **Find and Read Plan/Roadmap Files**
 
    - Look for markdown files with the pattern `plan-*`
-   - Common plan types: `plan-refactor-*`, `plan-feature-*`,
-     `plan-migration-*`, `plan-architecture-*`
+   - Common plan types: `plan-refactor-*`, `plan-feature-*`, `plan-migration-*`,
+     `plan-architecture-*`
    - Read the complete plan to understand the overall goals and strategy
    - Identify the planned phases, milestones, and dependencies
    - Note any success criteria or acceptance requirements
@@ -132,10 +132,8 @@ refactoring effort and determine the next steps.
    - What skills, tools, or resources are needed?
    - Are there any external dependencies or waiting periods?
 
-**Important:** Wait for explicit confirmation before making any code
-changes, commits, or file modifications. Only provide analysis and
-recommendations initially.
+**Important:** Wait for explicit confirmation before making any code changes, commits, or file
+modifications. Only provide analysis and recommendations initially.
 
-**Goal:** Provide a comprehensive understanding of where we are in
-the implementation process, what the next logical step should be,
-and how to proceed safely and efficiently.
+**Goal:** Provide a comprehensive understanding of where we are in the implementation process, what
+the next logical step should be, and how to proceed safely and efficiently.

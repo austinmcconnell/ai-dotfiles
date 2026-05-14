@@ -1,14 +1,11 @@
 # Commit Analysis
 
-Analyze the commits on my current branch and identify which ones
-should be removed, split into smaller units, have improved commit
-messages, or (rarely) consolidated through interactive rebase.
+Analyze the commits on my current branch and identify which ones should be removed, split into
+smaller units, have improved commit messages, or (rarely) consolidated through interactive rebase.
 
-**Guiding Principle**: Optimize for reviewability and git bisect,
-not commit count. Granular commits (20-30) are better than
-consolidated commits (5-10) if each commit represents a logical,
-atomic unit of work. Each commit should be independently reviewable
-and revertable.
+**Guiding Principle**: Optimize for reviewability and git bisect, not commit count. Granular commits
+(20-30) are better than consolidated commits (5-10) if each commit represents a logical, atomic unit
+of work. Each commit should be independently reviewable and revertable.
 
 ## Step 1: Initial Analysis
 
@@ -48,7 +45,8 @@ Look for (in priority order):
 
 **B. Split Candidates** (commits to break apart):
 
-- **Multiple concerns**: Commit changes unrelated files/features (e.g., "Add feature X and fix bug Y")
+- **Multiple concerns**: Commit changes unrelated files/features (e.g., "Add feature X and fix bug
+  Y")
 - **Mixed refactoring**: Combines refactoring with new functionality
 - **Scope creep**: Commit message says one thing but diff shows additional unrelated changes
 - **Large commits**: Changes >300 lines or >8 files in ways that could be separate logical steps
@@ -65,18 +63,20 @@ Look for (in priority order):
 
 **D. Consolidation Candidates** (lowest priority - use sparingly):
 
-- **Bug fixes for bugs introduced in the branch**: Commits that fix
-  issues introduced earlier in the same branch (not pre-existing bugs)
+- **Bug fixes for bugs introduced in the branch**: Commits that fix issues introduced earlier in the
+  same branch (not pre-existing bugs)
 - **Accidental splits**: Commits that were accidentally split (e.g., forgot to stage a file)
 - **True fixup commits**: Commits explicitly marked as "fixup!" or "squash!"
 
 **Do NOT consolidate:**
 
 - **Security changes**: Keep each security improvement separate for independent review
-- **Different concerns**: Even if touching the same files, keep separate if addressing different problems
-- **Would create large commits**: If consolidation would create a
-  commit >300 lines of changes, keep separate
-- **Iterative fixes**: Configuration refinements discovered during deployment/testing should stay separate
+- **Different concerns**: Even if touching the same files, keep separate if addressing different
+  problems
+- **Would create large commits**: If consolidation would create a commit >300 lines of changes, keep
+  separate
+- **Iterative fixes**: Configuration refinements discovered during deployment/testing should stay
+  separate
 - **Feature + infrastructure**: Keep feature code separate from deployment/config changes
 - **Same file, different purposes**: Multiple commits touching the same file for different reasons
 
@@ -169,8 +169,7 @@ After each modification:
 - Reference issues/tickets if applicable
 - For complex changes, use bullet points to list key changes
 
-**Split Decision Criteria:**
-A commit should be split if:
+**Split Decision Criteria:** A commit should be split if:
 
 - It mixes refactoring with new features
 - It touches multiple unrelated subsystems
@@ -181,8 +180,7 @@ A commit should be split if:
 - Half the changes could be merged with a different commit
 - The diff shows changes that aren't mentioned in the commit message
 
-**Consolidation Decision Criteria:**
-Only consolidate commits if:
+**Consolidation Decision Criteria:** Only consolidate commits if:
 
 - They are true fixup/squash commits for the same logical change
 - They fix bugs introduced in the same branch (not pre-existing bugs)
@@ -191,8 +189,7 @@ Only consolidate commits if:
 - They address the exact same concern (not just the same file)
 - Consolidation improves clarity (rare)
 
-**Output Format:**
-Present each change clearly with:
+**Output Format:** Present each change clearly with:
 
 - Change type (Consolidate/Split/Improve Message)
 - Current state

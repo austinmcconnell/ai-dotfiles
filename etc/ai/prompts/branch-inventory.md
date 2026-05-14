@@ -1,7 +1,7 @@
 # Branch Inventory
 
-Analyze all local branches in this repository and provide a comprehensive inventory with
-actionable recommendations for each branch.
+Analyze all local branches in this repository and provide a comprehensive inventory with actionable
+recommendations for each branch.
 
 ## Data Collection
 
@@ -40,8 +40,8 @@ git branch -r --no-merged main | grep -v HEAD
 
 For each branch, determine:
 
-1. **Purpose** — What was this branch trying to accomplish? Infer from branch name, commit
-   messages, and diff content.
+1. **Purpose** — What was this branch trying to accomplish? Infer from branch name, commit messages,
+   and diff content.
 1. **Maturity** — Classify as one of:
    - **Just started** — 1-2 exploratory commits, no clear direction yet
    - **In progress** — Active development with a clear goal, but incomplete
@@ -49,8 +49,8 @@ For each branch, determine:
    - **Stale experiment** — Old branch that was exploring an idea, unclear if still relevant
    - **Abandoned** — Very old, superseded by other work, or no longer applicable
 1. **Staleness** — How long since the last commit? How far behind main?
-1. **Merge complexity** — Check for textual conflicts. Note if files touched by the branch have
-   been heavily modified on main (semantic conflicts even without textual ones).
+1. **Merge complexity** — Check for textual conflicts. Note if files touched by the branch have been
+   heavily modified on main (semantic conflicts even without textual ones).
 1. **Value assessment** — Is the work on this branch still useful? Are there individual commits
    worth cherry-picking even if the branch as a whole is abandoned?
 

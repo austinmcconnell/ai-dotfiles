@@ -1,7 +1,6 @@
 # PR Description
 
-Generate a comprehensive pull request description based on the current
-branch changes.
+Generate a comprehensive pull request description based on the current branch changes.
 
 **Analysis Context:**
 
@@ -16,8 +15,8 @@ git diff main HEAD
 1. Check for a pull request template at `.github/PULL_REQUEST_TEMPLATE.md`
 1. If found, use that template as the base structure for the PR description
 1. If not found, start with the JIRA ticket format shown below
-1. **In both cases**, add the relevant conditional sections from
-   the guidelines below based on what changes were made
+1. **In both cases**, add the relevant conditional sections from the guidelines below based on what
+   changes were made
 
 **Base Format (if no template found):**
 
@@ -29,19 +28,15 @@ git diff main HEAD
 
 [2-3 sentence overview of what this PR accomplishes and why it's needed, focusing on business value]
 
-Key Benefits:
-• [Performance/scalability/reliability improvements]
-• [System improvements]
-• [User experience improvements]
-• [Operational improvements]
+Key Benefits: • [Performance/scalability/reliability improvements] • [System improvements] • \[User
+experience improvements\] • [Operational improvements]
 
 ## Changes Made
 
 ### Features
 
-[Group features by logical functionality, not by file names]
-• [Feature description with brief technical context]
-• [Another feature with implementation details]
+[Group features by logical functionality, not by file names] • \[Feature description with brief
+technical context\] • [Another feature with implementation details]
 
 **Conditional Sections (add these to ANY PR description when applicable):**
 
@@ -74,9 +69,8 @@ Response Examples:
 
 ### Infrastructure & Configuration
 
-• [Environment variables, dependencies, deployment changes]
-• [Docker, Kubernetes, Terraform updates]
-• [Database or infrastructure modifications]
+• [Environment variables, dependencies, deployment changes] • \[Docker, Kubernetes, Terraform
+updates\] • [Database or infrastructure modifications]
 
 \[**INCLUDE if there is new documentation:**\]
 
@@ -88,9 +82,9 @@ Response Examples:
 
 ## Testing
 
-• **X new test cases** covering [functionality] with comprehensive error handling
-• **Total tests passing** including edge cases and failure scenarios
-• [Brief summary of what was tested - avoid excessive detail]
+• **X new test cases** covering [functionality] with comprehensive error handling • **Total tests
+passing** including edge cases and failure scenarios • \[Brief summary of what was tested - avoid
+excessive detail\]
 
 \[**INCLUDE if there are deployment considerations:**\]
 
@@ -112,24 +106,21 @@ ANOTHER_VAR=value             # Purpose
 
 ### Infrastructure Changes
 
-• **New AWS Resources**: [list resources]
-• **Kubernetes**: [deployment changes]
-• **Networking**: [network changes]
+• **New AWS Resources**: [list resources] • **Kubernetes**: [deployment changes] • **Networking**:
+[network changes]
 
 \[**INCLUDE if there are monitoring/operational changes:**\]
 
 ### Monitoring
 
-• [Monitoring endpoints or dashboards]
-• [Operational considerations]
+• [Monitoring endpoints or dashboards] • [Operational considerations]
 
 \[**INCLUDE if there are deployment considerations:**\]
 
 ### Key Points
 
-• **Database migrations**: [required/not required with explanation]
-• **Backward compatibility**: [compatible/breaking with details]
-• **Deployment strategy**: [zero downtime/rolling/etc.]
+• **Database migrations**: [required/not required with explanation] • **Backward compatibility**:
+[compatible/breaking with details] • **Deployment strategy**: [zero downtime/rolling/etc.]
 
 \[**ALWAYS INCLUDE:**\]
 
@@ -152,7 +143,6 @@ ANOTHER_VAR=value             # Purpose
 - Provide JSON examples for new API endpoints
 - Include monitoring and operational considerations when applicable
 
-**Important**: Whether using a template or the base format, always
-evaluate the changes and include the relevant conditional sections
-above. The template provides structure, but these sections provide
+**Important**: Whether using a template or the base format, always evaluate the changes and include
+the relevant conditional sections above. The template provides structure, but these sections provide
 comprehensive change documentation.

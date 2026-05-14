@@ -1,18 +1,17 @@
 # Technical Debt Analysis
 
-**IMPORTANT: Branch Validation Required**
-Before proceeding, verify the current git branch:
+**IMPORTANT: Branch Validation Required** Before proceeding, verify the current git branch:
 
 ```bash
 git branch --show-current
 ```
 
-This analysis should ONLY be performed on `main` or `master` branches.
-If currently on a different branch, abort the analysis and inform the
-user that technical debt analysis should be done from the main branch.
+This analysis should ONLY be performed on `main` or `master` branches. If currently on a different
+branch, abort the analysis and inform the user that technical debt analysis should be done from the
+main branch.
 
-**Prerequisite Check:**
-This analysis requires the following prerequisite analyses to be completed first.
+**Prerequisite Check:** This analysis requires the following prerequisite analyses to be completed
+first.
 
 Check for required files:
 
@@ -26,13 +25,11 @@ If any files are missing, run the corresponding analysis prompts first:
 
 **If any prerequisite files are missing, abort this analysis and complete the prerequisites first.**
 
-**Technical Debt Analysis:**
-Analyze code quality issues, refactoring opportunities,
-maintainability concerns, and technical debt in this repository.
+**Technical Debt Analysis:** Analyze code quality issues, refactoring opportunities, maintainability
+concerns, and technical debt in this repository.
 
-**Read Prerequisite Analyses:**
-Read the following files to understand the project goals and intended
-architecture before proceeding:
+**Read Prerequisite Analyses:** Read the following files to understand the project goals and
+intended architecture before proceeding:
 
 - `analysis/project-analysis.md` - For project context, goals, and intended direction
 - `analysis/architecture-analysis.md` - For intended system design to compare against current state
@@ -177,8 +174,7 @@ find . -name ".eslintrc*" -o -name "pylint.rc" \
   | head -5
 ```
 
-**Update Strategy:**
-If `analysis/technical-debt-analysis.md` already exists:
+**Update Strategy:** If `analysis/technical-debt-analysis.md` already exists:
 
 1. Read the existing file to understand previous technical debt analysis
 1. Note what has changed since the last analysis (compare commit hashes)
@@ -191,6 +187,5 @@ If `analysis/technical-debt-analysis.md` already exists:
 - This allows analysis files to be updated over time without cluttering the repository
 - Files can be manually committed if you want to track technical debt evolution over time
 
-Focus on identifying and prioritizing technical debt rather than
-implementing specific refactoring solutions. Provide actionable
-recommendations with estimated impact and effort.
+Focus on identifying and prioritizing technical debt rather than implementing specific refactoring
+solutions. Provide actionable recommendations with estimated impact and effort.

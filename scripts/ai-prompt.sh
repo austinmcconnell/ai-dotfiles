@@ -42,7 +42,7 @@ ai-prompt() {
 
 # Get prompt directory
 _ai_prompt_dir() {
-    echo "$HOME/.dotfiles/etc/ai-prompts"
+    echo "$HOME/.dotfiles/etc/ai/prompts"
 }
 
 # Get list of available prompts (without .md extension)

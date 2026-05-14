@@ -2,9 +2,8 @@
 
 ## Purpose
 
-Research recent Kiro CLI releases and evaluate whether configuration
-updates are needed based on breaking changes, deprecations, and new
-features that fit the specific setup.
+Research recent Kiro CLI releases and evaluate whether configuration updates are needed based on
+breaking changes, deprecations, and new features that fit the specific setup.
 
 ## Research Phase
 
@@ -20,21 +19,20 @@ Provide a summary with specific version numbers, dates, and concrete configurati
 
 ## Analysis Phase
 
-Compare those findings with my current kiro-cli config in `etc/kiro-cli/`.
-Also read `install/kiro-cli.sh` and `AGENTS.md` to understand my setup
-and usage patterns.
+Compare those findings with my current kiro-cli config in `etc/kiro-cli/`. Also read
+`install/kiro-cli.sh` and `AGENTS.md` to understand my setup and usage patterns.
 
 Analyze:
 
-1. **Breaking changes** - Are there any changes where my current config
-   is not fully working anymore?
+1. **Breaking changes** - Are there any changes where my current config is not fully working
+   anymore?
 1. **Deprecations** - Are there any features that currently work but won't in the future?
 1. **Recommended updates** - Are there non-breaking changes or new features I should adopt?
 
 ## Evaluation Criteria
 
-For recommended updates, critically evaluate whether each recommendation
-makes sense for MY specific setup:
+For recommended updates, critically evaluate whether each recommendation makes sense for MY specific
+setup:
 
 - Consider my agent architecture (peer agents vs. hierarchical)
 - Consider my workflow patterns (manual switching vs. auto-spawning)
@@ -60,5 +58,5 @@ For each actionable item (sections 1-3), include:
 
 For "Not Recommended" items, just list the feature name and one-line reason why it doesn't fit.
 
-**Important:** Only include items in "Recommended Updates" if they
-require action. Don't list things that are already configured correctly.
+**Important:** Only include items in "Recommended Updates" if they require action. Don't list things
+that are already configured correctly.

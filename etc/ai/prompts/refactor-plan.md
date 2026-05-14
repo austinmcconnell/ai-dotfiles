@@ -1,7 +1,7 @@
 # Refactor Plan
 
-Help me create a refactoring plan for the following code. Analyze
-the current implementation and suggest improvements.
+Help me create a refactoring plan for the following code. Analyze the current implementation and
+suggest improvements.
 
 **Please provide:**
 
@@ -43,5 +43,5 @@ the current implementation and suggest improvements.
 - Include a table of contents for easy navigation
 - Use checkboxes for actionable items to track progress
 
-**Goal:** Create a step-by-step plan that improves code quality
-while minimizing risk of introducing bugs.
+**Goal:** Create a step-by-step plan that improves code quality while minimizing risk of introducing
+bugs.

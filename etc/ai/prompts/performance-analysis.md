@@ -1,18 +1,17 @@
 # Performance Analysis
 
-**IMPORTANT: Branch Validation Required**
-Before proceeding, verify the current git branch:
+**IMPORTANT: Branch Validation Required** Before proceeding, verify the current git branch:
 
 ```bash
 git branch --show-current
 ```
 
-This analysis should ONLY be performed on `main` or `master` branches.
-If currently on a different branch, abort the analysis and inform the
-user that performance analysis should be done from the main branch.
+This analysis should ONLY be performed on `main` or `master` branches. If currently on a different
+branch, abort the analysis and inform the user that performance analysis should be done from the
+main branch.
 
-**Prerequisite Check:**
-This analysis requires the following prerequisite analyses to be completed first.
+**Prerequisite Check:** This analysis requires the following prerequisite analyses to be completed
+first.
 
 Check for required files:
 
@@ -26,13 +25,11 @@ If any files are missing, run the corresponding analysis prompts first:
 
 **If any prerequisite files are missing, abort this analysis and complete the prerequisites first.**
 
-**Performance Analysis:**
-Analyze the performance characteristics, bottlenecks, and optimization
+**Performance Analysis:** Analyze the performance characteristics, bottlenecks, and optimization
 opportunities in this repository.
 
-**Read Prerequisite Analyses:**
-Read the following files to understand the system design and external
-dependencies before proceeding:
+**Read Prerequisite Analyses:** Read the following files to understand the system design and
+external dependencies before proceeding:
 
 - `analysis/architecture-analysis.md` - For system design and potential bottlenecks
 - `analysis/integration-analysis.md` - For external dependencies affecting performance
@@ -165,8 +162,7 @@ find . -name "*migration*" -o -name "*schema*" -o -name "*.sql" | head -10
 find . -name "*metric*" -o -name "*monitor*" -o -name "*telemetry*" | head -10
 ```
 
-**Update Strategy:**
-If `analysis/performance-analysis.md` already exists:
+**Update Strategy:** If `analysis/performance-analysis.md` already exists:
 
 1. Read the existing file to understand previous performance analysis
 1. Note what has changed since the last analysis (compare commit hashes)
@@ -179,6 +175,5 @@ If `analysis/performance-analysis.md` already exists:
 - This allows analysis files to be updated over time without cluttering the repository
 - Files can be manually committed if you want to track performance optimization evolution over time
 
-Focus on identifying performance characteristics and optimization
-opportunities rather than implementing specific performance
-improvements.
+Focus on identifying performance characteristics and optimization opportunities rather than
+implementing specific performance improvements.

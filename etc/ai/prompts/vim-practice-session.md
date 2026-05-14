@@ -1,9 +1,8 @@
 # Vim Practice Session
 
-I want to practice and improve my vim skills through a structured
-quiz session. Please reference my vim configuration and documentation
-in `~/.dotfiles/obsidian/Knowledge Base/Languages/Vim/` to create
-personalized challenges.
+I want to practice and improve my vim skills through a structured quiz session. Please reference my
+vim configuration and documentation in `~/.dotfiles/obsidian/Knowledge Base/Languages/Vim/` to
+create personalized challenges.
 
 **Session Tracking System:**
 
@@ -60,9 +59,8 @@ personalized challenges.
    - **Coverage Analysis**: Review what vim areas have been tested recently vs. untested areas
    - **Baseline Assessment**: If recent sessions have narrow focus, recommend comprehensive baseline
    - Ask me to specify focus areas or use data-driven recommendations
-   - Available focus areas: motions, operators, text objects,
-     registers, substitution, buffers/windows, command-line mode,
-     plugins, macros, folds, searching, visual mode, marks/jumps
+   - Available focus areas: motions, operators, text objects, registers, substitution,
+     buffers/windows, command-line mode, plugins, macros, folds, searching, visual mode, marks/jumps
    - Determine difficulty level: beginner, intermediate, advanced, mixed, or baseline assessment
    - **Question Distribution**: Ensure broad coverage over time, not just weak area focus
 
@@ -91,13 +89,11 @@ personalized challenges.
 **Personalization Guidelines:**
 
 - Reference my actual vim configuration in `~/.dotfiles/etc/vim/.vimrc`
-- **Read and reference ALL files** in
-  `~/.dotfiles/obsidian/Knowledge Base/Languages/Vim/` directory
+- **Read and reference ALL files** in `~/.dotfiles/obsidian/Knowledge Base/Languages/Vim/` directory
   for comprehensive question coverage
-- Use content from all vim documentation files including:
-  Motions.md, Operators.md, Text Objects.md, Registers.md,
-  Substitution.md, Buffers Windows And Tabs.md, Searching.md,
-  Plugins.md, and any other files in the directory
+- Use content from all vim documentation files including: Motions.md, Operators.md, Text Objects.md,
+  Registers.md, Substitution.md, Buffers Windows And Tabs.md, Searching.md, Plugins.md, and any
+  other files in the directory
 - Use my specific plugin mappings (`;d` for Fern, `;b` for buffers, `;S` for sessions, etc.)
 - Include my leader key (`;`) in relevant questions
 - Test knowledge of plugins I actually use: Fern, ALE, FZF, Grepper, GitGutter, etc.
@@ -150,11 +146,11 @@ personalized challenges.
 1. **One Question at a Time**: Never present multiple questions simultaneously
 1. **Wait for Response**: Always pause after asking a question and wait for the user's answer
 1. **Immediate Feedback**: After each answer, immediately indicate correct/incorrect
-1. **Educational Explanations**: For wrong answers, explain why
-   their answer was incorrect and what the right approach is
+1. **Educational Explanations**: For wrong answers, explain why their answer was incorrect and what
+   the right approach is
 1. **Score Tracking**: Keep a running tally and show progress (e.g., "Score: 4/7")
-1. **Engagement**: Use encouraging language and acknowledge good
-   reasoning even for incorrect answers
+1. **Engagement**: Use encouraging language and acknowledge good reasoning even for incorrect
+   answers
 
 **Feedback and Learning:**
 
@@ -190,9 +186,8 @@ During the session, track:
 
    - Append new session data to `~/.dotfiles/etc/vim/practice-sessions.csv`
 
-   - Include: date, focus area, difficulty, format, duration,
-     questions asked, correct answers, accuracy %, weak areas
-     (comma-separated), strong areas (comma-separated), notes
+   - Include: date, focus area, difficulty, format, duration, questions asked, correct answers,
+     accuracy %, weak areas (comma-separated), strong areas (comma-separated), notes
 
    - Example row:
 
@@ -221,14 +216,13 @@ During the session, track:
 
 Always begin with an interactive approach like:
 
-"Let's begin your vim practice session! I'll ask you questions one
-at a time. After each question, give me your answer and I'll let you
-know if you're correct and explain why. Ready for Question 1?"
+"Let's begin your vim practice session! I'll ask you questions one at a time. After each question,
+give me your answer and I'll let you know if you're correct and explain why. Ready for Question 1?"
 
 Choose session focus based on my request or data analysis:
 
-- **"Comprehensive Baseline"**: Test broad range of vim skills to
-  establish current proficiency across all areas
+- **"Comprehensive Baseline"**: Test broad range of vim skills to establish current proficiency
+  across all areas
 - **"Mixed Review"**: Cover all areas with varied difficulty
 - **"Motion Mastery"**: Focus on navigation and movement efficiency
 - **"Text Manipulation"**: Operators, text objects, and editing workflows
@@ -281,6 +275,5 @@ Ask me to specify:
 - **Data privacy**: Only stores vim command performance, no personal information
 - **Analysis tools**: Can be opened in spreadsheet software for manual analysis
 
-**Goal**: Maintain and improve vim proficiency through regular,
-targeted practice that adapts to my specific configuration, tracks
-progress over time, and systematically addresses areas of weakness.
+**Goal**: Maintain and improve vim proficiency through regular, targeted practice that adapts to my
+specific configuration, tracks progress over time, and systematically addresses areas of weakness.

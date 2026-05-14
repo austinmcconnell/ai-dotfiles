@@ -8,13 +8,14 @@ Before proceeding, verify the current git branch:
 git branch --show-current
 ```
 
-This analysis should ONLY be performed on `main` or `master` branches.
-If currently on a different branch, abort the analysis and inform the user
-that project analysis should be done from the main branch.
+This analysis should ONLY be performed on `main` or `master` branches. If currently on a different
+branch, abort the analysis and inform the user that project analysis should be done from the main
+branch.
 
 ## Repository Analysis
 
-Scan this repository to understand its structure, purpose, and current development direction. Please:
+Scan this repository to understand its structure, purpose, and current development direction.
+Please:
 
 1. Examine the repository structure and identify the main technology stack/framework
 1. Read the README and any top-level documentation to understand the project's purpose

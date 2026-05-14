@@ -1,18 +1,17 @@
 # Integration Analysis
 
-**IMPORTANT: Branch Validation Required**
-Before proceeding, verify the current git branch:
+**IMPORTANT: Branch Validation Required** Before proceeding, verify the current git branch:
 
 ```bash
 git branch --show-current
 ```
 
-This analysis should ONLY be performed on `main` or `master` branches.
-If currently on a different branch, abort the analysis and inform
-the user that integration analysis should be done from the main branch.
+This analysis should ONLY be performed on `main` or `master` branches. If currently on a different
+branch, abort the analysis and inform the user that integration analysis should be done from the
+main branch.
 
-**Prerequisite Check:**
-This analysis requires the following prerequisite analyses to be completed first.
+**Prerequisite Check:** This analysis requires the following prerequisite analyses to be completed
+first.
 
 Check for required files:
 
@@ -28,11 +27,11 @@ If any files are missing, run the corresponding analysis prompts first:
 
 **If any prerequisite files are missing, abort this analysis and complete the prerequisites first.**
 
-**Integration Analysis:**
-Analyze how this system integrates with external services, APIs, databases, and other systems.
+**Integration Analysis:** Analyze how this system integrates with external services, APIs,
+databases, and other systems.
 
-**Read Prerequisite Analyses:**
-Read the following files to understand the project context and architecture before proceeding:
+**Read Prerequisite Analyses:** Read the following files to understand the project context and
+architecture before proceeding:
 
 - `analysis/project-analysis.md` - For project context, purpose, and scope
 - `analysis/architecture-analysis.md` - For system design and component structure
@@ -153,8 +152,7 @@ grep -r -i "api\|http\|database\|db\|auth" --include="*.py" --include="*.js" --i
 find . -name "package.json" -o -name "requirements.txt" -o -name "Gemfile" -o -name "pom.xml" -o -name "go.mod" -o -name "Cargo.toml"
 ```
 
-**Update Strategy:**
-If `analysis/integration-analysis.md` already exists:
+**Update Strategy:** If `analysis/integration-analysis.md` already exists:
 
 1. Read the existing file to understand previous integration analysis
 1. Note what has changed since the last analysis (compare commit hashes)
@@ -167,5 +165,5 @@ If `analysis/integration-analysis.md` already exists:
 - This allows analysis files to be updated over time without cluttering the repository
 - Files can be manually committed if you want to track integration evolution over time
 
-Focus on understanding the current integration landscape and patterns rather
-than suggesting major architectural changes.
+Focus on understanding the current integration landscape and patterns rather than suggesting major
+architectural changes.

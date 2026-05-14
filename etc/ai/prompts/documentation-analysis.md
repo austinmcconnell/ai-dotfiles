@@ -1,18 +1,17 @@
 # Documentation Analysis
 
-**IMPORTANT: Branch Validation Required**
-Before proceeding, verify the current git branch:
+**IMPORTANT: Branch Validation Required** Before proceeding, verify the current git branch:
 
 ```bash
 git branch --show-current
 ```
 
-This analysis should ONLY be performed on `main` or `master` branches.
-If currently on a different branch, abort the analysis and inform
-the user that documentation analysis should be done from the main branch.
+This analysis should ONLY be performed on `main` or `master` branches. If currently on a different
+branch, abort the analysis and inform the user that documentation analysis should be done from the
+main branch.
 
-**Prerequisite Check:**
-This analysis requires the following prerequisite analysis to be completed first.
+**Prerequisite Check:** This analysis requires the following prerequisite analysis to be completed
+first.
 
 Check for required file:
 
@@ -24,12 +23,11 @@ If the file is missing, run the prerequisite analysis first:
 
 **If the prerequisite file is missing, abort this analysis and complete the prerequisite first.**
 
-**Documentation Analysis:**
-Analyze the documentation quality, completeness, maintenance, and accessibility of this repository.
+**Documentation Analysis:** Analyze the documentation quality, completeness, maintenance, and
+accessibility of this repository.
 
-**Read Prerequisite Analysis:**
-Read `analysis/project-analysis.md` to understand the project context, purpose,
-and scope before proceeding with the documentation analysis.
+**Read Prerequisite Analysis:** Read `analysis/project-analysis.md` to understand the project
+context, purpose, and scope before proceeding with the documentation analysis.
 
 Please:
 
@@ -160,8 +158,7 @@ find . -name "INSTALL*" -o -name "SETUP*" -o -name "CONTRIBUTING*" -o -name "CHA
 grep -r -i "sphinx\|jekyll\|gitbook\|mkdocs\|docusaurus\|jsdoc" package.json requirements.txt Gemfile pom.xml go.mod Cargo.toml 2>/dev/null | head -10
 ```
 
-**Update Strategy:**
-If `analysis/documentation-analysis.md` already exists:
+**Update Strategy:** If `analysis/documentation-analysis.md` already exists:
 
 1. Read the existing file to understand previous documentation analysis
 1. Note what has changed since the last analysis (compare commit hashes)
@@ -174,5 +171,5 @@ If `analysis/documentation-analysis.md` already exists:
 - This allows analysis files to be updated over time without cluttering the repository
 - Files can be manually committed if you want to track documentation quality evolution over time
 
-Focus on assessing the current state of documentation and identifying areas
-for improvement rather than rewriting existing documentation.
+Focus on assessing the current state of documentation and identifying areas for improvement rather
+than rewriting existing documentation.

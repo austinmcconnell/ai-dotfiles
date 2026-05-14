@@ -51,7 +51,7 @@ mkdir -p "$KIRO_SETTINGS_DIR"
 mkdir -p "$KIRO_AGENTS_DIR"
 mkdir -p "$KIRO_SKILLS_DIR"
 mkdir -p "$KIRO_LOGS_DIR"
-mkdir -p "$DOTFILES_DIR/etc/ai-prompts"
+mkdir -p "$DOTFILES_DIR/etc/ai/prompts"
 
 # Create audit log files with proper permissions
 touch "$KIRO_LOGS_DIR/aws-audit.jsonl"

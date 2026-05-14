@@ -1,18 +1,17 @@
 # Security Analysis
 
-**IMPORTANT: Branch Validation Required**
-Before proceeding, verify the current git branch:
+**IMPORTANT: Branch Validation Required** Before proceeding, verify the current git branch:
 
 ```bash
 git branch --show-current
 ```
 
-This analysis should ONLY be performed on `main` or `master` branches.
-If currently on a different branch, abort the analysis and inform
-the user that security analysis should be done from the main branch.
+This analysis should ONLY be performed on `main` or `master` branches. If currently on a different
+branch, abort the analysis and inform the user that security analysis should be done from the main
+branch.
 
-**Prerequisite Check:**
-This analysis requires the following prerequisite analyses to be completed first.
+**Prerequisite Check:** This analysis requires the following prerequisite analyses to be completed
+first.
 
 Check for required files:
 
@@ -28,11 +27,11 @@ If any files are missing, run the corresponding analysis prompts first:
 
 **If any prerequisite files are missing, abort this analysis and complete the prerequisites first.**
 
-**Security Analysis:**
-Analyze the security posture, vulnerabilities, and compliance considerations of this repository.
+**Security Analysis:** Analyze the security posture, vulnerabilities, and compliance considerations
+of this repository.
 
-**Read Prerequisite Analyses:**
-Read the following files to understand the complete system context before proceeding:
+**Read Prerequisite Analyses:** Read the following files to understand the complete system context
+before proceeding:
 
 - `analysis/project-analysis.md` - For project context, purpose, and scope
 - `analysis/architecture-analysis.md` - For system design and security boundaries
@@ -164,8 +163,7 @@ grep -r -i "security\|auth\|crypto\|ssl\|tls" package.json requirements.txt Gemf
 find . -name "security.txt" -o -name ".security" -o -name "SECURITY.md" -o -name "security.md"
 ```
 
-**Update Strategy:**
-If `analysis/security-analysis.md` already exists:
+**Update Strategy:** If `analysis/security-analysis.md` already exists:
 
 1. Read the existing file to understand previous security analysis
 1. Note what has changed since the last analysis (compare commit hashes)
@@ -178,6 +176,5 @@ If `analysis/security-analysis.md` already exists:
 - This allows analysis files to be updated over time without cluttering the repository
 - Files can be manually committed if you want to track security posture evolution over time
 
-**IMPORTANT**: Focus on identifying security considerations and potential
-risks rather than providing specific remediation code. Highlight areas
-that need security review or improvement.
+**IMPORTANT**: Focus on identifying security considerations and potential risks rather than
+providing specific remediation code. Highlight areas that need security review or improvement.
