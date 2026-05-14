@@ -27,8 +27,8 @@ If no venv exists and a Python command fails, suggest creating one before retryi
 - Combine `as` imports on one line (`combine-as-imports = true`)
 - No blank lines between `import` and `from` within a section (`force-sort-within-sections = true`)
 - Alphabetical sort within sections approximated via `order-by-type = false` and
-  `case-sensitive = false` (ruff lacks `force_alphabetical_sort_within_sections`;
-  see <https://github.com/astral-sh/ruff/issues/4670>)
+  `case-sensitive = false` (ruff lacks `force_alphabetical_sort_within_sections`; see
+  <https://github.com/astral-sh/ruff/issues/4670>)
 - No wildcard imports (F403)
 - No unused imports (F401)
 - No duplicate imports (E811)

@@ -63,9 +63,9 @@
     "prompt": "file://./default-prompt.md",
     "resources": [
         "file://AGENTS.md",
-        "file://~/.dotfiles/etc/kiro-cli/steering/code/**/*.md",
-        "file://~/.dotfiles/etc/kiro-cli/steering/github/**/*.md",
-        "file://~/.dotfiles/etc/kiro-cli/steering/security/**/*.md",
+        "file://~/.dotfiles/etc/ai/steering/code/**/*.md",
+        "file://~/.dotfiles/etc/ai/steering/github/**/*.md",
+        "file://~/.dotfiles/etc/ai/steering/security/**/*.md",
         "file://.kiro/steering/**/*.md",
         "file://README.md",
         "skill://.kiro/skills/development/**/SKILL.md",

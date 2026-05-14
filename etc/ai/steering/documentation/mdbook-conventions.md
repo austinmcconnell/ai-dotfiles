@@ -57,7 +57,7 @@ Use blockquote format (mdBook has no native admonitions):
 
 ```markdown
 > **Note:** Additional helpful information.
-
+>
 > **Warning:** Potential issues or data loss.
 ```
 

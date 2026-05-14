@@ -40,8 +40,8 @@
     "prompt": "file://./jira-prompt.md",
     "resources": [
         "file://AGENTS.md",
-        "file://~/.dotfiles/etc/kiro-cli/steering/scrum/**/*.md",
-        "file://~/.dotfiles/etc/kiro-cli/steering/security/env-file-protection.md",
+        "file://~/.dotfiles/etc/ai/steering/scrum/**/*.md",
+        "file://~/.dotfiles/etc/ai/steering/security/env-file-protection.md",
         "file://.kiro/steering/**/*.md",
         "file://README.md",
         "skill://.kiro/skills/**/SKILL.md",

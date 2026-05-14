@@ -1,7 +1,7 @@
 # Steering vs Skill Review
 
-Review all steering documents in `~/.dotfiles/etc/kiro-cli/steering/` and evaluate whether each one
-is correctly placed as a steering doc or would be better as a skill.
+Review all steering documents in `~/.dotfiles/etc/ai/steering/` and evaluate whether each one is
+correctly placed as a steering doc or would be better as a skill.
 
 ## Context
 

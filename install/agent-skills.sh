@@ -18,7 +18,7 @@ source "$DOTFILES_DIR/install/utils.sh"
 print_section_header "Distributing Agent Skills"
 
 SKILLS_SOURCE="$DOTFILES_DIR/etc/ai/skills"
-STEERING_SOURCE="$DOTFILES_DIR/etc/kiro-cli/steering"
+STEERING_SOURCE="$DOTFILES_DIR/etc/ai/steering"
 
 # ---------------------------------------------------------------
 # Steering Generators
@@ -33,7 +33,7 @@ generate_single_steering() {
 # Coding Guidelines
 
 Auto-generated from dotfiles steering docs. Do not edit directly.
-Source: `~/.dotfiles/etc/kiro-cli/steering/{code,security}/`
+Source: `~/.dotfiles/etc/ai/steering/{code,security}/`
 
 HEADER
         for f in "$STEERING_SOURCE/code"/*.md; do
