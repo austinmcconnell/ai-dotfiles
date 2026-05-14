@@ -107,7 +107,7 @@ AGENT_STEERING[windsurf]="none"
 ENABLED_AGENTS=(
     # "claude-code"
     "codex"
-    # "cursor"
+    "cursor"
     # "gemini-cli"
     # "github-copilot"
     # "windsurf"
