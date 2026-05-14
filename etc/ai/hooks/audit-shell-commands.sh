@@ -1,17 +1,12 @@
 #!/bin/bash
 # Audit AWS and kubectl commands run via shell
-# Shared hook: works with kiro-cli (preToolUse) and Claude Code (PostToolUse)
+# Shared hook: works with any AI tool that sets AI_AGENT_NAME
 
 set -euo pipefail
 
 TOOL_INPUT=$(cat)
 
-# Detect which AI tool is running this hook
-if [ -n "${CLAUDE_PROJECT_DIR:-}" ]; then
-    AGENT="claude-code"
-else
-    AGENT="kiro-cli"
-fi
+AGENT="${AI_AGENT_NAME:-unknown}"
 
 # Extract command from tool input
 CMD=$(echo "$TOOL_INPUT" | jq -r '.tool_input.command // empty')

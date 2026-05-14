@@ -33,7 +33,7 @@
             },
             {
                 "matcher": "execute_bash",
-                "command": "~/.dotfiles/etc/ai/hooks/audit-shell-commands.sh"
+                "command": "AI_AGENT_NAME=kiro-cli ~/.dotfiles/etc/ai/hooks/audit-shell-commands.sh"
             }
         ],
         "postToolUse": [
