@@ -308,7 +308,7 @@ When diagram-as-code isn't suitable:
 ```markdown
 ![Network topology](../images/network-topology.png)
 
-_Figure 1: Network topology with VLAN segmentation_
+## Figure 1: Network topology with VLAN segmentation
 ```
 
 ## Mermaid Reference

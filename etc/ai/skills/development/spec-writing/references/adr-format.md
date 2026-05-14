@@ -109,9 +109,11 @@ ADRs live in the "Architecture" section of specs:
 ## Architecture
 
 ### Components
+
 [List of components]
 
 ### Data Contracts
+
 [API schemas, database schemas]
 
 ### Key Decisions
@@ -170,6 +172,7 @@ Example:
   "email": "string",
   "role": "admin|user"
 }
+```
 ````
 
 ### Key Decisions

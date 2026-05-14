@@ -148,6 +148,7 @@ Report findings in this format:
 # Cross-Repo Audit Report
 
 ## Summary
+
 - Repos audited: X
 - Conflicts found: Y
 - Stale references: Z
@@ -155,6 +156,7 @@ Report findings in this format:
 ## Conflicts
 
 ### [Resource type]: [Description]
+
 - **Owner**: [repo] `[file]`
 - **Conflict**: [repo] `[file]` says X, but owner says Y
 - **Resolution**: Update [repo] to match owner
@@ -162,9 +164,11 @@ Report findings in this format:
 ## Stale References
 
 ### [Repo]: [file]
+
 - Link to [URL] — [issue description]
 
 ## Verified (no issues)
+
 - [ ] Rack unit assignments consistent
 - [ ] PDU port assignments consistent
 - [ ] Switch port assignments consistent

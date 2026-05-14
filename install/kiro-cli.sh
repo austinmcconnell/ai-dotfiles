@@ -88,8 +88,8 @@ fi
 KIRO_SKILLS_DIR="$HOME/.kiro/skills"
 mkdir -p "$KIRO_SKILLS_DIR"
 
-if [ -d "$DOTFILES_DIR/etc/kiro-cli/skills" ]; then
-    for skill_dir in "$DOTFILES_DIR/etc/kiro-cli/skills"/*; do
+if [ -d "$DOTFILES_DIR/etc/ai/skills" ]; then
+    for skill_dir in "$DOTFILES_DIR/etc/ai/skills"/*; do
         if [ -d "$skill_dir" ]; then
             skill_name=$(basename "$skill_dir")
             ln -sfnv "$skill_dir" "$KIRO_SKILLS_DIR/$skill_name"

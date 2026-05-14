@@ -163,6 +163,7 @@ Use the IP addresses defined in [Configuration: Network Topology - IP Assignment
 This decision supersedes [ADR-001: Initial Platform Selection](adr-001-platform-selection.md).
 
 Related decisions:
+
 - [ADR-003: Security Strategy](adr-003-security-strategy.md)
 - [ADR-005: Component Selection](adr-005-component-selection.md)
 ```
@@ -192,7 +193,7 @@ Follow [Procedure: Initial Setup](../procedures/setup.md) for implementation.
 
 ```markdown
 <!-- Bad -->
-See https://adr.github.io/madr/ for MADR documentation.
+See <https://adr.github.io/madr/> for MADR documentation.
 
 <!-- Good -->
 See [MADR Documentation](https://adr.github.io/madr/) for template details.
@@ -230,7 +231,7 @@ Configure devices according to [Configuration: Network Topology](../configuratio
 
 ```markdown
 [Configuration: {Topic}](path)
-[Config: {Topic}](path)  # Shorter alternative
+[Config: {Topic}](path) # Shorter alternative
 ```
 
 Examples:
@@ -242,7 +243,7 @@ Examples:
 
 ```markdown
 [Procedure: {Action}](path)
-[Setup: {Component}](path)  # For setup procedures
+[Setup: {Component}](path) # For setup procedures
 ```
 
 Examples:
@@ -265,7 +266,7 @@ Examples:
 
 ```markdown
 [Component: {Name}](path)
-[{Component Name} Specs](path)  # Alternative
+[{Component Name} Specs](path) # Alternative
 ```
 
 Examples:

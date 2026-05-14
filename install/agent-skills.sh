@@ -17,7 +17,7 @@ source "$DOTFILES_DIR/install/utils.sh"
 
 print_section_header "Distributing Agent Skills"
 
-SKILLS_SOURCE="$DOTFILES_DIR/etc/kiro-cli/skills"
+SKILLS_SOURCE="$DOTFILES_DIR/etc/ai/skills"
 STEERING_SOURCE="$DOTFILES_DIR/etc/kiro-cli/steering"
 
 # ---------------------------------------------------------------

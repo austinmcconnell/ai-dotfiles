@@ -231,7 +231,7 @@ Separates primary content from reference material.
 - [Chapter 1](chapter1.md)
 - [Section](folder/section.md)
 
-# Bad
+## Bad
 
 - [Chapter 1](/chapter1.md) # Absolute path
 - [Chapter 1](./chapter1.md) # Unnecessary ./
@@ -264,11 +264,11 @@ Provides context before diving into subsections.
 ```markdown
 # In src/chapter1/section1.md
 
-# Wrong
+## Wrong
 
 [Config](configuration/config.md) # Looks in chapter1/configuration/
 
-# Right
+## Right
 
 [Config](../configuration/config.md) # Goes up one level first
 ```

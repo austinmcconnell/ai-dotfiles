@@ -2152,6 +2152,7 @@ from app.logging_utils import hash_identifier
 
 # Hash user email
 logger.info(f'User {hash_identifier(user_email, "email")} performed action')
+```
 ````
 
 ## Allowed in Logs
@@ -2197,6 +2198,7 @@ This policy supports:
 ### Testing Requirements
 
 **Unit Tests:**
+
 ```python
 # tests/test_logging_utils.py
 def test_hash_identifier_consistent():
@@ -2233,6 +2235,7 @@ def test_sanitize_log_data_hashes_pii():
     assert 'user_id' not in sanitized
     assert 'user_id_hash' in sanitized
     assert sanitized['role'] == 'admin'  # Non-PII preserved
+```
 ````
 
 **Integration Tests:**

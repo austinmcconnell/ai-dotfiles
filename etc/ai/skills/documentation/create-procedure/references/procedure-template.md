@@ -23,8 +23,8 @@ This procedure implements [brief description]. For complete specifications, see 
 ## Step 1: [Action]
 
 1. Navigate to **XXX**
-2. Click **YYY**
-3. Configure:
+1. Click **YYY**
+1. Configure:
    - **Field 1**: [value - reference config if complex]
    - **Field 2**: [value]
    - **Field 3**: [value]
@@ -35,7 +35,7 @@ This procedure implements [brief description]. For complete specifications, see 
 ## Step 2: [Action]
 
 1. [Step]
-2. [Step]
+1. [Step]
 
 ## Verification
 

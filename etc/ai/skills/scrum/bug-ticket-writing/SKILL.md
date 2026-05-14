@@ -151,7 +151,7 @@ production database have empty identified_needs arrays"
 
 ## Example
 
-```markdown
+````markdown
 ## Summary
 
 Fix typo preventing user data from being processed correctly
@@ -167,8 +167,11 @@ quick lookup.
 
 **File**: `app/users/service.py` **Line**: 245 **Issue**: Typo in condition check
 
-    # Current (incorrect)
-    if user.type == 'premum':  # ← Missing 'i' in 'premium'
+```text
+# Current (incorrect)
+if user.type == 'premum':  # ← Missing 'i' in 'premium'
+```
+````
 
 ### Current Impact
 
@@ -183,14 +186,18 @@ Recommendation engine uses fallback logic • Premium feature toggles not workin
 
 Production database query:
 
-    SELECT COUNT(*) as total_premium,
-           COUNT(CASE WHEN preferences IS NOT NULL THEN 1 END) as with_preferences
-    FROM users WHERE type = 'premium';
-    -- Result: 15,432 total premium users, 0 with populated preferences
+```text
+SELECT COUNT(*) as total_premium,
+       COUNT(CASE WHEN preferences IS NOT NULL THEN 1 END) as with_preferences
+FROM users WHERE type = 'premium';
+-- Result: 15,432 total premium users, 0 with populated preferences
+```
 
 ## Acceptance Criteria
 
 • New premium users have preferences populated correctly • User dashboard displays saved preferences
 • Recommendation engine uses actual user preferences • Premium feature toggles work based on user
 settings
+
+```text
 ```

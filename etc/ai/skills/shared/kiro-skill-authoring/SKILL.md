@@ -91,7 +91,7 @@ lines / ~5000 tokens. Move detailed reference material to `references/` files.
 ## Directory Layout
 
 ```text
-etc/kiro-cli/skills/<category>/<skill-name>/
+etc/ai/skills/<category>/<skill-name>/
 ├── SKILL.md              ← required
 ├── references/           ← optional: documentation the agent reads on demand
 │   ├── template.md
@@ -100,7 +100,7 @@ etc/kiro-cli/skills/<category>/<skill-name>/
 └── assets/               ← optional: templates, schemas, static resources
 ```
 
-Symlinks from `~/.kiro/skills/` point to the source directories under `etc/kiro-cli/skills/`.
+Symlinks from `~/.kiro/skills/` point to the source directories under `etc/ai/skills/`.
 
 ### Categories
 

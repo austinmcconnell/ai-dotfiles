@@ -26,8 +26,8 @@ For each steering document, evaluate against these questions in priority order:
    activity (e.g., creating JIRA tickets, scaffolding a project) is a candidate for a skill, unless
    it contains safety guardrails that must be always-loaded.
 1. **Does an existing skill already cover the same ground?** Check skill descriptions in
-   `~/.dotfiles/etc/kiro-cli/skills/` for overlap. If a skill exists, determine whether the steering
-   doc duplicates it or provides complementary always-needed rules.
+   `~/.dotfiles/etc/ai/skills/` for overlap. If a skill exists, determine whether the steering doc
+   duplicates it or provides complementary always-needed rules.
 
 **Important:** Content format (tables, code examples, diagrams) is a weak signal. A terminology
 table that prevents style violations every session is a convention, not reference material. Evaluate

@@ -135,14 +135,14 @@ The next release will include support for IPv6.
 <!-- Good -->
 
 1. Navigate to Settings
-2. Click Network
-3. Enter the IP address
+1. Click Network
+1. Enter the IP address
 
 <!-- Avoid -->
 
 1. You should navigate to Settings
-2. You need to click Network
-3. You must enter the IP address
+1. You need to click Network
+1. You must enter the IP address
 ```
 
 ## Terminology
