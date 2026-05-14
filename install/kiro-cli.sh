@@ -129,34 +129,6 @@ else
     echo "npm not found. Skipping Node.js MCP server installation."
 fi
 
-# Pre-cache Python MCP servers for uvx if uv is available
-if is-executable uv; then
-    print_section_header "Pre-caching Python MCP servers for uvx"
-
-    for server in "${PYTHON_MCP_SERVERS[@]}"; do
-        echo "Pre-caching $server..."
-        uvx --quiet "$server" --help >/dev/null 2>&1 && echo "✓ $server cached" || echo "⚠️  $server may need manual verification"
-    done
-
-    echo "✅ All Python MCP servers pre-cached for uvx"
-else
-    echo "uv not found. Skipping Python MCP server pre-caching."
-    echo "Install uv (https://docs.astral.sh/uv/) for Python MCP server support."
-fi
-
-# Install GitHub MCP Server via go install if Go is available
-if is-executable go; then
-    print_section_header "Installing GitHub MCP Server"
-    echo "Installing $GITHUB_MCP_SERVER_PKG..."
-    if go install "$GITHUB_MCP_SERVER_PKG"; then
-        echo "✅ GitHub MCP Server installed to $(go env GOPATH)/bin/"
-    else
-        echo "❌ Failed to install GitHub MCP Server"
-    fi
-else
-    echo "Go not found. Skipping GitHub MCP Server installation."
-fi
-
 # Configure git hooks for the research repo (KB staleness detection)
 # Uses git 2.54+ config-based hooks — coexists with pre-commit framework
 # without needing core.hooksPath (which overrides .git/hooks/ entirely).
