@@ -27,6 +27,7 @@
     "mcpServers": {
         "jira": {
             "args": [
+                "-y",
                 "@aashari/mcp-server-atlassian-jira"
             ],
             "command": "npx",
