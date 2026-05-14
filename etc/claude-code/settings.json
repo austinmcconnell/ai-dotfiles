@@ -137,28 +137,6 @@
                     }
                 ]
             }
-        ],
-        "Stop": [
-            {
-                "hooks": [
-                    {
-                        "type": "command",
-                        "command": "~/.dotfiles/etc/ai/hooks/notify-stop.sh",
-                        "timeout": 5
-                    }
-                ]
-            }
-        ],
-        "Notification": [
-            {
-                "hooks": [
-                    {
-                        "type": "command",
-                        "command": "~/.dotfiles/etc/ai/hooks/notify-attention.sh",
-                        "timeout": 5
-                    }
-                ]
-            }
         ]
     }
 }
