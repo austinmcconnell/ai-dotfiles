@@ -2,6 +2,11 @@
     "$schema": "https://json.schemastore.org/claude-code-settings.json",
     "permissions": {
         "allow": [
+            "Read(*)",
+            "Read(**)",
+            "Edit(~/projects/**)",
+            "Edit(~/repositories/**)",
+            "Edit(~/.dotfiles/**)",
             "Bash(cat *)",
             "Bash(command -v *)",
             "Bash(dirname *)",
