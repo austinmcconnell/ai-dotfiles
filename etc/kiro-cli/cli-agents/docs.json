@@ -83,7 +83,7 @@
             "type": "knowledgeBase",
             "source": "file://~/projects/austinmcconnell/_documentation_/family-dashboard",
             "name": "family-dashboard-docs",
-            "description": "Family wall calendar and chore management system documentation covering display hardware, software platform research (MagicMirror², Home Assistant), kiosk software, mounting options, and component selection. References ubiquiti-network-stack for IP address and VLAN assignments",
+            "description": "Family wall calendar and chore management system documentation covering display hardware, software platform research (MagicMirror\u00b2, Home Assistant), kiosk software, mounting options, and component selection. References ubiquiti-network-stack for IP address and VLAN assignments",
             "indexType": "best",
             "include": [
                 "**/*.md"
@@ -257,6 +257,7 @@
                 "readlink( .*)?",
                 "sed .*",
                 "sort( .*)?",
+                "source .*",
                 "tail .*",
                 "tr .*",
                 "tree( .*)?",
@@ -365,7 +366,10 @@
         "read": {
             "deniedPaths": [
                 "**/.env",
-                "**/.env.*"
+                "**/.env.*",
+                "**/*.key",
+                "**/*.pem",
+                "**/credentials*"
             ]
         }
     },

@@ -209,7 +209,7 @@
                 "readlink( .*)?",
                 "sed .*",
                 "sort( .*)?",
-                "source .*/\\.venv/bin/activate",
+                "source .*",
                 "tr .*",
                 "tail .*",
                 "tree( .*)?",
@@ -378,7 +378,10 @@
         "read": {
             "deniedPaths": [
                 "**/.env",
-                "**/.env.*"
+                "**/.env.*",
+                "**/*.key",
+                "**/*.pem",
+                "**/credentials*"
             ]
         }
     }

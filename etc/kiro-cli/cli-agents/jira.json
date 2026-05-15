@@ -92,6 +92,7 @@
                 "readlink( .*)?",
                 "sed .*",
                 "sort( .*)?",
+                "source .*",
                 "tail .*",
                 "tr .*",
                 "tree( .*)?",
@@ -213,7 +214,10 @@
         "read": {
             "deniedPaths": [
                 "**/.env",
-                "**/.env.*"
+                "**/.env.*",
+                "**/*.key",
+                "**/*.pem",
+                "**/credentials*"
             ]
         }
     }
