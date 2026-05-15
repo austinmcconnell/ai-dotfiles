@@ -119,6 +119,7 @@ fi
 RESEARCH_REPO="$HOME/projects/austinmcconnell/_research_"
 if [ -d "$RESEARCH_REPO/.git" ]; then
     HOOK_CMD="$HOME/.dotfiles/etc/kiro-cli/hooks/kb-staleness.sh"
+    git -C "$RESEARCH_REPO" config unset --all hook.kb-staleness.event 2>/dev/null || true
     git -C "$RESEARCH_REPO" config set hook.kb-staleness.command "$HOOK_CMD"
     git -C "$RESEARCH_REPO" config set hook.kb-staleness.event post-commit
     git -C "$RESEARCH_REPO" config set --append hook.kb-staleness.event post-merge
