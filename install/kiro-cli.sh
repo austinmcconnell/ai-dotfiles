@@ -43,13 +43,11 @@ install_if_needed "kiro-cli" "cask"
 # Define Kiro CLI configuration directories
 KIRO_SETTINGS_DIR="$HOME/.kiro/settings"
 KIRO_AGENTS_DIR="$HOME/.kiro/agents"
-KIRO_SKILLS_DIR="$HOME/.kiro/skills"
 KIRO_LOGS_DIR="$HOME/.kiro/logs"
 
 # Create necessary directories
 mkdir -p "$KIRO_SETTINGS_DIR"
 mkdir -p "$KIRO_AGENTS_DIR"
-mkdir -p "$KIRO_SKILLS_DIR"
 mkdir -p "$KIRO_LOGS_DIR"
 mkdir -p "$DOTFILES_DIR/etc/ai/prompts"
 
@@ -84,21 +82,7 @@ if is-executable kiro-cli; then
     kiro-cli agent set-default --name default 2>/dev/null || echo "⚠️  Could not set default agent (may need to run manually)"
 fi
 
-# Link skills from dotfiles repository
-KIRO_SKILLS_DIR="$HOME/.kiro/skills"
-mkdir -p "$KIRO_SKILLS_DIR"
-
-if [ -d "$DOTFILES_DIR/etc/ai/skills" ]; then
-    for skill_dir in "$DOTFILES_DIR/etc/ai/skills"/*; do
-        if [ -d "$skill_dir" ]; then
-            skill_name=$(basename "$skill_dir")
-            ln -sfnv "$skill_dir" "$KIRO_SKILLS_DIR/$skill_name"
-            echo "✓ Linked skill: $skill_name"
-        fi
-    done
-else
-    echo "No skills directory found in dotfiles"
-fi
+# Skills are linked by install/ai-tools.sh (centralized for all AI tools)
 
 # Install Kiro CLI integrations if the CLI is available
 if is-executable kiro-cli; then

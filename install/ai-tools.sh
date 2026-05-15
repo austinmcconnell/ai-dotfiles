@@ -23,6 +23,7 @@ ENABLED_AGENTS=(
     "claude-code"
     "codex"
     "cursor"
+    "kiro-cli"
     # "gemini-cli"
     # "github-copilot"
     # "windsurf"
@@ -151,6 +152,8 @@ agent_config() {
     gemini-cli:steering) echo "single:$HOME/.gemini/GEMINI.md" ;;
     github-copilot:skills_path) echo "$HOME/.agents/skills" ;;
     github-copilot:steering) echo "none" ;;
+    kiro-cli:skills_path) echo "$HOME/.kiro/skills" ;;
+    kiro-cli:steering) echo "none" ;;
     windsurf:skills_path) echo "$HOME/.codeium/windsurf/skills" ;;
     windsurf:steering) echo "none" ;;
     esac
@@ -165,6 +168,10 @@ for agent in "${ENABLED_AGENTS[@]}"; do
 
     # Symlink skills
     mkdir -p "$(dirname "$skills_path")"
+    # Remove existing real directory (e.g., left over from prior per-category symlink layout)
+    if [ -d "$skills_path" ] && [ ! -L "$skills_path" ]; then
+        rm -rf "$skills_path"
+    fi
     ln -sfn "$SKILLS_SOURCE" "$skills_path"
     echo "✓ Linked skills to $agent ($skills_path)"
 
