@@ -68,6 +68,10 @@ and [agent security documentation](https://docs.cursor.com/en/account/agent-secu
 - **`git add .` blocked** — prevents accidental bulk staging
 - **Pinned MCP package versions** — `@aashari/mcp-server-atlassian-jira@3.3.0` (not `@latest`)
 - **Env var interpolation for secrets** — `${env:ATLASSIAN_SITE_NAME}` syntax
+- **Read allows with deny exceptions** — all reads pre-approved; deny rules block `.env`, `.key`,
+  `.pem`, credentials
+- **Write allows scoped to project dirs** — `~/projects/`, `~/repositories/`, `~/.dotfiles/`
+  pre-approved; system paths denied
 
 ### What Cursor Does NOT Have (vs Kiro CLI)
 

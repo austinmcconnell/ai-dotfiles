@@ -10,8 +10,10 @@ Permission rules and hooks for Claude Code (the `claude` CLI). Configuration is 
   files protected, same system paths restricted
 - **Deny-first security**: Deny rules always win regardless of allow rules. Sensitive files blocked
   at multiple levels (permission rules + hooks)
-- **Minimal friction for reads**: Allow common read-only shell commands without prompting while
-  blocking all write operations until approved
+- **Minimal friction for reads**: Allow all file reads without prompting; deny rules block sensitive
+  files (`.env`, `.key`, `.pem`, credentials)
+- **Parity with Kiro CLI write model**: Allow edits in project directories without prompting; deny
+  rules block system paths
 - **Cross-tool hooks**: Shared hook scripts work identically across Kiro CLI and Claude Code
 
 ## Directory Structure
@@ -94,8 +96,6 @@ These practices come from the
   `paths:` frontmatter for conditional loading. `CLAUDE.md` is a minimal pointer file.
 - **No project-level settings** — only user-level `~/.claude/settings.json` exists. Official docs
   recommend `.claude/settings.json` committed to git for team sharing. Acceptable for personal use.
-- **No `Edit` allow rules** — every file edit requires approval. Higher friction but maximum safety
-  for a tool without Kiro CLI's layered enforcement.
 
 ## Official Documentation
 

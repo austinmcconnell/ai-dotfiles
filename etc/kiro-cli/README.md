@@ -90,7 +90,10 @@ and [hooks documentation](https://kiro.dev/docs/cli/hooks/):
 
 - **Start restrictive, expand as needed** — minimal `allowedTools`, broad `deniedCommands`
 - **Deny-before-allow evaluation** — `deniedCommands` always checked first
+- **Defense-in-depth for sensitive files** — `.env` blocked at hook layer, `read.deniedPaths`,
+  `grep.deniedPaths`, `glob.deniedPaths`, and `shell.deniedCommands` simultaneously
 - **Hook-based enforcement** — `preToolUse` with exit code 2 for hard blocks
+- **Hook timeouts** — `timeout_ms: 5000` on all hooks to prevent hangs
 - **Audit logging** — sensitive operations (AWS, kubectl, shell) logged to JSONL files
 - **MCP secrets via interpolation** — never hardcoded in config
 - **Knowledge base scoping** — `"best"` for docs, `"fast"` for code; descriptive `description`
