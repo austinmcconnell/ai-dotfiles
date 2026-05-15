@@ -15,31 +15,37 @@
     "hooks": {
         "agentSpawn": [
             {
-                "command": "~/.dotfiles/etc/kiro-cli/hooks/check-research-kb.sh default"
+                "command": "~/.dotfiles/etc/kiro-cli/hooks/check-research-kb.sh default",
+                "timeout_ms": 5000
             }
         ],
         "preToolUse": [
             {
                 "matcher": "*",
-                "command": "~/.dotfiles/etc/ai/hooks/block-env-files.sh"
+                "command": "~/.dotfiles/etc/ai/hooks/block-env-files.sh",
+                "timeout_ms": 5000
             },
             {
                 "matcher": "use_aws",
-                "command": "jq -c '{timestamp: now | strftime(\"%Y-%m-%d %H:%M:%S\"), tool: .tool_name, input: .tool_input}' >> ~/.kiro/logs/aws-audit.jsonl"
+                "command": "jq -c '{timestamp: now | strftime(\"%Y-%m-%d %H:%M:%S\"), tool: .tool_name, input: .tool_input}' >> ~/.kiro/logs/aws-audit.jsonl",
+                "timeout_ms": 5000
             },
             {
                 "matcher": "@kubernetes",
-                "command": "jq -c '{timestamp: now | strftime(\"%Y-%m-%d %H:%M:%S\"), tool: .tool_name, input: .tool_input}' >> ~/.kiro/logs/kubectl-audit.jsonl"
+                "command": "jq -c '{timestamp: now | strftime(\"%Y-%m-%d %H:%M:%S\"), tool: .tool_name, input: .tool_input}' >> ~/.kiro/logs/kubectl-audit.jsonl",
+                "timeout_ms": 5000
             },
             {
                 "matcher": "execute_bash",
-                "command": "AI_AGENT_NAME=kiro-cli ~/.dotfiles/etc/ai/hooks/audit-shell-commands.sh"
+                "command": "AI_AGENT_NAME=kiro-cli ~/.dotfiles/etc/ai/hooks/audit-shell-commands.sh",
+                "timeout_ms": 5000
             }
         ],
         "postToolUse": [
             {
                 "matcher": "knowledge",
-                "command": "~/.dotfiles/etc/kiro-cli/hooks/clear-research-kb-stale.sh default"
+                "command": "~/.dotfiles/etc/kiro-cli/hooks/clear-research-kb-stale.sh default",
+                "timeout_ms": 5000
             }
         ]
     },
@@ -81,8 +87,12 @@
             "name": "research",
             "description": "Structured research files covering product evaluations, technology comparisons, and technical investigations with cited sources and verification dates",
             "indexType": "best",
-            "include": ["**/*.md"],
-            "exclude": [".git/**"],
+            "include": [
+                "**/*.md"
+            ],
+            "exclude": [
+                ".git/**"
+            ],
             "autoUpdate": false
         },
         {
@@ -118,8 +128,12 @@
             "name": "screenings-ingestion-docs",
             "description": "Markdown documentation for the screenings ingestion service including architecture, data flows, and operational guides",
             "indexType": "best",
-            "include": ["**/*.md"],
-            "exclude": [".git/**"],
+            "include": [
+                "**/*.md"
+            ],
+            "exclude": [
+                ".git/**"
+            ],
             "autoUpdate": true
         },
         {
@@ -128,8 +142,12 @@
             "name": "analysis-all-projects",
             "description": "Cross-project analysis documents covering architecture decisions, research findings, and technical comparisons across all Unite Us projects",
             "indexType": "best",
-            "include": ["*/analysis/*.md"],
-            "exclude": [".git/**"],
+            "include": [
+                "*/analysis/*.md"
+            ],
+            "exclude": [
+                ".git/**"
+            ],
             "autoUpdate": false
         },
         {
@@ -138,12 +156,18 @@
             "name": "analysis-personal-projects",
             "description": "Cross-project analysis documents covering architecture decisions, research findings, and technical comparisons across personal projects",
             "indexType": "best",
-            "include": ["*/analysis/*.md"],
-            "exclude": [".git/**"],
+            "include": [
+                "*/analysis/*.md"
+            ],
+            "exclude": [
+                ".git/**"
+            ],
             "autoUpdate": false
         }
     ],
-    "tools": ["*"],
+    "tools": [
+        "*"
+    ],
     "toolsSettings": {
         "shell": {
             "allowedCommands": [
@@ -280,11 +304,27 @@
             "autoAllowReadonly": true
         },
         "write": {
-            "allowedPaths": ["~/projects/**", "~/repositories/**", "~/.dotfiles/**", "./**"],
-            "deniedPaths": ["/etc/**", "/usr/**", "/bin/**", "/sbin/**", "/System/**"]
+            "allowedPaths": [
+                "~/projects/**",
+                "~/repositories/**",
+                "~/.dotfiles/**",
+                "./**"
+            ],
+            "deniedPaths": [
+                "/etc/**",
+                "/usr/**",
+                "/bin/**",
+                "/sbin/**",
+                "/System/**"
+            ]
         },
         "grep": {
-            "allowedPaths": ["~/projects/**", "~/repositories/**", "~/.dotfiles/**", "./**"],
+            "allowedPaths": [
+                "~/projects/**",
+                "~/repositories/**",
+                "~/.dotfiles/**",
+                "./**"
+            ],
             "deniedPaths": [
                 "/etc/**",
                 "/usr/**",
@@ -296,7 +336,12 @@
             ]
         },
         "glob": {
-            "allowedPaths": ["~/projects/**", "~/repositories/**", "~/.dotfiles/**", "./**"],
+            "allowedPaths": [
+                "~/projects/**",
+                "~/repositories/**",
+                "~/.dotfiles/**",
+                "./**"
+            ],
             "deniedPaths": [
                 "/etc/**",
                 "/usr/**",
@@ -308,8 +353,14 @@
             ]
         },
         "subagent": {
-            "availableAgents": ["default", "docs", "jira"],
-            "trustedAgents": ["default"]
+            "availableAgents": [
+                "default",
+                "docs",
+                "jira"
+            ],
+            "trustedAgents": [
+                "default"
+            ]
         },
         "web_fetch": {
             "trusted": [
@@ -320,7 +371,15 @@
                 ".*stackoverflow\\.com.*",
                 ".*developer\\.mozilla\\.org.*"
             ],
-            "blocked": [".*pastebin\\.com.*"]
+            "blocked": [
+                ".*pastebin\\.com.*"
+            ]
+        },
+        "read": {
+            "deniedPaths": [
+                "**/.env",
+                "**/.env.*"
+            ]
         }
     }
 }

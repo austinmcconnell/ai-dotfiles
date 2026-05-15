@@ -2,7 +2,6 @@
     "name": "docs",
     "description": "Documentation project specialist with mdBook expertise and best practices",
     "prompt": "file://./docs-prompt.md",
-
     "resources": [
         "file://~/.dotfiles/etc/ai/steering/documentation/**/*.md",
         "file://~/.dotfiles/etc/ai/steering/security/env-file-protection.md",
@@ -20,8 +19,12 @@
             "name": "research",
             "description": "Structured research files covering product evaluations, technology comparisons, and technical investigations with cited sources and verification dates",
             "indexType": "best",
-            "include": ["**/*.md"],
-            "exclude": [".git/**"],
+            "include": [
+                "**/*.md"
+            ],
+            "exclude": [
+                ".git/**"
+            ],
             "autoUpdate": false
         },
         {
@@ -30,8 +33,16 @@
             "name": "sdohcc-screening-observations",
             "description": "SDOHCC screening observations mdBook documentation covering FHIR observation mappings, screening instruments, and clinical data standards",
             "indexType": "best",
-            "include": ["**/*.md"],
-            "exclude": [".git/**", "book/**", "scripts/**", "reports/**", ".kiro/**"],
+            "include": [
+                "**/*.md"
+            ],
+            "exclude": [
+                ".git/**",
+                "book/**",
+                "scripts/**",
+                "reports/**",
+                ".kiro/**"
+            ],
             "autoUpdate": true
         },
         {
@@ -40,8 +51,15 @@
             "name": "automatic-ripping-machine-docs",
             "description": "Multi-drive Automatic Ripping Machine build documentation covering drive selection, compute platform, NVMe storage, rack enclosure research, and component specifications. References ubiquiti-network-stack for IP address and VLAN assignments. References tiny-lab for rack slot, PDU port, and compute switch port assignments",
             "indexType": "best",
-            "include": ["**/*.md"],
-            "exclude": [".git/**", "book/**", "scripts/**", "reports/**"],
+            "include": [
+                "**/*.md"
+            ],
+            "exclude": [
+                ".git/**",
+                "book/**",
+                "scripts/**",
+                "reports/**"
+            ],
             "autoUpdate": true
         },
         {
@@ -50,8 +68,15 @@
             "name": "email-provider-selection-docs",
             "description": "Privacy-conscious email provider evaluation documentation covering provider comparisons (Fastmail, Mailbox.org, Migadu, StartMail), evaluation criteria, migration procedures, and architecture decisions. Isolated project with no shared infrastructure dependencies",
             "indexType": "best",
-            "include": ["**/*.md"],
-            "exclude": [".git/**", "book/**", "scripts/**", "reports/**"],
+            "include": [
+                "**/*.md"
+            ],
+            "exclude": [
+                ".git/**",
+                "book/**",
+                "scripts/**",
+                "reports/**"
+            ],
             "autoUpdate": true
         },
         {
@@ -60,8 +85,15 @@
             "name": "family-dashboard-docs",
             "description": "Family wall calendar and chore management system documentation covering display hardware, software platform research (MagicMirror², Home Assistant), kiosk software, mounting options, and component selection. References ubiquiti-network-stack for IP address and VLAN assignments",
             "indexType": "best",
-            "include": ["**/*.md"],
-            "exclude": [".git/**", "book/**", "scripts/**", "reports/**"],
+            "include": [
+                "**/*.md"
+            ],
+            "exclude": [
+                ".git/**",
+                "book/**",
+                "scripts/**",
+                "reports/**"
+            ],
             "autoUpdate": true
         },
         {
@@ -70,8 +102,15 @@
             "name": "gaming-media-pc-docs",
             "description": "Gaming and media PC build documentation covering component selection, BIOS/Windows configuration, game streaming setup, and architecture decisions. Isolated project with no shared infrastructure dependencies",
             "indexType": "best",
-            "include": ["**/*.md"],
-            "exclude": [".git/**", "book/**", "scripts/**", "reports/**"],
+            "include": [
+                "**/*.md"
+            ],
+            "exclude": [
+                ".git/**",
+                "book/**",
+                "scripts/**",
+                "reports/**"
+            ],
             "autoUpdate": true
         },
         {
@@ -80,8 +119,15 @@
             "name": "home-assistant-server-docs",
             "description": "Dedicated Home Assistant server documentation covering HA Yellow (PoE) platform, Raspberry Pi CM5 compute module, HAOS installation, and component specifications. Operates independently from homelab. References ubiquiti-network-stack for IP address and VLAN assignments. References tiny-lab for rack slot, PDU port, and compute switch port assignments",
             "indexType": "best",
-            "include": ["**/*.md"],
-            "exclude": [".git/**", "book/**", "scripts/**", "reports/**"],
+            "include": [
+                "**/*.md"
+            ],
+            "exclude": [
+                ".git/**",
+                "book/**",
+                "scripts/**",
+                "reports/**"
+            ],
             "autoUpdate": true
         },
         {
@@ -90,8 +136,15 @@
             "name": "tiny-lab-docs",
             "description": "Compact Proxmox homelab cluster documentation covering M920x Tiny hardware, ZFS storage, 2.5GbE networking, rack layout, PDU port assignments, compute rack switch port assignments, and cluster expansion decisions. Authoritative source for rack slot assignments, PDU ports, and compute switch ports. References ubiquiti-network-stack for IP addresses and VLANs",
             "indexType": "best",
-            "include": ["**/*.md"],
-            "exclude": [".git/**", "book/**", "scripts/**", "reports/**"],
+            "include": [
+                "**/*.md"
+            ],
+            "exclude": [
+                ".git/**",
+                "book/**",
+                "scripts/**",
+                "reports/**"
+            ],
             "autoUpdate": true
         },
         {
@@ -100,8 +153,15 @@
             "name": "truenas-server-docs",
             "description": "TrueNAS backup server build documentation covering ODROID H4+ hardware, ZFS mirror storage, network configuration, rackmount case, and component selection decisions. References tiny-lab for rack slot, PDU port, and compute switch port assignments. References ubiquiti-network-stack for IP address and VLAN assignments",
             "indexType": "best",
-            "include": ["**/*.md"],
-            "exclude": [".git/**", "book/**", "scripts/**", "reports/**"],
+            "include": [
+                "**/*.md"
+            ],
+            "exclude": [
+                ".git/**",
+                "book/**",
+                "scripts/**",
+                "reports/**"
+            ],
             "autoUpdate": true
         },
         {
@@ -110,12 +170,18 @@
             "name": "ubiquiti-network-docs",
             "description": "Ubiquiti UniFi home network documentation covering gateway, switches, access points, VLANs, firewall rules, VPN, WiFi, DNS ad blocking, and Pi-hole local DNS records. Authoritative source for all IP address assignments, VLAN definitions, DNS records, main switch port assignments, and gateway port assignments across all documentation repos",
             "indexType": "best",
-            "include": ["**/*.md"],
-            "exclude": [".git/**", "book/**", "scripts/**", "reports/**"],
+            "include": [
+                "**/*.md"
+            ],
+            "exclude": [
+                ".git/**",
+                "book/**",
+                "scripts/**",
+                "reports/**"
+            ],
             "autoUpdate": true
         }
     ],
-
     "allowedTools": [
         "code",
         "glob",
@@ -128,29 +194,31 @@
         "web_fetch",
         "web_search"
     ],
-
-    "tools": ["*"],
-
+    "tools": [
+        "*"
+    ],
     "hooks": {
         "agentSpawn": [
             {
-                "command": "~/.dotfiles/etc/kiro-cli/hooks/check-research-kb.sh docs"
+                "command": "~/.dotfiles/etc/kiro-cli/hooks/check-research-kb.sh docs",
+                "timeout_ms": 5000
             }
         ],
         "preToolUse": [
             {
                 "matcher": "*",
-                "command": "~/.dotfiles/etc/ai/hooks/block-env-files.sh"
+                "command": "~/.dotfiles/etc/ai/hooks/block-env-files.sh",
+                "timeout_ms": 5000
             }
         ],
         "postToolUse": [
             {
                 "matcher": "knowledge",
-                "command": "~/.dotfiles/etc/kiro-cli/hooks/clear-research-kb-stale.sh docs"
+                "command": "~/.dotfiles/etc/kiro-cli/hooks/clear-research-kb-stale.sh docs",
+                "timeout_ms": 5000
             }
         ]
     },
-
     "toolsSettings": {
         "aws": {
             "allowedServices": []
@@ -238,16 +306,48 @@
             ]
         },
         "grep": {
-            "allowedPaths": ["~/projects/**", "~/repositories/**", "~/.dotfiles/**", "./**"],
-            "deniedPaths": ["/etc/**", "/usr/**", "/bin/**", "/sbin/**", "/System/**", "**/.env", "**/.env.*"]
+            "allowedPaths": [
+                "~/projects/**",
+                "~/repositories/**",
+                "~/.dotfiles/**",
+                "./**"
+            ],
+            "deniedPaths": [
+                "/etc/**",
+                "/usr/**",
+                "/bin/**",
+                "/sbin/**",
+                "/System/**",
+                "**/.env",
+                "**/.env.*"
+            ]
         },
         "glob": {
-            "allowedPaths": ["~/projects/**", "~/repositories/**", "~/.dotfiles/**", "./**"],
-            "deniedPaths": ["/etc/**", "/usr/**", "/bin/**", "/sbin/**", "/System/**", "**/.env", "**/.env.*"]
+            "allowedPaths": [
+                "~/projects/**",
+                "~/repositories/**",
+                "~/.dotfiles/**",
+                "./**"
+            ],
+            "deniedPaths": [
+                "/etc/**",
+                "/usr/**",
+                "/bin/**",
+                "/sbin/**",
+                "/System/**",
+                "**/.env",
+                "**/.env.*"
+            ]
         },
         "subagent": {
-            "availableAgents": ["default", "docs", "jira"],
-            "trustedAgents": ["default"]
+            "availableAgents": [
+                "default",
+                "docs",
+                "jira"
+            ],
+            "trustedAgents": [
+                "default"
+            ]
         },
         "web_fetch": {
             "trusted": [
@@ -261,8 +361,13 @@
             "blocked": [
                 ".*pastebin\\.com.*"
             ]
+        },
+        "read": {
+            "deniedPaths": [
+                "**/.env",
+                "**/.env.*"
+            ]
         }
     },
-
     "includeMcpJson": true
 }
