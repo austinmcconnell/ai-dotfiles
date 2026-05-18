@@ -15,6 +15,23 @@ ansible-lint <file_or_directory>
 
 If ansible-lint is not available, perform manual review against the rules below.
 
+### Step 1b: Check for deprecation warnings
+
+If a target host is reachable, run the playbook in check mode and look for deprecation warnings:
+
+```bash
+ansible-playbook playbooks/<playbook>.yml --limit <host> --check 2>&1 | grep -i "DEPRECATION WARNING"
+```
+
+Deprecation warnings fire based on code patterns, not host state — they appear on every run until
+the code is fixed. Treat them as suggestions unless the removal version is imminent.
+
+Common deprecation patterns:
+
+- `{{ ansible_* }}` top-level facts → use `{{ ansible_facts['*'] }}`
+- `include:` → use `ansible.builtin.include_tasks:` or `ansible.builtin.import_tasks:`
+- Module-specific parameter renames (check the warning text for guidance)
+
 ### Step 2: Check for anti-patterns
 
 Review each file against these categories, ordered by severity:
