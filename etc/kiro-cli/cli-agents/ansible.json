@@ -115,6 +115,7 @@
                 "cat .*",
                 "chmod \\+x .*",
                 "command -v .*",
+                "cruft .*",
                 "dirname .*",
                 "echo( .*)?",
                 "find .*",
