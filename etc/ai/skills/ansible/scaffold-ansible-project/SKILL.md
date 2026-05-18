@@ -172,6 +172,9 @@ beyond the template's scope.
 
 ## Notes
 
+- Use `cruft create` instead of `cookiecutter` — the template is compatible with both, but cruft
+  adds a `.cruft.json` tracking file that enables `cruft check`/`cruft update` to pull in template
+  improvements later. Use plain `cookiecutter` only if cruft is unavailable.
 - The template generates only invariant tooling files — lint config, CI, Makefile, gitignore
 - All project-specific content (inventory, playbooks, roles, variables) is created in Steps 3–6
 - For role scaffolding within an existing project, use the `create-role` skill instead
