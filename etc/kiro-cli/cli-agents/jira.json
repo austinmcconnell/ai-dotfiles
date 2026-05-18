@@ -196,7 +196,8 @@
             "availableAgents": [
                 "default",
                 "docs",
-                "jira"
+                "jira",
+                "ansible"
             ],
             "trustedAgents": [
                 "default"

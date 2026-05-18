@@ -1,0 +1,275 @@
+{
+    "name": "ansible",
+    "description": "Ansible automation specialist for Proxmox homelab infrastructure management",
+    "prompt": "file://./ansible-prompt.md",
+    "resources": [
+        "file://~/.dotfiles/etc/ai/steering/ansible/**/*.md",
+        "file://~/.dotfiles/etc/ai/steering/security/env-file-protection.md",
+        "file://.kiro/steering/**/*.md",
+        "file://AGENTS.md",
+        "file://README.md",
+        "file://ansible.cfg",
+        "skill://.kiro/skills/**/SKILL.md",
+        "skill://~/.kiro/skills/ansible/**/SKILL.md",
+        "skill://~/.kiro/skills/shared/**/SKILL.md",
+        {
+            "type": "knowledgeBase",
+            "source": "file://~/projects/austinmcconnell/_research_",
+            "name": "research",
+            "description": "Structured research files covering product evaluations, technology comparisons, and technical investigations with cited sources and verification dates",
+            "indexType": "best",
+            "include": [
+                "**/*.md"
+            ],
+            "exclude": [
+                ".git/**"
+            ],
+            "autoUpdate": false
+        },
+        {
+            "type": "knowledgeBase",
+            "source": "file://~/projects/austinmcconnell/_documentation_/tiny-lab",
+            "name": "tiny-lab-docs",
+            "description": "Compact Proxmox homelab cluster documentation covering M920x Tiny hardware, ZFS storage, 2.5GbE networking, rack layout, PDU port assignments, compute rack switch port assignments, and cluster expansion decisions. Authoritative source for rack slot assignments, PDU ports, and compute switch ports. References ubiquiti-network-stack for IP addresses and VLANs",
+            "indexType": "best",
+            "include": [
+                "**/*.md"
+            ],
+            "exclude": [
+                ".git/**",
+                "book/**",
+                "scripts/**",
+                "reports/**"
+            ],
+            "autoUpdate": true
+        },
+        {
+            "type": "knowledgeBase",
+            "source": "file://~/projects/austinmcconnell/_documentation_/ubiquiti-network-stack",
+            "name": "ubiquiti-network-docs",
+            "description": "Ubiquiti UniFi home network documentation covering gateway, switches, access points, VLANs, firewall rules, VPN, WiFi, DNS ad blocking, and Pi-hole local DNS records. Authoritative source for all IP address assignments, VLAN definitions, DNS records, main switch port assignments, and gateway port assignments across all documentation repos",
+            "indexType": "best",
+            "include": [
+                "**/*.md"
+            ],
+            "exclude": [
+                ".git/**",
+                "book/**",
+                "scripts/**",
+                "reports/**"
+            ],
+            "autoUpdate": true
+        }
+    ],
+    "allowedTools": [
+        "code",
+        "glob",
+        "grep",
+        "introspect",
+        "knowledge",
+        "read",
+        "subagent",
+        "todo",
+        "web_fetch",
+        "web_search"
+    ],
+    "tools": [
+        "*"
+    ],
+    "hooks": {
+        "agentSpawn": [
+            {
+                "command": "~/.dotfiles/etc/kiro-cli/hooks/check-research-kb.sh ansible",
+                "timeout_ms": 5000
+            }
+        ],
+        "preToolUse": [
+            {
+                "matcher": "*",
+                "command": "~/.dotfiles/etc/ai/hooks/block-env-files.sh",
+                "timeout_ms": 5000
+            }
+        ],
+        "postToolUse": [
+            {
+                "matcher": "knowledge",
+                "command": "~/.dotfiles/etc/kiro-cli/hooks/clear-research-kb-stale.sh ansible",
+                "timeout_ms": 5000
+            }
+        ]
+    },
+    "toolsSettings": {
+        "aws": {
+            "allowedServices": []
+        },
+        "shell": {
+            "allowedCommands": [
+                "ansible --version",
+                "ansible-galaxy .*",
+                "ansible-lint.*",
+                "ansible-playbook .*--check.*",
+                "ansible-playbook .*--list-.*",
+                "ansible-playbook .*--syntax-check.*",
+                "ansible-vault view .*",
+                "awk .*",
+                "cat .*",
+                "chmod \\+x .*",
+                "command -v .*",
+                "dirname .*",
+                "echo( .*)?",
+                "find .*",
+                "git branch.*",
+                "git check-ignore.*",
+                "git diff.*",
+                "(GIT_PAGER=cat )?git log.*",
+                "git ls-files.*",
+                "git ls-tree .*",
+                "git merge-base .*",
+                "git rev-list .*",
+                "git rev-parse .*",
+                "git show.*",
+                "git status.*",
+                "grep .*",
+                "head .*",
+                "hostname",
+                "jq( .*)?",
+                "ls( .*)?",
+                "man .*",
+                "mkdir -p .*",
+                "pre-commit .*",
+                "pwd",
+                "read( .*)?",
+                "readlink( .*)?",
+                "sed .*",
+                "sort( .*)?",
+                "source .*",
+                "tail .*",
+                "tr .*",
+                "tree( .*)?",
+                "true",
+                "type .*",
+                "uniq .*",
+                "wc .*",
+                "which .*",
+                "whoami",
+                "xargs .*",
+                "yamllint .*"
+            ],
+            "deniedCommands": [
+                "ansible-playbook (?!.*--check)(?!.*--list-)(?!.*--syntax-check).*",
+                "ansible-vault create .*",
+                "ansible-vault decrypt .*",
+                "ansible-vault edit .*",
+                "ansible-vault encrypt .*",
+                "awk .*\\.env.*",
+                "cat .*\\.env.*",
+                "grep .*\\.env.*",
+                "head .*\\.env.*",
+                "sed .*\\.env.*",
+                "tail .*\\.env.*",
+                "find .*\\.env.*",
+                "rm .*",
+                "sudo .*",
+                "chmod [0-7]{3,4} .*",
+                "chmod -R .*",
+                "chmod u\\+s .*",
+                "chmod g\\+s .*",
+                "chown .*",
+                "docker .*",
+                "kubectl .*",
+                "git add \\.",
+                "git add -A.*",
+                "git add --all.*",
+                "ssh .*",
+                "pip install .*",
+                "npm install .*",
+                "brew install .*"
+            ]
+        },
+        "write": {
+            "allowedPaths": [
+                "~/projects/**",
+                "~/repositories/**",
+                "~/.dotfiles/**",
+                "./**"
+            ],
+            "deniedPaths": [
+                "/etc/**",
+                "/usr/**",
+                "/bin/**",
+                "/sbin/**",
+                "/System/**"
+            ]
+        },
+        "grep": {
+            "allowedPaths": [
+                "~/projects/**",
+                "~/repositories/**",
+                "~/.dotfiles/**",
+                "./**"
+            ],
+            "deniedPaths": [
+                "/etc/**",
+                "/usr/**",
+                "/bin/**",
+                "/sbin/**",
+                "/System/**",
+                "**/.env",
+                "**/.env.*"
+            ]
+        },
+        "glob": {
+            "allowedPaths": [
+                "~/projects/**",
+                "~/repositories/**",
+                "~/.dotfiles/**",
+                "./**"
+            ],
+            "deniedPaths": [
+                "/etc/**",
+                "/usr/**",
+                "/bin/**",
+                "/sbin/**",
+                "/System/**",
+                "**/.env",
+                "**/.env.*"
+            ]
+        },
+        "subagent": {
+            "availableAgents": [
+                "default",
+                "docs",
+                "jira",
+                "ansible"
+            ],
+            "trustedAgents": [
+                "default"
+            ]
+        },
+        "web_fetch": {
+            "trusted": [
+                ".*docs\\.ansible\\.com.*",
+                ".*ansible\\.readthedocs\\.io.*",
+                ".*galaxy\\.ansible\\.com.*",
+                ".*github\\.com.*",
+                ".*pve\\.proxmox\\.com.*",
+                ".*docs\\..*"
+            ],
+            "blocked": [
+                ".*pastebin\\.com.*"
+            ]
+        },
+        "read": {
+            "deniedPaths": [
+                "**/.env",
+                "**/.env.*",
+                "**/*.key",
+                "**/*.pem",
+                "**/credentials*",
+                "**/.vault_pass*",
+                "**/vault-password*"
+            ]
+        }
+    },
+    "includeMcpJson": true
+}
