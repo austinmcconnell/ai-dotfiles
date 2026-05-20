@@ -20,6 +20,11 @@
                 "matcher": "*",
                 "command": "~/.dotfiles/etc/ai/hooks/block-env-files.sh",
                 "timeout_ms": 5000
+            },
+            {
+                "matcher": "*",
+                "command": "~/.dotfiles/etc/ai/hooks/block-sops-age-files.sh",
+                "timeout_ms": 5000
             }
         ],
         "userPromptSubmit": []
@@ -111,6 +116,9 @@
                 "head .*\\.env.*",
                 "sed .*\\.env.*",
                 "tail .*\\.env.*",
+                "cat .*sops/age/keys\\.txt.*",
+                "cat .*\\.agekey.*",
+                "sops (decrypt|--decrypt|-d ).*",
                 "aws .*",
                 "brew install .*",
                 "chmod [0-7]{3,4} .*",
@@ -172,7 +180,9 @@
                 "/sbin/**",
                 "/System/**",
                 "**/.env",
-                "**/.env.*"
+                "**/.env.*",
+                "**/sops/age/keys.txt",
+                "**/*.agekey"
             ]
         },
         "glob": {
@@ -189,7 +199,9 @@
                 "/sbin/**",
                 "/System/**",
                 "**/.env",
-                "**/.env.*"
+                "**/.env.*",
+                "**/sops/age/keys.txt",
+                "**/*.agekey"
             ]
         },
         "subagent": {
@@ -218,7 +230,9 @@
                 "**/.env.*",
                 "**/*.key",
                 "**/*.pem",
-                "**/credentials*"
+                "**/credentials*",
+                "**/sops/age/keys.txt",
+                "**/*.agekey"
             ]
         }
     }

@@ -26,6 +26,11 @@
                 "timeout_ms": 5000
             },
             {
+                "matcher": "*",
+                "command": "~/.dotfiles/etc/ai/hooks/block-sops-age-files.sh",
+                "timeout_ms": 5000
+            },
+            {
                 "matcher": "use_aws",
                 "command": "jq -c '{timestamp: now | strftime(\"%Y-%m-%d %H:%M:%S\"), tool: .tool_name, input: .tool_input}' >> ~/.kiro/logs/aws-audit.jsonl",
                 "timeout_ms": 5000
@@ -229,6 +234,9 @@
                 "sed .*\\.env.*",
                 "tail .*\\.env.*",
                 "find .*\\.env.*",
+                "cat .*sops/age/keys\\.txt.*",
+                "cat .*\\.agekey.*",
+                "sops (decrypt|--decrypt|-d ).*",
                 "gh auth .*",
                 "gh issue close .*",
                 "gh issue delete .*",
@@ -332,7 +340,9 @@
                 "/sbin/**",
                 "/System/**",
                 "**/.env",
-                "**/.env.*"
+                "**/.env.*",
+                "**/sops/age/keys.txt",
+                "**/*.agekey"
             ]
         },
         "glob": {
@@ -349,7 +359,9 @@
                 "/sbin/**",
                 "/System/**",
                 "**/.env",
-                "**/.env.*"
+                "**/.env.*",
+                "**/sops/age/keys.txt",
+                "**/*.agekey"
             ]
         },
         "subagent": {
@@ -382,7 +394,9 @@
                 "**/.env.*",
                 "**/*.key",
                 "**/*.pem",
-                "**/credentials*"
+                "**/credentials*",
+                "**/sops/age/keys.txt",
+                "**/*.agekey"
             ]
         }
     }
