@@ -20,3 +20,13 @@ These files contain encryption keys and decrypted secrets that must not be expos
 
 The `.sops.yaml` config file and `*.enc.*` (encrypted) files are safe to read — they contain only
 public keys and encrypted values respectively.
+
+## SSH Keys
+
+NEVER read, display, search, or access SSH private keys:
+
+- `~/.ssh/id_rsa`, `~/.ssh/id_ed25519`, `~/.ssh/id_ecdsa`, `~/.ssh/id_dsa`
+- Any file matching `.ssh/id_*` that does NOT end in `.pub`
+
+Public keys (`*.pub`), `~/.ssh/config`, `~/.ssh/known_hosts`, and `~/.ssh/authorized_keys` are safe
+to read — they contain no secret material.

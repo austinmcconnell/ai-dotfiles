@@ -83,7 +83,7 @@
             "type": "knowledgeBase",
             "source": "file://~/projects/austinmcconnell/_documentation_/family-dashboard",
             "name": "family-dashboard-docs",
-            "description": "Family wall calendar and chore management system documentation covering display hardware, software platform research (MagicMirror\u00b2, Home Assistant), kiosk software, mounting options, and component selection. References ubiquiti-network-stack for IP address and VLAN assignments",
+            "description": "Family wall calendar and chore management system documentation covering display hardware, software platform research (MagicMirror², Home Assistant), kiosk software, mounting options, and component selection. References ubiquiti-network-stack for IP address and VLAN assignments",
             "indexType": "best",
             "include": [
                 "**/*.md"
@@ -214,6 +214,11 @@
                 "matcher": "*",
                 "command": "~/.dotfiles/etc/ai/hooks/block-sops-age-files.sh",
                 "timeout_ms": 5000
+            },
+            {
+                "matcher": "*",
+                "command": "~/.dotfiles/etc/ai/hooks/block-ssh-private-keys.sh",
+                "timeout_ms": 5000
             }
         ],
         "postToolUse": [
@@ -285,6 +290,11 @@
                 "cat .*sops/age/keys\\.txt.*",
                 "cat .*\\.agekey.*",
                 "sops (decrypt|--decrypt|-d ).*",
+                "cat .*\\.ssh/id_rsa.*",
+                "cat .*\\.ssh/id_ed25519.*",
+                "cat .*\\.ssh/id_ecdsa.*",
+                "cat .*\\.ssh/id_dsa.*",
+                "cat .*\\.ssh/.*_key[^.].*",
                 "rm .*",
                 "sudo .*",
                 "chmod [0-7]{3,4} .*",
@@ -330,7 +340,12 @@
                 "**/.env",
                 "**/.env.*",
                 "**/sops/age/keys.txt",
-                "**/*.agekey"
+                "**/*.agekey",
+                "**/.ssh/id_rsa",
+                "**/.ssh/id_ed25519",
+                "**/.ssh/id_ecdsa",
+                "**/.ssh/id_dsa",
+                "**/.ssh/*_key"
             ]
         },
         "glob": {
@@ -349,7 +364,12 @@
                 "**/.env",
                 "**/.env.*",
                 "**/sops/age/keys.txt",
-                "**/*.agekey"
+                "**/*.agekey",
+                "**/.ssh/id_rsa",
+                "**/.ssh/id_ed25519",
+                "**/.ssh/id_ecdsa",
+                "**/.ssh/id_dsa",
+                "**/.ssh/*_key"
             ]
         },
         "subagent": {
@@ -384,7 +404,12 @@
                 "**/*.pem",
                 "**/credentials*",
                 "**/sops/age/keys.txt",
-                "**/*.agekey"
+                "**/*.agekey",
+                "**/.ssh/id_rsa",
+                "**/.ssh/id_ed25519",
+                "**/.ssh/id_ecdsa",
+                "**/.ssh/id_dsa",
+                "**/.ssh/*_key"
             ]
         }
     },

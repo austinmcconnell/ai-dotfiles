@@ -31,6 +31,11 @@
                 "timeout_ms": 5000
             },
             {
+                "matcher": "*",
+                "command": "~/.dotfiles/etc/ai/hooks/block-ssh-private-keys.sh",
+                "timeout_ms": 5000
+            },
+            {
                 "matcher": "use_aws",
                 "command": "jq -c '{timestamp: now | strftime(\"%Y-%m-%d %H:%M:%S\"), tool: .tool_name, input: .tool_input}' >> ~/.kiro/logs/aws-audit.jsonl",
                 "timeout_ms": 5000
@@ -237,6 +242,11 @@
                 "cat .*sops/age/keys\\.txt.*",
                 "cat .*\\.agekey.*",
                 "sops (decrypt|--decrypt|-d ).*",
+                "cat .*\\.ssh/id_rsa.*",
+                "cat .*\\.ssh/id_ed25519.*",
+                "cat .*\\.ssh/id_ecdsa.*",
+                "cat .*\\.ssh/id_dsa.*",
+                "cat .*\\.ssh/.*_key[^.].*",
                 "gh auth .*",
                 "gh issue close .*",
                 "gh issue delete .*",
@@ -342,7 +352,12 @@
                 "**/.env",
                 "**/.env.*",
                 "**/sops/age/keys.txt",
-                "**/*.agekey"
+                "**/*.agekey",
+                "**/.ssh/id_rsa",
+                "**/.ssh/id_ed25519",
+                "**/.ssh/id_ecdsa",
+                "**/.ssh/id_dsa",
+                "**/.ssh/*_key"
             ]
         },
         "glob": {
@@ -361,7 +376,12 @@
                 "**/.env",
                 "**/.env.*",
                 "**/sops/age/keys.txt",
-                "**/*.agekey"
+                "**/*.agekey",
+                "**/.ssh/id_rsa",
+                "**/.ssh/id_ed25519",
+                "**/.ssh/id_ecdsa",
+                "**/.ssh/id_dsa",
+                "**/.ssh/*_key"
             ]
         },
         "subagent": {
@@ -396,7 +416,12 @@
                 "**/*.pem",
                 "**/credentials*",
                 "**/sops/age/keys.txt",
-                "**/*.agekey"
+                "**/*.agekey",
+                "**/.ssh/id_rsa",
+                "**/.ssh/id_ed25519",
+                "**/.ssh/id_ecdsa",
+                "**/.ssh/id_dsa",
+                "**/.ssh/*_key"
             ]
         }
     }

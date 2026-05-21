@@ -93,6 +93,11 @@
                 "matcher": "*",
                 "command": "~/.dotfiles/etc/ai/hooks/block-sops-age-files.sh",
                 "timeout_ms": 5000
+            },
+            {
+                "matcher": "*",
+                "command": "~/.dotfiles/etc/ai/hooks/block-ssh-private-keys.sh",
+                "timeout_ms": 5000
             }
         ],
         "postToolUse": [
@@ -176,6 +181,11 @@
                 "cat .*sops/age/keys\\.txt.*",
                 "cat .*\\.agekey.*",
                 "sops (decrypt|--decrypt|-d ).*",
+                "cat .*\\.ssh/id_rsa.*",
+                "cat .*\\.ssh/id_ed25519.*",
+                "cat .*\\.ssh/id_ecdsa.*",
+                "cat .*\\.ssh/id_dsa.*",
+                "cat .*\\.ssh/.*_key[^.].*",
                 "brew install .*",
                 "chmod [0-7]{3,4} .*",
                 "chmod -R .*",
@@ -234,7 +244,12 @@
                 "**/.env",
                 "**/.env.*",
                 "**/sops/age/keys.txt",
-                "**/*.agekey"
+                "**/*.agekey",
+                "**/.ssh/id_rsa",
+                "**/.ssh/id_ed25519",
+                "**/.ssh/id_ecdsa",
+                "**/.ssh/id_dsa",
+                "**/.ssh/*_key"
             ]
         },
         "glob": {
@@ -253,7 +268,12 @@
                 "**/.env",
                 "**/.env.*",
                 "**/sops/age/keys.txt",
-                "**/*.agekey"
+                "**/*.agekey",
+                "**/.ssh/id_rsa",
+                "**/.ssh/id_ed25519",
+                "**/.ssh/id_ecdsa",
+                "**/.ssh/id_dsa",
+                "**/.ssh/*_key"
             ]
         },
         "subagent": {
@@ -290,7 +310,12 @@
                 "**/.vault_pass*",
                 "**/vault-password*",
                 "**/sops/age/keys.txt",
-                "**/*.agekey"
+                "**/*.agekey",
+                "**/.ssh/id_rsa",
+                "**/.ssh/id_ed25519",
+                "**/.ssh/id_ecdsa",
+                "**/.ssh/id_dsa",
+                "**/.ssh/*_key"
             ]
         }
     },
