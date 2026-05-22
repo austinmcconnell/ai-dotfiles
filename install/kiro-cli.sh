@@ -126,3 +126,24 @@ if [ -d "$RESEARCH_REPO/.git" ]; then
     git -C "$RESEARCH_REPO" config set --append hook.kb-staleness.event post-rewrite
     echo "✓ Configured KB staleness hooks for research repo"
 fi
+
+# Clone reference repositories for ansible agent knowledge bases
+SOURCES_DIR="$HOME/sources/geerlingguy"
+GEERLING_REPOS=(
+    "ansible.jeffgeerling.com"
+    "ansible-for-devops"
+    "ansible-role-docker"
+    "ansible-role-security"
+    "ansible-role-pip"
+    "ansible-role-ntp"
+)
+
+mkdir -p "$SOURCES_DIR"
+for repo in "${GEERLING_REPOS[@]}"; do
+    if [ ! -d "$SOURCES_DIR/$repo" ]; then
+        echo "Cloning $repo..."
+        git clone "https://github.com/geerlingguy/$repo.git" "$SOURCES_DIR/$repo" || echo "⚠️  Failed to clone $repo (non-fatal)"
+    else
+        echo "✓ $repo already exists"
+    fi
+done

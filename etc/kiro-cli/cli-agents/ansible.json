@@ -14,6 +14,72 @@
         "skill://~/.kiro/skills/shared/**/SKILL.md",
         {
             "type": "knowledgeBase",
+            "source": "file://~/sources/geerlingguy/ansible.jeffgeerling.com",
+            "name": "geerlingguy-infrastructure",
+            "description": "Geerling's personal infrastructure playbook — real-world production project structure, inventory layout, and role organization patterns",
+            "indexType": "best",
+            "exclude": [
+                ".git/**"
+            ],
+            "autoUpdate": false
+        },
+        {
+            "type": "knowledgeBase",
+            "source": "file://~/sources/geerlingguy/ansible-for-devops",
+            "name": "geerlingguy-ansible-for-devops",
+            "description": "Companion examples for Ansible for DevOps book — role structure, testing patterns, and multi-server setups organized by chapter",
+            "indexType": "best",
+            "exclude": [
+                ".git/**"
+            ],
+            "autoUpdate": false
+        },
+        {
+            "type": "knowledgeBase",
+            "source": "file://~/sources/geerlingguy/ansible-role-docker",
+            "name": "geerlingguy-role-docker",
+            "description": "Complex multi-platform Ansible role reference — Docker installation with platform-specific vars, molecule tests, and CI",
+            "indexType": "best",
+            "exclude": [
+                ".git/**"
+            ],
+            "autoUpdate": false
+        },
+        {
+            "type": "knowledgeBase",
+            "source": "file://~/sources/geerlingguy/ansible-role-security",
+            "name": "geerlingguy-role-security",
+            "description": "Security hardening Ansible role — SSH config, fail2ban, automatic updates with clean defaults/vars separation",
+            "indexType": "best",
+            "exclude": [
+                ".git/**"
+            ],
+            "autoUpdate": false
+        },
+        {
+            "type": "knowledgeBase",
+            "source": "file://~/sources/geerlingguy/ansible-role-pip",
+            "name": "geerlingguy-role-pip",
+            "description": "Simple utility Ansible role reference — pip installation with minimal task structure",
+            "indexType": "best",
+            "exclude": [
+                ".git/**"
+            ],
+            "autoUpdate": false
+        },
+        {
+            "type": "knowledgeBase",
+            "source": "file://~/sources/geerlingguy/ansible-role-ntp",
+            "name": "geerlingguy-role-ntp",
+            "description": "Minimal single-purpose Ansible role reference — NTP configuration with platform variables and molecule tests",
+            "indexType": "best",
+            "exclude": [
+                ".git/**"
+            ],
+            "autoUpdate": false
+        },
+        {
+            "type": "knowledgeBase",
             "source": "file://~/projects/austinmcconnell/_research_",
             "name": "research",
             "description": "Structured research files covering product evaluations, technology comparisons, and technical investigations with cited sources and verification dates",
@@ -232,6 +298,7 @@
             "allowedPaths": [
                 "~/projects/**",
                 "~/repositories/**",
+                "~/sources/**",
                 "~/.dotfiles/**",
                 "./**"
             ],
@@ -256,6 +323,7 @@
             "allowedPaths": [
                 "~/projects/**",
                 "~/repositories/**",
+                "~/sources/**",
                 "~/.dotfiles/**",
                 "./**"
             ],
