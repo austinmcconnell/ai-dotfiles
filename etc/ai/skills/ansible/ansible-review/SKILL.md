@@ -54,6 +54,8 @@ Review each file against these categories, ordered by severity:
 - `shell` used without shell features (`command-instead-of-shell`)
 - Repeated Proxmox API auth instead of `module_defaults`
 - Missing tags on roles in playbooks
+- Service/package tasks missing `ignore_errors: "{{ ansible_check_mode }}"` (causes false failures
+  in `--check` mode when packages aren't installed yet)
 
 **Nits:**
 
@@ -74,6 +76,13 @@ Review each file against these categories, ordered by severity:
 - Do command/shell tasks have proper change detection?
 - Are Proxmox operations using fixed `vmid` values?
 - Do template/copy tasks only write when content differs? (they do by default)
+
+To verify idempotency in practice:
+
+- **Molecule:** `molecule test` runs converge twice and asserts zero changes on the second run
+- **Manual:** Run the playbook twice with `--check --diff` — the second run should report no changes
+- **CI:** Use a `test_idempotence` flag that runs the playbook a second time and fails if `changed=`
+  is non-zero
 
 ### Step 5: Check Proxmox-specific patterns
 

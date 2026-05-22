@@ -60,6 +60,41 @@ rule):
     creates: /var/lib/app/db.sqlite
 ```
 
+## check_mode and failed_when for Command Tasks
+
+For read-only commands that register variables used in later `when:` conditions, add
+`check_mode: false` to ensure they execute during `--check` mode:
+
+```yaml
+# Runs even in --check mode so the registered variable is available
+- name: Check current application version
+  ansible.builtin.command: /opt/app/version
+  register: app_version
+  check_mode: false
+  changed_when: false
+  failed_when: false
+```
+
+Use `failed_when: false` when a command might legitimately fail (e.g., checking if a binary exists
+before installation):
+
+```yaml
+# Binary may not exist yet — that's expected
+- name: Check if docker-compose is installed
+  ansible.builtin.command: docker-compose --version
+  register: compose_check
+  check_mode: false
+  changed_when: false
+  failed_when: false
+
+- name: Install docker-compose
+  ansible.builtin.get_url:
+    url: "{{ docker_compose_url }}"
+    dest: /usr/local/bin/docker-compose
+    mode: "0755"
+  when: compose_check.rc != 0
+```
+
 ## Common Module Mappings
 
 | Short name       | FQCN                             |

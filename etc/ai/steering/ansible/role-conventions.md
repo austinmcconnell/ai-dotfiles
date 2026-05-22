@@ -62,6 +62,75 @@ proxmox_base_service_name: pve-cluster
 Rule: if a user should be able to override it → `defaults/`. If changing it would break the role →
 `vars/`.
 
+## Platform-Specific Variables
+
+For roles that support multiple distributions, use platform-specific vars files with a
+double-underscore prefix (`__`) for internal values:
+
+```text
+roles/<role_name>/
+└── vars/
+    ├── Debian.yml
+    ├── RedHat.yml
+    └── main.yml        # Empty or shared constants
+```
+
+```yaml
+# vars/Debian.yml
+__rolename_package: ntp
+__rolename_service: ntp
+__rolename_config_file: /etc/ntp.conf
+
+# vars/RedHat.yml
+__rolename_package: chrony
+__rolename_service: chronyd
+__rolename_config_file: /etc/chrony.conf
+```
+
+Load with `include_vars` and a `first_found` fallback chain at the top of `tasks/main.yml`:
+
+```yaml
+- name: Include OS-specific variables
+  ansible.builtin.include_vars: "{{ item }}"
+  with_first_found:
+    - "{{ ansible_facts.distribution }}-{{ ansible_facts['distribution_version'] }}.yml"
+    - "{{ ansible_facts.os_family }}.yml"
+    - main.yml
+```
+
+Promote `__` vars to public names via `set_fact` so users can override from `group_vars`:
+
+```yaml
+- name: Set platform-specific defaults
+  ansible.builtin.set_fact:
+    rolename_package: "{{ __rolename_package }}"
+  when: rolename_package is not defined
+```
+
+## Defaults Documentation Style
+
+Document `defaults/main.yml` with inline comments. Group related variables with blank lines as
+separators. Use flat YAML (no nested dicts for configuration groups):
+
+```yaml
+---
+# Service control
+rolename_enabled: true
+rolename_manage_config: true
+
+# Network configuration
+rolename_port: 8080
+rolename_bind_address: "0.0.0.0"
+
+# Package version (empty string = latest)
+rolename_version: ""
+
+# Platform-specific values — set dynamically from vars/ files.
+# Override in group_vars to force a specific value.
+# rolename_package: [varies by OS]
+# rolename_service: [varies by OS]
+```
+
 ## meta/main.yml
 
 ```yaml
@@ -82,6 +151,45 @@ galaxy_info:
 
 - Keep `dependencies: []` unless the role truly cannot function without another role running first
 - Prefer explicit `include_role` in playbooks over implicit dependencies for loose coupling
+
+## Handler Conventions
+
+Handler names must be globally unique, start with a capitalized verb, and describe the action:
+`Restart nginx`, `Reload systemd`, `Update GRUB`.
+
+Use variables for service names so handlers work with platform-specific values:
+
+```yaml
+# handlers/main.yml
+- name: Restart ntp
+  ansible.builtin.service:
+    name: "{{ rolename_service }}"
+    state: "{{ rolename_restart_handler_state }}"
+  when: rolename_enabled | bool
+  ignore_errors: "{{ ansible_check_mode }}"
+```
+
+Expose handler state as a default so users can suppress restarts during maintenance:
+
+```yaml
+# defaults/main.yml
+rolename_restart_handler_state: restarted
+```
+
+## Service Tasks and Check Mode
+
+Service and package tasks may fail during `--check` mode because the package isn't actually
+installed yet. Use `ignore_errors: "{{ ansible_check_mode }}"` to prevent false failures:
+
+```yaml
+- name: Ensure service is running and enabled
+  ansible.builtin.service:
+    name: "{{ rolename_service }}"
+    state: started
+    enabled: true
+  when: rolename_enabled | bool
+  ignore_errors: "{{ ansible_check_mode }}"
+```
 
 ## Task File Organization
 

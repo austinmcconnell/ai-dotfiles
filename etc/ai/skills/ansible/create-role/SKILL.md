@@ -26,6 +26,7 @@ roles/<role_name>/
 ├── handlers/main.yml       # Only if tasks use notify
 ├── defaults/main.yml       # Only if role has configurable values
 ├── vars/main.yml           # Only if role has internal constants
+├── vars/<OS_family>.yml    # Only if role supports multiple platforms
 ├── templates/              # Only if role deploys Jinja2 templates
 ├── files/                  # Only if role deploys static files
 ├── meta/main.yml
@@ -34,6 +35,9 @@ roles/<role_name>/
     ├── converge.yml
     └── verify.yml
 ```
+
+If the role supports multiple platforms, add `vars/<OS_family>.yml` files with `__` prefixed
+internal variables (see role-conventions.md Platform-Specific Variables section).
 
 ### Step 3: Write meta/main.yml
 
@@ -73,7 +77,28 @@ galaxy_info:
 - Add `changed_when` to any command/shell tasks
 - Split into included files if the role manages multiple concerns
 
-### Step 6: Update playbook
+### Step 6: Write molecule converge.yml (if testing)
+
+```yaml
+---
+- name: Converge
+  hosts: all
+  become: true
+
+  pre_tasks:
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 600
+
+  roles:
+    - role: <role_name>
+```
+
+Use `pre_tasks` for test environment setup only (apt cache, installing test dependencies). The role
+is invoked via `roles:` — not inline tasks.
+
+### Step 7: Update playbook
 
 Add the role to the appropriate playbook with tags:
 
