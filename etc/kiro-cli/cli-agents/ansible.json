@@ -222,6 +222,7 @@
                 "hostname",
                 "jq( .*)?",
                 "ls( .*)?",
+                "make lint",
                 "man .*",
                 "mkdir -p .*",
                 "pre-commit .*",
