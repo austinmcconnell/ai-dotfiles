@@ -130,7 +130,8 @@ fi
 # Clone reference repositories for ansible agent knowledge bases
 SOURCES_DIR="$HOME/sources/geerlingguy"
 GEERLING_REPOS=(
-    "ansible.jeffgeerling.com"
+    "mac-dev-playbook"
+    "pi-cluster"
     "ansible-for-devops"
     "ansible-role-docker"
     "ansible-role-security"

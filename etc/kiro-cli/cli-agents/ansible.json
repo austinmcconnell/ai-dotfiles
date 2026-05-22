@@ -14,9 +14,20 @@
         "skill://~/.kiro/skills/shared/**/SKILL.md",
         {
             "type": "knowledgeBase",
-            "source": "file://~/sources/geerlingguy/ansible.jeffgeerling.com",
-            "name": "geerlingguy-infrastructure",
-            "description": "Geerling's personal infrastructure playbook — real-world production project structure, inventory layout, and role organization patterns",
+            "source": "file://~/sources/geerlingguy/mac-dev-playbook",
+            "name": "geerlingguy-mac-dev-playbook",
+            "description": "Geerling's macOS development playbook — real-world project structure, role organization, and requirements management for personal machine setup",
+            "indexType": "best",
+            "exclude": [
+                ".git/**"
+            ],
+            "autoUpdate": false
+        },
+        {
+            "type": "knowledgeBase",
+            "source": "file://~/sources/geerlingguy/pi-cluster",
+            "name": "geerlingguy-pi-cluster",
+            "description": "Geerling's Raspberry Pi cluster playbook — multi-node infrastructure automation, inventory patterns, and service deployment for a homelab cluster",
             "indexType": "best",
             "exclude": [
                 ".git/**"
