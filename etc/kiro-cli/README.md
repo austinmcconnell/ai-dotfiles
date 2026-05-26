@@ -113,6 +113,31 @@ and [hooks documentation](https://kiro.dev/docs/cli/hooks/):
 - **`aws.autoAllowReadonly: true`** — more permissive than default. Allows read-only AWS calls
   (describe, list, get) without prompting. Appropriate for infrastructure work.
 
+## Considered and Rejected
+
+Features evaluated and intentionally not adopted (last reviewed: 2026-05-26, v2.4):
+
+- **`cache_ttl_seconds` on security hooks** — The hooks docs do not confirm whether caching is keyed
+  on input parameters. If caching is global (exit code cached regardless of tool input), a
+  successful check for a safe file would bypass the hook for subsequent `.env` access within the
+  TTL. Do not add until Kiro documents input-aware cache keys.
+- **`autoAllowReadonly` for shell** — Kiro's heuristic for "read-only" is undocumented. Until we can
+  verify exactly which commands it auto-approves, the explicit `allowedCommands` list is safer.
+  Revisit if the heuristic is documented or if the allowedCommands list becomes unwieldy.
+- **`keyboardShortcut` on agents** — Agent switching is infrequent enough that `/agent swap` is
+  fine. Shortcuts add config noise without meaningful time savings.
+- **`model` field on agents** — Locks agents to specific models. The "Auto" default adapts as new
+  models become available without config changes.
+- **`welcomeMessage` field** — Agent name and description already provide context on switch.
+- **`stop` hook trigger** — No current use case. Tests and builds are triggered explicitly.
+- **`denyByDefault` for shell** — Too restrictive for the default agent where novel commands are
+  common. Would require constant allowlist maintenance.
+- **Tool Search** — Only beneficial with 5+ MCP servers or 50k+ tokens of tool specs. Current setup
+  has 1-2 MCP servers per agent.
+- **`$AGENT_CONTEXT_OUT` in hooks** — This env var is only set when the agent's shell tool drives a
+  command, not during hook execution. Hooks already have their own output mechanism (stdout → agent
+  context for agentSpawn, stderr → LLM for preToolUse exit 2).
+
 ## Official Documentation
 
 - [Configuration Reference](https://kiro.dev/docs/cli/custom-agents/configuration-reference/)
