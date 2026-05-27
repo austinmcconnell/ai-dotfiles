@@ -6,6 +6,7 @@ set -euo pipefail
 
 TRACE_DIR="$HOME/.kiro/logs/traces"
 [[ -d "$TRACE_DIR" ]] || exit 0
+chmod 700 "$TRACE_DIR"
 
 MAX_AGE_DAYS=7
 MAX_TOTAL_MB=100

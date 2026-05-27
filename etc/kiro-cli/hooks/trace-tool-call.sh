@@ -9,6 +9,7 @@ TOOL_INPUT=$(cat)
 AGENT="${AI_AGENT_NAME:-${1:-default}}"
 TRACE_DIR="$HOME/.kiro/logs/traces"
 mkdir -p "$TRACE_DIR"
+chmod 700 "$TRACE_DIR"
 
 # Session ID: prefer explicit, fall back to date + parent PID
 SESSION_ID="${KIRO_SESSION_ID:-$(date +%Y%m%d)-$$}"
