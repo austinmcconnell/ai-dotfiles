@@ -50,3 +50,26 @@ breakpoints is preferred because:
 - The summary is higher quality (written with full understanding of what matters)
 
 Auto-compaction should rarely trigger if you compact strategically.
+
+## Configured Token Settings
+
+The following settings are active and affect compaction behavior:
+
+### Kiro CLI (`cli.json`)
+
+- `compaction.excludeContextWindowPercent: 15` — preserves the most recent 15% of context during
+  compaction (keeps working memory intact)
+- `compaction.excludeMessages: 4` — last 4 message exchanges survive compaction unchanged
+
+### Claude Code
+
+- `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE=60` — triggers compaction at 60% context usage instead of ~95%
+
+### What's NOT Configured (and why)
+
+- **Thinking token cap** — not available in Kiro CLI; for Claude Code, strategic compaction at
+  breakpoints is preferred over capping thinking (quality over speed)
+- **Subagent model downgrade** — subagent quality matters for complex delegated work; not worth the
+  cost savings
+- **Compaction trigger threshold in Kiro CLI** — not available as a setting; only
+  `excludeContextWindowPercent` (what to preserve) is configurable

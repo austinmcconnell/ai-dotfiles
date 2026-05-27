@@ -36,5 +36,7 @@
     "chat.enableTodoList": true,
     "chat.greeting.enabled": false,
     "cleanup.periodDays": 90,
-    "hooks.showStatus": true
+    "hooks.showStatus": true,
+    "compaction.excludeContextWindowPercent": 15,
+    "compaction.excludeMessages": 4
 }
