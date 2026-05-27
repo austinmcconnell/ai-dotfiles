@@ -1,0 +1,142 @@
+#!/bin/bash
+# Search and query agent trace logs
+# Usage:
+#   trace-search                    # show recent traces (last session)
+#   trace-search --tool shell       # filter by tool name
+#   trace-search --grep "pattern"   # search input/output summaries
+#   trace-search --session <id>     # specific session
+#   trace-search --today            # all traces from today
+#   trace-search --list             # list available trace files
+
+set -euo pipefail
+
+TRACE_DIR="$HOME/.kiro/logs/traces"
+
+usage() {
+    echo "Usage: trace-search [OPTIONS]"
+    echo ""
+    echo "Options:"
+    echo "  --list              List available trace files"
+    echo "  --session <id>     Show traces for a specific session"
+    echo "  --today            Show all traces from today"
+    echo "  --tool <name>      Filter by tool name"
+    echo "  --grep <pattern>   Search input/output summaries"
+    echo "  --last <n>         Show last N entries (default: 50)"
+    echo "  --tail             Follow the latest trace file"
+    echo "  -h, --help         Show this help"
+}
+
+FILTER_TOOL=""
+FILTER_GREP=""
+SESSION=""
+LAST=50
+TAIL=false
+LIST=false
+TODAY=false
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+    --list)
+        LIST=true
+        shift
+        ;;
+    --session)
+        SESSION="$2"
+        shift 2
+        ;;
+    --today)
+        TODAY=true
+        shift
+        ;;
+    --tool)
+        FILTER_TOOL="$2"
+        shift 2
+        ;;
+    --grep)
+        FILTER_GREP="$2"
+        shift 2
+        ;;
+    --last)
+        LAST="$2"
+        shift 2
+        ;;
+    --tail)
+        TAIL=true
+        shift
+        ;;
+    -h | --help)
+        usage
+        exit 0
+        ;;
+    *)
+        echo "Unknown option: $1" >&2
+        usage
+        exit 1
+        ;;
+    esac
+done
+
+if [[ ! -d "$TRACE_DIR" ]]; then
+    echo "No traces found at $TRACE_DIR" >&2
+    exit 1
+fi
+
+# List mode
+if [[ "$LIST" == "true" ]]; then
+    echo "Trace files in $TRACE_DIR:"
+    ls -lht "$TRACE_DIR"/*.jsonl 2>/dev/null || echo "  (none)"
+    exit 0
+fi
+
+# Determine which file(s) to search
+FILES=()
+if [[ -n "$SESSION" ]]; then
+    if [[ ! -f "$TRACE_DIR/${SESSION}.jsonl" ]]; then
+        echo "No trace file for session: $SESSION" >&2
+        exit 1
+    fi
+    FILES=("$TRACE_DIR/${SESSION}.jsonl")
+elif [[ "$TODAY" == "true" ]]; then
+    TODAY_PREFIX=$(date +%Y%m%d)
+    while IFS= read -r -d '' f; do
+        FILES+=("$f")
+    done < <(find "$TRACE_DIR" -name "${TODAY_PREFIX}*.jsonl" -print0 2>/dev/null | sort -z)
+else
+    LATEST=$(find "$TRACE_DIR" -name "*.jsonl" -print0 2>/dev/null | xargs -0 ls -t 2>/dev/null | head -1)
+    [[ -n "$LATEST" ]] && FILES=("$LATEST")
+fi
+
+if [[ ${#FILES[@]} -eq 0 ]]; then
+    echo "No trace files found" >&2
+    exit 1
+fi
+
+# Tail mode
+if [[ "$TAIL" == "true" ]]; then
+    LATEST=$(find "$TRACE_DIR" -name "*.jsonl" -print0 2>/dev/null | xargs -0 ls -t 2>/dev/null | head -1)
+    tail -f "$LATEST" | jq .
+    exit 0
+fi
+
+# Build jq filter (use --arg to prevent injection)
+JQ_ARGS=()
+JQ_FILTER="."
+if [[ -n "$FILTER_TOOL" ]]; then
+    JQ_ARGS+=(--arg tool "$FILTER_TOOL")
+    # shellcheck disable=SC2016
+    JQ_FILTER='select(.tool == $tool)'
+fi
+
+# Process files
+OUTPUT=$(cat "${FILES[@]}" | jq -c "${JQ_ARGS[@]}" "$JQ_FILTER" 2>/dev/null | tail -n "$LAST")
+
+if [[ -n "$FILTER_GREP" ]]; then
+    OUTPUT=$(echo "$OUTPUT" | grep -i "$FILTER_GREP" || true)
+fi
+
+# Pretty print
+if [[ -z "$OUTPUT" ]]; then
+    echo "No matching traces found" >&2
+    exit 0
+fi
+echo "$OUTPUT" | jq .

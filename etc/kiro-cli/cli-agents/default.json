@@ -28,6 +28,10 @@
             {
                 "command": "~/.dotfiles/etc/kiro-cli/hooks/recall-memory.sh",
                 "timeout_ms": 5000
+            },
+            {
+                "command": "~/.dotfiles/etc/kiro-cli/hooks/rotate-traces.sh",
+                "timeout_ms": 5000
             }
         ],
         "preToolUse": [
@@ -72,6 +76,11 @@
                 "matcher": "knowledge",
                 "command": "~/.dotfiles/etc/kiro-cli/hooks/clear-research-kb-stale.sh default",
                 "timeout_ms": 5000
+            },
+            {
+                "matcher": "*",
+                "command": "~/.dotfiles/etc/kiro-cli/hooks/trace-tool-call.sh default",
+                "timeout_ms": 3000
             }
         ]
     },
