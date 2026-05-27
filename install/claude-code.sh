@@ -25,6 +25,14 @@ if [ ! -f "$CLAUDE_JSON" ]; then
     cat >"$CLAUDE_JSON" <<'EOF'
 {
   "mcpServers": {
+    "engram": {
+      "type": "stdio",
+      "command": "engram",
+      "args": ["mcp"],
+      "env": {
+        "ENGRAM_DATA_DIR": "${HOME}/.config/engram"
+      }
+    },
     "jira": {
       "type": "stdio",
       "command": "npx",

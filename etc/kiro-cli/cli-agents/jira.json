@@ -1,5 +1,12 @@
 {
     "allowedTools": [
+        "@engram/mem_context",
+        "@engram/mem_save",
+        "@engram/mem_search",
+        "@engram/mem_session_end",
+        "@engram/mem_session_start",
+        "@engram/mem_stats",
+        "@engram/mem_suggest_topic_key",
         "@jira/jira_get",
         "code",
         "glob",
@@ -14,7 +21,12 @@
     ],
     "description": "JIRA-focused agent with deep SCRUM and Agile knowledge, restricted to safe operations",
     "hooks": {
-        "agentSpawn": [],
+        "agentSpawn": [
+            {
+                "command": "~/.dotfiles/etc/kiro-cli/hooks/recall-memory.sh",
+                "timeout_ms": 5000
+            }
+        ],
         "preToolUse": [
             {
                 "matcher": "*",
@@ -29,6 +41,11 @@
             {
                 "matcher": "*",
                 "command": "~/.dotfiles/etc/ai/hooks/block-ssh-private-keys.sh",
+                "timeout_ms": 5000
+            },
+            {
+                "matcher": "@engram",
+                "command": "~/.dotfiles/etc/ai/hooks/block-memory-secrets.sh",
                 "timeout_ms": 5000
             }
         ],

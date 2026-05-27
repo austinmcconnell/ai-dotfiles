@@ -1,5 +1,12 @@
 {
     "allowedTools": [
+        "@engram/mem_context",
+        "@engram/mem_save",
+        "@engram/mem_search",
+        "@engram/mem_session_end",
+        "@engram/mem_session_start",
+        "@engram/mem_stats",
+        "@engram/mem_suggest_topic_key",
         "code",
         "glob",
         "grep",
@@ -16,6 +23,10 @@
         "agentSpawn": [
             {
                 "command": "~/.dotfiles/etc/kiro-cli/hooks/check-research-kb.sh default",
+                "timeout_ms": 5000
+            },
+            {
+                "command": "~/.dotfiles/etc/kiro-cli/hooks/recall-memory.sh",
                 "timeout_ms": 5000
             }
         ],
@@ -48,6 +59,11 @@
             {
                 "matcher": "execute_bash",
                 "command": "AI_AGENT_NAME=kiro-cli ~/.dotfiles/etc/ai/hooks/audit-shell-commands.sh",
+                "timeout_ms": 5000
+            },
+            {
+                "matcher": "@engram",
+                "command": "~/.dotfiles/etc/ai/hooks/block-memory-secrets.sh",
                 "timeout_ms": 5000
             }
         ],

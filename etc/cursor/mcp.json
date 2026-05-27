@@ -1,5 +1,12 @@
 {
     "mcpServers": {
+        "engram": {
+            "command": "engram",
+            "args": ["mcp"],
+            "env": {
+                "ENGRAM_DATA_DIR": "${HOME}/.config/engram"
+            }
+        },
         "jira": {
             "command": "npx",
             "args": ["-y", "@aashari/mcp-server-atlassian-jira@3.3.0"],
