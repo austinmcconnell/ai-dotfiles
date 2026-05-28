@@ -208,6 +208,133 @@ Split `tasks/main.yml` into focused files when the role manages multiple concern
   when: proxmox_base_zfs_enabled
 ```
 
+## Molecule Test Conventions
+
+### Directory Structure
+
+```text
+roles/<role_name>/molecule/default/
+├── molecule.yml        # Driver, platforms, provisioner config
+├── prepare.yml         # One-time setup (systemd wait)
+├── converge.yml        # Applies the role under test
+├── verify.yml          # Assertions over converged state
+└── README.md           # Document network deps and local usage
+```
+
+### molecule.yml — Docker Driver Template
+
+```yaml
+---
+role_name_check: 1
+
+dependency:
+  name: galaxy
+
+driver:
+  name: docker
+
+platforms:
+  - name: <role_name>-test
+    image: "geerlingguy/docker-${MOLECULE_DISTRO:-debian12}-ansible:latest"
+    pre_build_image: true
+    override_command: false
+    privileged: true
+    cgroupns_mode: host
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    tmpfs:
+      - /run
+      - /tmp
+    published_ports:
+      - "0.0.0.0:${MOLECULE_PUBLISHED_PORT:-<service_port>}:<service_port>/tcp"
+
+provisioner:
+  name: ansible
+  env:
+    ANSIBLE_ROLES_PATH: "../../../../roles"
+  inventory:
+    host_vars:
+      <role_name>-test:
+        ansible_host: 127.0.0.1
+
+verifier:
+  name: ansible
+```
+
+Key settings:
+
+- `role_name_check: 1` — validates role name matches Galaxy conventions
+- `override_command: false` — uses image's default CMD (systemd)
+- `privileged: true` + `cgroupns_mode: host` + cgroup volume — required for systemd
+- `tmpfs: [/run, /tmp]` — systemd expects these as tmpfs
+- `MOLECULE_DISTRO` env var — enables distro switching without editing the file
+- `ansible_host: 127.0.0.1` — required for roles that make API calls to themselves
+- `ANSIBLE_ROLES_PATH` — resolves role from `molecule/default/` back to `roles/`
+- `published_ports` with env var — enables local debugging via `molecule converge`
+
+### prepare.yml — Systemd Readiness Wait
+
+Always include a prepare.yml that waits for systemd to finish booting inside the container:
+
+```yaml
+---
+- name: Prepare
+  hosts: all
+  become: true
+  gather_facts: false
+  tasks:
+    - name: Wait for systemd to complete initialization
+      ansible.builtin.command: systemctl is-system-running  # noqa command-instead-of-module
+      register: <role_name>_systemctl_status
+      until: >
+        'running' in <role_name>_systemctl_status.stdout or
+        'degraded' in <role_name>_systemctl_status.stdout
+      retries: 30
+      delay: 5
+      changed_when: false
+      failed_when: <role_name>_systemctl_status.rc > 1
+```
+
+Without this, systemd service tasks fail intermittently because systemd hasn't finished booting.
+
+### converge.yml — Role Application
+
+```yaml
+---
+- name: Converge
+  hosts: all
+  become: true
+  pre_tasks:
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 600
+      when: ansible_facts.os_family == 'Debian'
+  tasks:
+    - name: Apply <role_name> role
+      ansible.builtin.include_role:
+        name: <role_name>
+```
+
+### verify.yml — Assertion Patterns
+
+- Use the ansible verifier (not testinfra) for ≤15 assertions without complex loops
+- Prefix all registered variables with the role name (ansible-lint enforces this)
+- Reference variables from molecule's inventory (e.g., `guest_technitium_admin_password`) instead of
+  hardcoding values
+- Test observable outcomes: service state, listening ports, API responses, file contents
+- Use `wait_for` with timeouts for port checks
+- Use `until`/`retries` for assertions that may need the service to warm up
+
+### Network-Dependent Roles
+
+For roles that download from the internet during converge:
+
+- Set `timeout-minutes: 30` (or appropriate) on the CI job
+- Document network dependencies in `molecule/default/README.md`
+- Add `timeout:` to long-running download tasks in the role itself
+- Accept that these tests will fail if the external service is down
+
 ## Role Naming
 
 - Lowercase alphanumeric and underscores only: `[a-z][a-z0-9_]*`
