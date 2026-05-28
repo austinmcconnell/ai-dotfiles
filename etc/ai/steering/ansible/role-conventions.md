@@ -217,6 +217,7 @@ roles/<role_name>/molecule/default/
 ├── molecule.yml        # Driver, platforms, provisioner config
 ├── prepare.yml         # One-time setup (systemd wait)
 ├── converge.yml        # Applies the role under test
+├── side_effect.yml     # Optional: simulate drift or test upgrade path
 ├── verify.yml          # Assertions over converged state
 └── README.md           # Document network deps and local usage
 ```
@@ -242,9 +243,6 @@ platforms:
     cgroupns_mode: host
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:rw
-    tmpfs:
-      - /run
-      - /tmp
     published_ports:
       - "0.0.0.0:${MOLECULE_PUBLISHED_PORT:-<service_port>}:<service_port>/tcp"
 
@@ -256,9 +254,22 @@ provisioner:
     host_vars:
       <role_name>-test:
         ansible_host: 127.0.0.1
+        ansible_docker_host: <role_name>-test
 
 verifier:
   name: ansible
+
+scenario:
+  test_sequence:
+    - dependency
+    - syntax
+    - create
+    - prepare
+    - converge
+    - idempotence
+    - side_effect
+    - verify
+    - destroy
 ```
 
 Key settings:
@@ -266,11 +277,14 @@ Key settings:
 - `role_name_check: 1` — validates role name matches Galaxy conventions
 - `override_command: false` — uses image's default CMD (systemd)
 - `privileged: true` + `cgroupns_mode: host` + cgroup volume — required for systemd
-- `tmpfs: [/run, /tmp]` — systemd expects these as tmpfs
 - `MOLECULE_DISTRO` env var — enables distro switching without editing the file
 - `ansible_host: 127.0.0.1` — required for roles that make API calls to themselves
+- `ansible_docker_host` — tells the Docker connection plugin which container to exec into; without
+  this, setting `ansible_host` breaks container identification
 - `ANSIBLE_ROLES_PATH` — resolves role from `molecule/default/` back to `roles/`
-- `published_ports` with env var — enables local debugging via `molecule converge`
+- `published_ports` with env var — for local debugging only (`molecule converge`); the verify
+  playbook runs inside the container and does not use published ports
+- `test_sequence` — explicit sequence; include `side_effect` only when a `side_effect.yml` exists
 
 ### prepare.yml — Systemd Readiness Wait
 
@@ -283,6 +297,14 @@ Always include a prepare.yml that waits for systemd to finish booting inside the
   become: true
   gather_facts: false
   tasks:
+    - name: Wait for container to be connectable
+      ansible.builtin.raw: /bin/true
+      register: <role_name>_raw_wait
+      until: <role_name>_raw_wait is success
+      retries: 10
+      delay: 3
+      changed_when: false
+
     - name: Wait for systemd to complete initialization
       ansible.builtin.command: systemctl is-system-running  # noqa command-instead-of-module
       register: <role_name>_systemctl_status
@@ -295,7 +317,9 @@ Always include a prepare.yml that waits for systemd to finish booting inside the
       failed_when: <role_name>_systemctl_status.rc > 1
 ```
 
-Without this, systemd service tasks fail intermittently because systemd hasn't finished booting.
+The `raw` task is essential — it doesn't require a temp directory, so it works even when the
+container's init process hasn't finished setting up the filesystem. Without it, the `command` module
+fails with "Failed to create temporary directory" in CI.
 
 ### converge.yml — Role Application
 
@@ -323,8 +347,26 @@ Without this, systemd service tasks fail intermittently because systemd hasn't f
 - Reference variables from molecule's inventory (e.g., `guest_technitium_admin_password`) instead of
   hardcoding values
 - Test observable outcomes: service state, listening ports, API responses, file contents
-- Use `wait_for` with timeouts for port checks
+- Use `wait_for` with timeouts for port checks (30s+ for services that download at startup)
 - Use `until`/`retries` for assertions that may need the service to warm up
+
+Race condition prevention — a TCP port being open does NOT mean the service is ready to handle
+requests. For API-dependent verify tasks, always add `until`/`retries`:
+
+```yaml
+- name: Login to service API
+  ansible.builtin.uri:
+    url: "http://127.0.0.1:{{ port }}/api/login"
+    method: POST
+    body_format: form-urlencoded
+    body:
+      user: admin
+      pass: "{{ role_name_admin_password }}"
+  register: role_name_verify_login
+  until: role_name_verify_login.json.status | default('') == 'ok'
+  retries: 5
+  delay: 3
+```
 
 ### Network-Dependent Roles
 

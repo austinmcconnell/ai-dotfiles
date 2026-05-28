@@ -1,6 +1,6 @@
 ---
 name: create-role
-description: Scaffold a new Ansible role with correct directory structure, defaults, meta, and naming conventions. Use when creating a new role, scaffolding role directories, or adding a role to the project.
+description: Scaffold a new Ansible role with correct directory structure, defaults, meta, molecule tests, and naming conventions. Use when creating a new role, scaffolding role directories, adding a role to the project, adding molecule tests to a role, or creating a molecule scenario.
 ---
 
 # Create Role
@@ -100,9 +100,6 @@ platforms:
     cgroupns_mode: host
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:rw
-    tmpfs:
-      - /run
-      - /tmp
     published_ports:
       - "0.0.0.0:${MOLECULE_PUBLISHED_PORT:-<service_port>}:<service_port>/tcp"
 
@@ -114,9 +111,22 @@ provisioner:
     host_vars:
       <role_name>-test:
         ansible_host: 127.0.0.1
+        ansible_docker_host: <role_name>-test
 
 verifier:
   name: ansible
+
+scenario:
+  test_sequence:
+    - dependency
+    - syntax
+    - create
+    - prepare
+    - converge
+    - idempotence
+    - side_effect
+    - verify
+    - destroy
 ```
 
 Key settings explained:
@@ -124,11 +134,14 @@ Key settings explained:
 - `role_name_check: 1` — validates role name matches Galaxy conventions
 - `override_command: false` — uses image's default CMD (systemd); never use `command: ""`
 - `privileged: true` + `cgroupns_mode: host` + cgroup volume — required for systemd in Docker
-- `tmpfs: [/run, /tmp]` — systemd expects these as tmpfs
 - `MOLECULE_DISTRO` env var — enables distro switching: `MOLECULE_DISTRO=ubuntu2404 molecule test`
 - `ansible_host: 127.0.0.1` — required for roles that make API/HTTP calls to themselves
+- `ansible_docker_host: <role_name>-test` — tells the Docker connection plugin which container to
+  exec into; without this, setting `ansible_host` breaks container identification
 - `ANSIBLE_ROLES_PATH: "../../../../roles"` — resolves from `molecule/default/` back to `roles/`
-- `published_ports` with `MOLECULE_PUBLISHED_PORT` env var — enables local debugging
+- `published_ports` with `MOLECULE_PUBLISHED_PORT` env var — for local debugging only; verify runs
+  inside the container and does not use published ports
+- `test_sequence` — explicit sequence; include `side_effect` only when a `side_effect.yml` exists
 
 Omit `published_ports` if the role doesn't expose a network service.
 
@@ -143,6 +156,14 @@ Always include a prepare.yml that waits for systemd to finish booting:
   become: true
   gather_facts: false
   tasks:
+    - name: Wait for container to be connectable
+      ansible.builtin.raw: /bin/true
+      register: <role_name>_raw_wait
+      until: <role_name>_raw_wait is success
+      retries: 10
+      delay: 3
+      changed_when: false
+
     - name: Wait for systemd to complete initialization
       ansible.builtin.command: systemctl is-system-running  # noqa command-instead-of-module
       register: <role_name>_systemctl_status
@@ -155,7 +176,9 @@ Always include a prepare.yml that waits for systemd to finish booting:
       failed_when: <role_name>_systemctl_status.rc > 1
 ```
 
-Without this, systemd service tasks fail intermittently in Docker containers.
+The `raw` task is essential — it doesn't require a temp directory, so it works even when the
+container's init process hasn't finished setting up the filesystem. Without it, the `command` module
+fails with "Failed to create temporary directory" in CI.
 
 ### Step 8: Write converge.yml
 
@@ -204,16 +227,60 @@ Test observable outcomes — service state, listening ports, API responses, file
     - name: Check service port is listening
       ansible.builtin.wait_for:
         port: <port>
-        timeout: 10
+        timeout: 30
+```
+
+For roles with API endpoints, a TCP port being open does NOT mean the service is ready. Always add
+`until`/`retries` on API-dependent tasks:
+
+```yaml
+    - name: Login to service API
+      ansible.builtin.uri:
+        url: "http://127.0.0.1:<port>/api/login"
+        method: POST
+        body_format: form-urlencoded
+        body:
+          user: admin
+          pass: "{{ <role_name>_admin_password }}"
+      register: <role_name>_verify_login
+      until: <role_name>_verify_login.json.status | default('') == 'ok'
+      retries: 5
+      delay: 3
 ```
 
 Verify playbook rules:
 
 - Prefix all registered variables with the role name (ansible-lint enforces this)
 - Reference variables from molecule's inventory instead of hardcoding values
-- Use `wait_for` with timeouts for port checks
+- Use `wait_for` with timeouts for port checks (30s+ for services that download at startup)
 - Use `until`/`retries` for assertions that need the service to warm up
 - Use the ansible verifier (not testinfra) for ≤15 assertions without complex loops
+
+### Step 9b: Write side_effect.yml (optional)
+
+Add a `side_effect.yml` when the role has an upgrade path or you want to prove it self-heals after
+drift. This runs after idempotence but before verify:
+
+```yaml
+---
+- name: Upgrade <service_name>
+  hosts: all
+  become: true
+  tasks:
+    - name: Re-apply role with upgrade enabled
+      ansible.builtin.include_role:
+        name: <role_name>
+      vars:
+        <role_name>_upgrade: true
+```
+
+Use `side_effect` for:
+
+- Testing upgrade paths (re-run install with upgrade flag)
+- Simulating config drift (overwrite a file, stop a service, then re-converge)
+- Proving the role is self-healing
+
+Only include `side_effect` in `test_sequence` when a `side_effect.yml` exists.
 
 ### Step 10: Write molecule/default/README.md
 
@@ -277,10 +344,21 @@ create the workflow with a lint job and a molecule job per role:
         with:
           python-version: "3.12"
           cache: pip
+          cache-dependency-path: requirements.txt
       - name: Install dependencies
         run: pip install -r requirements.txt
       - name: Install Galaxy collections
         run: ansible-galaxy collection install -r requirements.yml
+      - name: Cache Docker image
+        uses: actions/cache@v4
+        with:
+          path: /tmp/docker-images
+          key: docker-image-<role_name>-${{ hashFiles('roles/<role_name>/molecule/default/molecule.yml') }}
+      - name: Load cached Docker image
+        run: |
+          if [ -f /tmp/docker-images/molecule.tar ]; then
+            docker load -i /tmp/docker-images/molecule.tar
+          fi
       - name: Run Molecule tests
         run: molecule test
         working-directory: roles/<role_name>
@@ -288,6 +366,14 @@ create the workflow with a lint job and a molecule job per role:
           PY_COLORS: "1"
           ANSIBLE_FORCE_COLOR: "1"
           MOLECULE_DISTRO: debian12
+      - name: Save Docker image to cache
+        if: always()
+        run: |
+          mkdir -p /tmp/docker-images
+          docker images --format '{{.Repository}}:{{.Tag}}' | \
+            grep geerlingguy | head -1 | while read img; do
+              docker save -o /tmp/docker-images/molecule.tar "$img" || true
+            done
       - name: Upload Molecule logs on failure
         if: failure()
         uses: actions/upload-artifact@v4

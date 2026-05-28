@@ -9,6 +9,8 @@ that have explicit skills.
 | Creating new ansible projects           | `scaffold-ansible-project` |
 | Updating ansible projects from template | `scaffold-ansible-project` |
 | Creating Ansible roles                  | `create-role`              |
+| Adding Molecule tests to a role         | `create-role`              |
+| Creating a Molecule scenario            | `create-role`              |
 | Creating Ansible playbooks              | `create-playbook`          |
 | Reviewing Ansible code                  | `ansible-review`           |
 

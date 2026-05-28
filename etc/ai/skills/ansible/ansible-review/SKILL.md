@@ -92,6 +92,43 @@ To verify idempotency in practice:
 - Correct `state:` values for desired outcome
 - `update: true` set when modifying existing guest config
 
+### Step 6: Check Molecule test quality (when molecule/ exists)
+
+**Race conditions:**
+
+- Does the verify playbook use `until`/`retries` on API calls? A port being open does NOT mean the
+  service is ready
+- Are `wait_for` timeouts adequate? (30s+ for services that download at startup)
+- Is there a `prepare.yml` that waits for systemd initialization?
+
+**Assertion coverage:**
+
+- Does verify test observable outcomes (service state, ports, API responses, file contents)?
+- Are all configured settings verified, not just one or two?
+- Are registered variables prefixed with the role name?
+- Are values referenced from molecule inventory vars, not hardcoded?
+
+**molecule.yml correctness:**
+
+- Is `test_sequence` explicitly defined?
+- Does it include `side_effect` only when a `side_effect.yml` exists?
+- Is `override_command: false` set (not `command: ""`)?
+- Are `privileged`, `cgroupns_mode: host`, and cgroup volume all present for systemd?
+- Is `ANSIBLE_ROLES_PATH` set correctly for the directory depth?
+
+**CI workflow:**
+
+- Does the molecule job have `timeout-minutes` set?
+- Is there artifact upload on failure?
+- Is pip caching configured with `cache-dependency-path`?
+- Is Docker image caching present for large images?
+- Are `PY_COLORS` and `ANSIBLE_FORCE_COLOR` set for readable logs?
+
+**Idempotence:**
+
+- Are any role paths skipped by molecule inventory overrides? (document in comments)
+- Would a `side_effect.yml` add value for upgrade or drift testing?
+
 ## Output Format
 
 ```text
