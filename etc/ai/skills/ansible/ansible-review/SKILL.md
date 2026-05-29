@@ -26,7 +26,16 @@ ansible-playbook playbooks/<playbook>.yml --limit <host> --check 2>&1 | grep -i 
 Deprecation warnings fire based on code patterns, not host state — they appear on every run until
 the code is fixed. Treat them as suggestions unless the removal version is imminent.
 
-Common deprecation patterns:
+**Always report deprecation warnings to the user** with an assessment:
+
+- **Fixable (our code):** Show the warning, identify the file/line, and fix it.
+- **Upstream (collection/module internals):** Report the warning, note which collection triggers it,
+  and confirm no action is needed on our side. Example: "ansible.posix.mount uses deprecated
+  ansible-core internals — fixed in a future collection release, not our code."
+
+Do not silently dismiss warnings.
+
+Common fixable deprecation patterns:
 
 - `{{ ansible_* }}` top-level facts → use `{{ ansible_facts['*'] }}`
 - `include:` → use `ansible.builtin.include_tasks:` or `ansible.builtin.import_tasks:`

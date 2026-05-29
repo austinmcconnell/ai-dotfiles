@@ -384,6 +384,23 @@ create the workflow with a lint job and a molecule job per role:
             ~/.cache/molecule/
 ```
 
+## Post-Implementation Verification
+
+After lint passes, run the new role in check mode against a reachable host:
+
+```bash
+ansible-playbook playbooks/<playbook>.yml --tags <tag> --check --diff 2>&1
+```
+
+Report to the user:
+
+1. Whether all tasks pass (note expected skips in check mode, e.g., API-based creation tasks)
+1. Any deprecation warnings (with assessment: fixable in our code vs upstream collection issue)
+1. Any unexpected changed/failed counts
+
+This applies to all roles — including those without molecule tests (Layer 2 provisioning roles that
+require real Proxmox API access).
+
 ## Validation Checklist
 
 - [ ] Role name matches `[a-z][a-z0-9_]*` pattern
