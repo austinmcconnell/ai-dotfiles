@@ -126,10 +126,12 @@ before installation):
 
 ## Proxmox Modules
 
-| Module                          | Purpose                 |
-| ------------------------------- | ----------------------- |
-| `community.general.proxmox`     | LXC container lifecycle |
-| `community.general.proxmox_kvm` | KVM/QEMU VM lifecycle   |
+| Module                                   | Purpose                   |
+| ---------------------------------------- | ------------------------- |
+| `community.proxmox.proxmox`              | LXC container lifecycle   |
+| `community.proxmox.proxmox_kvm`          | KVM/QEMU VM lifecycle     |
+| `community.proxmox.proxmox_vm_info`      | Query VM/CT information   |
+| `community.proxmox.proxmox_storage_info` | Query storage information |
 
 Use `module_defaults` to avoid repeating API auth on every task:
 
@@ -137,13 +139,48 @@ Use `module_defaults` to avoid repeating API auth on every task:
 - hosts: localhost
   connection: local
   module_defaults:
-    group/community.general.proxmox:
+    group/community.proxmox.proxmox:
       api_host: "{{ proxmox_api_host }}"
       api_user: "{{ proxmox_api_user }}"
       api_token_id: "{{ proxmox_token_id }}"
       api_token_secret: "{{ proxmox_token_secret }}"
       validate_certs: false
 ```
+
+## Proxmox CLI Operations
+
+Some Proxmox operations have no module equivalent and require `command`/`shell` with `delegate_to`:
+
+| Command         | Purpose                            | Why no module                        |
+| --------------- | ---------------------------------- | ------------------------------------ |
+| `qm importdisk` | Import disk image to VM            | No module for disk import            |
+| `qm set`        | Attach unused disk, set boot order | No module for post-import attachment |
+| `pvesr`         | ZFS replication job management     | No module exists                     |
+| `pvecm`         | Cluster create/join/status         | No module exists                     |
+| `pvesh`         | Generic API access from CLI        | Fallback for uncovered endpoints     |
+
+Pattern: check state first, then conditionally execute with proper guards:
+
+```yaml
+- name: Check current VM configuration
+  ansible.builtin.command: qm config {{ vm_vmid }}
+  delegate_to: "{{ proxmox_node }}"
+  become: true
+  check_mode: false
+  changed_when: false
+  register: vm_config
+
+- name: Import disk to VM
+  ansible.builtin.command:
+    cmd: "qm importdisk {{ vm_vmid }} /tmp/image.qcow2 local-zfs"
+  delegate_to: "{{ proxmox_node }}"
+  become: true
+  changed_when: true
+  when: "'scsi0' not in vm_config.stdout"
+```
+
+These tasks require `delegate_to` + `become: true` when the play runs from localhost. The delegated
+host must be reachable via SSH (same access used for Layer 1 host configuration).
 
 ## Collection Dependencies
 

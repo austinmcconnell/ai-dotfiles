@@ -208,6 +208,44 @@ Split `tasks/main.yml` into focused files when the role manages multiple concern
   when: proxmox_base_zfs_enabled
 ```
 
+## Mixed Connection Patterns
+
+Some roles run from `localhost` (API-based provisioning) but need to execute CLI commands on remote
+Proxmox nodes. Use `delegate_to` for these tasks rather than splitting into a separate play.
+
+When to use `delegate_to` vs. a separate play:
+
+- **`delegate_to`**: role runs from localhost, a few tasks need remote execution (disk import,
+  replication setup). Keeps the role self-contained.
+- **Separate play**: the majority of tasks target the remote host. Use a normal play with
+  `hosts: <group>` instead.
+
+```yaml
+# Role runs from localhost with module_defaults for API calls.
+# CLI tasks delegate to the Proxmox node via SSH.
+- name: Create VM via API
+  community.proxmox.proxmox_kvm:
+    vmid: "{{ vm_role_vmid }}"
+    node: "{{ vm_role_proxmox_node }}"
+    state: present
+
+- name: Import disk via CLI
+  ansible.builtin.command:
+    cmd: "qm importdisk {{ vm_role_vmid }} /tmp/image.qcow2 local-zfs"
+  delegate_to: "{{ vm_role_proxmox_node }}"
+  become: true
+  changed_when: true
+```
+
+Key considerations:
+
+- `module_defaults` apply to module tasks (API calls stay local); delegated `command`/`shell` tasks
+  use SSH to the target node
+- Inside a delegated task, `inventory_hostname` is still `localhost` — use explicit variables for
+  the target node name
+- The delegated host must be reachable via SSH (same access configured for Layer 1 host roles)
+- Add `become: true` on delegated tasks that require root (e.g., `qm`, `pvesr`)
+
 ## Molecule Test Conventions
 
 ### Directory Structure

@@ -403,3 +403,92 @@ create the workflow with a lint job and a molecule job per role:
 - [ ] verify.yml uses role-prefixed variables and references inventory vars
 - [ ] Network dependencies documented in README.md
 - [ ] Role added to CI workflow with timeout and artifact upload
+
+## VM Provisioning Roles
+
+VM provisioning roles (e.g., `vm_haos`) differ from LXC and service roles because they require disk
+import via CLI — no Ansible module exists for `qm importdisk`.
+
+### Directory structure
+
+```text
+roles/vm_<name>/
+├── tasks/main.yml
+├── defaults/main.yml
+└── meta/main.yml
+```
+
+No molecule directory — disk import and UEFI VM creation cannot be tested in Docker containers. Add
+integration tests when a test Proxmox node is available.
+
+### Task sequence
+
+1. Create VM via `community.proxmox.proxmox_kvm` (`state: present`, idempotent by `vmid`)
+1. Check if disk is already attached (read-only `qm config` via `delegate_to`)
+1. Conditionally download, decompress, import, and attach disk (wrapped in `when:` block)
+1. Set boot order
+1. Start VM (`state: started`)
+
+### Disk import idempotency pattern
+
+Re-importing over an existing disk **fails**. Guard the entire import block:
+
+```yaml
+- name: Check VM configuration
+  ansible.builtin.command: qm config {{ vm_name_vmid }}
+  delegate_to: "{{ vm_name_proxmox_node }}"
+  become: true
+  check_mode: false
+  changed_when: false
+  register: vm_name_config
+
+- name: Import and attach disk
+  when: "'scsi0' not in vm_name_config.stdout"
+  block:
+    - name: Download image
+      ansible.builtin.get_url:
+        url: "{{ vm_name_image_url }}"
+        dest: "{{ vm_name_tempdir }}/{{ vm_name_image_filename }}"
+        mode: "0644"
+      delegate_to: "{{ vm_name_proxmox_node }}"
+
+    - name: Import disk to VM
+      ansible.builtin.command:
+        cmd: "qm importdisk {{ vm_name_vmid }} {{ vm_name_tempdir }}/{{ vm_name_image_filename }} {{ vm_name_storage }}"
+      delegate_to: "{{ vm_name_proxmox_node }}"
+      become: true
+      changed_when: true
+
+    - name: Attach imported disk
+      ansible.builtin.command:
+        cmd: "qm set {{ vm_name_vmid }} --scsi0 {{ vm_name_storage }}:vm-{{ vm_name_vmid }}-disk-1"
+      delegate_to: "{{ vm_name_proxmox_node }}"
+      become: true
+      changed_when: true
+```
+
+### UEFI boot configuration
+
+VMs requiring UEFI (e.g., HAOS) need these `proxmox_kvm` parameters:
+
+```yaml
+bios: ovmf
+efidisk0:
+  storage: local-zfs
+  format: raw
+  efitype: 4m
+  pre_enrolled_keys: false
+machine: q35
+scsihw: virtio-scsi-single
+boot: "order=scsi0"
+```
+
+### When to skip molecule
+
+Skip molecule for roles that:
+
+- Require real Proxmox API access (`proxmox_kvm` module)
+- Use `qm`/`pvesr`/`pvecm` CLI commands via `delegate_to`
+- Cannot be meaningfully tested in a Docker container
+
+Document this in the role's README and add a `# molecule: skip` comment in `meta/main.yml`.
