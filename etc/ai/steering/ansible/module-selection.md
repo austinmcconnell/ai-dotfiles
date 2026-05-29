@@ -151,36 +151,45 @@ Use `module_defaults` to avoid repeating API auth on every task:
 
 Some Proxmox operations have no module equivalent and require `command`/`shell` with `delegate_to`:
 
-| Command         | Purpose                            | Why no module                        |
-| --------------- | ---------------------------------- | ------------------------------------ |
-| `qm importdisk` | Import disk image to VM            | No module for disk import            |
-| `qm set`        | Attach unused disk, set boot order | No module for post-import attachment |
-| `pvesr`         | ZFS replication job management     | No module exists                     |
-| `pvecm`         | Cluster create/join/status         | No module exists                     |
-| `pvesh`         | Generic API access from CLI        | Fallback for uncovered endpoints     |
+| Command          | Purpose                            | Why no module                        |
+| ---------------- | ---------------------------------- | ------------------------------------ |
+| `qm disk import` | Import disk image to VM            | No module for disk import            |
+| `qm set`         | Attach unused disk, set boot order | No module for post-import attachment |
+| `pvesr`          | ZFS replication job management     | No module exists                     |
+| `pvecm`          | Cluster create/join/status         | No module exists                     |
+| `pvesh`          | Generic API access from CLI        | Fallback for uncovered endpoints     |
 
 Pattern: check state first, then conditionally execute with proper guards:
 
 ```yaml
 - name: Check current VM configuration
-  ansible.builtin.command: qm config {{ vm_vmid }}
+  ansible.builtin.command: /usr/sbin/qm config {{ vm_vmid }}
   delegate_to: "{{ proxmox_node }}"
-  become: true
+  vars:
+    ansible_connection: ssh
   check_mode: false
   changed_when: false
   register: vm_config
 
 - name: Import disk to VM
   ansible.builtin.command:
-    cmd: "qm importdisk {{ vm_vmid }} /tmp/image.qcow2 local-zfs"
+    cmd: "/usr/sbin/qm disk import {{ vm_vmid }} /tmp/image.qcow2 local-zfs"
   delegate_to: "{{ proxmox_node }}"
-  become: true
+  vars:
+    ansible_connection: ssh
   changed_when: true
   when: "'scsi0' not in vm_config.stdout"
 ```
 
-These tasks require `delegate_to` + `become: true` when the play runs from localhost. The delegated
-host must be reachable via SSH (same access used for Layer 1 host configuration).
+Key requirements for delegated CLI tasks:
+
+- **`vars: {ansible_connection: ssh}`** is mandatory — without it, `delegate_to` from a
+  `connection: local` play silently runs tasks locally (known Ansible behavior, not a bug)
+- **Full path** (`/usr/sbin/qm`, `/usr/sbin/pvesr`) — delegated SSH sessions may not have
+  `/usr/sbin` in PATH
+- **`become: true` is NOT needed** when the Proxmox node's `ansible_user` is `root` (the typical
+  configuration for this project)
+- The delegated host must be in inventory with SSH access configured
 
 ## Collection Dependencies
 

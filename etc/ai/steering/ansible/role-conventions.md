@@ -231,9 +231,10 @@ When to use `delegate_to` vs. a separate play:
 
 - name: Import disk via CLI
   ansible.builtin.command:
-    cmd: "qm importdisk {{ vm_role_vmid }} /tmp/image.qcow2 local-zfs"
+    cmd: "/usr/sbin/qm disk import {{ vm_role_vmid }} /tmp/image.qcow2 local-zfs"
   delegate_to: "{{ vm_role_proxmox_node }}"
-  become: true
+  vars:
+    ansible_connection: ssh
   changed_when: true
 ```
 
@@ -241,10 +242,15 @@ Key considerations:
 
 - `module_defaults` apply to module tasks (API calls stay local); delegated `command`/`shell` tasks
   use SSH to the target node
+- **`vars: {ansible_connection: ssh}`** is mandatory — without it, `delegate_to` from a
+  `connection: local` play silently runs tasks locally (known Ansible behavior, not a bug)
+- **Full path** (`/usr/sbin/qm`, `/usr/sbin/pvesr`) — delegated SSH sessions may not have
+  `/usr/sbin` in PATH
+- **`become: true` is NOT needed** when the Proxmox node's `ansible_user` is `root` (the typical
+  configuration for this project)
 - Inside a delegated task, `inventory_hostname` is still `localhost` — use explicit variables for
   the target node name
 - The delegated host must be reachable via SSH (same access configured for Layer 1 host roles)
-- Add `become: true` on delegated tasks that require root (e.g., `qm`, `pvesr`)
 
 ## Molecule Test Conventions
 
