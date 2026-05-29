@@ -11,7 +11,7 @@ TOOL_INPUT=$(cat)
 
 # Only check memory save/update operations
 TOOL_NAME=$(echo "$TOOL_INPUT" | jq -r '.tool_name // empty' 2>/dev/null)
-if [[ "${TOOL_NAME}" != "mem_save" && "${TOOL_NAME}" != "mem_update" ]]; then
+if [[ "${TOOL_NAME}" != "mem_save" && "${TOOL_NAME}" != "mem_update" && "${TOOL_NAME}" != "mem_save_prompt" && "${TOOL_NAME}" != "mem_session_summary" && "${TOOL_NAME}" != "mem_capture_passive" ]]; then
     exit 0
 fi
 
