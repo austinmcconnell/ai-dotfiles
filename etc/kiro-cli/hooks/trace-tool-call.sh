@@ -22,9 +22,8 @@ TOOL_OUT=$(echo "$TOOL_INPUT" | jq -c '.tool_output // {}' 2>/dev/null) || TOOL_
 DURATION=$(echo "$TOOL_INPUT" | jq -r '.duration_ms // empty' 2>/dev/null) || DURATION=""
 
 # Redact sensitive values (perl for case-insensitive support on macOS)
-REDACT_PATTERN='(password|secret|token|key|credential|authorization|api.key|private)'
-TOOL_IN_SAFE=$(echo "$TOOL_IN" | perl -pe "s/(\"($REDACT_PATTERN)\"\\s*:\\s*\")[^\"]*\"/\$1[REDACTED]\"/gi")
-TOOL_OUT_SAFE=$(echo "$TOOL_OUT" | perl -pe "s/(\"($REDACT_PATTERN)\"\\s*:\\s*\")[^\"]*\"/\$1[REDACTED]\"/gi")
+TOOL_IN_SAFE=$(echo "$TOOL_IN" | perl -pe 's/("[^"]*(?:password|secret|token|key|credential|authorization|api.key|private)[^"]*"\s*:\s*")[^"]*"/${1}[REDACTED]"/gi')
+TOOL_OUT_SAFE=$(echo "$TOOL_OUT" | perl -pe 's/("[^"]*(?:password|secret|token|key|credential|authorization|api.key|private)[^"]*"\s*:\s*")[^"]*"/${1}[REDACTED]"/gi')
 
 # Truncate for storage
 INPUT_SUMMARY=$(echo "$TOOL_IN_SAFE" | cut -c1-300)
