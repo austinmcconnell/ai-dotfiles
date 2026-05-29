@@ -159,6 +159,46 @@ Some Proxmox operations have no module equivalent and require `command`/`shell` 
 | `pvecm`          | Cluster create/join/status         | No module exists                     |
 | `pvesh`          | Generic API access from CLI        | Fallback for uncovered endpoints     |
 
+Additionally, some operations that the module *supports syntactically* are **restricted to
+`root@pam` by the Proxmox API** — any non-root token (even with `PVEAdmin` role) gets
+`403 Forbidden`. Use `pct set`/`qm set` via CLI as root instead:
+
+| Operation                       | Module parameter | Why CLI required                         |
+| ------------------------------- | ---------------- | ---------------------------------------- |
+| LXC bind mount (host path)      | `mount_volumes`  | `root@pam` only — host filesystem access |
+| LXC device passthrough (`dev0`) | Not supported    | `root@pam` only — host device access     |
+| Custom LXC config options       | N/A              | `root@pam` only — arbitrary config risk  |
+
+```yaml
+# Pattern: create container via API (token auth), then configure
+# privileged options via CLI (root SSH)
+- name: Create LXC container
+  community.proxmox.proxmox:
+    vmid: "{{ container_vmid }}"
+    state: present
+    # ... standard options work fine with token auth
+
+- name: Check container configuration
+  ansible.builtin.command: /usr/sbin/pct config {{ container_vmid }}
+  delegate_to: "{{ proxmox_node }}"
+  vars:
+    ansible_connection: ssh
+  check_mode: false
+  changed_when: false
+  failed_when: false
+  register: container_config
+
+- name: Configure bind mount (requires root)
+  ansible.builtin.command: >-
+    /usr/sbin/pct set {{ container_vmid }}
+    --mp0 /mnt/data,mp=/mnt/data
+  delegate_to: "{{ proxmox_node }}"
+  vars:
+    ansible_connection: ssh
+  changed_when: true
+  when: "container_config.rc == 0 and 'mp0' not in container_config.stdout"
+```
+
 Pattern: check state first, then conditionally execute with proper guards:
 
 ```yaml
