@@ -6,31 +6,12 @@
 # 1. Installs Kiro CLI via Homebrew
 # 2. Creates necessary configuration directories
 # 3. Links configuration files from the dotfiles repository
-# 4. Installs Kiro CLI integrations (like SSH)
 # ---------------------------------------------------------------
 
 set -euo pipefail
 
 # Source the utilities script for helper functions
 source "$DOTFILES_DIR/install/utils.sh"
-
-# Check if a Kiro CLI integration is installed
-is_integration_installed() {
-    local integration_name=$1
-    kiro-cli integrations status "$integration_name" | grep -q "Installed"
-}
-
-# Install a Kiro CLI integration if it's not already installed
-install_integration_if_needed() {
-    local integration_name=$1
-
-    if is_integration_installed "$integration_name"; then
-        echo -e "\033[32m✓ ${integration_name} integration is already installed\033[0m"
-    else
-        echo "Installing ${integration_name} integration..."
-        kiro-cli integrations install "$integration_name"
-    fi
-}
 
 print_section_header "Installing Kiro CLI"
 
@@ -84,13 +65,9 @@ fi
 
 # Skills are linked by install/ai-tools.sh (centralized for all AI tools)
 
-# Install Kiro CLI integrations if the CLI is available
-if is-executable kiro-cli; then
-    print_section_header "Installing Kiro CLI integrations"
-    install_integration_if_needed "ssh"
-else
-    echo "Kiro CLI not found. Skipping integrations installation."
-fi
+# NOTE: Do NOT install the "ssh" integration — it injects itself into ~/.ssh/config
+# and runs `kiro-cli internal generate-ssh` on every SSH connection. My SSH config
+# already handles keys, ControlMaster, and host aliases independently.
 
 # Install MCP servers if npm is available
 source "$DOTFILES_DIR/etc/kiro-cli/mcp-servers.conf"
