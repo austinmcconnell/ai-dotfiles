@@ -2,6 +2,7 @@
     "autocomplete.disable": true,
     "autocomplete.insertSpaceAutomatically": true,
     "chat.defaultAgent": "default",
+    "chat.disableInheritingDefaultResources": true,
     "codeWhisperer.shareCodeWhispererContentWithAWS": false,
     "inline.enabled": false,
     "mcp.loadedBefore": true,
