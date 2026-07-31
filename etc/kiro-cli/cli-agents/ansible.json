@@ -171,47 +171,76 @@
     "tools": [
         "*"
     ],
-    "hooks": {
-        "agentSpawn": [
-            {
-                "command": "~/.dotfiles/etc/kiro-cli/hooks/check-research-kb.sh ansible",
-                "timeout_ms": 5000
+    "hooks": [
+        {
+            "name": "agentSpawn-0",
+            "trigger": "agentSpawn",
+            "action": {
+                "type": "command",
+                "command": "~/.dotfiles/etc/kiro-cli/hooks/check-research-kb.sh ansible"
             },
-            {
-                "command": "~/.dotfiles/etc/kiro-cli/hooks/recall-memory.sh",
-                "timeout_ms": 5000
-            }
-        ],
-        "preToolUse": [
-            {
-                "matcher": "*",
-                "command": "~/.dotfiles/etc/ai/hooks/block-env-files.sh",
-                "timeout_ms": 5000
+            "timeout": 5
+        },
+        {
+            "name": "agentSpawn-1",
+            "trigger": "agentSpawn",
+            "action": {
+                "type": "command",
+                "command": "~/.dotfiles/etc/kiro-cli/hooks/recall-memory.sh"
             },
-            {
-                "matcher": "*",
-                "command": "~/.dotfiles/etc/ai/hooks/block-sops-age-files.sh",
-                "timeout_ms": 5000
+            "timeout": 5
+        },
+        {
+            "name": "postToolUse-0",
+            "trigger": "postToolUse",
+            "matcher": "knowledge",
+            "action": {
+                "type": "command",
+                "command": "~/.dotfiles/etc/kiro-cli/hooks/clear-research-kb-stale.sh ansible"
             },
-            {
-                "matcher": "*",
-                "command": "~/.dotfiles/etc/ai/hooks/block-ssh-private-keys.sh",
-                "timeout_ms": 5000
+            "timeout": 5
+        },
+        {
+            "name": "preToolUse-0",
+            "trigger": "preToolUse",
+            "matcher": "*",
+            "action": {
+                "type": "command",
+                "command": "~/.dotfiles/etc/ai/hooks/block-env-files.sh"
             },
-            {
-                "matcher": "@engram",
-                "command": "~/.dotfiles/etc/ai/hooks/block-memory-secrets.sh",
-                "timeout_ms": 5000
-            }
-        ],
-        "postToolUse": [
-            {
-                "matcher": "knowledge",
-                "command": "~/.dotfiles/etc/kiro-cli/hooks/clear-research-kb-stale.sh ansible",
-                "timeout_ms": 5000
-            }
-        ]
-    },
+            "timeout": 5
+        },
+        {
+            "name": "preToolUse-1",
+            "trigger": "preToolUse",
+            "matcher": "*",
+            "action": {
+                "type": "command",
+                "command": "~/.dotfiles/etc/ai/hooks/block-sops-age-files.sh"
+            },
+            "timeout": 5
+        },
+        {
+            "name": "preToolUse-2",
+            "trigger": "preToolUse",
+            "matcher": "*",
+            "action": {
+                "type": "command",
+                "command": "~/.dotfiles/etc/ai/hooks/block-ssh-private-keys.sh"
+            },
+            "timeout": 5
+        },
+        {
+            "name": "preToolUse-3",
+            "trigger": "preToolUse",
+            "matcher": "@engram",
+            "action": {
+                "type": "command",
+                "command": "~/.dotfiles/etc/ai/hooks/block-memory-secrets.sh"
+            },
+            "timeout": 5
+        }
+    ],
     "toolsSettings": {
         "aws": {
             "allowedServices": []
@@ -458,5 +487,275 @@
             ]
         }
     },
-    "includeMcpJson": true
+    "includeMcpJson": true,
+    "permissions": {
+        "rules": [
+            {
+                "capability": "shell",
+                "match": [
+                    "ansible --version",
+                    "ansible-config list*",
+                    "ansible-config dump*",
+                    "ansible-config view*",
+                    "ansible-config validate*",
+                    "ansible-doc *",
+                    "ansible-galaxy *",
+                    "ansible-inventory *",
+                    "ansible-lint*",
+                    "ansible-playbook * --check *",
+                    "ansible-playbook * --check",
+                    "ansible-playbook * --list-* *",
+                    "ansible-playbook * --list-*",
+                    "ansible-playbook * --syntax-check *",
+                    "ansible-playbook * --syntax-check",
+                    "ansible-vault view *",
+                    "molecule cleanup*",
+                    "molecule converge*",
+                    "molecule create*",
+                    "molecule destroy*",
+                    "molecule exec*",
+                    "molecule idempotence*",
+                    "molecule init*",
+                    "molecule list*",
+                    "molecule login*",
+                    "molecule matrix*",
+                    "molecule reset*",
+                    "molecule test*",
+                    "molecule verify*",
+                    "awk *",
+                    "cat *",
+                    "chmod +x *",
+                    "command -v *",
+                    "cruft *",
+                    "dirname *",
+                    "docker images*",
+                    "docker inspect*",
+                    "docker logs*",
+                    "docker ps*",
+                    "echo *",
+                    "echo",
+                    "find *",
+                    "git branch*",
+                    "git check-ignore*",
+                    "git diff*",
+                    "GIT_PAGER=cat git log*",
+                    "git log*",
+                    "git ls-files*",
+                    "git ls-tree *",
+                    "git merge-base *",
+                    "git rev-list *",
+                    "git rev-parse *",
+                    "git show*",
+                    "git status*",
+                    "grep *",
+                    "head *",
+                    "hostname",
+                    "jq *",
+                    "jq",
+                    "ls *",
+                    "ls",
+                    "make lint",
+                    "man *",
+                    "mkdir -p *",
+                    "pre-commit *",
+                    "pwd",
+                    "read *",
+                    "read",
+                    "readlink *",
+                    "readlink",
+                    "sed *",
+                    "sort *",
+                    "sort",
+                    "source *",
+                    "tail *",
+                    "tr *",
+                    "tree *",
+                    "tree",
+                    "true",
+                    "type *",
+                    "uniq *",
+                    "wc *",
+                    "which *",
+                    "whoami",
+                    "xargs *",
+                    "yamllint *"
+                ],
+                "effect": "allow"
+            },
+            {
+                "capability": "shell",
+                "match": [
+                    "ansible *",
+                    "ansible-console *",
+                    "ansible-pull *",
+                    "ansible-vault create *",
+                    "ansible-vault decrypt *",
+                    "ansible-vault edit *",
+                    "ansible-vault encrypt *",
+                    "ansible-vault rekey *",
+                    "awk *.env*",
+                    "cat *.env*",
+                    "grep *.env*",
+                    "head *.env*",
+                    "sed *.env*",
+                    "tail *.env*",
+                    "find *.env*",
+                    "cat *sops/age/keys.txt*",
+                    "cat *.agekey*",
+                    "sops decrypt*",
+                    "sops --decrypt*",
+                    "sops -d *",
+                    "cat *.ssh/id_rsa*",
+                    "cat *.ssh/id_ed25519*",
+                    "cat *.ssh/id_ecdsa*",
+                    "cat *.ssh/id_dsa*",
+                    "cat *.ssh/*_key*",
+                    "brew install *",
+                    "chmod * *",
+                    "chmod -R *",
+                    "chmod u+s *",
+                    "chmod g+s *",
+                    "chown *",
+                    "crontab *",
+                    "dd *",
+                    "docker exec *",
+                    "docker kill *",
+                    "docker network rm *",
+                    "docker rm *",
+                    "docker rmi *",
+                    "docker run *",
+                    "docker stop *",
+                    "docker system prune*",
+                    "docker volume rm *",
+                    "git add .",
+                    "git add -A*",
+                    "git add --all*",
+                    "kill *",
+                    "killall *",
+                    "kubectl *",
+                    "npm install *",
+                    "pip install *",
+                    "pkill *",
+                    "rm *",
+                    "rmdir *",
+                    "service *",
+                    "ssh *",
+                    "sudo *",
+                    "systemctl *",
+                    "trash *"
+                ],
+                "exclude": [
+                    "chmod +x *"
+                ],
+                "effect": "deny"
+            },
+            {
+                "capability": "fs_read",
+                "match": [
+                    "**/.env",
+                    "**/.env.*",
+                    "**/*.key",
+                    "**/*.pem",
+                    "**/credentials*",
+                    "**/.vault_pass*",
+                    "**/vault-password*",
+                    "**/sops/age/keys.txt",
+                    "**/*.agekey",
+                    "**/.ssh/id_rsa",
+                    "**/.ssh/id_ed25519",
+                    "**/.ssh/id_ecdsa",
+                    "**/.ssh/id_dsa",
+                    "**/.ssh/*_key"
+                ],
+                "effect": "deny"
+            },
+            {
+                "capability": "fs_write",
+                "match": [
+                    "~/projects/**",
+                    "~/repositories/**",
+                    "~/.dotfiles/**",
+                    "./**"
+                ],
+                "effect": "allow"
+            },
+            {
+                "capability": "fs_write",
+                "match": [
+                    "/etc/**",
+                    "/usr/**",
+                    "/bin/**",
+                    "/sbin/**",
+                    "/System/**"
+                ],
+                "effect": "deny"
+            },
+            {
+                "capability": "web_fetch",
+                "match": [
+                    "*docs.ansible.com*",
+                    "*ansible.readthedocs.io*",
+                    "*galaxy.ansible.com*",
+                    "*github.com*",
+                    "*pve.proxmox.com*",
+                    "*docs.*"
+                ],
+                "effect": "allow"
+            },
+            {
+                "capability": "web_fetch",
+                "match": [
+                    "*pastebin.com*"
+                ],
+                "effect": "deny"
+            },
+            {
+                "capability": "subagent",
+                "match": [
+                    "default"
+                ],
+                "effect": "allow"
+            },
+            {
+                "capability": "fs_read",
+                "effect": "allow"
+            },
+            {
+                "capability": "subagent",
+                "effect": "allow"
+            },
+            {
+                "capability": "web_fetch",
+                "effect": "allow"
+            },
+            {
+                "capability": "web_search",
+                "effect": "allow"
+            },
+            {
+                "capability": "mcp",
+                "match": [
+                    "engram/mem_capture_passive",
+                    "engram/mem_compare",
+                    "engram/mem_context",
+                    "engram/mem_current_project",
+                    "engram/mem_delete",
+                    "engram/mem_doctor",
+                    "engram/mem_get_observation",
+                    "engram/mem_judge",
+                    "engram/mem_save",
+                    "engram/mem_save_prompt",
+                    "engram/mem_search",
+                    "engram/mem_session_end",
+                    "engram/mem_session_start",
+                    "engram/mem_session_summary",
+                    "engram/mem_stats",
+                    "engram/mem_suggest_topic_key",
+                    "engram/mem_timeline",
+                    "engram/mem_update"
+                ],
+                "effect": "allow"
+            }
+        ]
+    }
 }

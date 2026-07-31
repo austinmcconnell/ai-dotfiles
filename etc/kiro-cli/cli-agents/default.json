@@ -30,71 +30,125 @@
         "web_search"
     ],
     "description": "Default CLI agent with comprehensive development tools and security restrictions",
-    "hooks": {
-        "agentSpawn": [
-            {
-                "command": "~/.dotfiles/etc/kiro-cli/hooks/check-research-kb.sh default",
-                "timeout_ms": 5000
+    "hooks": [
+        {
+            "name": "agentSpawn-0",
+            "trigger": "agentSpawn",
+            "action": {
+                "type": "command",
+                "command": "~/.dotfiles/etc/kiro-cli/hooks/check-research-kb.sh default"
             },
-            {
-                "command": "~/.dotfiles/etc/kiro-cli/hooks/recall-memory.sh",
-                "timeout_ms": 5000
+            "timeout": 5
+        },
+        {
+            "name": "agentSpawn-1",
+            "trigger": "agentSpawn",
+            "action": {
+                "type": "command",
+                "command": "~/.dotfiles/etc/kiro-cli/hooks/recall-memory.sh"
             },
-            {
-                "command": "~/.dotfiles/etc/kiro-cli/hooks/rotate-traces.sh",
-                "timeout_ms": 5000
-            }
-        ],
-        "preToolUse": [
-            {
-                "matcher": "*",
-                "command": "~/.dotfiles/etc/ai/hooks/block-env-files.sh",
-                "timeout_ms": 5000
+            "timeout": 5
+        },
+        {
+            "name": "agentSpawn-2",
+            "trigger": "agentSpawn",
+            "action": {
+                "type": "command",
+                "command": "~/.dotfiles/etc/kiro-cli/hooks/rotate-traces.sh"
             },
-            {
-                "matcher": "*",
-                "command": "~/.dotfiles/etc/ai/hooks/block-sops-age-files.sh",
-                "timeout_ms": 5000
+            "timeout": 5
+        },
+        {
+            "name": "postToolUse-0",
+            "trigger": "postToolUse",
+            "matcher": "knowledge",
+            "action": {
+                "type": "command",
+                "command": "~/.dotfiles/etc/kiro-cli/hooks/clear-research-kb-stale.sh default"
             },
-            {
-                "matcher": "*",
-                "command": "~/.dotfiles/etc/ai/hooks/block-ssh-private-keys.sh",
-                "timeout_ms": 5000
+            "timeout": 5
+        },
+        {
+            "name": "postToolUse-1",
+            "trigger": "postToolUse",
+            "matcher": "*",
+            "action": {
+                "type": "command",
+                "command": "~/.dotfiles/etc/kiro-cli/hooks/trace-tool-call.sh default"
             },
-            {
-                "matcher": "use_aws",
-                "command": "jq -c '{timestamp: now | strftime(\"%Y-%m-%d %H:%M:%S\"), tool: .tool_name, input: .tool_input}' >> ~/.kiro/logs/aws-audit.jsonl",
-                "timeout_ms": 5000
+            "timeout": 3
+        },
+        {
+            "name": "preToolUse-0",
+            "trigger": "preToolUse",
+            "matcher": "*",
+            "action": {
+                "type": "command",
+                "command": "~/.dotfiles/etc/ai/hooks/block-env-files.sh"
             },
-            {
-                "matcher": "@kubernetes",
-                "command": "jq -c '{timestamp: now | strftime(\"%Y-%m-%d %H:%M:%S\"), tool: .tool_name, input: .tool_input}' >> ~/.kiro/logs/kubectl-audit.jsonl",
-                "timeout_ms": 5000
+            "timeout": 5
+        },
+        {
+            "name": "preToolUse-1",
+            "trigger": "preToolUse",
+            "matcher": "*",
+            "action": {
+                "type": "command",
+                "command": "~/.dotfiles/etc/ai/hooks/block-sops-age-files.sh"
             },
-            {
-                "matcher": "execute_bash",
-                "command": "AI_AGENT_NAME=kiro-cli ~/.dotfiles/etc/ai/hooks/audit-shell-commands.sh",
-                "timeout_ms": 5000
+            "timeout": 5
+        },
+        {
+            "name": "preToolUse-2",
+            "trigger": "preToolUse",
+            "matcher": "*",
+            "action": {
+                "type": "command",
+                "command": "~/.dotfiles/etc/ai/hooks/block-ssh-private-keys.sh"
             },
-            {
-                "matcher": "@engram",
-                "command": "~/.dotfiles/etc/ai/hooks/block-memory-secrets.sh",
-                "timeout_ms": 5000
-            }
-        ],
-        "postToolUse": [
-            {
-                "matcher": "knowledge",
-                "command": "~/.dotfiles/etc/kiro-cli/hooks/clear-research-kb-stale.sh default",
-                "timeout_ms": 5000
+            "timeout": 5
+        },
+        {
+            "name": "preToolUse-3",
+            "trigger": "preToolUse",
+            "matcher": "use_aws",
+            "action": {
+                "type": "command",
+                "command": "jq -c '{timestamp: now | strftime(\"%Y-%m-%d %H:%M:%S\"), tool: .tool_name, input: .tool_input}' >> ~/.kiro/logs/aws-audit.jsonl"
             },
-            {
-                "matcher": "*",
-                "command": "~/.dotfiles/etc/kiro-cli/hooks/trace-tool-call.sh default",
-                "timeout_ms": 3000
-            }
-        ]
-    },
+            "timeout": 5
+        },
+        {
+            "name": "preToolUse-4",
+            "trigger": "preToolUse",
+            "matcher": "@kubernetes",
+            "action": {
+                "type": "command",
+                "command": "jq -c '{timestamp: now | strftime(\"%Y-%m-%d %H:%M:%S\"), tool: .tool_name, input: .tool_input}' >> ~/.kiro/logs/kubectl-audit.jsonl"
+            },
+            "timeout": 5
+        },
+        {
+            "name": "preToolUse-5",
+            "trigger": "preToolUse",
+            "matcher": "execute_bash",
+            "action": {
+                "type": "command",
+                "command": "AI_AGENT_NAME=kiro-cli ~/.dotfiles/etc/ai/hooks/audit-shell-commands.sh"
+            },
+            "timeout": 5
+        },
+        {
+            "name": "preToolUse-6",
+            "trigger": "preToolUse",
+            "matcher": "@engram",
+            "action": {
+                "type": "command",
+                "command": "~/.dotfiles/etc/ai/hooks/block-memory-secrets.sh"
+            },
+            "timeout": 5
+        }
+    ],
     "includeMcpJson": true,
     "mcpServers": {
         "kubernetes": {
@@ -460,5 +514,259 @@
                 "**/.ssh/*_key"
             ]
         }
+    },
+    "permissions": {
+        "rules": [
+            {
+                "capability": "shell",
+                "match": [
+                    "awk *",
+                    "cat *",
+                    "chmod +x *",
+                    "command -v *",
+                    "dirname *",
+                    "echo *",
+                    "echo",
+                    "find *",
+                    "gh api *",
+                    "gh issue list*",
+                    "gh issue view*",
+                    "gh pr list*",
+                    "gh pr view*",
+                    "gh run *",
+                    "git branch*",
+                    "git check-ignore*",
+                    "git diff*",
+                    "GIT_PAGER=cat git log*",
+                    "git log*",
+                    "git ls-files*",
+                    "git ls-tree *",
+                    "git merge-base *",
+                    "git rev-list *",
+                    "git rev-parse *",
+                    "git show*",
+                    "git status*",
+                    "grep *",
+                    "head *",
+                    "hostname",
+                    "jq *",
+                    "jq",
+                    "ls *",
+                    "ls",
+                    "man *",
+                    "mkdir -p *",
+                    "pre-commit run *",
+                    "pwd",
+                    "pylint *",
+                    "read *",
+                    "read",
+                    "readlink *",
+                    "readlink",
+                    "sed *",
+                    "sort *",
+                    "sort",
+                    "source *",
+                    "tr *",
+                    "tail *",
+                    "tree *",
+                    "tree",
+                    "true",
+                    "type *",
+                    "uniq *",
+                    "wc *",
+                    "which *",
+                    "whoami",
+                    "xargs *"
+                ],
+                "effect": "allow"
+            },
+            {
+                "capability": "shell",
+                "match": [
+                    "awk *.env*",
+                    "cat *.env*",
+                    "grep *.env*",
+                    "head *.env*",
+                    "sed *.env*",
+                    "tail *.env*",
+                    "find *.env*",
+                    "cat *sops/age/keys.txt*",
+                    "cat *.agekey*",
+                    "sops decrypt*",
+                    "sops --decrypt*",
+                    "sops -d *",
+                    "cat *.ssh/id_rsa*",
+                    "cat *.ssh/id_ed25519*",
+                    "cat *.ssh/id_ecdsa*",
+                    "cat *.ssh/id_dsa*",
+                    "cat *.ssh/*_key*",
+                    "gh auth *",
+                    "gh issue close *",
+                    "gh issue delete *",
+                    "gh label create *",
+                    "gh label delete *",
+                    "gh label edit *",
+                    "gh pr close *",
+                    "gh pr merge *",
+                    "gh release create *",
+                    "gh release delete *",
+                    "gh repo create *",
+                    "gh repo delete*",
+                    "gh repo edit *",
+                    "gh repo fork *",
+                    "gh run cancel *",
+                    "gh run rerun *",
+                    "gh secret *",
+                    "gh variable *",
+                    "gh workflow disable *",
+                    "gh workflow run *",
+                    "git add .",
+                    "git add -A*",
+                    "git add --all*",
+                    "chmod * *",
+                    "chmod -R *",
+                    "chmod u+s *",
+                    "chmod g+s *",
+                    "chown *",
+                    "cp /*",
+                    "crontab -e",
+                    "crontab -r",
+                    "dd *",
+                    "docker exec --privileged *",
+                    "docker run --privileged *",
+                    "fdisk *",
+                    "init *",
+                    "kill -9 *",
+                    "killall *",
+                    "kubectl apply *",
+                    "kubectl create *",
+                    "kubectl delete *",
+                    "kubectl patch *",
+                    "kubectl replace *",
+                    "mkfs *",
+                    "mount *",
+                    "mv /*",
+                    "pkill *",
+                    "reboot",
+                    "rm *",
+                    "rmdir *",
+                    "service *",
+                    "shutdown *",
+                    "sudo *",
+                    "systemctl *",
+                    "trash *",
+                    "umount *"
+                ],
+                "exclude": [
+                    "chmod +x *"
+                ],
+                "effect": "deny"
+            },
+            {
+                "capability": "fs_read",
+                "match": [
+                    "**/.env",
+                    "**/.env.*",
+                    "**/*.key",
+                    "**/*.pem",
+                    "**/credentials*",
+                    "**/sops/age/keys.txt",
+                    "**/*.agekey",
+                    "**/.ssh/id_rsa",
+                    "**/.ssh/id_ed25519",
+                    "**/.ssh/id_ecdsa",
+                    "**/.ssh/id_dsa",
+                    "**/.ssh/*_key"
+                ],
+                "effect": "deny"
+            },
+            {
+                "capability": "fs_write",
+                "match": [
+                    "~/projects/**",
+                    "~/repositories/**",
+                    "~/.dotfiles/**",
+                    "./**"
+                ],
+                "effect": "allow"
+            },
+            {
+                "capability": "fs_write",
+                "match": [
+                    "/etc/**",
+                    "/usr/**",
+                    "/bin/**",
+                    "/sbin/**",
+                    "/System/**"
+                ],
+                "effect": "deny"
+            },
+            {
+                "capability": "web_fetch",
+                "match": [
+                    "*docs.aws.amazon.com*",
+                    "*docs.github.com*",
+                    "*github.com*",
+                    "*raw.githubusercontent.com*",
+                    "*stackoverflow.com*",
+                    "*developer.mozilla.org*"
+                ],
+                "effect": "allow"
+            },
+            {
+                "capability": "web_fetch",
+                "match": [
+                    "*pastebin.com*"
+                ],
+                "effect": "deny"
+            },
+            {
+                "capability": "subagent",
+                "match": [
+                    "default"
+                ],
+                "effect": "allow"
+            },
+            {
+                "capability": "fs_read",
+                "effect": "allow"
+            },
+            {
+                "capability": "subagent",
+                "effect": "allow"
+            },
+            {
+                "capability": "web_fetch",
+                "effect": "allow"
+            },
+            {
+                "capability": "web_search",
+                "effect": "allow"
+            },
+            {
+                "capability": "mcp",
+                "match": [
+                    "engram/mem_capture_passive",
+                    "engram/mem_compare",
+                    "engram/mem_context",
+                    "engram/mem_current_project",
+                    "engram/mem_delete",
+                    "engram/mem_doctor",
+                    "engram/mem_get_observation",
+                    "engram/mem_judge",
+                    "engram/mem_save",
+                    "engram/mem_save_prompt",
+                    "engram/mem_search",
+                    "engram/mem_session_end",
+                    "engram/mem_session_start",
+                    "engram/mem_session_summary",
+                    "engram/mem_stats",
+                    "engram/mem_suggest_topic_key",
+                    "engram/mem_timeline",
+                    "engram/mem_update"
+                ],
+                "effect": "allow"
+            }
+        ]
     }
 }
