@@ -1,0 +1,570 @@
+{
+    "name": "datadog",
+    "description": "Datadog observability specialist for auditing APM, monitors, dashboards, and UST compliance",
+    "prompt": "file://./datadog-prompt.md",
+    "resources": [
+        "file://~/.dotfiles/etc/ai/steering/datadog/**/*.md",
+        "file://~/.dotfiles/etc/ai/steering/security/env-file-protection.md",
+        "file://.kiro/steering/**/*.md",
+        "file://AGENTS.md",
+        "file://README.md",
+        "skill://.kiro/skills/**/SKILL.md",
+        "skill://~/.kiro/skills/operations/**/SKILL.md",
+        "skill://~/.kiro/skills/shared/**/SKILL.md"
+    ],
+    "allowedTools": [
+        "@engram/mem_capture_passive",
+        "@engram/mem_compare",
+        "@engram/mem_context",
+        "@engram/mem_current_project",
+        "@engram/mem_delete",
+        "@engram/mem_doctor",
+        "@engram/mem_get_observation",
+        "@engram/mem_judge",
+        "@engram/mem_save",
+        "@engram/mem_save_prompt",
+        "@engram/mem_search",
+        "@engram/mem_session_end",
+        "@engram/mem_session_start",
+        "@engram/mem_session_summary",
+        "@engram/mem_stats",
+        "@engram/mem_suggest_topic_key",
+        "@engram/mem_timeline",
+        "@engram/mem_update",
+        "code",
+        "glob",
+        "grep",
+        "introspect",
+        "knowledge",
+        "read",
+        "subagent",
+        "todo",
+        "web_fetch",
+        "web_search"
+    ],
+    "tools": [
+        "*"
+    ],
+    "hooks": [
+        {
+            "name": "agentSpawn-0",
+            "trigger": "agentSpawn",
+            "action": {
+                "type": "command",
+                "command": "~/.dotfiles/etc/kiro-cli/hooks/recall-memory.sh"
+            },
+            "timeout": 5
+        },
+        {
+            "name": "preToolUse-0",
+            "trigger": "preToolUse",
+            "matcher": "*",
+            "action": {
+                "type": "command",
+                "command": "~/.dotfiles/etc/ai/hooks/block-env-files.sh"
+            },
+            "timeout": 5
+        },
+        {
+            "name": "preToolUse-1",
+            "trigger": "preToolUse",
+            "matcher": "*",
+            "action": {
+                "type": "command",
+                "command": "~/.dotfiles/etc/ai/hooks/block-sops-age-files.sh"
+            },
+            "timeout": 5
+        },
+        {
+            "name": "preToolUse-2",
+            "trigger": "preToolUse",
+            "matcher": "*",
+            "action": {
+                "type": "command",
+                "command": "~/.dotfiles/etc/ai/hooks/block-ssh-private-keys.sh"
+            },
+            "timeout": 5
+        },
+        {
+            "name": "preToolUse-3",
+            "trigger": "preToolUse",
+            "matcher": "@engram",
+            "action": {
+                "type": "command",
+                "command": "~/.dotfiles/etc/ai/hooks/block-memory-secrets.sh"
+            },
+            "timeout": 5
+        }
+    ],
+    "toolsSettings": {
+        "aws": {
+            "allowedServices": []
+        },
+        "shell": {
+            "allowedCommands": [
+                "pup monitors (list|get|search|diff).*",
+                "pup logs (search|aggregate).*",
+                "pup metrics (query|list|search).*",
+                "pup dashboards (list|get).*",
+                "pup synthetics (tests|locations|suites) (list|get).*",
+                "pup slos (list|get|status).*",
+                "pup infrastructure hosts list.*",
+                "pup service-catalog (list|get).*",
+                "pup apm services (list|stats).*",
+                "pup tags list.*",
+                "pup events list.*",
+                "pup downtime list.*",
+                "pup incidents list.*",
+                "pup agent schema.*",
+                "pup auth status.*",
+                "pup --help.*",
+                "pup .* --help.*",
+                "awk .*",
+                "cat .*",
+                "chmod \\+x .*",
+                "command -v .*",
+                "dirname .*",
+                "echo( .*)?",
+                "find .*",
+                "git branch.*",
+                "git check-ignore.*",
+                "git diff.*",
+                "(GIT_PAGER=cat )?git log.*",
+                "git ls-files.*",
+                "git ls-tree .*",
+                "git merge-base .*",
+                "git rev-list .*",
+                "git rev-parse .*",
+                "git show.*",
+                "git status.*",
+                "grep .*",
+                "head .*",
+                "hostname",
+                "jq( .*)?",
+                "ls( .*)?",
+                "man .*",
+                "mkdir -p .*",
+                "pwd",
+                "read( .*)?",
+                "readlink( .*)?",
+                "sed .*",
+                "sort( .*)?",
+                "source .*",
+                "tail .*",
+                "tr .*",
+                "tree( .*)?",
+                "true",
+                "type .*",
+                "uniq .*",
+                "wc .*",
+                "which .*",
+                "whoami",
+                "xargs .*"
+            ],
+            "deniedCommands": [
+                "pup .* (create|update|delete|edit|mute|unmute).*",
+                "pup auth login.*",
+                "pup auth logout.*",
+                "pup auth refresh.*",
+                "awk .*\\.env.*",
+                "cat .*\\.env.*",
+                "grep .*\\.env.*",
+                "head .*\\.env.*",
+                "sed .*\\.env.*",
+                "tail .*\\.env.*",
+                "find .*\\.env.*",
+                "cat .*sops/age/keys\\.txt.*",
+                "cat .*\\.agekey.*",
+                "sops (decrypt|--decrypt|-d ).*",
+                "cat .*\\.ssh/id_rsa.*",
+                "cat .*\\.ssh/id_ed25519.*",
+                "cat .*\\.ssh/id_ecdsa.*",
+                "cat .*\\.ssh/id_dsa.*",
+                "cat .*\\.ssh/.*_key[^.].*",
+                "aws .*",
+                "brew install .*",
+                "chmod [0-7]{3,4} .*",
+                "chmod -R .*",
+                "chmod u\\+s .*",
+                "chmod g\\+s .*",
+                "chown .*",
+                "crontab .*",
+                "dd .*",
+                "docker .*",
+                "git add \\.",
+                "git add -A.*",
+                "git add --all.*",
+                "kill .*",
+                "killall .*",
+                "kubectl .*",
+                "npm install .*",
+                "pip install .*",
+                "pkill .*",
+                "rm .*",
+                "rmdir .*",
+                "service .*",
+                "ssh .*",
+                "sudo .*",
+                "systemctl .*",
+                "trash .*"
+            ]
+        },
+        "write": {
+            "allowedPaths": [
+                "~/projects/**",
+                "~/repositories/**",
+                "~/.dotfiles/**",
+                "./**"
+            ],
+            "deniedPaths": [
+                "/etc/**",
+                "/usr/**",
+                "/bin/**",
+                "/sbin/**",
+                "/System/**"
+            ]
+        },
+        "grep": {
+            "allowedPaths": [
+                "~/projects/**",
+                "~/repositories/**",
+                "~/sources/**",
+                "~/.dotfiles/**",
+                "./**"
+            ],
+            "deniedPaths": [
+                "/etc/**",
+                "/usr/**",
+                "/bin/**",
+                "/sbin/**",
+                "/System/**",
+                "**/.env",
+                "**/.env.*",
+                "**/sops/age/keys.txt",
+                "**/*.agekey",
+                "**/.ssh/id_rsa",
+                "**/.ssh/id_ed25519",
+                "**/.ssh/id_ecdsa",
+                "**/.ssh/id_dsa",
+                "**/.ssh/*_key"
+            ]
+        },
+        "glob": {
+            "allowedPaths": [
+                "~/projects/**",
+                "~/repositories/**",
+                "~/sources/**",
+                "~/.dotfiles/**",
+                "./**"
+            ],
+            "deniedPaths": [
+                "/etc/**",
+                "/usr/**",
+                "/bin/**",
+                "/sbin/**",
+                "/System/**",
+                "**/.env",
+                "**/.env.*",
+                "**/sops/age/keys.txt",
+                "**/*.agekey",
+                "**/.ssh/id_rsa",
+                "**/.ssh/id_ed25519",
+                "**/.ssh/id_ecdsa",
+                "**/.ssh/id_dsa",
+                "**/.ssh/*_key"
+            ]
+        },
+        "subagent": {
+            "availableAgents": [
+                "default",
+                "docs",
+                "jira",
+                "ansible",
+                "datadog"
+            ],
+            "trustedAgents": [
+                "default"
+            ]
+        },
+        "web_fetch": {
+            "trusted": [
+                ".*docs\\.datadoghq\\.com.*",
+                ".*github\\.com.*",
+                ".*github\\.com/DataDog/.*"
+            ],
+            "blocked": [
+                ".*pastebin\\.com.*"
+            ]
+        },
+        "read": {
+            "deniedPaths": [
+                "**/.env",
+                "**/.env.*",
+                "**/*.key",
+                "**/*.pem",
+                "**/credentials*",
+                "**/sops/age/keys.txt",
+                "**/*.agekey",
+                "**/.ssh/id_rsa",
+                "**/.ssh/id_ed25519",
+                "**/.ssh/id_ecdsa",
+                "**/.ssh/id_dsa",
+                "**/.ssh/*_key"
+            ]
+        }
+    },
+    "includeMcpJson": true,
+    "permissions": {
+        "rules": [
+            {
+                "capability": "shell",
+                "match": [
+                    "pup monitors list*",
+                    "pup monitors get*",
+                    "pup monitors search*",
+                    "pup monitors diff*",
+                    "pup logs search*",
+                    "pup logs aggregate*",
+                    "pup metrics query*",
+                    "pup metrics list*",
+                    "pup metrics search*",
+                    "pup dashboards list*",
+                    "pup dashboards get*",
+                    "pup synthetics tests list*",
+                    "pup synthetics tests get*",
+                    "pup synthetics locations list*",
+                    "pup synthetics suites list*",
+                    "pup slos list*",
+                    "pup slos get*",
+                    "pup slos status*",
+                    "pup infrastructure hosts list*",
+                    "pup service-catalog list*",
+                    "pup service-catalog get*",
+                    "pup apm services list*",
+                    "pup apm services stats*",
+                    "pup tags list*",
+                    "pup events list*",
+                    "pup downtime list*",
+                    "pup incidents list*",
+                    "pup agent schema*",
+                    "pup auth status*",
+                    "pup --help*",
+                    "pup * --help*",
+                    "awk *",
+                    "cat *",
+                    "chmod +x *",
+                    "command -v *",
+                    "dirname *",
+                    "echo *",
+                    "echo",
+                    "find *",
+                    "git branch*",
+                    "git check-ignore*",
+                    "git diff*",
+                    "GIT_PAGER=cat git log*",
+                    "git log*",
+                    "git ls-files*",
+                    "git ls-tree *",
+                    "git merge-base *",
+                    "git rev-list *",
+                    "git rev-parse *",
+                    "git show*",
+                    "git status*",
+                    "grep *",
+                    "head *",
+                    "hostname",
+                    "jq *",
+                    "jq",
+                    "ls *",
+                    "ls",
+                    "man *",
+                    "mkdir -p *",
+                    "pwd",
+                    "read *",
+                    "read",
+                    "readlink *",
+                    "readlink",
+                    "sed *",
+                    "sort *",
+                    "sort",
+                    "source *",
+                    "tail *",
+                    "tr *",
+                    "tree *",
+                    "tree",
+                    "true",
+                    "type *",
+                    "uniq *",
+                    "wc *",
+                    "which *",
+                    "whoami",
+                    "xargs *"
+                ],
+                "effect": "allow"
+            },
+            {
+                "capability": "shell",
+                "match": [
+                    "pup * create*",
+                    "pup * update*",
+                    "pup * delete*",
+                    "pup * edit*",
+                    "pup * mute*",
+                    "pup * unmute*",
+                    "pup auth login*",
+                    "pup auth logout*",
+                    "pup auth refresh*",
+                    "awk *.env*",
+                    "cat *.env*",
+                    "grep *.env*",
+                    "head *.env*",
+                    "sed *.env*",
+                    "tail *.env*",
+                    "find *.env*",
+                    "cat *sops/age/keys.txt*",
+                    "cat *.agekey*",
+                    "sops decrypt*",
+                    "sops --decrypt*",
+                    "sops -d *",
+                    "cat *.ssh/id_rsa*",
+                    "cat *.ssh/id_ed25519*",
+                    "cat *.ssh/id_ecdsa*",
+                    "cat *.ssh/id_dsa*",
+                    "cat *.ssh/*_key*",
+                    "aws *",
+                    "brew install *",
+                    "chmod * *",
+                    "chmod -R *",
+                    "chmod u+s *",
+                    "chmod g+s *",
+                    "chown *",
+                    "crontab *",
+                    "dd *",
+                    "docker *",
+                    "git add .",
+                    "git add -A*",
+                    "git add --all*",
+                    "kill *",
+                    "killall *",
+                    "kubectl *",
+                    "npm install *",
+                    "pip install *",
+                    "pkill *",
+                    "rm *",
+                    "rmdir *",
+                    "service *",
+                    "ssh *",
+                    "sudo *",
+                    "systemctl *",
+                    "trash *"
+                ],
+                "exclude": [
+                    "chmod +x *"
+                ],
+                "effect": "deny"
+            },
+            {
+                "capability": "fs_read",
+                "match": [
+                    "**/.env",
+                    "**/.env.*",
+                    "**/*.key",
+                    "**/*.pem",
+                    "**/credentials*",
+                    "**/sops/age/keys.txt",
+                    "**/*.agekey",
+                    "**/.ssh/id_rsa",
+                    "**/.ssh/id_ed25519",
+                    "**/.ssh/id_ecdsa",
+                    "**/.ssh/id_dsa",
+                    "**/.ssh/*_key"
+                ],
+                "effect": "deny"
+            },
+            {
+                "capability": "fs_write",
+                "match": [
+                    "~/projects/**",
+                    "~/repositories/**",
+                    "~/.dotfiles/**",
+                    "./**"
+                ],
+                "effect": "allow"
+            },
+            {
+                "capability": "fs_write",
+                "match": [
+                    "/etc/**",
+                    "/usr/**",
+                    "/bin/**",
+                    "/sbin/**",
+                    "/System/**"
+                ],
+                "effect": "deny"
+            },
+            {
+                "capability": "web_fetch",
+                "match": [
+                    "*docs.datadoghq.com*",
+                    "*github.com*",
+                    "*github.com/DataDog/*"
+                ],
+                "effect": "allow"
+            },
+            {
+                "capability": "web_fetch",
+                "match": [
+                    "*pastebin.com*"
+                ],
+                "effect": "deny"
+            },
+            {
+                "capability": "subagent",
+                "match": [
+                    "default"
+                ],
+                "effect": "allow"
+            },
+            {
+                "capability": "fs_read",
+                "effect": "allow"
+            },
+            {
+                "capability": "subagent",
+                "effect": "allow"
+            },
+            {
+                "capability": "web_fetch",
+                "effect": "allow"
+            },
+            {
+                "capability": "web_search",
+                "effect": "allow"
+            },
+            {
+                "capability": "mcp",
+                "match": [
+                    "engram/mem_capture_passive",
+                    "engram/mem_compare",
+                    "engram/mem_context",
+                    "engram/mem_current_project",
+                    "engram/mem_delete",
+                    "engram/mem_doctor",
+                    "engram/mem_get_observation",
+                    "engram/mem_judge",
+                    "engram/mem_save",
+                    "engram/mem_save_prompt",
+                    "engram/mem_search",
+                    "engram/mem_session_end",
+                    "engram/mem_session_start",
+                    "engram/mem_session_summary",
+                    "engram/mem_stats",
+                    "engram/mem_suggest_topic_key",
+                    "engram/mem_timeline",
+                    "engram/mem_update"
+                ],
+                "effect": "allow"
+            }
+        ]
+    }
+}

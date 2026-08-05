@@ -16,7 +16,7 @@
             "type": "knowledgeBase",
             "source": "file://~/sources/geerlingguy/mac-dev-playbook",
             "name": "geerlingguy-mac-dev-playbook",
-            "description": "Geerling's macOS development playbook — real-world project structure, role organization, and requirements management for personal machine setup",
+            "description": "Geerling's macOS development playbook \u2014 real-world project structure, role organization, and requirements management for personal machine setup",
             "indexType": "best",
             "exclude": [
                 ".git/**"
@@ -27,7 +27,7 @@
             "type": "knowledgeBase",
             "source": "file://~/sources/geerlingguy/pi-cluster",
             "name": "geerlingguy-pi-cluster",
-            "description": "Geerling's Raspberry Pi cluster playbook — multi-node infrastructure automation, inventory patterns, and service deployment for a homelab cluster",
+            "description": "Geerling's Raspberry Pi cluster playbook \u2014 multi-node infrastructure automation, inventory patterns, and service deployment for a homelab cluster",
             "indexType": "best",
             "exclude": [
                 ".git/**"
@@ -38,7 +38,7 @@
             "type": "knowledgeBase",
             "source": "file://~/sources/geerlingguy/ansible-for-devops",
             "name": "geerlingguy-ansible-for-devops",
-            "description": "Companion examples for Ansible for DevOps book — role structure, testing patterns, and multi-server setups organized by chapter",
+            "description": "Companion examples for Ansible for DevOps book \u2014 role structure, testing patterns, and multi-server setups organized by chapter",
             "indexType": "best",
             "exclude": [
                 ".git/**"
@@ -49,7 +49,7 @@
             "type": "knowledgeBase",
             "source": "file://~/sources/geerlingguy/ansible-role-docker",
             "name": "geerlingguy-role-docker",
-            "description": "Complex multi-platform Ansible role reference — Docker installation with platform-specific vars, molecule tests, and CI",
+            "description": "Complex multi-platform Ansible role reference \u2014 Docker installation with platform-specific vars, molecule tests, and CI",
             "indexType": "best",
             "exclude": [
                 ".git/**"
@@ -60,7 +60,7 @@
             "type": "knowledgeBase",
             "source": "file://~/sources/geerlingguy/ansible-role-security",
             "name": "geerlingguy-role-security",
-            "description": "Security hardening Ansible role — SSH config, fail2ban, automatic updates with clean defaults/vars separation",
+            "description": "Security hardening Ansible role \u2014 SSH config, fail2ban, automatic updates with clean defaults/vars separation",
             "indexType": "best",
             "exclude": [
                 ".git/**"
@@ -71,7 +71,7 @@
             "type": "knowledgeBase",
             "source": "file://~/sources/geerlingguy/ansible-role-pip",
             "name": "geerlingguy-role-pip",
-            "description": "Simple utility Ansible role reference — pip installation with minimal task structure",
+            "description": "Simple utility Ansible role reference \u2014 pip installation with minimal task structure",
             "indexType": "best",
             "exclude": [
                 ".git/**"
@@ -82,7 +82,7 @@
             "type": "knowledgeBase",
             "source": "file://~/sources/geerlingguy/ansible-role-ntp",
             "name": "geerlingguy-role-ntp",
-            "description": "Minimal single-purpose Ansible role reference — NTP configuration with platform variables and molecule tests",
+            "description": "Minimal single-purpose Ansible role reference \u2014 NTP configuration with platform variables and molecule tests",
             "indexType": "best",
             "exclude": [
                 ".git/**"
@@ -449,7 +449,8 @@
                 "default",
                 "docs",
                 "jira",
-                "ansible"
+                "ansible",
+                "datadog"
             ],
             "trustedAgents": [
                 "default"

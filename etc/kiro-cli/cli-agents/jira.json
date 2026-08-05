@@ -277,7 +277,8 @@
                 "default",
                 "docs",
                 "jira",
-                "ansible"
+                "ansible",
+                "datadog"
             ],
             "trustedAgents": [
                 "default"
