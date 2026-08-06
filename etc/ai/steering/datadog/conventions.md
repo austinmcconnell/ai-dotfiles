@@ -85,3 +85,22 @@ domains with subcommands you may not recognize. For explicit read commands (`lis
 Datadog documentation is hosted at `docs.datadoghq.com` regardless of your org's site — always use
 `docs.datadoghq.com` URLs when referencing documentation. Only API endpoints and the Pup CLI's
 `DD_SITE` configuration use `ddog-gov.com`.
+
+## Terraform Branch Review Protocol
+
+When asked to review Datadog Terraform changes on a feature branch, perform the following:
+
+1. **Correctness**: Validate metric names, query syntax, aggregation functions, and resource types
+   against official Datadog documentation. Fetch docs — don't rely on training data for specifics
+   like burn rate window pairings, SLO threshold semantics, or trace metric naming.
+1. **Best practices**: Confirm current recommended approaches are used, not legacy/deprecated
+   patterns. Check for cases where N resources are recommended but fewer exist (e.g., 3 burn rate
+   monitors per 30d SLO, not 1).
+1. **Completeness**: Flag missing fields that Datadog recommends (escalation_message,
+   evaluation_delay, notify_no_data where traffic is expected, recovery thresholds).
+1. **Consistency**: Compare new resources against existing monitors in the same module for naming,
+   tagging, notification, and structural patterns.
+1. **Semantic correctness**: Validate that threshold values, window sizes, and alert conditions make
+   sense for the metric type, service traffic volume, and SLO target.
+
+Always diff against main to scope the review to branch changes only.
