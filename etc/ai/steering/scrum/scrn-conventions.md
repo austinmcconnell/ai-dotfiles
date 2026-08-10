@@ -5,7 +5,23 @@ guidance in `jira-operations-guidance.md`.
 
 For statuses, API body examples, sprint entry criteria, and acceptance criteria templates, load the
 `jira-operations` skill. For legacy labels, `maybe-delete` workflow, and epic lifecycle rules, load
-the `scrn-backlog-triage` skill.
+the `scrn-backlog-triage` skill. For deployment frontier analysis and testing prioritization, load
+the `deployment-readiness` skill.
+
+## Status Workflow
+
+| Jira Status               | Board Column         | Meaning                                          |
+| ------------------------- | -------------------- | ------------------------------------------------ |
+| `Backlog`                 | Backlog              | Not yet committed to a sprint                    |
+| `Ready for Refinement`    | Ready for Refinement | Needs grooming before sprint commitment          |
+| `In Progress`             | In Progress          | Actively being developed                         |
+| `Code Review`             | Code Review          | PR open, awaiting review                         |
+| `Ready to Test`           | Ready to Test        | Code merged to main, needs manual testing        |
+| `Approved for Production` | Ready for Deployment | Tested and approved, ready for production deploy |
+| `Done`                    | Done                 | Deployed to production and verified              |
+
+**Key distinction**: The Jira API status is `Approved for Production` but the Sprint Board column
+displays as **Ready for Deployment**. These are the same state — use the API name in queries.
 
 ## Priority Values
 
@@ -83,3 +99,18 @@ specific priority.
 | ------------- | ---------------------------------------- |
 | `components`  | Not used in SCRN — all values are empty  |
 | `fixVersions` | Not used in SCRN — no release versioning |
+
+## Release Tag Format
+
+Tags trigger deployments via GitHub Actions. The tag pattern determines the target environment.
+
+| Tag Format                    | Environment            | Example       |
+| ----------------------------- | ---------------------- | ------------- |
+| `X.X.Xalpha` or `X.X.Xalpha2` | n-aaa (pre-production) | `0.0.76alpha` |
+| `X.X.Xbeta` or `X.X.Xbeta2`   | training               | `0.0.76beta`  |
+| `X.X.X` (numeric only)        | production             | `0.0.76`      |
+
+**Production tag regex**: `^[0-9]+\.[0-9]+\.[0-9]+$`
+
+Source of truth: `.github/workflows/build-and-deploy.yaml` — production deploys when tag does NOT
+contain `alpha` and does NOT contain `beta`.

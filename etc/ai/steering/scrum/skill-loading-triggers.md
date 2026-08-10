@@ -15,3 +15,4 @@ that have explicit skills.
 | Transitioning, linking, or searching issues  | `jira-operations`        |
 | Backlog health or triage review              | `scrn-backlog-triage`    |
 | Validating Jira setup or API connectivity    | `jira-smoke-test`        |
+| Deployment readiness, "what can we deploy"   | `deployment-readiness`   |
