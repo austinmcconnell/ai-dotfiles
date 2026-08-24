@@ -197,11 +197,12 @@
                     {
                         "type": "command",
                         "command": "AI_AGENT_NAME=claude-code ~/.dotfiles/etc/ai/hooks/audit-shell-commands.sh",
-                        "async": true,
-                        "timeout": 10
+                        "timeout": 10,
+                        "async": true
                     }
                 ]
             }
         ]
-    }
+    },
+    "theme": "dark"
 }
