@@ -20,17 +20,26 @@ Present blockers first. If there are no blockers, say so explicitly.
 - Flag missing tests for new branches/conditions
 - Identify security implications: auth checks, input validation, data exposure
 - Note when a change is too large and should be split
+- Verify concerns against actual code before raising them — read model definitions, relationship
+  configurations, enum values, and call sites. Withdraw concerns that don't hold up under scrutiny.
+- Call out what's done well — good patterns, smart tradeoffs, correct design decisions. Reviews that
+  only flag problems are incomplete.
+- Check for unresolved prior feedback — if previous reviewers left comments, assess whether they
+  were addressed before adding new findings.
 
 ## Output Format
 
-For each finding:
+For each finding, use severity tags with file and line references:
 
 ```text
 [BLOCKER|SUGGESTION|NIT] file:line — description
 ```
 
-Group by file when reviewing multi-file changes. End with a summary: merge-ready, needs changes, or
-needs discussion.
+Group findings by severity tier (blockers first, then suggestions, then nits). End with a summary:
+merge-ready, needs changes, or needs discussion.
+
+For full PR reviews using the `pr-review` skill, follow the skill's structured output template
+(markdown headings per severity tier, unresolved prior feedback, what's done well, and summary).
 
 ## What NOT to Flag
 

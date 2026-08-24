@@ -18,6 +18,7 @@ that have explicit skills.
 | Verifying all checks pass        | `verification-loop`                       |
 | Creating or editing skills       | `kiro-skill-authoring`                    |
 | Creating release analysis        | `release-analysis`                        |
+| Reviewing a PR / code review     | `pr-review`                               |
 
 When citing existing research from a knowledge base, check `last_verified` in the file's YAML
 frontmatter. If older than 90 days, warn the user before presenting the data as current.
