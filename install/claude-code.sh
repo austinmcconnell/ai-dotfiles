@@ -1,14 +1,24 @@
 #!/bin/bash
 
 # ---------------------------------------------------------------
-# Claude Code Configuration
-# Symlinks Claude Code settings from dotfiles to ~/.claude/
-# and bootstraps MCP server configuration in ~/.claude.json
+# Claude Code Installation Script
+# This script:
+# 1. Installs Claude Code via Homebrew
+# 2. Symlinks settings from dotfiles to ~/.claude/
+# 3. Bootstraps MCP server configuration in ~/.claude.json
 # ---------------------------------------------------------------
 
 set -euo pipefail
 
 source "$DOTFILES_DIR/install/utils.sh"
+
+print_section_header "Installing Claude Code"
+
+# Initialize Homebrew cache
+init_brew_cache
+
+# Install Claude Code via Homebrew
+install_if_needed "claude-code" "cask"
 
 print_section_header "Setting up Claude Code configuration"
 
