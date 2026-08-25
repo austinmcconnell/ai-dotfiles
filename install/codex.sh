@@ -7,6 +7,10 @@
 
 set -euo pipefail
 
+# Resolve the AI dotfiles root from this script's location when not already set
+# (e.g. run standalone rather than sourced from a parent install.sh).
+AI_DOTFILES_DIR="${AI_DOTFILES_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
+
 source "$AI_DOTFILES_DIR/install/utils.sh"
 
 print_section_header "Setting up Codex configuration"
