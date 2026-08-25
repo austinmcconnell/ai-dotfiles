@@ -8,7 +8,7 @@
 
 set -euo pipefail
 
-source "$DOTFILES_DIR/install/utils.sh"
+source "$AI_DOTFILES_DIR/install/utils.sh"
 
 print_section_header "Configuring Engram"
 

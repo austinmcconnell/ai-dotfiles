@@ -7,7 +7,7 @@
 
 set -euo pipefail
 
-source "$DOTFILES_DIR/install/utils.sh"
+source "$AI_DOTFILES_DIR/install/utils.sh"
 
 print_section_header "Setting up Codex configuration"
 
@@ -15,7 +15,7 @@ install_if_needed "codex" "cask"
 
 CODEX_DIR="$HOME/.codex"
 CODEX_CONFIG="$CODEX_DIR/config.toml"
-DOTFILES_CODEX_CONFIG="$DOTFILES_DIR/etc/codex/config.toml"
+DOTFILES_CODEX_CONFIG="$AI_DOTFILES_DIR/etc/codex/config.toml"
 
 mkdir -p "$CODEX_DIR"
 

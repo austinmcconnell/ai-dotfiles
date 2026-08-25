@@ -10,7 +10,7 @@
 
 set -euo pipefail
 
-source "$DOTFILES_DIR/install/utils.sh"
+source "$AI_DOTFILES_DIR/install/utils.sh"
 
 print_section_header "Installing Claude Code"
 
@@ -28,7 +28,7 @@ CLAUDE_JSON="$HOME/.claude.json"
 mkdir -p "$CLAUDE_DIR"
 
 # Link settings (permissions)
-ln -sfv "$DOTFILES_DIR/etc/claude-code/settings.json" "$CLAUDE_DIR/settings.json"
+ln -sfv "$AI_DOTFILES_DIR/etc/claude-code/settings.json" "$CLAUDE_DIR/settings.json"
 
 # Bootstrap MCP servers in ~/.claude.json (user scope) if not already present
 if [ ! -f "$CLAUDE_JSON" ]; then

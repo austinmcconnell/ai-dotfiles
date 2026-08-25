@@ -13,7 +13,7 @@
 
 set -euo pipefail
 
-source "$DOTFILES_DIR/install/utils.sh"
+source "$AI_DOTFILES_DIR/install/utils.sh"
 
 # ---------------------------------------------------------------
 # Enable the agents you actively use. Others are defined in the
@@ -33,8 +33,8 @@ ENABLED_AGENTS=(
 
 print_section_header "Distributing Agent Skills"
 
-SKILLS_SOURCE="$DOTFILES_DIR/etc/ai/skills"
-STEERING_SOURCE="$DOTFILES_DIR/etc/ai/steering"
+SKILLS_SOURCE="$AI_DOTFILES_DIR/etc/ai/skills"
+STEERING_SOURCE="$AI_DOTFILES_DIR/etc/ai/steering"
 
 # ---------------------------------------------------------------
 # Steering Generators

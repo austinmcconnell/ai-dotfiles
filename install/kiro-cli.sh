@@ -11,7 +11,7 @@
 set -euo pipefail
 
 # Source the utilities script for helper functions
-source "$DOTFILES_DIR/install/utils.sh"
+source "$AI_DOTFILES_DIR/install/utils.sh"
 
 print_section_header "Installing Kiro CLI"
 
@@ -30,7 +30,7 @@ KIRO_LOGS_DIR="$HOME/.kiro/logs"
 mkdir -p "$KIRO_SETTINGS_DIR"
 mkdir -p "$KIRO_AGENTS_DIR"
 mkdir -p "$KIRO_LOGS_DIR"
-mkdir -p "$DOTFILES_DIR/etc/ai/prompts"
+mkdir -p "$AI_DOTFILES_DIR/etc/ai/prompts"
 
 # Create audit log files with proper permissions
 touch "$KIRO_LOGS_DIR/aws-audit.jsonl"
@@ -38,15 +38,15 @@ touch "$KIRO_LOGS_DIR/kubectl-audit.jsonl"
 chmod 600 "$KIRO_LOGS_DIR"/*.jsonl
 
 # Link settings from dotfiles
-ln -sfv "$DOTFILES_DIR/etc/kiro-cli/settings/cli.json" "$KIRO_SETTINGS_DIR/cli.json"
-ln -sfv "$DOTFILES_DIR/etc/kiro-cli/settings/mcp.json" "$KIRO_SETTINGS_DIR/mcp.json"
+ln -sfv "$AI_DOTFILES_DIR/etc/kiro-cli/settings/cli.json" "$KIRO_SETTINGS_DIR/cli.json"
+ln -sfv "$AI_DOTFILES_DIR/etc/kiro-cli/settings/mcp.json" "$KIRO_SETTINGS_DIR/mcp.json"
 
 # Link CLI agents from dotfiles repository
 KIRO_AGENTS_DIR="$HOME/.kiro/agents"
 mkdir -p "$KIRO_AGENTS_DIR"
 
-if [ -d "$DOTFILES_DIR/etc/kiro-cli/cli-agents" ]; then
-    for agent_file in "$DOTFILES_DIR/etc/kiro-cli/cli-agents"/*.{json,md}; do
+if [ -d "$AI_DOTFILES_DIR/etc/kiro-cli/cli-agents" ]; then
+    for agent_file in "$AI_DOTFILES_DIR/etc/kiro-cli/cli-agents"/*.{json,md}; do
         if [ -f "$agent_file" ]; then
             agent_name=$(basename "$agent_file")
             ln -sfv "$agent_file" "$KIRO_AGENTS_DIR/$agent_name"
@@ -70,7 +70,7 @@ fi
 # already handles keys, ControlMaster, and host aliases independently.
 
 # Install MCP servers if npm is available
-source "$DOTFILES_DIR/etc/kiro-cli/mcp-servers.conf"
+source "$AI_DOTFILES_DIR/etc/kiro-cli/mcp-servers.conf"
 
 if is-executable npm; then
     print_section_header "Installing Kiro CLI MCP servers"
