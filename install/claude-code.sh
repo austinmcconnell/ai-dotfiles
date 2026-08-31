@@ -34,6 +34,12 @@ mkdir -p "$CLAUDE_DIR"
 # Link settings (permissions)
 ln -sfv "$AI_DOTFILES_DIR/etc/claude-code/settings.json" "$CLAUDE_DIR/settings.json"
 
+# Link subagents directory (jira, datadog personas — usable via `claude --agent <name>`).
+# Note: Claude Code does not detect a newly created agents/ dir mid-session; a restart
+# is required the first time this symlink is added.
+ln -sfn "$AI_DOTFILES_DIR/etc/claude-code/agents" "$CLAUDE_DIR/agents"
+echo "✓ Linked subagents to ~/.claude/agents"
+
 # Bootstrap MCP servers in ~/.claude.json (user scope).
 #
 # Idempotent: the desired server set lives in a heredoc and is merged into any
