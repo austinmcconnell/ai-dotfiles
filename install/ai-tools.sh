@@ -40,6 +40,15 @@ print_section_header "Distributing Agent Skills"
 SKILLS_SOURCE="$AI_DOTFILES_DIR/etc/ai/skills"
 STEERING_SOURCE="$AI_DOTFILES_DIR/etc/ai/steering"
 
+# Steering domains shipped to every session by the steering-file generators
+# (Gemini GEMINI.md, Cursor .mdc, Claude rules/). These are universal — they
+# apply to any work in any session. Domain-specific steering (ansible,
+# documentation, datadog, scrum) is loaded per-persona via @-imports in the
+# relevant Claude subagent body, so it doesn't pollute unrelated sessions.
+# Single source of truth: every generator loops this array, so adding a
+# universal domain here updates all three tools at once.
+UNIVERSAL_STEERING_DOMAINS=(code github security)
+
 # ---------------------------------------------------------------
 # Steering Generators
 # ---------------------------------------------------------------
@@ -57,21 +66,17 @@ HEADER
         # Single quotes are intentional: the backticks are literal markdown code
         # formatting, and %s pulls in $STEERING_SOURCE as a printf argument.
         # shellcheck disable=SC2016
-        printf 'Source: `%s/{code,github,security}/`\n\n' "$STEERING_SOURCE"
-        for f in "$STEERING_SOURCE/code"/*.md; do
-            [ -f "$f" ] || continue
-            cat "$f"
-            printf '\n\n'
-        done
-        for f in "$STEERING_SOURCE/github"/*.md; do
-            [ -f "$f" ] || continue
-            cat "$f"
-            printf '\n\n'
-        done
-        for f in "$STEERING_SOURCE/security"/*.md; do
-            [ -f "$f" ] || continue
-            cat "$f"
-            printf '\n\n'
+        printf 'Source: `%s/{%s}/`\n\n' "$STEERING_SOURCE" \
+            "$(
+                IFS=,
+                echo "${UNIVERSAL_STEERING_DOMAINS[*]}"
+            )"
+        for domain in "${UNIVERSAL_STEERING_DOMAINS[@]}"; do
+            for f in "$STEERING_SOURCE/$domain"/*.md; do
+                [ -f "$f" ] || continue
+                cat "$f"
+                printf '\n\n'
+            done
         done
     } >"$output_file"
 }
@@ -86,22 +91,24 @@ generate_mdc_steering() {
     rm -f "${output_dir:?}/${prefix}"*.mdc
     find "$output_dir" -maxdepth 1 -name "*.mdc" -type l ! -exec test -e {} \; -delete 2>/dev/null || true
 
-    for f in "$STEERING_SOURCE/code"/*.md "$STEERING_SOURCE/github"/*.md "$STEERING_SOURCE/security"/*.md; do
-        [ -f "$f" ] || continue
-        local basename desc content
-        basename="$(basename "$f" .md)"
-        # Strip any existing YAML frontmatter before extracting content
-        if head -1 "$f" | grep -q '^---$'; then
-            content="$(sed '1{/^---$/!q}; 1,/^---$/d' "$f")"
-        else
-            content="$(cat "$f")"
-        fi
-        desc="$(echo "$content" | grep -m1 '^# ' | sed 's/^# //')"
-        local mdc_file="$output_dir/${prefix}${basename}.mdc"
-        {
-            printf -- '---\ndescription: %s\nalwaysApply: true\n---\n\n' "$desc"
-            echo "$content"
-        } >"$mdc_file"
+    for domain in "${UNIVERSAL_STEERING_DOMAINS[@]}"; do
+        for f in "$STEERING_SOURCE/$domain"/*.md; do
+            [ -f "$f" ] || continue
+            local basename desc content
+            basename="$(basename "$f" .md)"
+            # Strip any existing YAML frontmatter before extracting content
+            if head -1 "$f" | grep -q '^---$'; then
+                content="$(sed '1{/^---$/!q}; 1,/^---$/d' "$f")"
+            else
+                content="$(cat "$f")"
+            fi
+            desc="$(echo "$content" | grep -m1 '^# ' | sed 's/^# //')"
+            local mdc_file="$output_dir/${prefix}${basename}.mdc"
+            {
+                printf -- '---\ndescription: %s\nalwaysApply: true\n---\n\n' "$desc"
+                echo "$content"
+            } >"$mdc_file"
+        done
     done
 }
 
@@ -113,10 +120,12 @@ generate_rules_steering() {
     local claude_md="$2"
 
     # Clean previously generated rules
-    rm -rf "${output_dir:?}"/{code,github,security}
+    for domain in "${UNIVERSAL_STEERING_DOMAINS[@]}"; do
+        rm -rf "${output_dir:?}/${domain}"
+    done
 
     # Copy each steering doc preserving subdirectory structure
-    for domain in code github security; do
+    for domain in "${UNIVERSAL_STEERING_DOMAINS[@]}"; do
         for f in "$STEERING_SOURCE/$domain"/*.md; do
             [ -f "$f" ] || continue
             mkdir -p "$output_dir/$domain"
