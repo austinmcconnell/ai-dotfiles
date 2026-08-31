@@ -11,9 +11,13 @@ TOOL_INPUT=$(cat)
 
 # Only check memory save/update operations
 TOOL_NAME=$(echo "$TOOL_INPUT" | jq -r '.tool_name // empty' 2>/dev/null)
-# Strip a leading MCP server prefix (e.g. "@engram/mem_save" -> "mem_save").
-# kiro-cli reports MCP tools with the "@server/" prefix; Claude Code does not.
+# Normalize MCP tool-name prefixes so the bare tool name is compared:
+#   kiro-cli:     "@engram/mem_save"        -> "mem_save"  (prefix ends with "/")
+#   Claude Code:  "mcp__engram__mem_save"   -> "mem_save"  (prefix uses "__")
+# Strip the kiro-style "@server/" prefix first, then the Claude-style
+# "mcp__server__" prefix. Order is safe: the patterns don't overlap.
 TOOL_NAME="${TOOL_NAME##*/}"
+TOOL_NAME="${TOOL_NAME##mcp__*__}"
 if [[ "${TOOL_NAME}" != "mem_save" && "${TOOL_NAME}" != "mem_update" && "${TOOL_NAME}" != "mem_save_prompt" && "${TOOL_NAME}" != "mem_session_summary" && "${TOOL_NAME}" != "mem_capture_passive" ]]; then
     exit 0
 fi
