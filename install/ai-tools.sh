@@ -103,7 +103,10 @@ generate_mdc_steering() {
                 content="$(cat "$f")"
             fi
             desc="$(echo "$content" | grep -m1 '^# ' | sed 's/^# //')"
-            local mdc_file="$output_dir/${prefix}${basename}.mdc"
+            # Prefix the domain so files sharing a basename across domains
+            # (e.g. code/ and github/ both have skill-loading-triggers.md) don't
+            # collide on a flat output name and silently overwrite each other.
+            local mdc_file="$output_dir/${prefix}${domain}-${basename}.mdc"
             {
                 printf -- '---\ndescription: %s\nalwaysApply: true\n---\n\n' "$desc"
                 echo "$content"
