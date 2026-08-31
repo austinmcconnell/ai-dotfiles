@@ -74,7 +74,7 @@
         {
             "name": "preToolUse-3",
             "trigger": "preToolUse",
-            "matcher": "@engram",
+            "matcher": "@engram/*",
             "action": {
                 "type": "command",
                 "command": "~/.dotfiles/etc/ai/hooks/block-memory-secrets.sh"
