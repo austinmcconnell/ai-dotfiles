@@ -15,13 +15,13 @@ etc/ai/
 
 `install/ai-tools.sh` reads from these directories and generates tool-specific output:
 
-| Tool        | Skills                           | Steering                                        |
-| ----------- | -------------------------------- | ----------------------------------------------- |
-| kiro-cli    | Symlinked to `~/.kiro/skills/`   | Loaded as `file://` resources in agent JSON     |
-| Codex       | Symlinked to `~/.codex/skills/`  | Reads AGENTS.md (no adapter needed)             |
-| Cursor      | Symlinked to `~/.cursor/skills/` | Generated as `.mdc` files in `~/.cursor/rules/` |
-| Claude Code | Symlinked to `~/.claude/skills/` | Concatenated into `~/.claude/CLAUDE.md`         |
-| Gemini CLI  | Symlinked to `~/.gemini/skills/` | Concatenated into `~/.gemini/GEMINI.md`         |
+| Tool        | Skills                           | Steering                                                                                        |
+| ----------- | -------------------------------- | ----------------------------------------------------------------------------------------------- |
+| kiro-cli    | Symlinked to `~/.kiro/skills/`   | Symlinked to `~/.kiro/steering/`, loaded via `file://~/.kiro/steering/` resources in agent JSON |
+| Codex       | Symlinked to `~/.codex/skills/`  | Reads AGENTS.md (no adapter needed)                                                             |
+| Cursor      | Symlinked to `~/.cursor/skills/` | Generated as `.mdc` files in `~/.cursor/rules/`                                                 |
+| Claude Code | Symlinked to `~/.claude/skills/` | Concatenated into `~/.claude/CLAUDE.md`                                                         |
+| Gemini CLI  | Symlinked to `~/.gemini/skills/` | Concatenated into `~/.gemini/GEMINI.md`                                                         |
 
 Only tools listed in `ENABLED_AGENTS` within `install/ai-tools.sh` are active.
 
@@ -52,5 +52,6 @@ Always-on principles that guide AI behavior. Organized by domain:
 - `documentation/` — writing style, formatting, mdbook
 - `scrum/` — JIRA operations, sprint conventions
 
-These are the *source of truth*. Each tool consumes them differently (kiro-cli loads them as
-resources, Cursor gets `.mdc` files, Claude/Gemini get a concatenated markdown file).
+These are the *source of truth*. Each tool consumes them differently (kiro-cli reads them through a
+`~/.kiro/steering/` symlink referenced by `file://~/.kiro/steering/` resource globs in each agent
+JSON, Cursor gets `.mdc` files, Claude/Gemini get a concatenated markdown file).

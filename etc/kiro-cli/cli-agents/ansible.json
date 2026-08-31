@@ -3,8 +3,8 @@
     "description": "Ansible automation specialist for Proxmox homelab infrastructure management",
     "prompt": "file://./ansible-prompt.md",
     "resources": [
-        "file://~/.dotfiles/etc/ai/steering/ansible/**/*.md",
-        "file://~/.dotfiles/etc/ai/steering/security/env-file-protection.md",
+        "file://~/.kiro/steering/ansible/**/*.md",
+        "file://~/.kiro/steering/security/env-file-protection.md",
         "file://.kiro/steering/**/*.md",
         "file://AGENTS.md",
         "file://README.md",

@@ -169,9 +169,9 @@
     "prompt": "file://./default-prompt.md",
     "resources": [
         "file://AGENTS.md",
-        "file://~/.dotfiles/etc/ai/steering/code/**/*.md",
-        "file://~/.dotfiles/etc/ai/steering/github/**/*.md",
-        "file://~/.dotfiles/etc/ai/steering/security/**/*.md",
+        "file://~/.kiro/steering/code/**/*.md",
+        "file://~/.kiro/steering/github/**/*.md",
+        "file://~/.kiro/steering/security/**/*.md",
         "file://.kiro/steering/**/*.md",
         "file://README.md",
         "skill://.kiro/skills/development/**/SKILL.md",

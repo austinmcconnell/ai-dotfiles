@@ -142,6 +142,9 @@ EOF
 #                  "single:PATH" = single concatenated file
 #                  "mdc:DIR"     = .mdc files with frontmatter
 #                  "rules:DIR"   = individual .md files (Claude Code rules/)
+#                  "symlink:DIR" = symlink the steering tree to DIR (kiro-cli
+#                                  reads it via file://~/.kiro/steering/ URIs in
+#                                  each agent's resources)
 # ---------------------------------------------------------------
 agent_config() {
     local agent="$1" field="$2"
@@ -157,7 +160,7 @@ agent_config() {
     github-copilot:skills_path) echo "$HOME/.agents/skills" ;;
     github-copilot:steering) echo "none" ;;
     kiro-cli:skills_path) echo "$HOME/.kiro/skills" ;;
-    kiro-cli:steering) echo "none" ;;
+    kiro-cli:steering) echo "symlink:$HOME/.kiro/steering" ;;
     windsurf:skills_path) echo "$HOME/.codeium/windsurf/skills" ;;
     windsurf:steering) echo "none" ;;
     esac
@@ -182,6 +185,17 @@ for agent in "${ENABLED_AGENTS[@]}"; do
     # Generate steering adapter
     case "$steering" in
     none) ;;
+    symlink:*)
+        steering_link="${steering#symlink:}"
+        mkdir -p "$(dirname "$steering_link")"
+        # Remove existing real directory (e.g., the empty ~/.kiro/steering dir
+        # kiro creates) before linking, so ln -sfn creates a symlink not a nested one
+        if [ -d "$steering_link" ] && [ ! -L "$steering_link" ]; then
+            rm -rf "$steering_link"
+        fi
+        ln -sfn "$STEERING_SOURCE" "$steering_link"
+        echo "✓ Linked steering to $agent ($steering_link)"
+        ;;
     single:*)
         output_file="${steering#single:}"
         mkdir -p "$(dirname "$output_file")"

@@ -3,8 +3,8 @@
     "description": "Datadog observability specialist for auditing APM, monitors, dashboards, and UST compliance",
     "prompt": "file://./datadog-prompt.md",
     "resources": [
-        "file://~/.dotfiles/etc/ai/steering/datadog/**/*.md",
-        "file://~/.dotfiles/etc/ai/steering/security/env-file-protection.md",
+        "file://~/.kiro/steering/datadog/**/*.md",
+        "file://~/.kiro/steering/security/env-file-protection.md",
         "file://.kiro/steering/**/*.md",
         "file://AGENTS.md",
         "file://README.md",

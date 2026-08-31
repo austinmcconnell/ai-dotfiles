@@ -3,8 +3,8 @@
     "description": "Documentation project specialist with mdBook expertise and best practices",
     "prompt": "file://./docs-prompt.md",
     "resources": [
-        "file://~/.dotfiles/etc/ai/steering/documentation/**/*.md",
-        "file://~/.dotfiles/etc/ai/steering/security/env-file-protection.md",
+        "file://~/.kiro/steering/documentation/**/*.md",
+        "file://~/.kiro/steering/security/env-file-protection.md",
         "file://.kiro/steering/**/*.md",
         "file://AGENTS.md",
         "file://README.md",
