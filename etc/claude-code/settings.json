@@ -158,6 +158,18 @@
         ]
     },
     "hooks": {
+        "SessionStart": [
+            {
+                "matcher": "startup|resume",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "AI_AGENT_NAME=claude-code $AI_DOTFILES_DIR/etc/kiro-cli/hooks/recall-memory.sh",
+                        "timeout": 5
+                    }
+                ]
+            }
+        ],
         "PreToolUse": [
             {
                 "matcher": "*",
