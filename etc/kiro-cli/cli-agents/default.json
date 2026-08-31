@@ -36,7 +36,7 @@
             "trigger": "agentSpawn",
             "action": {
                 "type": "command",
-                "command": "~/.dotfiles/etc/kiro-cli/hooks/check-research-kb.sh default"
+                "command": "$AI_DOTFILES_DIR/etc/kiro-cli/hooks/check-research-kb.sh default"
             },
             "timeout": 5
         },
@@ -45,7 +45,7 @@
             "trigger": "agentSpawn",
             "action": {
                 "type": "command",
-                "command": "~/.dotfiles/etc/kiro-cli/hooks/recall-memory.sh"
+                "command": "$AI_DOTFILES_DIR/etc/kiro-cli/hooks/recall-memory.sh"
             },
             "timeout": 5
         },
@@ -54,7 +54,7 @@
             "trigger": "agentSpawn",
             "action": {
                 "type": "command",
-                "command": "~/.dotfiles/etc/kiro-cli/hooks/rotate-traces.sh"
+                "command": "$AI_DOTFILES_DIR/etc/kiro-cli/hooks/rotate-traces.sh"
             },
             "timeout": 5
         },
@@ -64,7 +64,7 @@
             "matcher": "knowledge",
             "action": {
                 "type": "command",
-                "command": "~/.dotfiles/etc/kiro-cli/hooks/clear-research-kb-stale.sh default"
+                "command": "$AI_DOTFILES_DIR/etc/kiro-cli/hooks/clear-research-kb-stale.sh default"
             },
             "timeout": 5
         },
@@ -74,7 +74,7 @@
             "matcher": "*",
             "action": {
                 "type": "command",
-                "command": "~/.dotfiles/etc/kiro-cli/hooks/trace-tool-call.sh default"
+                "command": "$AI_DOTFILES_DIR/etc/kiro-cli/hooks/trace-tool-call.sh default"
             },
             "timeout": 3
         },
@@ -84,7 +84,7 @@
             "matcher": "*",
             "action": {
                 "type": "command",
-                "command": "~/.dotfiles/etc/ai/hooks/block-env-files.sh"
+                "command": "$AI_DOTFILES_DIR/etc/ai/hooks/block-env-files.sh"
             },
             "timeout": 5
         },
@@ -94,7 +94,7 @@
             "matcher": "*",
             "action": {
                 "type": "command",
-                "command": "~/.dotfiles/etc/ai/hooks/block-sops-age-files.sh"
+                "command": "$AI_DOTFILES_DIR/etc/ai/hooks/block-sops-age-files.sh"
             },
             "timeout": 5
         },
@@ -104,7 +104,7 @@
             "matcher": "*",
             "action": {
                 "type": "command",
-                "command": "~/.dotfiles/etc/ai/hooks/block-ssh-private-keys.sh"
+                "command": "$AI_DOTFILES_DIR/etc/ai/hooks/block-ssh-private-keys.sh"
             },
             "timeout": 5
         },
@@ -134,7 +134,7 @@
             "matcher": "execute_bash",
             "action": {
                 "type": "command",
-                "command": "AI_AGENT_NAME=kiro-cli ~/.dotfiles/etc/ai/hooks/audit-shell-commands.sh"
+                "command": "AI_AGENT_NAME=kiro-cli $AI_DOTFILES_DIR/etc/ai/hooks/audit-shell-commands.sh"
             },
             "timeout": 5
         },
@@ -144,7 +144,7 @@
             "matcher": "@engram/*",
             "action": {
                 "type": "command",
-                "command": "~/.dotfiles/etc/ai/hooks/block-memory-secrets.sh"
+                "command": "$AI_DOTFILES_DIR/etc/ai/hooks/block-memory-secrets.sh"
             },
             "timeout": 5
         }

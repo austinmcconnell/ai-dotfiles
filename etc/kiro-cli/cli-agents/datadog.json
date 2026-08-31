@@ -51,7 +51,7 @@
             "trigger": "agentSpawn",
             "action": {
                 "type": "command",
-                "command": "~/.dotfiles/etc/kiro-cli/hooks/recall-memory.sh"
+                "command": "$AI_DOTFILES_DIR/etc/kiro-cli/hooks/recall-memory.sh"
             },
             "timeout": 5
         },
@@ -61,7 +61,7 @@
             "matcher": "*",
             "action": {
                 "type": "command",
-                "command": "~/.dotfiles/etc/ai/hooks/block-env-files.sh"
+                "command": "$AI_DOTFILES_DIR/etc/ai/hooks/block-env-files.sh"
             },
             "timeout": 5
         },
@@ -71,7 +71,7 @@
             "matcher": "*",
             "action": {
                 "type": "command",
-                "command": "~/.dotfiles/etc/ai/hooks/block-sops-age-files.sh"
+                "command": "$AI_DOTFILES_DIR/etc/ai/hooks/block-sops-age-files.sh"
             },
             "timeout": 5
         },
@@ -81,7 +81,7 @@
             "matcher": "*",
             "action": {
                 "type": "command",
-                "command": "~/.dotfiles/etc/ai/hooks/block-ssh-private-keys.sh"
+                "command": "$AI_DOTFILES_DIR/etc/ai/hooks/block-ssh-private-keys.sh"
             },
             "timeout": 5
         },
@@ -91,7 +91,7 @@
             "matcher": "@engram/*",
             "action": {
                 "type": "command",
-                "command": "~/.dotfiles/etc/ai/hooks/block-memory-secrets.sh"
+                "command": "$AI_DOTFILES_DIR/etc/ai/hooks/block-memory-secrets.sh"
             },
             "timeout": 5
         }
