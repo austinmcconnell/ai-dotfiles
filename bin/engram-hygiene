@@ -1,0 +1,208 @@
+#!/bin/bash
+set -euo pipefail
+
+# ---------------------------------------------------------------
+# engram-hygiene — surface accumulated engram memory-conflict debt
+#
+# Engram detects conflicting/superseding relations between memories but leaves
+# them "pending" until judged (via mem_judge / mem_compare, or `engram conflicts
+# scan`). This debt accrues silently over time. This script surfaces it.
+#
+# Modes:
+#   status        All-projects table of pending/orphaned conflict debt (on-demand;
+#                 what `dotfiles memory-check` calls). Read-only.
+#   check         Current-project, time-throttled check for the agentSpawn nudge.
+#                 Prints a one-line nudge only when BOTH the cadence interval has
+#                 elapsed AND the current project has pending debt. Writes only a
+#                 local throttle stamp; never touches engram data.
+#
+# Read-only w.r.t. engram: neither mode runs `conflicts scan --apply` or judges
+# anything (`check` writes only a local cadence stamp under ~/.kiro). Conflict
+# resolution stays user-approved (mem_judge / mem_compare), consistent with the
+# repo's "capture is automatic, mutation is user-approved" model.
+# ---------------------------------------------------------------
+
+# Cadence for the agentSpawn nudge. 6 weeks: conflict debt accrues slowly and
+# per-session, so monthly-ish keeps it from becoming noise while not letting a
+# handful of pending relations grow unbounded.
+readonly CADENCE_DAYS="${ENGRAM_HYGIENE_CADENCE_DAYS:-42}"
+# Guard against a non-numeric override: arithmetic evaluation inside [[ ]] would
+# treat a garbage value (e.g. "abc") as a variable name and, under `set -u`, abort
+# with an unbound-variable error. Fall back to the default rather than crash.
+if [[ ! "${CADENCE_DAYS}" =~ ^[0-9]+$ ]]; then
+    readonly EFFECTIVE_CADENCE_DAYS=42
+else
+    readonly EFFECTIVE_CADENCE_DAYS="${CADENCE_DAYS}"
+fi
+# Per-project cadence stamps live here, one file per project. The throttle is
+# per-project because the debt it gates is per-project — a global stamp would let
+# a check in one project suppress the nudge for every other project for the whole
+# cadence window.
+readonly STAMP_DIR="$HOME/.kiro/engram-hygiene"
+
+# Resolve the current project the way engram does: git remote repo name (strip
+# ".git"), falling back to the working-directory basename when there is no remote.
+# Mirrors etc/kiro-cli/hooks/recall-memory.sh so both hooks agree on the name.
+resolve_project() {
+    local remote_url
+    remote_url="$(git remote get-url origin 2>/dev/null || true)"
+    if [[ -n "${remote_url}" ]]; then
+        local name
+        name="$(basename "${remote_url}")"
+        echo "${name%.git}"
+    else
+        basename "$(pwd)"
+    fi
+}
+
+# Map a project name to its cadence-stamp file path. Project names come from a git
+# remote or directory basename and could contain slashes or other path-hostile
+# characters, so replace anything outside [A-Za-z0-9._-] with an underscore.
+stamp_path() {
+    local project="$1" safe
+    safe="$(printf '%s' "${project}" | tr -c 'A-Za-z0-9._-' '_')"
+    echo "${STAMP_DIR}/${safe}.last"
+}
+
+# True only when engram is usable: the binary is on PATH AND its database exists.
+# Mirrors etc/kiro-cli/hooks/recall-memory.sh — on a machine where the binary is
+# installed but no DB has been created yet, `engram` subcommands can error, so both
+# modes gate on this to degrade to a clean "nothing to check" instead of a
+# confusing empty/error table.
+readonly ENGRAM_DB="$HOME/.config/engram/engram.db"
+engram_available() {
+    command -v engram &>/dev/null && [[ -f "${ENGRAM_DB}" ]]
+}
+
+# Extract the judgment_status "pending" count from `engram conflicts stats`.
+# The output has two "pending:" lines (one under "By judgment_status", one under
+# "By relation type"); the first is the unjudged-relation count we care about.
+pending_count() {
+    local project="$1"
+    engram conflicts stats --project "${project}" 2>/dev/null |
+        grep -E 'pending:' | head -1 | grep -oE '[0-9]+' | head -1 || true
+}
+
+orphaned_count() {
+    local project="$1"
+    engram conflicts stats --project "${project}" 2>/dev/null |
+        grep -E 'orphaned:' | head -1 | grep -oE '[0-9]+' | head -1 || true
+}
+
+# List every project name engram knows about (first column of `projects list`,
+# skipping the "Projects (N):" header line).
+list_projects() {
+    engram projects list 2>/dev/null | awk 'NR>1 && NF {print $1}'
+}
+
+mode_status() {
+    if ! engram_available; then
+        echo "engram not available (binary or database missing) — nothing to check"
+        return 0
+    fi
+
+    # Gate ANSI colors on an interactive stdout so piped/redirected output stays
+    # clean (e.g. `dotfiles memory-check | grep`). Mirrors scripts/scan-docs.sh.
+    local green yellow dim reset
+    if [[ -t 1 ]]; then
+        green="\033[32m"
+        yellow="\033[0;33m"
+        dim="\033[2m"
+        reset="\033[0m"
+    else
+        green='' yellow='' dim='' reset=''
+    fi
+
+    local -a projects=()
+    local p
+    while IFS= read -r p; do
+        [[ -n "${p}" ]] && projects+=("${p}")
+    done < <(list_projects)
+
+    if [[ ${#projects[@]} -eq 0 ]]; then
+        echo "No engram projects found."
+        return 0
+    fi
+
+    local max_name=7
+    for p in "${projects[@]}"; do
+        [[ ${#p} -gt ${max_name} ]] && max_name=${#p}
+    done
+
+    echo ""
+    printf " %-${max_name}s │ %7s │ %8s\n" "Project" "Pending" "Orphaned"
+    local divider
+    divider=$(printf '─%.0s' $(seq 1 $((max_name + 22))))
+    echo " ${divider}"
+
+    local total_pending=0 flagged=0
+    for p in "${projects[@]}"; do
+        local pending orphaned
+        pending="$(pending_count "${p}")"
+        orphaned="$(orphaned_count "${p}")"
+        pending="${pending:-0}"
+        orphaned="${orphaned:-0}"
+        total_pending=$((total_pending + pending))
+
+        local color="${dim}"
+        if [[ "${pending}" -gt 0 ]]; then
+            color="${yellow}"
+            flagged=$((flagged + 1))
+        fi
+        printf " ${color}%-${max_name}s${reset} │ %7s │ %8s\n" "${p}" "${pending}" "${orphaned}"
+    done
+
+    echo ""
+    if [[ ${total_pending} -eq 0 ]]; then
+        echo -e "${green}✓ No pending conflict debt across ${#projects[@]} project(s).${reset}"
+    else
+        echo -e "${yellow}${total_pending} pending conflict relation(s) across ${flagged} project(s).${reset}"
+        echo "  Review with: engram conflicts list --project <name> --status pending"
+        echo "  Or ask an agent to judge them with mem_judge / mem_compare."
+    fi
+}
+
+mode_check() {
+    engram_available || exit 0
+
+    # Resolve the project first — the cadence stamp is per-project, so we need the
+    # name before we can decide whether this project's check is due.
+    local project stamp_file
+    project="$(resolve_project)"
+    stamp_file="$(stamp_path "${project}")"
+
+    # Throttle: skip if THIS project was checked within CADENCE_DAYS.
+    if [[ -f "${stamp_file}" ]]; then
+        local last_epoch now_epoch age_days
+        last_epoch="$(date -r "${stamp_file}" +%s 2>/dev/null || echo 0)"
+        now_epoch="$(date +%s)"
+        age_days=$(((now_epoch - last_epoch) / 86400))
+        [[ "${age_days}" -lt "${EFFECTIVE_CADENCE_DAYS}" ]] && exit 0
+    fi
+
+    local pending
+    pending="$(pending_count "${project}")"
+    pending="${pending:-0}"
+
+    # Record that this project was checked, regardless of outcome, so the interval
+    # resets and we don't nudge every session once overdue.
+    mkdir -p "${STAMP_DIR}"
+    : >"${stamp_file}"
+
+    if [[ "${pending}" -gt 0 ]]; then
+        echo "🧹 Engram has ${pending} pending conflict relation(s) in '${project}' awaiting review. Run 'dotfiles memory-check' or ask me to judge them with mem_judge."
+    fi
+}
+
+case "${1:-status}" in
+status)
+    mode_status
+    ;;
+check)
+    mode_check
+    ;;
+*)
+    echo "Usage: engram-hygiene [status|check]" >&2
+    exit 1
+    ;;
+esac

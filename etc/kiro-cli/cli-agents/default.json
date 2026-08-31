@@ -50,6 +50,15 @@
             "timeout": 5
         },
         {
+            "name": "agentSpawn-hygiene",
+            "trigger": "agentSpawn",
+            "action": {
+                "type": "command",
+                "command": "$AI_DOTFILES_DIR/etc/kiro-cli/hooks/check-engram-hygiene.sh"
+            },
+            "timeout": 5
+        },
+        {
             "name": "agentSpawn-2",
             "trigger": "agentSpawn",
             "action": {
