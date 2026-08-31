@@ -65,3 +65,23 @@ memories cluster together for retrieval.
 - Include the "why" — bare facts without rationale are less useful
 - Use project names consistently so memories are findable
 - Don't duplicate information that belongs in docs or code comments
+
+## Conflict Relations
+
+Engram surfaces when a new memory may conflict with or supersede an existing one, storing these as
+relations with a `judgment_status`. Two states matter in practice:
+
+- **Unjudged** (`pending`) — a relation awaiting a verdict. This is the only actionable state. The
+  intended resolution is the agent conversation flow: read both memories and record a verdict with
+  `mem_judge` (for a candidate surfaced by `mem_save`) or `mem_compare` (for a proactive semantic
+  comparison). Verdicts are `related` | `compatible` | `scoped` | `conflicts_with` | `supersedes` |
+  `not_conflict`. Resolving these stays user-approved — surface the verdict and confidence before
+  recording when the call is non-obvious.
+- **Orphaned** — a dangling relation whose source or target observation was deleted. Informational
+  only: there is no judge path and no supported cleanup command, so do not attempt to delete
+  orphaned relations (that would require unsupported direct-SQL edits that bypass sync). They are
+  inert and can be left as-is.
+
+`dotfiles memory-check` reports both counts across all projects; the `agentSpawn` hygiene nudge
+fires only on unjudged relations for the current project. Do not treat orphaned counts as debt or
+prompt the user to act on them.
