@@ -74,19 +74,34 @@ engram_available() {
     command -v engram &>/dev/null && [[ -f "${ENGRAM_DB}" ]]
 }
 
-# Extract the judgment_status "pending" count from `engram conflicts stats`.
-# The output has two "pending:" lines (one under "By judgment_status", one under
-# "By relation type"); the first is the unjudged-relation count we care about.
-pending_count() {
-    local project="$1"
-    engram conflicts stats --project "${project}" 2>/dev/null |
-        grep -E 'pending:' | head -1 | grep -oE '[0-9]+' | head -1 || true
+# Extract a judgment_status count from `engram conflicts stats`. The output has
+# TWO groupings — "By judgment_status" (pending/judged/orphaned/ignored) and
+# "By relation type" (which ALSO has a `pending:` line for the relation KIND named
+# "pending"). These mean different things. Lifecycle state lives under judgment
+# status, so we scope the awk to that block only. A naive `grep pending: | head -1`
+# silently reads the relation-type count on projects with no judgment_status
+# pending line (e.g. all relations judged but some of kind "pending").
+judgment_count() {
+    local project="$1" field="$2"
+    engram conflicts stats --project "${project}" 2>/dev/null | awk -v f="${field}" '
+        /By judgment_status:/ { inblock = 1; next }
+        /By relation type:/   { inblock = 0 }
+        inblock && $1 ~ "^"f":" { gsub(/[^0-9]/, "", $2); print $2; exit }
+    '
 }
 
+# Unjudged relations awaiting a verdict (judgment_status=pending). This is the
+# only count that represents something the user must act on via mem_judge.
+pending_count() {
+    judgment_count "$1" pending
+}
+
+# Orphaned relations (judgment_status=orphaned): dangling rows whose source/target
+# observation was deleted. Informational only — there is no judge path for these;
+# they are a byproduct of deletion, not a decision. Surfaced in `status` but never
+# used to trigger the startup nudge.
 orphaned_count() {
-    local project="$1"
-    engram conflicts stats --project "${project}" 2>/dev/null |
-        grep -E 'orphaned:' | head -1 | grep -oE '[0-9]+' | head -1 || true
+    judgment_count "$1" orphaned
 }
 
 # List every project name engram knows about (first column of `projects list`,
@@ -130,35 +145,43 @@ mode_status() {
     done
 
     echo ""
-    printf " %-${max_name}s │ %7s │ %8s\n" "Project" "Pending" "Orphaned"
+    printf " %-${max_name}s │ %8s │ %8s\n" "Project" "Unjudged" "Orphaned"
     local divider
-    divider=$(printf '─%.0s' $(seq 1 $((max_name + 22))))
+    divider=$(printf '─%.0s' $(seq 1 $((max_name + 23))))
     echo " ${divider}"
 
-    local total_pending=0 flagged=0
+    local total_unjudged=0 total_orphaned=0 flagged=0
     for p in "${projects[@]}"; do
         local pending orphaned
         pending="$(pending_count "${p}")"
         orphaned="$(orphaned_count "${p}")"
         pending="${pending:-0}"
         orphaned="${orphaned:-0}"
-        total_pending=$((total_pending + pending))
+        total_unjudged=$((total_unjudged + pending))
+        total_orphaned=$((total_orphaned + orphaned))
 
+        # Only unjudged relations are actionable; highlight those. A project with
+        # only orphaned rows is not flagged (nothing awaits a verdict).
         local color="${dim}"
         if [[ "${pending}" -gt 0 ]]; then
             color="${yellow}"
             flagged=$((flagged + 1))
         fi
-        printf " ${color}%-${max_name}s${reset} │ %7s │ %8s\n" "${p}" "${pending}" "${orphaned}"
+        printf " ${color}%-${max_name}s${reset} │ %8s │ %8s\n" "${p}" "${pending}" "${orphaned}"
     done
 
     echo ""
-    if [[ ${total_pending} -eq 0 ]]; then
-        echo -e "${green}✓ No pending conflict debt across ${#projects[@]} project(s).${reset}"
+    if [[ ${total_unjudged} -eq 0 ]]; then
+        echo -e "${green}✓ No unjudged conflict relations across ${#projects[@]} project(s).${reset}"
     else
-        echo -e "${yellow}${total_pending} pending conflict relation(s) across ${flagged} project(s).${reset}"
+        echo -e "${yellow}${total_unjudged} unjudged conflict relation(s) across ${flagged} project(s) awaiting a verdict.${reset}"
         echo "  Review with: engram conflicts list --project <name> --status pending"
         echo "  Or ask an agent to judge them with mem_judge / mem_compare."
+    fi
+    # Orphaned rows are informational: dangling relations from deleted observations,
+    # with no judge path. Mention them only so the count isn't mistaken for debt.
+    if [[ ${total_orphaned} -gt 0 ]]; then
+        echo -e "${dim}  (${total_orphaned} orphaned relation(s) from deleted observations — informational, no action needed.)${reset}"
     fi
 }
 
@@ -190,7 +213,7 @@ mode_check() {
     : >"${stamp_file}"
 
     if [[ "${pending}" -gt 0 ]]; then
-        echo "🧹 Engram has ${pending} pending conflict relation(s) in '${project}' awaiting review. Run 'dotfiles memory-check' or ask me to judge them with mem_judge."
+        echo "🧹 Engram has ${pending} unjudged conflict relation(s) in '${project}' awaiting your verdict. Run 'dotfiles memory-check' or ask me to judge them with mem_judge."
     fi
 }
 
