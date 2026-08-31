@@ -53,9 +53,11 @@ generate_single_steering() {
 # Coding Guidelines
 
 Auto-generated from dotfiles steering docs. Do not edit directly.
-Source: `~/.dotfiles/etc/ai/steering/{code,github,security}/`
-
 HEADER
+        # Single quotes are intentional: the backticks are literal markdown code
+        # formatting, and %s pulls in $STEERING_SOURCE as a printf argument.
+        # shellcheck disable=SC2016
+        printf 'Source: `%s/{code,github,security}/`\n\n' "$STEERING_SOURCE"
         for f in "$STEERING_SOURCE/code"/*.md; do
             [ -f "$f" ] || continue
             cat "$f"
@@ -127,8 +129,9 @@ generate_rules_steering() {
 # Coding Guidelines
 
 Steering rules are loaded from ~/.claude/rules/ (auto-generated from dotfiles).
-See ~/.dotfiles/etc/ai/steering/ for source files.
-
+EOF
+    printf 'See %s/ for source files.\n\n' "$STEERING_SOURCE" >>"$claude_md"
+    cat >>"$claude_md" <<'EOF'
 Skills are available in ~/.claude/skills/ (symlinked from dotfiles).
 EOF
 }
