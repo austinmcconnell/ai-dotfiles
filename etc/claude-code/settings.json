@@ -164,7 +164,7 @@
                 "hooks": [
                     {
                         "type": "command",
-                        "command": "~/.dotfiles/etc/ai/hooks/block-env-files.sh",
+                        "command": "$AI_DOTFILES_DIR/etc/ai/hooks/block-env-files.sh",
                         "timeout": 5
                     }
                 ]
@@ -174,7 +174,7 @@
                 "hooks": [
                     {
                         "type": "command",
-                        "command": "~/.dotfiles/etc/ai/hooks/block-sops-age-files.sh",
+                        "command": "$AI_DOTFILES_DIR/etc/ai/hooks/block-sops-age-files.sh",
                         "timeout": 5
                     }
                 ]
@@ -184,7 +184,7 @@
                 "hooks": [
                     {
                         "type": "command",
-                        "command": "~/.dotfiles/etc/ai/hooks/block-ssh-private-keys.sh",
+                        "command": "$AI_DOTFILES_DIR/etc/ai/hooks/block-ssh-private-keys.sh",
                         "timeout": 5
                     }
                 ]
@@ -196,7 +196,7 @@
                 "hooks": [
                     {
                         "type": "command",
-                        "command": "AI_AGENT_NAME=claude-code ~/.dotfiles/etc/ai/hooks/audit-shell-commands.sh",
+                        "command": "AI_AGENT_NAME=claude-code $AI_DOTFILES_DIR/etc/ai/hooks/audit-shell-commands.sh",
                         "timeout": 10,
                         "async": true
                     }
