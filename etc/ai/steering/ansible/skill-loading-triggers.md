@@ -13,6 +13,7 @@ that have explicit skills.
 | Creating a Molecule scenario            | `create-role`              |
 | Creating Ansible playbooks              | `create-playbook`          |
 | Reviewing Ansible code                  | `ansible-review`           |
+| Promoting corrections to steering       | `distill-learnings`        |
 
 When citing existing research from a knowledge base, check `last_verified` in the file's YAML
 frontmatter. If older than 90 days, warn the user before presenting the data as current.

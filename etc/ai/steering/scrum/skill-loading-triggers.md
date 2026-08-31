@@ -16,3 +16,4 @@ that have explicit skills.
 | Backlog health or triage review              | `scrn-backlog-triage`    |
 | Validating Jira setup or API connectivity    | `jira-smoke-test`        |
 | Deployment readiness, "what can we deploy"   | `deployment-readiness`   |
+| Promoting corrections to steering            | `distill-learnings`      |

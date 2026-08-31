@@ -239,6 +239,15 @@
                 "command": "$AI_DOTFILES_DIR/etc/ai/hooks/block-memory-secrets.sh"
             },
             "timeout": 5
+        },
+        {
+            "name": "userPromptSubmit-0",
+            "trigger": "userPromptSubmit",
+            "action": {
+                "type": "command",
+                "command": "$AI_DOTFILES_DIR/etc/ai/hooks/correction-capture.sh"
+            },
+            "timeout": 5
         }
     ],
     "toolsSettings": {

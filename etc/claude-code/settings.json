@@ -224,6 +224,17 @@
                     }
                 ]
             }
+        ],
+        "UserPromptSubmit": [
+            {
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "$AI_DOTFILES_DIR/etc/ai/hooks/correction-capture.sh",
+                        "timeout": 5
+                    }
+                ]
+            }
         ]
     },
     "theme": "dark"
