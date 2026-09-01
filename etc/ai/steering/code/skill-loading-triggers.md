@@ -12,6 +12,9 @@ that have explicit skills.
 | Researching countries for relocation  | `create-research` + `country-relocation-research` |
 | Updating country relocation research  | `update-research` + `country-relocation-research` |
 | Verifying country relocation research | `verify-research` + `country-relocation-research` |
+| Researching US states for relocation  | `create-research` + `state-relocation-research`   |
+| Updating state relocation research    | `update-research` + `state-relocation-research`   |
+| Verifying state relocation research   | `verify-research` + `state-relocation-research`   |
 | Writing specs or design docs          | `spec-writing`                                    |
 | Writing implementation guides         | `implementation-guide`                            |
 | Running pre-commit hooks              | `pre-commit-validation`                           |
