@@ -109,3 +109,4 @@ context at startup. They are the canonical source in the dotfiles repo — edit 
 @~/.dotfiles/etc/ai/steering/documentation/mdbook-conventions.md
 @~/.dotfiles/etc/ai/steering/documentation/writing-style.md
 @~/.dotfiles/etc/ai/steering/documentation/skill-loading-triggers.md
+@~/.dotfiles/etc/ai/steering/security/env-file-protection.md

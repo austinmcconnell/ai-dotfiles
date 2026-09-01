@@ -103,3 +103,4 @@ startup. They are the canonical source in the dotfiles repo — edit them there,
 @~/.dotfiles/etc/ai/steering/ansible/role-conventions.md
 @~/.dotfiles/etc/ai/steering/ansible/variable-precedence.md
 @~/.dotfiles/etc/ai/steering/ansible/skill-loading-triggers.md
+@~/.dotfiles/etc/ai/steering/security/env-file-protection.md
