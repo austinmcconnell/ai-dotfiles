@@ -5,7 +5,7 @@ description: >-
   documentation with mdBook. Use when authoring or updating mdBook repos,
   writing ADRs/components/procedures, enforcing WHAT/HOW/WHY content separation,
   managing SUMMARY.md, or reviewing docs for duplication and correct placement.
-tools: Read, Grep, Glob, Bash, Edit, Write, WebFetch
+tools: Read, Grep, Glob, Bash, Edit, Write, WebFetch, mcp__engram
 model: inherit
 ---
 

@@ -5,10 +5,11 @@ description: >-
   and work items. Use when writing or improving JIRA issues, applying INVEST
   criteria, planning sprints, refining the backlog, or reviewing acceptance
   criteria. Has read/create/update access to JIRA via MCP (never deletes).
-tools: Read, Grep, Glob, Bash, mcp__jira
+tools: Read, Grep, Glob, Bash, mcp__jira, mcp__engram
 disallowedTools: mcp__jira__jira_delete
 mcpServers:
   - jira
+  - engram
 model: inherit
 ---
 

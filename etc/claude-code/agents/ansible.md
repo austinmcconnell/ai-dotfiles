@@ -6,7 +6,7 @@ description: >-
   ansible-lint compliance and idempotency; managing variable precedence; or
   automating Proxmox host config, guest provisioning, and service deployment.
   Runs playbooks only in check/syntax/list modes; never mutates live hosts.
-tools: Read, Grep, Glob, Bash, Edit, Write, WebFetch
+tools: Read, Grep, Glob, Bash, Edit, Write, WebFetch, mcp__engram
 model: inherit
 ---
 

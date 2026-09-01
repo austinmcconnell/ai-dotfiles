@@ -6,7 +6,7 @@ description: >-
   service's observability setup, reviewing Terraform-managed Datadog resources,
   checking UST tag consistency, or querying live Datadog state via the Pup CLI.
   Read-only: surfaces findings and recommendations, never mutates resources.
-tools: Read, Grep, Glob, Bash, WebFetch
+tools: Read, Grep, Glob, Bash, WebFetch, mcp__engram
 model: inherit
 ---
 
