@@ -70,6 +70,26 @@ directory.
 For detailed examples, templates, checklists, and workflows, read the relevant documentation skill
 (available in ~/.claude/skills/documentation/) before acting.
 
+## Reference Repositories
+
+Claude Code has no semantic-index knowledge-base feature (unlike kiro-cli's KB search over these
+same repos). Use Grep/Glob directly against these local paths when a question touches their content.
+A path missing on this machine is expected (work vs. personal machines) — skip it without
+commenting.
+
+| Path                                                                   | Covers                                              |
+| ---------------------------------------------------------------------- | --------------------------------------------------- |
+| `~/projects/austinmcconnell/_research_`                                | Product/technology research, cited and dated        |
+| `~/projects/unite-us/sdohcc-screening-observations`                    | SDOHCC screening FHIR observation mappings          |
+| `~/projects/austinmcconnell/_documentation_/automatic-ripping-machine` | Multi-drive ARM build                               |
+| `~/projects/austinmcconnell/_documentation_/email-provider-selection`  | Email provider evaluation                           |
+| `~/projects/austinmcconnell/_documentation_/family-dashboard`          | Family dashboard build                              |
+| `~/projects/austinmcconnell/_documentation_/gaming-media-pc`           | Gaming/media PC build                               |
+| `~/projects/austinmcconnell/_documentation_/home-assistant-server`     | Home Assistant server build                         |
+| `~/projects/austinmcconnell/_documentation_/tiny-lab`                  | Proxmox homelab cluster — rack/PDU/switch authority |
+| `~/projects/austinmcconnell/_documentation_/truenas-server`            | TrueNAS backup server build                         |
+| `~/projects/austinmcconnell/_documentation_/ubiquiti-network-stack`    | Network stack — IP/VLAN/DNS authority               |
+
 ## Steering
 
 The following steering docs define this project's documentation conventions and are loaded into

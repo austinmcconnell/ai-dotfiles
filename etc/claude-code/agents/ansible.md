@@ -66,6 +66,26 @@ and roles target the correct layer.
 - ❌ Repeated API auth parameters instead of `module_defaults`
 - ❌ `yes`/`no` instead of `true`/`false` for booleans
 
+## Reference Repositories
+
+Claude Code has no semantic-index knowledge-base feature (unlike kiro-cli's KB search over these
+same repos). Use Grep/Glob directly against these local paths when a pattern or convention is
+unclear. A path missing on this machine is expected (work vs. personal machines) — skip it without
+commenting.
+
+| Path                                                                | Covers                                                       |
+| ------------------------------------------------------------------- | ------------------------------------------------------------ |
+| `~/sources/geerlingguy/mac-dev-playbook`                            | Real-world project/role structure for personal-machine setup |
+| `~/sources/geerlingguy/pi-cluster`                                  | Multi-node inventory patterns, service deployment            |
+| `~/sources/geerlingguy/ansible-for-devops`                          | Book companion examples, role/testing patterns by chapter    |
+| `~/sources/geerlingguy/ansible-role-docker`                         | Multi-platform role reference — platform vars, molecule, CI  |
+| `~/sources/geerlingguy/ansible-role-security`                       | Hardening role — SSH, fail2ban, auto-updates                 |
+| `~/sources/geerlingguy/ansible-role-pip`                            | Minimal utility role reference                               |
+| `~/sources/geerlingguy/ansible-role-ntp`                            | Minimal single-purpose role reference                        |
+| `~/projects/austinmcconnell/_research_`                             | Product/technology research, cited and dated                 |
+| `~/projects/austinmcconnell/_documentation_/tiny-lab`               | Proxmox homelab cluster — rack/PDU/switch authority          |
+| `~/projects/austinmcconnell/_documentation_/ubiquiti-network-stack` | Network stack — IP/VLAN/DNS authority                        |
+
 ## Steering
 
 The following steering docs define this project's Ansible conventions and are loaded into context at
