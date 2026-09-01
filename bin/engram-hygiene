@@ -43,7 +43,7 @@ readonly STAMP_DIR="$HOME/.kiro/engram-hygiene"
 
 # Resolve the current project the way engram does: git remote repo name (strip
 # ".git"), falling back to the working-directory basename when there is no remote.
-# Mirrors etc/kiro-cli/hooks/recall-memory.sh so both hooks agree on the name.
+# Mirrors etc/ai/hooks/recall-memory.sh so both hooks agree on the name.
 resolve_project() {
     local remote_url
     remote_url="$(git remote get-url origin 2>/dev/null || true)"
@@ -66,7 +66,7 @@ stamp_path() {
 }
 
 # True only when engram is usable: the binary is on PATH AND its database exists.
-# Mirrors etc/kiro-cli/hooks/recall-memory.sh — on a machine where the binary is
+# Mirrors etc/ai/hooks/recall-memory.sh — on a machine where the binary is
 # installed but no DB has been created yet, `engram` subcommands can error, so both
 # modes gate on this to degrade to a clean "nothing to check" instead of a
 # confusing empty/error table.

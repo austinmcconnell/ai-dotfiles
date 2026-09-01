@@ -45,7 +45,7 @@
             "trigger": "agentSpawn",
             "action": {
                 "type": "command",
-                "command": "$AI_DOTFILES_DIR/etc/kiro-cli/hooks/recall-memory.sh"
+                "command": "$AI_DOTFILES_DIR/etc/ai/hooks/recall-memory.sh"
             },
             "timeout": 5
         },
@@ -54,7 +54,7 @@
             "trigger": "agentSpawn",
             "action": {
                 "type": "command",
-                "command": "$AI_DOTFILES_DIR/etc/kiro-cli/hooks/check-engram-hygiene.sh"
+                "command": "$AI_DOTFILES_DIR/etc/ai/hooks/check-engram-hygiene.sh"
             },
             "timeout": 5
         },
