@@ -13,7 +13,7 @@ when no project template is found.
 
 ## ADR Creation Workflow
 
-### Step 1: Find the project template
+### Step 1: Find the project template and calibrate
 
 1. Look for `decisions/adr-template.md` in the project
 1. Check `AGENTS.md` for template location or ADR conventions
@@ -23,6 +23,12 @@ when no project template is found.
 sections below.
 
 If no project template exists, use `references/madr-template.md` as a fallback.
+
+**If the project has existing ADRs, read two or three before writing** — especially ones closest in
+type to the current decision (software selection, hardware selection, architecture choice). The
+template defines structure; existing ADRs calibrate depth, prose vs. bullet balance, how much detail
+per alternative, and whether the project includes version numbers or prices in Decision sections.
+This takes 60 seconds and prevents stylistic drift.
 
 ### Step 2: Determine next ADR number
 
@@ -40,6 +46,12 @@ Gather the information needed to fill in the template sections. At minimum:
 - **Decision**: What was decided? Include concrete specifications when applicable.
 - **Consequences**: What are the positive and negative outcomes?
 - **Alternatives**: What options were evaluated? Why were they rejected?
+
+For alternatives, include both:
+
+- **Close-call alternatives** — full Pros / Cons / Why not treatment
+- **Hard disqualifiers** — a one-line `Why not` is sufficient; omitting them implies they weren't
+  evaluated and invites future agents to re-propose them
 
 ### Step 4: Create ADR file
 
@@ -124,11 +136,19 @@ Before finalizing the ADR, verify:
 1. **Keep it concise** — one decision per ADR
 1. **Update status** — mark as deprecated or superseded when needed
 1. **Link liberally** — reference related ADRs and documentation
+1. **Don't re-list requirements in Context** — link to `planning/requirements.md` instead. Context
+   should contain only considerations *specific to this decision* that aren't captured in the
+   requirements file (e.g., a constraint that emerged during evaluation, a usage pattern that shaped
+   the trade-off). Re-listing requirements duplicates content and drifts out of sync.
 
 ## Common Mistakes to Avoid
 
 - Skipping the alternatives section (shows what was evaluated)
 - Vague context (explain the problem, not just the solution)
+- Re-listing requirements inline in Context instead of linking to `planning/requirements.md` — only
+  decision-specific considerations belong inline; everything else is a reference link
+- Omitting hard-disqualified alternatives — a one-line "Why not" per disqualifier shows the
+  evaluation was thorough and prevents future agents from re-proposing ruled-out options
 - Missing consequences (both positive AND negative)
 - Forgetting to update the project index and SUMMARY.md
 - Not cross-referencing related ADRs
