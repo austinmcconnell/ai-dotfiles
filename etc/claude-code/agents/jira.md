@@ -11,13 +11,6 @@ mcpServers:
   - jira
   - engram
 model: inherit
-hooks:
-  PreToolUse:
-    - matcher: "Bash"
-      hooks:
-        - type: command
-          command: "$AI_DOTFILES_DIR/etc/ai/hooks/block-persona-shell-commands.sh jira"
-          timeout: 5
 ---
 
 # JIRA Agent

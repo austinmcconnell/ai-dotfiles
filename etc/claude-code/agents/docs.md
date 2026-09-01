@@ -7,13 +7,6 @@ description: >-
   managing SUMMARY.md, or reviewing docs for duplication and correct placement.
 tools: Read, Grep, Glob, Bash, Edit, Write, WebFetch, mcp__engram
 model: inherit
-hooks:
-  PreToolUse:
-    - matcher: "Bash"
-      hooks:
-        - type: command
-          command: "$AI_DOTFILES_DIR/etc/ai/hooks/block-persona-shell-commands.sh docs"
-          timeout: 5
 ---
 
 # Documentation Repository Specialist

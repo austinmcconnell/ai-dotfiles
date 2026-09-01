@@ -220,6 +220,16 @@
                         "timeout": 5
                     }
                 ]
+            },
+            {
+                "matcher": "Bash",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "$AI_DOTFILES_DIR/etc/ai/hooks/block-persona-shell-commands.sh",
+                        "timeout": 5
+                    }
+                ]
             }
         ],
         "PostToolUse": [

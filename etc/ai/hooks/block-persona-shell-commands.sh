@@ -9,16 +9,20 @@ set -euo pipefail
 # duplicated here: block-env-files.sh, block-sops-age-files.sh, and
 # block-ssh-private-keys.sh already cover those globally on both tools.
 #
-# Wired as a PreToolUse hook (matcher: Bash) in each persona's own `hooks:`
-# frontmatter block (etc/claude-code/agents/<persona>.md), invoked with the
-# persona name as $1:
-#   $AI_DOTFILES_DIR/etc/ai/hooks/block-persona-shell-commands.sh docs
+# Wired ONCE as a global PreToolUse(Bash) hook in settings.json (not
+# per-persona) and self-scopes by reading the `agent_type` field Claude Code
+# includes in the hook payload for any session run with `--agent <name>`
+# (confirmed against current hooks.md, and empirically verified: a real
+# `claude --agent docs` invocation produces a PreToolUse payload with
+# "agent_type":"docs", matching the persona's frontmatter `name:`). Main
+# Claude Code sessions and non-persona subagents have no matching case below
+# and fall through to the no-op default.
 #
 # Safety: grep runs inside `if` (errexit suppressed there); the empty-command
 # early exit avoids testing patterns against nothing.
 
-PERSONA="${1:-}"
 TOOL_INPUT=$(cat)
+PERSONA=$(echo "${TOOL_INPUT}" | jq -r '.agent_type // empty' 2>/dev/null)
 CMD=$(echo "${TOOL_INPUT}" | jq -r '.tool_input.command // empty' 2>/dev/null)
 
 [[ -z "${CMD}" ]] && exit 0

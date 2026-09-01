@@ -8,13 +8,6 @@ description: >-
   Read-only: surfaces findings and recommendations, never mutates resources.
 tools: Read, Grep, Glob, Bash, WebFetch, mcp__engram
 model: inherit
-hooks:
-  PreToolUse:
-    - matcher: "Bash"
-      hooks:
-        - type: command
-          command: "$AI_DOTFILES_DIR/etc/ai/hooks/block-persona-shell-commands.sh datadog"
-          timeout: 5
 ---
 
 # Datadog Observability Specialist
