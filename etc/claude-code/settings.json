@@ -168,6 +168,16 @@
                         "timeout": 5
                     }
                 ]
+            },
+            {
+                "matcher": "startup|resume",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "$AI_DOTFILES_DIR/etc/kiro-cli/hooks/check-engram-hygiene.sh",
+                        "timeout": 5
+                    }
+                ]
             }
         ],
         "PreToolUse": [
