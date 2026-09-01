@@ -9,8 +9,9 @@ set -euo pipefail
 # scan`). This debt accrues silently over time. This script surfaces it.
 #
 # Modes:
-#   status        All-projects table of pending/orphaned conflict debt (on-demand;
-#                 what `dotfiles memory-check` calls). Read-only.
+#   status        All-projects table of unjudged conflict relations (on-demand;
+#                 what `dotfiles memory-check` calls). Orphaned relations are
+#                 omitted — see the note in mode_status. Read-only.
 #   check         Current-project, time-throttled check for the agentSpawn nudge.
 #                 Prints a one-line nudge only when BOTH the cadence interval has
 #                 elapsed AND the current project has pending debt. Writes only a
@@ -96,14 +97,6 @@ pending_count() {
     judgment_count "$1" pending
 }
 
-# Orphaned relations (judgment_status=orphaned): dangling rows whose source/target
-# observation was deleted. Informational only — there is no judge path for these;
-# they are a byproduct of deletion, not a decision. Surfaced in `status` but never
-# used to trigger the startup nudge.
-orphaned_count() {
-    judgment_count "$1" orphaned
-}
-
 # List every project name engram knows about (first column of `projects list`,
 # skipping the "Projects (N):" header line).
 list_projects() {
@@ -145,29 +138,25 @@ mode_status() {
     done
 
     echo ""
-    printf " %-${max_name}s │ %8s │ %8s\n" "Project" "Unjudged" "Orphaned"
+    printf " %-${max_name}s │ %8s\n" "Project" "Unjudged"
     local divider
-    divider=$(printf '─%.0s' $(seq 1 $((max_name + 23))))
+    divider=$(printf '─%.0s' $(seq 1 $((max_name + 12))))
     echo " ${divider}"
 
-    local total_unjudged=0 total_orphaned=0 flagged=0
+    local total_unjudged=0 flagged=0
     for p in "${projects[@]}"; do
-        local pending orphaned
+        local pending
         pending="$(pending_count "${p}")"
-        orphaned="$(orphaned_count "${p}")"
         pending="${pending:-0}"
-        orphaned="${orphaned:-0}"
         total_unjudged=$((total_unjudged + pending))
-        total_orphaned=$((total_orphaned + orphaned))
 
-        # Only unjudged relations are actionable; highlight those. A project with
-        # only orphaned rows is not flagged (nothing awaits a verdict).
+        # Only unjudged relations are actionable; highlight those.
         local color="${dim}"
         if [[ "${pending}" -gt 0 ]]; then
             color="${yellow}"
             flagged=$((flagged + 1))
         fi
-        printf " ${color}%-${max_name}s${reset} │ %8s │ %8s\n" "${p}" "${pending}" "${orphaned}"
+        printf " ${color}%-${max_name}s${reset} │ %8s\n" "${p}" "${pending}"
     done
 
     echo ""
@@ -178,11 +167,10 @@ mode_status() {
         echo "  Review with: engram conflicts list --project <name> --status pending"
         echo "  Or ask an agent to judge them with mem_judge / mem_compare."
     fi
-    # Orphaned rows are informational: dangling relations from deleted observations,
-    # with no judge path. Mention them only so the count isn't mistaken for debt.
-    if [[ ${total_orphaned} -gt 0 ]]; then
-        echo -e "${dim}  (${total_orphaned} orphaned relation(s) from deleted observations — informational, no action needed.)${reset}"
-    fi
+    # Orphaned relations (dangling rows from deleted observations) are deliberately
+    # NOT shown: engram provides no way to resolve or prune them, so the count only
+    # grows and is not actionable debt. Use `engram conflicts stats` for the raw
+    # number if ever needed.
 }
 
 mode_check() {

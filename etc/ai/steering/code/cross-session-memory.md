@@ -82,6 +82,7 @@ relations with a `judgment_status`. Two states matter in practice:
   orphaned relations (that would require unsupported direct-SQL edits that bypass sync). They are
   inert and can be left as-is.
 
-`dotfiles memory-check` reports both counts across all projects; the `agentSpawn` hygiene nudge
-fires only on unjudged relations for the current project. Do not treat orphaned counts as debt or
-prompt the user to act on them.
+`dotfiles memory-check` reports the unjudged count per project; the `agentSpawn` hygiene nudge fires
+only on unjudged relations for the current project. Orphaned relations are intentionally not shown
+there — engram provides no way to resolve or prune them, so the count only grows and is not
+actionable debt. The raw orphaned count is available via `engram conflicts stats` if ever needed.
