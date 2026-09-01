@@ -8,6 +8,13 @@ description: >-
   Runs playbooks only in check/syntax/list modes; never mutates live hosts.
 tools: Read, Grep, Glob, Bash, Edit, Write, WebFetch, mcp__engram
 model: inherit
+hooks:
+  PreToolUse:
+    - matcher: "Bash"
+      hooks:
+        - type: command
+          command: "$AI_DOTFILES_DIR/etc/ai/hooks/block-persona-shell-commands.sh ansible"
+          timeout: 5
 ---
 
 # Ansible Automation Specialist
