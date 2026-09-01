@@ -105,3 +105,12 @@ Every audit report must include:
    - Expected impact
 
 1. **Priority remediation order** — numbered list from highest to lowest impact
+
+## Steering
+
+The following steering docs define this project's Datadog conventions and are loaded into context at
+startup. They are the canonical source in the dotfiles repo — edit them there, not here.
+
+@~/.dotfiles/etc/ai/steering/datadog/conventions.md
+@~/.dotfiles/etc/ai/steering/datadog/skill-loading-triggers.md
+@~/.dotfiles/etc/ai/steering/security/env-file-protection.md

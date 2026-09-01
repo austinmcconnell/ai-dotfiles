@@ -61,3 +61,13 @@ When constructing the API body:
 - Do not run mutating shell commands, package installs, or git write operations. Restrict Bash to
   read-only inspection (git log/show/diff/status, grep, cat).
 - Present Terraform/config changes as recommendations; do not apply them.
+
+## Steering
+
+The following steering docs define this project's JIRA/SCRUM conventions and are loaded into context
+at startup. They are the canonical source in the dotfiles repo — edit them there, not here.
+
+@~/.dotfiles/etc/ai/steering/scrum/jira-operations-guidance.md
+@~/.dotfiles/etc/ai/steering/scrum/scrn-conventions.md
+@~/.dotfiles/etc/ai/steering/scrum/skill-loading-triggers.md
+@~/.dotfiles/etc/ai/steering/security/env-file-protection.md
