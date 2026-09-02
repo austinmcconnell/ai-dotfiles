@@ -105,11 +105,17 @@ Save the handoff with `mem_save` using:
   drift the Memory Types section exists to prevent.
 - **content**: the full handoff body — what is done and committed, unresolved findings, next steps
   in order, and any hard rules (e.g. "user commits himself; never git commit").
-- **The sentinel token `ENGRAM-HANDOFF-ACTIVE` on its own line in the body.** This token is
-  **mandatory**, not optional. The session-start recall hook (`recall-memory.sh`) finds the active
-  handoff with an FTS5 search, and FTS5 needs a literal term to match on. A handoff written without
-  the sentinel is silently invisible to the nudge — writing one without it is doing it wrong.
-  `scripts/validate-memory-types.sh` treats the token as part of the convention.
+- **The structured marker line `ENGRAM-HANDOFF-ACTIVE: handoff/<project>-active` on its own line in
+  the body** (e.g. `ENGRAM-HANDOFF-ACTIVE: handoff/dotfiles-active`). This line is **mandatory**,
+  not optional. The session-start recall hook (`recall-memory.sh`) seeds an FTS search on the
+  `ENGRAM-HANDOFF-ACTIVE` token, then confirms a match by requiring this exact self-referential line
+  — because engram search cannot filter by topic_key, the bare token alone would also match any
+  memory that merely *mentions* the convention (a correction, this steering doc), not only real
+  handoffs. The `KEY: value` line naming the current project is what distinguishes "this observation
+  *is* the active handoff" from "this observation *talks about* handoffs." A handoff written without
+  it is silently invisible to the nudge — writing one without it is doing it wrong. Do not paste the
+  exact line into prose elsewhere: two matches make the hook fail loud (it will not guess which is
+  current). `scripts/validate-memory-types.sh` checks the structured form is documented here.
 
 Then **pin** the handoff (`mem_pin`) and **unpin** the prior one. Pinning is local, unsynced, and
 ordering-only — it raises salience in `mem_context` output but carries no lifecycle meaning, so it

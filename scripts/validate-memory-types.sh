@@ -24,8 +24,9 @@ set -euo pipefail
 # WHAT IT CHECKS
 #   1. Every AGENT-CHOSEN type below is documented in the steering file.
 #   2. Every ENGRAM-GENERATED type below is documented in the steering file.
-#   3. The mandatory handoff sentinel token is documented in the steering file
-#      (the recall hook depends on it; an undocumented token is a footgun).
+#   3. The mandatory structured handoff marker line is documented in the steering
+#      file (the recall hook confirms handoffs by it; an undocumented or bare-token
+#      form is a footgun — the bare token false-matches prose about the convention).
 #   4. BEST-EFFORT: if the engram binary is locatable WITHOUT a hardcoded
 #      version path, cross-check that its embedded mem_save type list has not
 #      diverged from our AGENT-CHOSEN set. If the binary is not found, this
@@ -44,8 +45,11 @@ source "${DOTFILES_DIR}/install/utils.sh"
 
 STEERING_FILE="${DOTFILES_DIR}/etc/ai/steering/code/cross-session-memory.md"
 
-# Mandatory sentinel token the recall hook searches for (see recall-memory.sh).
-HANDOFF_SENTINEL="ENGRAM-HANDOFF-ACTIVE"
+# Mandatory STRUCTURED marker line the recall hook confirms a handoff by (see
+# recall-memory.sh). The bare token alone false-matches any memory that merely
+# mentions the convention, so the steering must document the self-referential
+# KEY: value form. The <project> placeholder is how it appears in the doc.
+HANDOFF_SENTINEL="ENGRAM-HANDOFF-ACTIVE: handoff/<project>-active"
 
 # Canonical AGENT-CHOSEN types — the types we deliberately pass to mem_save.
 # Adding a new agent-chosen type means adding ONE line here plus the matching
@@ -109,8 +113,8 @@ for t in "${ENGRAM_GENERATED_TYPES[@]}"; do
     assert_documented "engram-generated type" "\`${t}\`"
 done
 
-# 3: the handoff sentinel token must be documented.
-assert_documented "handoff sentinel" "$HANDOFF_SENTINEL"
+# 3: the structured handoff marker line must be documented.
+assert_documented "handoff marker" "$HANDOFF_SENTINEL"
 
 # 4: best-effort engram cross-check via DYNAMIC resolution only.
 engram_bin=""
