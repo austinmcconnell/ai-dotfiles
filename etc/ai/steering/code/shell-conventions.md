@@ -26,6 +26,10 @@ paths:
 - Quote all variable expansions: `"${var}"` not `$var`
 - Use `[[ ]]` over `[ ]` for conditionals
 - Use `$(command)` over backticks
+- Locate external tools dynamically (`command -v <tool>`, `brew --prefix`) or against a checked-in
+  expected value — never hardcode a version- or machine-specific path (e.g. a pinned
+  `Cellar/<tool>/<version>/` path). Hardcoded paths rot silently across upgrades and machines; fail
+  loudly or skip with a note when the tool is absent, never silently pass.
 - shellcheck directive `disable=SC1091` is set globally (sourced file not found)
 
 ## Zsh Autoloaded Functions
