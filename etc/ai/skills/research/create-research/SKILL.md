@@ -114,8 +114,10 @@ Each subagent prompt must include:
 
 - **Exact output path:** "Write your findings to `_research_/networking-nics/25gbe-nics.md`"
 - **Negative constraint:** "Do not create any other files, directories, or README files"
-- **Template path:** Include the path to the appropriate template file and instruct the subagent to
-  read it. The template defines section names and order.
+- **Template path:** Include the **absolute** path to the appropriate template file (the templates
+  live in this skill's `references/` directory) and instruct the subagent to read it. Subagents run
+  with no skill context and cannot resolve a bare filename or a skill-relative `references/` path on
+  their own, so always pass the full path. The template defines section names and order.
 - **Citation format:** Remind subagents to use `[source-key]` inline citations and include source
   URLs in the YAML `sources` block
 - **Shared source keys:** If the orchestrator knows multiple subagents will cite the same source,
