@@ -67,6 +67,32 @@ if is-executable kiro-cli; then
     kiro-cli agent set-default default 2>/dev/null || echo "⚠️  Could not set default agent (may need to run manually)"
 fi
 
+# Validate agent configs against the schema (non-fatal — warn only).
+# The hand-maintained dual-format (V2 toolsSettings + V3 permissions) configs
+# are easy to break with a typo or schema drift; catch it at install time.
+# Only *.json are configs — the co-located *.md files are prompt bodies.
+# NOTE: `kiro-cli agent validate` (2.x) exits 0 even for invalid configs and
+# reports problems on stderr, so detect failure from stderr, not exit status.
+if is-executable kiro-cli; then
+    agent_count=0
+    agent_invalid=0
+    for agent_json in "$AI_DOTFILES_DIR/etc/kiro-cli/cli-agents"/*.json; do
+        [ -f "$agent_json" ] || continue
+        agent_count=$((agent_count + 1))
+        validate_err=$(kiro-cli agent validate --path "$agent_json" 2>&1 >/dev/null)
+        if [ -n "$validate_err" ]; then
+            agent_invalid=$((agent_invalid + 1))
+            echo "⚠️  Agent config failed validation: $(basename "$agent_json")"
+            echo "    $validate_err"
+        fi
+    done
+    if [ "$agent_invalid" -eq 0 ]; then
+        echo "✓ Validated $agent_count agent configs"
+    else
+        echo "⚠️  $agent_invalid of $agent_count agent configs failed validation"
+    fi
+fi
+
 # Skills are linked by install/ai-tools.sh (centralized for all AI tools)
 
 # NOTE: Do NOT install the "ssh" integration — it injects itself into ~/.ssh/config
