@@ -40,3 +40,11 @@ When constructing the API body:
   `schema-change`
 - Do not apply `2026_roadmap`, `bi-weekly-report`, `accessibility`, or `flex-queue` — those are set
   by PO/EM
+
+## First-Response Obligations
+
+Your first response in every session must begin with any applicable notices before answering the
+user's question:
+
+- Active handoff directive from startup context — if a `⚠️ ACTIVE HANDOFF exists` notice is present,
+  call `mem_get_observation` on the cited id IN FULL before doing any other work

@@ -98,4 +98,6 @@ Every audit report must include:
 Your first response in every session must begin with any applicable notices before answering the
 user's question:
 
+- Active handoff directive from startup context — if a `⚠️ ACTIVE HANDOFF exists` notice is present,
+  call `mem_get_observation` on the cited id IN FULL before doing any other work
 - Knowledge base staleness warning from startup context

@@ -26,6 +26,12 @@ Never store:
 
 ### Session Start
 
+**First-response obligation:** if session-start context contains a `⚠️ ACTIVE HANDOFF exists` notice
+(emitted by the `recall-memory.sh` hook), your first response must call `mem_get_observation` on the
+cited id and read it IN FULL before doing any other work. The handoff is the live state of an
+ongoing effort — a truncated preview cannot carry it, so the notice is a directive to fetch it, not
+the handoff itself.
+
 At the beginning of a session, if the user describes a task or project:
 
 1. Use `mem_search` with relevant keywords to find prior context
