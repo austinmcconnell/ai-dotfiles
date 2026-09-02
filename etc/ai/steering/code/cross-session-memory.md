@@ -46,18 +46,81 @@ Use descriptive titles and the What/Why/Where/Learned structure.
 
 ### Memory Types
 
-Use these types when saving:
+Engram's `type` field is free text — the store accepts any value and enforces nothing at runtime. So
+drift is prevented by convention, not by engram. Engram itself publishes **two** authoritative type
+lists that do not fully agree: the README Memory Protocol (`bugfix`, `decision`, `architecture`,
+`discovery`, `pattern`, `config`, `preference`) and the `mem_save` tool schema embedded in the
+binary (`decision`, `architecture`, `bugfix`, `pattern`, `config`, `discovery`, `learning`, default
+`manual`). Rather than pick one, we standardize by **function**:
+
+**Agent-chosen types** — the types you deliberately pass to `mem_save`. Use one of these:
 
 - `decision` — architectural or design choices with rationale
-- `bug` — bugs found, root causes, and fixes
-- `convention` — project or user conventions discovered
-- `blocker` — things that blocked progress and how they were resolved
+- `architecture` — system structure, module boundaries, data models
+- `bugfix` — bugs found, root causes, and fixes
+- `pattern` — conventions established (naming, structure, idioms)
+- `config` — configuration changes or environment setup
+- `discovery` — non-obvious findings about the codebase or tooling
 - `preference` — explicit user preferences about tools or workflow
+
+**Engram-generated types** — you do not hand-pick these; engram assigns them:
+
+- `learning` — produced by `mem_capture_passive` from a `## Key Learnings:` section
+- `manual` — the default type when a save supplies no `type`
+
+The functional split is what matters: if engram adds a type in a future version, it joins whichever
+category fits (something you'd choose → agent-chosen; something engram assigns → engram-generated).
+Do not describe the set by count — the membership will change, the rule will not.
+`scripts/validate-memory-types.sh` guards the agent-chosen list against drift.
 
 ### Topic Keys
 
 Use `mem_suggest_topic_key` to get a consistent topic key before saving. This ensures related
 memories cluster together for retrieval.
+
+## Handoffs
+
+A **handoff** is the live state of an ongoing effort — "here is where this work stands, pick it up."
+It is distinct from a session summary, and the two are not interchangeable:
+
+- **Active handoff** — *mutable current state*. There is exactly **one** active handoff per effort,
+  and a new one supersedes the old. This is the "pick up this effort" pointer.
+- **Session summary** (`mem_session_summary`) — *append-only history*. You write one per session;
+  they accumulate as the trail of "what happened." Engram surfaces the latest via `mem_context`.
+
+Use **both**, each for its strength. Do not collapse a handoff into a session summary: doing so
+loses the "exactly one active, auto-superseding" property, which is precisely what prevents a stale
+handoff from lingering after the work has moved on.
+
+### Writing an active handoff
+
+Save the handoff with `mem_save` using:
+
+- **topic_key**: `handoff/<project>-active` — e.g. `handoff/dotfiles-active`. The stable `-active`
+  key makes every new handoff **upsert** the prior one (same `project + scope + topic_key` updates
+  in place and bumps `revision_count`), so there is never more than one live handoff per project.
+  This is the mechanism, not a convention you must police by hand.
+- **type**: an agent-chosen type from the Memory Types list (usually `decision`). `handoff` is
+  **not** a type — it lives only in the topic_key. Adding it as a type would reintroduce the type
+  drift the Memory Types section exists to prevent.
+- **content**: the full handoff body — what is done and committed, unresolved findings, next steps
+  in order, and any hard rules (e.g. "user commits himself; never git commit").
+- **The sentinel token `ENGRAM-HANDOFF-ACTIVE` on its own line in the body.** This token is
+  **mandatory**, not optional. The session-start recall hook (`recall-memory.sh`) finds the active
+  handoff with an FTS5 search, and FTS5 needs a literal term to match on. A handoff written without
+  the sentinel is silently invisible to the nudge — writing one without it is doing it wrong.
+  `scripts/validate-memory-types.sh` treats the token as part of the convention.
+
+Then **pin** the handoff (`mem_pin`) and **unpin** the prior one. Pinning is local, unsynced, and
+ordering-only — it raises salience in `mem_context` output but carries no lifecycle meaning, so it
+does not replace the topic_key upsert.
+
+### Closing an effort
+
+When an effort is genuinely finished, write a `mem_session_summary` (the historical record) and stop
+refreshing the `handoff/<project>-active` pointer. Not every session needs a handoff — a one-off
+task that completes within the session needs only the summary, if anything. Reserve the active
+handoff for work that will span sessions.
 
 ## Memory Hygiene
 
