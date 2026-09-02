@@ -414,6 +414,7 @@
                 "/System/**",
                 "**/.env",
                 "**/.env.*",
+                "**/*.env",
                 "**/sops/age/keys.txt",
                 "**/*.agekey",
                 "**/.ssh/id_rsa",
@@ -438,6 +439,7 @@
                 "/System/**",
                 "**/.env",
                 "**/.env.*",
+                "**/*.env",
                 "**/sops/age/keys.txt",
                 "**/*.agekey",
                 "**/.ssh/id_rsa",
@@ -476,6 +478,7 @@
             "deniedPaths": [
                 "**/.env",
                 "**/.env.*",
+                "**/*.env",
                 "**/*.key",
                 "**/*.pem",
                 "**/credentials*",
@@ -593,6 +596,7 @@
                 "match": [
                     "**/.env",
                     "**/.env.*",
+                    "**/*.env",
                     "**/*.key",
                     "**/*.pem",
                     "**/credentials*",
