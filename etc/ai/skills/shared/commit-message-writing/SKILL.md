@@ -127,6 +127,8 @@ The body has two parts:
 
 - Wrap at 72 characters per line
 - Separate from subject with blank line
+- Exactly one context paragraph — never two or more prose paragraphs. If the motivation needs more,
+  compress it or move specifics into the change-list bullets
 
 **Example:**
 
