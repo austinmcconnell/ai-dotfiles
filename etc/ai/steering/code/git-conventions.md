@@ -20,3 +20,9 @@
 ## Push Workflow
 
 - Push to a feature branch, not directly to main
+
+## Reading History
+
+- Never use `git log --oneline` — it strips the commit body where the WHY context lives. Use the
+  default `git log` format (or a `--format` that keeps subject + body) so multi-line messages are
+  visible.
