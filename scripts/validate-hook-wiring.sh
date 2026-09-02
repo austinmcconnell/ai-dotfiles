@@ -28,7 +28,7 @@ set -euo pipefail
 #
 # Known, documented, intentional asymmetries are encoded explicitly
 # below (not treated as drift):
-#   - audit-shell-commands.sh is wired to kiro's `default` agent only
+#   - audit-shell-commands.sh is wired to kiro's `code` (default) agent only
 #     (kiro's other 4 agents deny aws/kubectl outright instead), but
 #     globally on the Claude side (Claude has no per-agent scoping
 #     mechanism for this). Claude's global wiring therefore also covers
@@ -61,7 +61,7 @@ KIRO_AGENTS_DIR="${DOTFILES_DIR}/etc/kiro-cli/cli-agents"
 CLAUDE_SETTINGS="${DOTFILES_DIR}/etc/claude-code/settings.json"
 CLAUDE_AGENTS_DIR="${DOTFILES_DIR}/etc/claude-code/agents"
 
-KIRO_AGENTS=(default docs jira datadog ansible)
+KIRO_AGENTS=(code docs jira datadog ansible)
 
 FAILURES=0
 
@@ -78,7 +78,7 @@ report_fail() {
 
 # Which kiro agents SHOULD wire this cross-tool script, per AGENTS.md.
 #   all5          - every kiro agent wires it
-#   default_only  - only the default agent wires it (documented asymmetry)
+#   default_only  - only the code (default) agent wires it (documented asymmetry)
 #   none          - not a kiro hook at all (Claude-only by design)
 expected_kiro_scope() {
     case "$1" in
@@ -136,8 +136,8 @@ for script_path in "$AI_HOOKS_DIR"/*.sh; do
         done
         ;;
     default_only)
-        if [[ "$actual_agents_display" != "default" ]]; then
-            report_fail "$script" "expected ONLY in kiro's default agent, found in: ${actual_agents_display:-<none>}"
+        if [[ "$actual_agents_display" != "code" ]]; then
+            report_fail "$script" "expected ONLY in kiro's code (default) agent, found in: ${actual_agents_display:-<none>}"
         fi
         ;;
     none)

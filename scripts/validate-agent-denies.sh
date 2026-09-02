@@ -36,7 +36,7 @@ DOTFILES_DIR="${DOTFILES_DIR:-$HOME/.dotfiles}"
 source "${DOTFILES_DIR}/install/utils.sh"
 
 AGENTS_DIR="${DOTFILES_DIR}/etc/kiro-cli/cli-agents"
-AGENTS=(default docs jira datadog ansible)
+AGENTS=(code docs jira datadog ansible)
 
 FAILURES=0
 

@@ -29,14 +29,14 @@
         "web_fetch",
         "web_search"
     ],
-    "description": "Default CLI agent with comprehensive development tools and security restrictions",
+    "description": "Code agent with comprehensive development tools and security restrictions",
     "hooks": [
         {
             "name": "agentSpawn-0",
             "trigger": "agentSpawn",
             "action": {
                 "type": "command",
-                "command": "$AI_DOTFILES_DIR/etc/kiro-cli/hooks/check-research-kb.sh default"
+                "command": "$AI_DOTFILES_DIR/etc/kiro-cli/hooks/check-research-kb.sh code"
             },
             "timeout": 5
         },
@@ -73,7 +73,7 @@
             "matcher": "knowledge",
             "action": {
                 "type": "command",
-                "command": "$AI_DOTFILES_DIR/etc/kiro-cli/hooks/clear-research-kb-stale.sh default"
+                "command": "$AI_DOTFILES_DIR/etc/kiro-cli/hooks/clear-research-kb-stale.sh code"
             },
             "timeout": 5
         },
@@ -83,7 +83,7 @@
             "matcher": "*",
             "action": {
                 "type": "command",
-                "command": "$AI_DOTFILES_DIR/etc/kiro-cli/hooks/trace-tool-call.sh default"
+                "command": "$AI_DOTFILES_DIR/etc/kiro-cli/hooks/trace-tool-call.sh code"
             },
             "timeout": 3
         },
@@ -183,8 +183,8 @@
             "timeout": 120000
         }
     },
-    "name": "default",
-    "prompt": "file://./default-prompt.md",
+    "name": "code",
+    "prompt": "file://./code-prompt.md",
     "resources": [
         "file://AGENTS.md",
         "file://~/.kiro/steering/code/**/*.md",
@@ -498,14 +498,14 @@
         },
         "subagent": {
             "availableAgents": [
-                "default",
+                "code",
                 "docs",
                 "jira",
                 "ansible",
                 "datadog"
             ],
             "trustedAgents": [
-                "default"
+                "code"
             ]
         },
         "web_fetch": {
@@ -750,7 +750,7 @@
             {
                 "capability": "subagent",
                 "match": [
-                    "default"
+                    "code"
                 ],
                 "effect": "allow"
             },

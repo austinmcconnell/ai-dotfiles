@@ -61,10 +61,10 @@ else
     echo "No CLI agents directory found in dotfiles"
 fi
 
-# Set default agent to use custom 'default' agent instead of built-in kiro_default
+# Set default agent to use custom 'code' agent instead of built-in kiro_default
 if is-executable kiro-cli; then
-    echo "Setting default agent to 'default'..."
-    kiro-cli agent set-default default 2>/dev/null || echo "⚠️  Could not set default agent (may need to run manually)"
+    echo "Setting default agent to 'code'..."
+    kiro-cli agent set-default code 2>/dev/null || echo "⚠️  Could not set default agent (may need to run manually)"
 fi
 
 # Validate agent configs against the schema (non-fatal — warn only).
