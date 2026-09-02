@@ -64,7 +64,7 @@ fi
 # Set default agent to use custom 'default' agent instead of built-in kiro_default
 if is-executable kiro-cli; then
     echo "Setting default agent to 'default'..."
-    kiro-cli agent set-default --name default 2>/dev/null || echo "⚠️  Could not set default agent (may need to run manually)"
+    kiro-cli agent set-default default 2>/dev/null || echo "⚠️  Could not set default agent (may need to run manually)"
 fi
 
 # Skills are linked by install/ai-tools.sh (centralized for all AI tools)
