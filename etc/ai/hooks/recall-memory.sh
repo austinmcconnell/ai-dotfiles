@@ -4,6 +4,12 @@ set -euo pipefail
 # Surface recent memory context at session start
 # Called from agentSpawn hook — output is injected into session context
 # Relies on agent config timeout_ms (5000ms) as safety net if engram hangs
+#
+# Emits one of two things, in priority order:
+#   1. If an ACTIVE HANDOFF exists (an observation carrying the ENGRAM-HANDOFF-ACTIVE
+#      sentinel), a DIRECTIVE to fetch it in full — the handoff is the live state of
+#      an ongoing effort and must be read before other work.
+#   2. Otherwise, if the project has any memories, a generic recall nudge.
 
 ENGRAM_DB="$HOME/.config/engram/engram.db"
 
@@ -33,7 +39,21 @@ OBS_COUNT=$(engram context "${PROJECT_NAME}" 2>/dev/null |
     grep -oE "\\*\\*${PROJECT_NAME}\\*\\*.*\\[[0-9]+ observations\\]" |
     grep -oE '[0-9]+ observations' | grep -oE '[0-9]+' | head -1 || true)
 
-if [[ -n "${OBS_COUNT}" && "${OBS_COUNT}" -gt 0 ]]; then
+# Detect an ACTIVE HANDOFF for this project and, if present, emit a directive to
+# fetch it IN FULL rather than a generic nudge. Handoffs carry the mandatory
+# sentinel token ENGRAM-HANDOFF-ACTIVE in their body (see the "Handoffs" section
+# of cross-session-memory.md steering) precisely so this FTS5 search can find
+# them — FTS5 needs a literal term to match on, and `engram search` requires a
+# query string (it cannot list purely by topic_key or type). The first result
+# line looks like "[1] #<id> (<type>) — <title>", so grep the leading "#<id>".
+# A truncated preview cannot carry the handoff, so the nudge COMMANDS the full
+# fetch instead of trying to CARRY it.
+HANDOFF_ID=$(engram search "ENGRAM-HANDOFF-ACTIVE" --project "${PROJECT_NAME}" --limit 1 2>/dev/null |
+    grep -oE '#[0-9]+' | head -1 | tr -d '#' || true)
+
+if [[ -n "${HANDOFF_ID}" ]]; then
+    echo "⚠️  ACTIVE HANDOFF exists for '${PROJECT_NAME}' (#${HANDOFF_ID}). Call mem_get_observation(${HANDOFF_ID}) IN FULL before doing anything else."
+elif [[ -n "${OBS_COUNT}" && "${OBS_COUNT}" -gt 0 ]]; then
     echo "💡 Engram has memories about '${PROJECT_NAME}'. Use mem_search or mem_context to recall prior decisions and context."
 fi
 
