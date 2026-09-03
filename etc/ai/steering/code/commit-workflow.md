@@ -28,6 +28,10 @@ breaks into more than one commit. The user may override any part of it ("just do
 
 ## Notes
 
+- **Plan before writing, not after.** Do steps 1–3 (scope → plan + get approval → record in todo.md)
+  *before* editing any file. The commit message itself is written after the change (you can only
+  describe work that exists) — what must come first is the agreed plan, not the message. Having this
+  steering loaded is not the same as executing it.
 - **The user commits by default.** Do not create commits unless the user explicitly asks you to
   (this reinforces `git-conventions.md` Commit Discipline). The default is: you prepare and verify,
   the user commits.
