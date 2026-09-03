@@ -14,6 +14,8 @@
 - Stage specific files — never `git add .` or `git add -A`
 - Run pre-commit hooks before committing (see `pre-commit-validation` skill)
 - If pre-commit modifies files, re-read them before proceeding
+- For multi-commit work, follow the `commit-workflow` steering cadence (plan → one commit at a time
+  → pause → verify)
 
 ## Push Workflow
 
