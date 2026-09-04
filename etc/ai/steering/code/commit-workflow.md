@@ -19,7 +19,12 @@ breaks into more than one commit. The user may override any part of it ("just do
    `verification-loop` and `pre-commit-validation` skills). Fix what breaks before presenting.
 1. **Pause for review, and suggest a commit message.** Present the finished work and a suggested
    message that follows the `commit-message-writing` skill (subject ≤72 chars imperative; exactly
-   one context paragraph; change-list bullets). Do not commit unless the user has said to.
+   one context paragraph; change-list bullets). Do not commit unless the user has said to. When the
+   change includes work whose final check is human visual or interactive inspection (a render,
+   layout, or behavior you cannot verify headless), state what you verified programmatically and
+   hand the user an explicit checklist of what to look for — phrased as specific expected
+   observations ("only the hovered item highlights, not its container"), not vague prompts ("check
+   hover works"). Their confirmation is the final gate for that work.
 1. **Act on feedback.** If the user asks for changes, make them and re-verify before pausing again.
 1. **After the user commits, verify it landed.** Run `git log -1` (and `git status` for a clean
    tree). Then mark that commit's item done in `todo.md`.
