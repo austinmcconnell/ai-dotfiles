@@ -116,6 +116,15 @@ The body has two parts:
 **Omit the entire body** only for trivial changes where the subject line tells the complete story
 (typo fixes, single-line config changes, version bumps).
 
+#### Write from the committed diff
+
+A commit message is permanent repo history. Write it from the **committed diff** — the changes a
+future reader can actually see. Do not reference git-ignored or explicitly temporary files (e.g.
+`analysis/`, `todo.md`, point-in-time planning docs): naming files a reader can't see ties the
+durable record to disappearing context. The motivation (WHY) may draw on external context, but the
+message should stand on the committed change itself. Decisions about temporary files belong in
+working state (todo.md / a handoff), not the commit message.
+
 **Include a body when:**
 
 - The change touches multiple files or areas
