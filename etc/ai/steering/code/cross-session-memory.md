@@ -87,6 +87,10 @@ It is distinct from a session summary, and the two are not interchangeable:
   and a new one supersedes the old. This is the "pick up this effort" pointer.
 - **Session summary** (`mem_session_summary`) — *append-only history*. You write one per session;
   they accumulate as the trail of "what happened." Engram surfaces the latest via `mem_context`.
+- **Durable detail** — *lives on disk* (docs/ or analysis/), not in the handoff. Substantive
+  reasoning, framing, tradeoffs, and open questions belong in a versioned file; the handoff only
+  points at it. Before a handoff/summary/compact checkpoint, write the detail to its file first —
+  prefer updating the one authoritative file for a topic over a new overlapping one.
 
 Use **both**, each for its strength. Do not collapse a handoff into a session summary: doing so
 loses the "exactly one active, auto-superseding" property, which is precisely what prevents a stale

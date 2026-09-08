@@ -32,3 +32,7 @@ intermediary's summary.
   is cheap.
 - Sequence dependent decisions rather than researching everything at once: when one decision
   constrains another, settle the first so the second is scoped by a known answer.
+- If you present framing points or criteria and invite the user's reaction, that is a hard stop:
+  wait for their input before launching the sub-agents. Stated criteria are often relaxed or
+  redirected on review — orchestrating research in the same turn spends parallel work on the wrong
+  frame and cuts the user out of scoping it.
