@@ -16,6 +16,18 @@ citation for the next attempt. Applying researched fix A → it fails → resear
 - If three researched fixes in a row don't hold, the PREMISE is likely wrong. Question the test,
   fixture, or assumption itself — don't just add more mitigation ("wait harder").
 
+## Verify the fix reached the running system before doubting the fix
+
+When a change that should be correct produces ZERO observable change, suspect the DELIVERY path — a
+stale cache, an unrebuilt bundle, a served-from-disk old artifact — before re-tuning the change
+itself. "Looks identical no matter what I change" is the signature of an edit that never reached the
+running system, not of a wrong edit.
+
+- Confirm the new code is actually what's running (hard-reload, bust the cache, rebuild, check the
+  served bytes) before adjusting values.
+- Re-tuning numbers against a stale artifact burns rounds and produces false evidence that the
+  approach is wrong — the classic tell is that even a large change has no effect.
+
 ## Stop when the fix escapes the task
 
 If your change perturbs behavior OUTSIDE what you were asked to do — especially a pre-existing or
