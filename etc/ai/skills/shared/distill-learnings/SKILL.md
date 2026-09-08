@@ -53,6 +53,20 @@ Match to an *existing* doc/skill first. Read the candidate destination before pr
 respect its scope (one responsibility per doc; see `code-health` steering). Only propose a new file
 when no existing home fits, and justify it.
 
+**Destination validity depends on WHEN the correction was captured** — a single distill run may mix
+both, so decide this per correction:
+
+- **Captured *this* session** → propose promoting it only into a surface that was actually *loaded*
+  this session. If the rule was followed this session, it was followed because it lived in a loaded
+  surface (or via engram/handoff) — so a destination that was *not* loaded would not have shaped
+  this session's behavior, a signal the home is wrong or the rule was already promoted before the
+  session began. Reading a candidate file while forming the proposal does **not** count as "loaded."
+- **Captured in a *previous* session** → soften this test (cross-session promotion is the point, and
+  the correction's target surface is usually not loaded during a distill run). Judge the destination
+  by its *type* instead: a steering doc is always-loaded; a skill loads only when its trigger fires,
+  so a rule that must shape *ordinary* work belongs in always-loaded steering, not a triggered
+  skill. If no fitting always-loaded home exists, propose a new steering doc or leave it in engram.
+
 ### 3. Propose exact edits
 
 For each promotable correction, present a proposal using the format in
