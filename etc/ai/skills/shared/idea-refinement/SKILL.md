@@ -68,11 +68,12 @@ For each idea, produce:
    splitting, narrowing, or reshaping the ask itself — not just accepting it.
 1. **Research flags.** What is unknown and must be settled before committing? Name the specific
    question, not "needs research" in the abstract.
-1. **Verdict** — exactly one:
+1. **Verdict** — one primary verdict; add a secondary note when an idea genuinely straddles two
+   (e.g. "Reshape — also needs research on X before promoting"):
    - **Promote** — survived critique; ready to move to the Refined section (or `backlog.md`).
+   - **Reshape** — worth doing but not as asked; record the recommended change to scope/approach.
    - **Needs research** — sound but blocked on a named unknown; stays in Unrefined with the question
      recorded.
-   - **Reshape** — worth doing but not as asked; record the recommended change to scope/approach.
    - **Drop** — doesn't fit; record the one-line reason so it isn't re-proposed.
 
 Use the output contract in `references/critique-output.md`. Keep each critique tight — a few

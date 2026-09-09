@@ -15,17 +15,20 @@ with, duplicate, or break?>
 
 **Research flags**: <specific open questions that must be settled first — name them, or "none">
 
-**Verdict**: Promote | Needs research | Reshape | Drop
+**Verdict**: Promote | Reshape | Needs research | Drop
 <one line justifying the verdict and stating where the idea goes next>
 ```
 
 ## Verdict meanings
 
+One primary verdict per idea; add a secondary note when an idea genuinely straddles two (e.g.
+"Reshape — also needs research on X before promoting").
+
 - **Promote** — survived critique; move to the Refined section (or `backlog.md`) with its scope
   decision recorded.
+- **Reshape** — worth doing but not as asked; record the recommended change to scope or approach.
 - **Needs research** — sound but blocked on a named unknown; stays in Unrefined with the question
   written down.
-- **Reshape** — worth doing but not as asked; record the recommended change to scope or approach.
 - **Drop** — doesn't fit; record the one-line reason so it isn't re-proposed later.
 
 ## Batch reviews
