@@ -13,3 +13,4 @@ that have explicit skills.
 | Checking DD resource configs for errors | `datadog-audit`          |
 | Writing commit messages                 | `commit-message-writing` |
 | Promoting corrections to steering       | `distill-learnings`      |
+| Navigating project docs / find a doc    | `readme-pointer`         |

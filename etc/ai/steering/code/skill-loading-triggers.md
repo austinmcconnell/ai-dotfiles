@@ -23,6 +23,7 @@ that have explicit skills.
 | Creating release analysis             | `release-analysis`                                |
 | Reviewing a PR / code review          | `pr-review`                                       |
 | Promoting corrections to steering     | `distill-learnings`                               |
+| Navigating project docs / find a doc  | `readme-pointer`                                  |
 
 When citing existing research from a knowledge base, check `last_verified` in the file's YAML
 frontmatter. If older than 90 days, warn the user before presenting the data as current.

@@ -17,3 +17,4 @@ that have explicit skills.
 | Validating Jira setup or API connectivity    | `jira-smoke-test`        |
 | Deployment readiness, "what can we deploy"   | `deployment-readiness`   |
 | Promoting corrections to steering            | `distill-learnings`      |
+| Navigating project docs / find a doc         | `readme-pointer`         |
