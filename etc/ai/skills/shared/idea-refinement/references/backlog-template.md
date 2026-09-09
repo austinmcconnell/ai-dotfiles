@@ -13,6 +13,7 @@
 <!-- Validated items, each with its scope decision. Next stop is a commit plan in todo.md. -->
 
 - Example validated item — scope: single feature, ~2 commits; no open research questions
+- Example complex item → plan-example-migration.md (worked-out implementation guide, throwaway)
 
 ## Parked
 

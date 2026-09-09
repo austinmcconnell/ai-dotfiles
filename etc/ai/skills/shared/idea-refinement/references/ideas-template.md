@@ -20,3 +20,4 @@
 <!-- This section IS the backlog until it grows enough to graduate into backlog.md. -->
 
 - Example refined idea — scope: narrowed to just the API layer; defer the UI to a later pass
+- Example complex refined idea → plan-example-migration.md (has a worked-out implementation guide)

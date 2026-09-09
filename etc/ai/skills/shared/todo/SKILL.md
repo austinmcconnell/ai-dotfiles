@@ -54,6 +54,13 @@ Mark items as done with `[x]` and add a link to the outcome:
 Resolved items stay in the file until actively cleaned out. They provide context for how decisions
 were reached.
 
+### Linking a detailed design
+
+A `todo.md` item under execution may need a worked-out implementation guide. Link it as a
+git-ignored `plan-<slug>.md`, e.g. `- [ ] Migrate auth to OAuth2 → plan-oauth2-migration.md`. See
+the `idea-refinement` skill's "Detailed Designs" section for the convention — the guide is a
+throwaway point-in-time snapshot, never committed.
+
 ### What does not belong here
 
 Decisions, specifications, or anything that should be a source of truth. Move items to tracked files

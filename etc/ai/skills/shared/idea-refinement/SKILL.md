@@ -90,6 +90,20 @@ sentences per section, not an essay.
 Promotion is a write to git-ignored working files, so it follows the "non-committable work" note in
 `commit-workflow` steering — there is nothing to commit, so say so and move on.
 
+## Detailed Designs
+
+When an item is complex enough to need a worked-out design before it can be broken into commits — a
+security fix, a migration, a multi-file refactor — link an implementation guide from the item (see
+the `implementation-guide` skill). Reference it as a git-ignored `plan-<slug>.md` in the project
+root, e.g. `- Migrate auth to OAuth2 → plan-oauth2-migration.md`.
+
+The guide is a **point-in-time execution snapshot** — the before/after code, exact file paths, and
+step order are only true at one moment. It is throwaway and never committed. Durable reasoning (why
+the change was made, tradeoffs chosen) belongs in the commit message, not the guide.
+
+Most items do not need a guide. Reach for one only when the design is non-obvious enough that
+working it out separately de-risks the commit breakdown.
+
 ## Tier Transitions
 
 Recommend restructuring the files based on **behavioral signals, not line counts**. Never nag about
