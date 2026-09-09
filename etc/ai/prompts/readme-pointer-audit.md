@@ -115,7 +115,7 @@ find . -type f \( -name "*.md" -o -name "*.rst" -o -name "*.adoc" \) \
 find . -type f -name "README.md" -not -path "*/node_modules/*" -not -path "*/.git/*"
 
 # Change frequency for a doc (high count = high traffic, higher rank)
-git log --oneline --follow -- <path/to/doc.md> | wc -l
+git rev-list --count HEAD -- <path/to/doc.md>
 ```
 
 ## Update strategy
