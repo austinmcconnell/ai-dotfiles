@@ -18,6 +18,27 @@ A README pointer telling you a doc exists is a *retrieval trigger*: follow it in
 repo is indexed) or read the target doc directly. Do not treat "not already in context" as "does not
 exist" — the map and the KB are there precisely so you retrieve rather than guess.
 
+## Reach for the KB First in an Indexed Repo
+
+When working in a repo that has a knowledge base, reach for the KB *before* hand-navigating with
+`grep`/`read` — but scope it by question type. This is "use the KB to orient, use grep to pin down,"
+not "the KB replaces grep."
+
+- **Comprehension / orientation questions** — "how does X work," "what handles Y," "where does this
+  flow live," "what are the pieces of subsystem Z." Search the KB first: it returns the right files
+  and the prose that explains them far faster than reading around. This is exactly the case agents
+  habitually skip — doing KB-shaped work by hand in an indexed repo is the documented failure mode
+  this rule exists to correct.
+- **Pointed call-site / definition hunts** — "every caller of `foo()`," "the exact line where `BAR`
+  is set." Here the KB is a *starting point*, not the final answer: semantic retrieval ranks
+  explanatory docs (markdown) above the source code they describe, so the precise call site often
+  sits below the useful doc or off the result list. Use the KB to find the right file and orient,
+  then confirm exact call sites with `grep`/`code`.
+
+The net rule: let the KB give you the map and the comprehension, then let `grep`/`code` give you the
+exhaustive, line-precise answer. Neither alone is sufficient in an indexed repo; skipping the KB
+entirely is the more common mistake.
+
 ## Search Before Researching
 
 Before performing web research, search available knowledge bases first. Existing research may
