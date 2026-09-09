@@ -84,8 +84,8 @@ sentences per section, not an essay.
   Refined section of `ideas.md`, or into `backlog.md` if it exists.
 - **Refined/backlog → todo**: when an item is validated and the user is ready to commit to it, hand
   it to the `commit-workflow` cadence — break it into atomic commits in dependency order and record
-  the plan in `todo.md`. This skill stops at the boundary of committed work; `commit-workflow` owns
-  what happens after.
+  the plan in `todo.md` (see the `todo` skill's template for its structure). This skill stops at the
+  boundary of committed work; `commit-workflow` owns what happens after.
 
 Promotion is a write to git-ignored working files, so it follows the "non-committable work" note in
 `commit-workflow` steering — there is nothing to commit, so say so and move on.
