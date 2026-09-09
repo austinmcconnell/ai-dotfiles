@@ -205,7 +205,7 @@
             "type": "knowledgeBase",
             "source": "file://~/projects/austinmcconnell/_research_",
             "name": "research",
-            "description": "Structured research files covering product evaluations, technology comparisons, and technical investigations with cited sources and verification dates",
+            "description": "Verified research files with cited sources and verification dates. Search here BEFORE doing web research or forming a recommendation: product/tool evaluations, technology comparisons, and technical investigations that may already answer the question. Owns 'which tool/approach should I pick and why' and 'has this already been researched' questions.",
             "indexType": "best",
             "include": [
                 "**/*.md"
@@ -219,7 +219,7 @@
             "type": "knowledgeBase",
             "source": "file://~/projects/unite-us/screenings-ingestion",
             "name": "screenings-ingestion",
-            "description": "Python app code, tests, Terraform infrastructure, and analysis docs for the FHIR screenings ingestion service",
+            "description": "Source of truth for the FHIR screenings ingestion service SOURCE CODE. Search here to find where a symbol is defined or used and how the code works: FHIR bundle processors, screening/people/template/consent services, empi_fallback and subject-id handling, template YAML seeding across migrations/seeds/fixtures, BaseTask jobs, and Terraform infra. Reach for this on 'where is X defined/called' and 'how does X work' questions before hand-navigating with grep.",
             "indexType": "fast",
             "include": [
                 "app/**/*.py",
@@ -249,7 +249,7 @@
             "type": "knowledgeBase",
             "source": "file://~/projects/unite-us/screenings-ingestion/docs",
             "name": "screenings-ingestion-docs",
-            "description": "Markdown documentation for the screenings ingestion service including architecture, data flows, and operational guides",
+            "description": "Prose documentation for the FHIR screenings ingestion service — architecture overviews, data-flow narratives, and operational runbooks. Search here for CONCEPTUAL 'how does the system work end-to-end' and 'how do I operate/run X' answers, as opposed to the screenings-ingestion KB which owns the actual source code.",
             "indexType": "best",
             "include": [
                 "**/*.md"
@@ -263,7 +263,7 @@
             "type": "knowledgeBase",
             "source": "file://~/projects/unite-us",
             "name": "analysis-all-projects",
-            "description": "Cross-project analysis documents covering architecture decisions, research findings, and technical comparisons across all Unite Us projects",
+            "description": "Analysis docs (the WHY) across all Unite Us WORK projects — architecture decisions, tradeoff rationale, research findings, and technical comparisons. Search here for 'why was this decided/designed this way' across work repos. Scope: Unite Us work projects only (use analysis-personal-projects for personal repos).",
             "indexType": "best",
             "include": [
                 "*/analysis/*.md"
@@ -277,7 +277,7 @@
             "type": "knowledgeBase",
             "source": "file://~/projects/austinmcconnell",
             "name": "analysis-personal-projects",
-            "description": "Cross-project analysis documents covering architecture decisions, research findings, and technical comparisons across personal projects",
+            "description": "Analysis docs (the WHY) across PERSONAL projects — architecture decisions, tradeoff rationale, research findings, and technical comparisons. Search here for 'why was this decided/designed this way' across personal repos. Scope: personal projects only (use analysis-all-projects for Unite Us work repos).",
             "indexType": "best",
             "include": [
                 "*/analysis/*.md"
