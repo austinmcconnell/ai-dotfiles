@@ -234,7 +234,10 @@
             ],
             "exclude": [
                 ".git/**",
+                "**/.git/rr-cache/**",
                 "**/__pycache__/**",
+                "**/.pytest_cache/**",
+                "Pipfile.lock",
                 ".terraform/**",
                 ".pre/**",
                 ".venv/**",
