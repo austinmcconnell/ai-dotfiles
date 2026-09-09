@@ -47,3 +47,8 @@ breaks into more than one commit. The user may override any part of it ("just do
 - **Non-committable work** (e.g. git-ignored analysis docs) still follows the plan/verify rhythm,
   but there is nothing to commit — say so and move on rather than waiting for a commit that will not
   happen.
+- **Funnel handoff.** This cadence is the *committed* end of the idea-refinement funnel (see the
+  `idea-refinement` skill). Work reaching step 1 has typically been captured and stress-tested in
+  `ideas.md`/`backlog.md` first; the commit plan recorded in step 3 is that refined work broken into
+  atomic commits. When beginning *planning or ideation* (deciding what to do, not executing an
+  agreed plan), reach for `idea-refinement` — this workflow starts once the work is committed to.
