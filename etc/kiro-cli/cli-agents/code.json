@@ -219,7 +219,7 @@
             "type": "knowledgeBase",
             "source": "file://~/projects/unite-us/screenings-ingestion",
             "name": "screenings-ingestion",
-            "description": "Source of truth for the FHIR screenings ingestion service SOURCE CODE. Search here to find where a symbol is defined or used and how the code works: FHIR bundle processors, screening/people/template/consent services, empi_fallback and subject-id handling, template YAML seeding across migrations/seeds/fixtures, BaseTask jobs, and Terraform infra. Reach for this on 'where is X defined/called' and 'how does X work' questions before hand-navigating with grep.",
+            "description": "Source of truth for the FHIR screenings ingestion service SOURCE CODE. Search here to find where a symbol is defined or used and how the code works: FHIR bundle processors, screening/people/template/consent services, empi_fallback and subject-id handling, template seeding logic in app/templates/, BaseTask jobs, and Terraform infra. The template YAML assets themselves (app/templates/assets/*.yaml) are deliberately not indexed — grep them directly for question/option/code content. Reach for this on 'where is X defined/called' and 'how does X work' questions before hand-navigating with grep.",
             "indexType": "fast",
             "include": [
                 "app/**/*.py",
@@ -249,7 +249,7 @@
             "type": "knowledgeBase",
             "source": "file://~/projects/unite-us/screenings-ingestion/docs",
             "name": "screenings-ingestion-docs",
-            "description": "Prose documentation for the FHIR screenings ingestion service — architecture overviews, data-flow narratives, and operational runbooks. Search here for CONCEPTUAL 'how does the system work end-to-end' and 'how do I operate/run X' answers, as opposed to the screenings-ingestion KB which owns the actual source code.",
+            "description": "Prose documentation for the FHIR screenings ingestion service — architecture overviews, data-flow narratives, and operational runbooks. Search here for CONCEPTUAL 'how does the system work end-to-end' and 'how do I operate/run X' answers. This docs corpus (best index) is the prose-first channel for those questions; the screenings-ingestion KB (fast index) is the channel for source-code lookups. The two overlap on docs/**/*.md — that overlap is harmless, but prefer this KB when the question is conceptual/operational rather than a code hunt.",
             "indexType": "best",
             "include": [
                 "**/*.md"
