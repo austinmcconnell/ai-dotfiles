@@ -1,5 +1,23 @@
 # Knowledge Base Usage
 
+## Which Channel: Knowledge Base vs Memory vs Eager Context
+
+Before reaching for the knowledge base, know what it *owns* versus the other two channels (the full
+routing rule and its rationale live in `cross-session-memory.md`; the `readme-pointer` skill is the
+eager-context map that feeds retrieval):
+
+- **Knowledge base (semantic retrieval)** — *facts that live in the repo or docs corpus*: how the
+  code works, what a doc says, cited research. This is the channel to query for repo/doc facts
+  rather than eager-loading the docs or copying them into memory.
+- **Persistent memory (engram)** — cross-session *narrative*: decisions, rationale, failed
+  approaches, corrections, preferences. Not repo facts.
+- **Eager context** — small, stable, high-signal always-loaded files plus a thin README *map* of
+  what else exists. The map points at docs to retrieve on demand; it is not the corpus itself.
+
+A README pointer telling you a doc exists is a *retrieval trigger*: follow it into the KB (if the
+repo is indexed) or read the target doc directly. Do not treat "not already in context" as "does not
+exist" — the map and the KB are there precisely so you retrieve rather than guess.
+
 ## Search Before Researching
 
 Before performing web research, search available knowledge bases first. Existing research may
