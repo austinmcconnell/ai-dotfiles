@@ -8,6 +8,8 @@
         "file://.kiro/steering/**/*.md",
         "file://AGENTS.md",
         "file://README.md",
+        "file://ideas.md",
+        "file://todo.md",
         "file://ansible.cfg",
         "skill://.kiro/skills/**/SKILL.md",
         "skill://~/.kiro/skills/ansible/**/SKILL.md",

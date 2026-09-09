@@ -8,6 +8,8 @@
         "file://.kiro/steering/**/*.md",
         "file://AGENTS.md",
         "file://README.md",
+        "file://ideas.md",
+        "file://todo.md",
         "file://SUMMARY.md",
         "file://book.toml",
         "skill://.kiro/skills/**/SKILL.md",
