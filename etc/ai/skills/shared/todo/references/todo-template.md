@@ -24,3 +24,4 @@
 <!-- Internal action items: docs review, cleanup, procedures to write. -->
 
 - [ ] Example: write initial setup procedure
+- [ ] Example complex task with a detailed design → plan-example-migration.md

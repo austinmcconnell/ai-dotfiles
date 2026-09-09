@@ -30,6 +30,21 @@ Skip implementation guides for:
 - Well-documented library usage
 - Trivial configuration changes
 
+## Output Status
+
+An implementation guide is a **point-in-time execution snapshot**: its before/after code, exact file
+paths, line numbers, and step order are true only at the moment it is written. Once the work lands,
+the "after" state is the code itself and the guide is stale.
+
+In personal projects, treat the guide as **throwaway** and store it as a git-ignored
+`plan-<slug>.md` in the project root (covered by the `plan*.md` ignore pattern) — do not commit it
+as documentation. Durable reasoning (why the change was made, tradeoffs chosen) belongs in the
+commit message, not the guide. The idea-refinement and todo skills link to guides using this
+`plan-<slug>.md` convention.
+
+(In a team setting where a guide is a shared deliverable executed by others, committing it may be
+warranted — but that is the exception, not the default.)
+
 ## Guide Structure
 
 Every implementation guide should include these sections:
