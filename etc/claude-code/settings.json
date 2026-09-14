@@ -257,5 +257,6 @@
             }
         ]
     },
+    "showThinkingSummaries": true,
     "theme": "dark"
 }
