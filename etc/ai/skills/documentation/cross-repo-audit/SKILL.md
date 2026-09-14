@@ -21,23 +21,38 @@ the resource and others reference it.
 
 ## Repositories and Source Files
 
+### home-infrastructure (cross-cutting authority)
+
+Owns: the Main-VLAN IP registry (multi-claimed `10.10.10.0/24` reservations), DNS-of-record, rack
+unit assignments (all racks), PDU port assignments, power budget. Referenced by:
+ubiquiti-network-stack, tiny-lab, truenas-server, home-assistant-server, and future consumers (ARM,
+family-dashboard). The IP-ownership rule is by claim count, not by VLAN: home-infrastructure owns IP
+facts more than one system claims; single-claimant reservations (Management `10.10.1.x`, IoT
+`10.10.30.x`) stay with ubiquiti-network-stack.
+
+| Resource              | File                                      | Table/section to check        |
+| --------------------- | ----------------------------------------- | ----------------------------- |
+| IP reservations       | `configuration/ip-reservations.sops.yaml` | reservations (SOPS-encrypted) |
+| IP registry view      | `configuration/ip-registry.md`            | Reservation table (Main VLAN) |
+| DNS-of-record         | `decisions/adr-001-dns-of-record.md`      | Decision section              |
+| Rack unit assignments | `configuration/rack-layout.md`            | Unit assignments per rack     |
+| PDU ports + power     | `configuration/power-budget.md`           | Port assignments, draw totals |
+
 ### tiny-lab (compute rack owner)
 
-Owns: PDU port assignments, compute rack switch port assignments, rack unit assignments, Proxmox
-node IPs.
+Owns: compute rack switch port assignments, Proxmox node specifications. References
+home-infrastructure for rack unit assignments, PDU port assignments, power budget, and Main-VLAN IP
+addresses.
 
-| Resource              | File                           | Table/section to check        |
-| --------------------- | ------------------------------ | ----------------------------- |
-| PDU port assignments  | `components/pdu.md`            | Port assignments table        |
-| Switch ports          | `configuration/network.md`     | Switch port assignments table |
-| Rack unit assignments | `configuration/rack-layout.md` | Unit assignments table        |
-| Proxmox node IPs      | `configuration/network.md`     | IP assignments table          |
-| Power budget          | `configuration/rack-layout.md` | Total rack power budget table |
+| Resource           | File                       | Table/section to check        |
+| ------------------ | -------------------------- | ----------------------------- |
+| Switch ports       | `configuration/network.md` | Switch port assignments table |
+| Proxmox node specs | `components/m920x.md`      | Node specifications           |
 
 ### truenas-server (NAS owner)
 
-Owns: TrueNAS device specs, storage configuration. References: tiny-lab for rack/PDU/switch
-assignments.
+Owns: TrueNAS device specs, storage configuration. References: home-infrastructure for
+rack/PDU/power and Main-VLAN IP addresses; tiny-lab for compute switch ports.
 
 | Resource           | File                           | Table/section to check      |
 | ------------------ | ------------------------------ | --------------------------- |
@@ -46,19 +61,17 @@ assignments.
 
 ### ubiquiti-network-stack (network owner)
 
-Owns: IP address assignments (all VLANs), VLAN definitions, DNS architecture, gateway port
-assignments, main switch port assignments.
+Owns: VLAN definitions, gateway port assignments, main switch port assignments, and the
+single-claimant Management (`10.10.1.x`) and IoT (`10.10.30.x`) IP reservations. References
+home-infrastructure for the Main-VLAN IP registry and DNS-of-record.
 
-| Resource            | File                                | Table/section to check                          |
-| ------------------- | ----------------------------------- | ----------------------------------------------- |
-| Gateway ports       | `configuration/network-topology.md` | Cloud Gateway Fiber port table                  |
-| Main switch ports   | `configuration/network-topology.md` | Switch Flex 2.5G 8 PoE port table               |
-| Management VLAN IPs | `configuration/network-topology.md` | Management VLAN DHCP reservations               |
-| Main VLAN IPs       | `configuration/network-topology.md` | Main VLAN DHCP reservations                     |
-| VLAN definitions    | `configuration/vlans.md`            | VLAN table (ID, name, subnet)                   |
-| DNS architecture    | `configuration/network-topology.md` | DNS servers per VLAN, Pi-hole local DNS records |
-| Network rack layout | `configuration/rack-layout.md`      | DeskPi T0 unit assignments                      |
-| Physical topology   | `configuration/network-topology.md` | Text diagram and mermaid diagram                |
+| Resource                | File                                | Table/section to check             |
+| ----------------------- | ----------------------------------- | ---------------------------------- |
+| Gateway ports           | `configuration/network-topology.md` | Cloud Gateway Fiber port table     |
+| Main switch ports       | `configuration/network-topology.md` | Switch Flex 2.5G 8 PoE port table  |
+| Management/IoT VLAN IPs | `configuration/network-topology.md` | Management + IoT DHCP reservations |
+| VLAN definitions        | `configuration/vlans.md`            | VLAN table (ID, name, subnet)      |
+| Physical topology       | `configuration/network-topology.md` | Text diagram and mermaid diagram   |
 
 ## Audit Workflow
 
@@ -69,25 +82,29 @@ conflicts.
 
 ### Step 2: Check rack unit assignments
 
-**Owner**: tiny-lab `configuration/rack-layout.md`
+**Owner**: home-infrastructure `configuration/rack-layout.md`
 
 Verify:
 
 - [ ] No U slot assigned to more than one device
-- [ ] Devices claiming rack placement in other repos match tiny-lab's assignments
-- [ ] truenas-server `components/rackmount-case.md` location matches tiny-lab U assignment
+- [ ] Devices claiming rack placement in device repos (tiny-lab, truenas-server, ubiquiti) match
+  home-infrastructure's assignments
+- [ ] truenas-server `components/rackmount-case.md` location matches the home-infrastructure U
+  assignment
 - [ ] Total U usage does not exceed rack capacity (8U for RackMate T1)
 
 ### Step 3: Check PDU port assignments
 
-**Owner**: tiny-lab `components/pdu.md`
+**Owner**: home-infrastructure `configuration/power-budget.md`
 
 Verify:
 
 - [ ] No PDU port assigned to more than one device
 - [ ] Voltage per port matches the connected device's requirements
-- [ ] Devices referencing PDU power in other repos match tiny-lab's port table
-- [ ] Total estimated power draw does not exceed PSU capacity (check rack-layout.md power budget)
+- [ ] Devices referencing PDU power in device repos match home-infrastructure's port table
+- [ ] Total estimated power draw does not exceed PSU capacity (check home-infrastructure
+  power-budget.md). The ShrikeLab PDU **device spec** stays in tiny-lab `components/pdu.md`; only
+  the port assignments and draw totals live in home-infrastructure
 
 ### Step 4: Check switch port assignments
 
@@ -105,30 +122,47 @@ Verify:
 
 ### Step 5: Check DNS and hostname assignments
 
-**Owner**: ubiquiti-network-stack `configuration/network-topology.md` (DNS architecture, Pi-hole
-local DNS records, VLAN DNS settings)
+**Owner**: home-infrastructure `decisions/adr-001-dns-of-record.md` (resolver of record, suffix)
+
+The resolver of record is the Technitium DNS container at `10.10.10.30` with the `home.arpa` suffix
+(`lab.home.arpa` for lab hosts/guests). Pi-hole is **out of both the resolver and the ad-block
+paths** — Technitium serves the blocklists directly. Do not treat Pi-hole `.lan` as the current DNS
+architecture anywhere.
 
 Verify:
 
-- [ ] Pi-hole local DNS records use `.lan` suffix (not `.local` — Apple devices hardcode `.local` to
-  mDNS, which breaks VPN and standard DNS resolution)
-- [ ] Hostnames in other repos match the DNS records in ubiquiti-network-stack
-- [ ] DNS server assignments per VLAN are current (no stale fallback entries)
-- [ ] Devices with static IPs in other repos have corresponding Pi-hole local DNS records
+- [ ] The resolver of record is Technitium `10.10.10.30` (not Pi-hole `10.10.10.11`), suffix
+  `home.arpa` (per home-infrastructure ADR-001)
+- [ ] `.lan` appears only as the Technitium conditional-forwarder zone delegating transient DHCP
+  hostnames to the UniFi gateway — never as the suffix of record
+- [ ] The `lab.home.arpa` zone (and `10.10.10.in-addr.arpa` reverse zone) are auto-generated by
+  `tiny-lab-ansible`; the `home.arpa` household zone is hand-maintained
+- [ ] Hostnames in other repos match the `home.arpa` records; no repo asserts Pi-hole as the
+  resolver or ad-blocker
+- [ ] DNS server assignments per VLAN point at `10.10.10.30` (no stale `.11`/Pi-hole entries)
 
 ### Step 6: Check IP address assignments
 
-**Owner**: ubiquiti-network-stack `configuration/network-topology.md` (authoritative for all VLANs)
+**Owner**: home-infrastructure `configuration/ip-registry.md` (Main VLAN `10.10.10.0/24`
+reservations — the multi-claimed block)
 
-**Secondary**: tiny-lab `configuration/network.md` (Proxmox node IPs)
+**Owner**: ubiquiti-network-stack `configuration/network-topology.md` (Management `10.10.1.x` and
+IoT `10.10.30.x` reservations — single-claimant, stay with ubiquiti)
+
+The IP-ownership rule is by claim count, not by VLAN: home-infrastructure owns IP facts more than
+one system claims (the Main VLAN, co-claimed by UniFi + `tiny-lab-ansible`); single-claimant
+Management/IoT reservations stay with ubiquiti.
 
 Verify:
 
 - [ ] No IP address assigned to more than one device
-- [ ] Proxmox node IPs in tiny-lab match the ubiquiti repo's Main VLAN table
-- [ ] TrueNAS IP (when assigned) matches across truenas-server and ubiquiti repo
-- [ ] Compute rack switch management IP in ubiquiti repo's Management VLAN table exists
-- [ ] IP assignments fall within their designated range (Servers, Austin's devices, etc.)
+- [ ] Proxmox node IPs in tiny-lab match the home-infrastructure Main-VLAN registry (tinylab1 `.20`;
+  tinylab1-amt `.21` planned)
+- [ ] TrueNAS IP matches across truenas-server and the home-infrastructure registry (`.15`, planned
+  until the box is deployed)
+- [ ] Management/IoT device IPs referenced in other repos match ubiquiti's Management/IoT tables
+- [ ] IP assignments fall within their designated range (Servers `.10-.19`, Proxmox `.20-.29`,
+  guests `.30-.49`, personal `.50-.69`)
 
 ### Step 7: Check cross-references between repos
 
@@ -194,16 +228,23 @@ If any of these are stale, suggest specific updates to this skill file.
 
 When a conflict is found, the **owner** repo is authoritative:
 
-| Resource                | Owner repo             | Others reference, never duplicate |
-| ----------------------- | ---------------------- | --------------------------------- |
-| PDU ports, rack layout  | tiny-lab               | truenas-server                    |
-| Compute switch ports    | tiny-lab               | truenas-server                    |
-| Proxmox node specs/IPs  | tiny-lab               | ubiquiti-network-stack            |
-| Gateway and main switch | ubiquiti-network-stack | tiny-lab                          |
-| All VLAN IP assignments | ubiquiti-network-stack | tiny-lab, truenas-server          |
-| VLAN definitions        | ubiquiti-network-stack | tiny-lab, truenas-server          |
-| DNS and hostnames       | ubiquiti-network-stack | tiny-lab, truenas-server          |
-| TrueNAS device specs    | truenas-server         | tiny-lab                          |
+| Resource                       | Owner repo             | Others reference, never duplicate                              |
+| ------------------------------ | ---------------------- | -------------------------------------------------------------- |
+| IP registry (Main VLAN)        | home-infrastructure    | ubiquiti, tiny-lab, truenas-server, home-assistant-server      |
+| Management/IoT IP reservations | ubiquiti-network-stack | (single-claimant — stays with sole owner)                      |
+| DNS-of-record                  | home-infrastructure    | ubiquiti, tiny-lab, truenas-server                             |
+| Rack layout (all racks)        | home-infrastructure    | tiny-lab, truenas-server, ubiquiti                             |
+| PDU ports, power budget        | home-infrastructure    | tiny-lab, truenas-server                                       |
+| Compute switch ports           | tiny-lab               | truenas-server                                                 |
+| Gateway and main switch        | ubiquiti-network-stack | tiny-lab                                                       |
+| VLAN definitions               | ubiquiti-network-stack | tiny-lab, truenas-server (home-infrastructure is pointer only) |
+| Proxmox node specs             | tiny-lab               | ubiquiti-network-stack                                         |
+| TrueNAS device specs           | truenas-server         | tiny-lab                                                       |
+
+The IP-ownership rule is **by claim count, not by VLAN**: home-infrastructure owns IP facts that
+more than one system claims (the Main VLAN, co-claimed by UniFi + `tiny-lab-ansible`);
+single-claimant facts (Management/IoT reservations) stay with their sole owner. VLAN definitions
+stay in ubiquiti-network-stack (home-infrastructure only points at them, it does not own them).
 
 **Resolution principle**: Update the non-owner repo to match the owner. If the owner is wrong, fix
 the owner first, then update references.
@@ -230,25 +271,33 @@ the actual device name and a cross-reference.
 Text and mermaid diagrams in the ubiquiti repo can fall out of sync with port tables in the same
 file, or with the actual topology described across repos. Check diagrams against tables.
 
-### `.local` vs `.lan` hostname suffix
+### `.local` vs `home.arpa` hostname suffix
 
 Apple devices hardcode `.local` to mDNS (Bonjour), which prevents standard DNS resolution and breaks
-VPN access. The ubiquiti-network-stack repo uses `.lan` for Pi-hole local DNS records. Other repos
-should use `.lan` for FQDNs, not `.local`. If a repo uses `.local`, flag it for correction.
+VPN access. The resolver of record (Technitium at `10.10.10.30`, per home-infrastructure ADR-001)
+uses `home.arpa` — the RFC 8375 special-use domain designed to resolve correctly for the split
+home/VPN case. Other repos should use `home.arpa` (or `lab.home.arpa` for lab hosts) for FQDNs, not
+`.local` and not the retired `.lan` suffix. `.lan` survives only as a Technitium
+conditional-forwarder zone, not the suffix of record. If a repo uses `.local`, or still asserts
+Pi-hole `.lan` as the DNS architecture, flag it for correction.
 
 ## Scaling: Dedicated rack infrastructure repo
 
-If the audit repeatedly surfaces rack-related conflicts, or the infrastructure grows beyond the
-current two-active-rack setup, consider extracting all physical rack assignments (U-slots, PDU
-ports, inter-rack cabling) into a dedicated repo. Device repos would reference it for physical
-placement.
+The extraction described below **has happened.** A dedicated `home-infrastructure` repo now owns the
+cross-cutting facts (Main-VLAN IP registry, DNS-of-record, rack layout across all racks, PDU port
+assignments, power budget). Device repos reference it for physical placement and IP/DNS rather than
+duplicating those tables. The indicators below are retained as the **historical rationale** that
+triggered the extraction.
 
-**Indicators that extraction is warranted:**
+**Indicators that warranted extraction (historical):**
 
 - Three or more repos have devices in the same rack
 - Devices move between racks, requiring coordinated multi-repo updates
 - A new rack is added with devices from multiple existing repos
 - Cross-rack inventory questions come up regularly (e.g., "which U slots are free?")
 
-**Current state:** Two active racks with clear single owners (ubiquiti-network-stack → T0, tiny-lab
-→ T1). This structure works at current scale.
+**Current state:** `home-infrastructure` is the authoritative owner of cross-rack and multi-claimed
+facts. ubiquiti-network-stack retains VLAN definitions, gateway/main switch ports, and
+single-claimant Management/IoT IP reservations; tiny-lab retains compute switch ports and Proxmox
+node specs; truenas-server retains storage/device specs. Each device repo links up to
+home-infrastructure for the moved facts.

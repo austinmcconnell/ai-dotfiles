@@ -51,7 +51,7 @@
             "type": "knowledgeBase",
             "source": "file://~/projects/austinmcconnell/_documentation_/automatic-ripping-machine",
             "name": "automatic-ripping-machine-docs",
-            "description": "Multi-drive Automatic Ripping Machine build documentation covering drive selection, compute platform, NVMe storage, rack enclosure research, and component specifications. References ubiquiti-network-stack for IP address and VLAN assignments. References tiny-lab for rack slot, PDU port, and compute switch port assignments",
+            "description": "Multi-drive Automatic Ripping Machine build documentation covering drive selection, compute platform, NVMe storage, rack enclosure research, and component specifications. References home-infrastructure for IP addresses, DNS, rack slot, and PDU port. References tiny-lab for compute switch port assignments. References ubiquiti-network-stack for VLAN assignments",
             "indexType": "best",
             "include": [
                 "**/*.md"
@@ -85,7 +85,7 @@
             "type": "knowledgeBase",
             "source": "file://~/projects/austinmcconnell/_documentation_/family-dashboard",
             "name": "family-dashboard-docs",
-            "description": "Family wall calendar and chore management system documentation covering display hardware, software platform research (MagicMirror\u00b2, Home Assistant), kiosk software, mounting options, and component selection. References ubiquiti-network-stack for IP address and VLAN assignments",
+            "description": "Family wall calendar and chore management system documentation covering display hardware, software platform research (MagicMirror\u00b2, Home Assistant), kiosk software, mounting options, and component selection. References home-infrastructure for IP addresses and DNS. References ubiquiti-network-stack for VLAN assignments",
             "indexType": "best",
             "include": [
                 "**/*.md"
@@ -119,7 +119,24 @@
             "type": "knowledgeBase",
             "source": "file://~/projects/austinmcconnell/_documentation_/home-assistant-server",
             "name": "home-assistant-server-docs",
-            "description": "Dedicated Home Assistant server documentation covering HA Yellow (PoE) platform, Raspberry Pi CM5 compute module, HAOS installation, and component specifications. Operates independently from homelab. References ubiquiti-network-stack for IP address and VLAN assignments. References tiny-lab for rack slot, PDU port, and compute switch port assignments",
+            "description": "Dedicated Home Assistant server documentation covering HA Yellow (PoE) platform, Raspberry Pi CM5 compute module, HAOS installation, and component specifications. Operates independently from homelab. References home-infrastructure for IP addresses, DNS, rack slot, and PDU port. References tiny-lab for compute switch port assignments. References ubiquiti-network-stack for VLAN assignments",
+            "indexType": "best",
+            "include": [
+                "**/*.md"
+            ],
+            "exclude": [
+                ".git/**",
+                "book/**",
+                "scripts/**",
+                "reports/**"
+            ],
+            "autoUpdate": true
+        },
+        {
+            "type": "knowledgeBase",
+            "source": "file://~/projects/austinmcconnell/_documentation_/home-infrastructure",
+            "name": "home-infrastructure-docs",
+            "description": "Authoritative cross-cutting homelab infrastructure documentation. Authoritative source for the Main-VLAN IP registry (10.10.10.0/24, the multi-claimed block), DNS-of-record (Technitium 10.10.10.30, home.arpa), rack unit assignments across all racks, PDU port assignments, and power budget. Referenced by ubiquiti-network-stack, tiny-lab, truenas-server, home-assistant-server, and future consumers (ARM, family-dashboard). Single-claimant Management/IoT IP reservations and VLAN definitions remain with ubiquiti-network-stack",
             "indexType": "best",
             "include": [
                 "**/*.md"
@@ -136,7 +153,7 @@
             "type": "knowledgeBase",
             "source": "file://~/projects/austinmcconnell/_documentation_/tiny-lab",
             "name": "tiny-lab-docs",
-            "description": "Compact Proxmox homelab cluster documentation covering M920x Tiny hardware, ZFS storage, 2.5GbE networking, rack layout, PDU port assignments, compute rack switch port assignments, and cluster expansion decisions. Authoritative source for rack slot assignments, PDU ports, and compute switch ports. References ubiquiti-network-stack for IP addresses and VLANs",
+            "description": "Compact Proxmox homelab cluster documentation covering M920x Tiny hardware, ZFS storage, 2.5GbE networking, and cluster expansion decisions. Authoritative source for compute switch port assignments and Proxmox node specifications. References home-infrastructure for rack slot assignments, PDU ports, power budget, IP addresses, and DNS",
             "indexType": "best",
             "include": [
                 "**/*.md"
@@ -153,7 +170,7 @@
             "type": "knowledgeBase",
             "source": "file://~/projects/austinmcconnell/_documentation_/truenas-server",
             "name": "truenas-server-docs",
-            "description": "TrueNAS backup server build documentation covering ODROID H4+ hardware, ZFS mirror storage, network configuration, rackmount case, and component selection decisions. References tiny-lab for rack slot, PDU port, and compute switch port assignments. References ubiquiti-network-stack for IP address and VLAN assignments",
+            "description": "TrueNAS backup server build documentation covering ODROID H4+ hardware, ZFS mirror storage, network configuration, rackmount case, and component selection decisions. References home-infrastructure for rack slot, PDU port, IP addresses, and DNS. References tiny-lab for compute switch port assignments. References ubiquiti-network-stack for VLAN assignments",
             "indexType": "best",
             "include": [
                 "**/*.md"
@@ -170,7 +187,7 @@
             "type": "knowledgeBase",
             "source": "file://~/projects/austinmcconnell/_documentation_/ubiquiti-network-stack",
             "name": "ubiquiti-network-docs",
-            "description": "Ubiquiti UniFi home network documentation covering gateway, switches, access points, VLANs, firewall rules, VPN, WiFi, DNS ad blocking, and Pi-hole local DNS records. Authoritative source for all IP address assignments, VLAN definitions, DNS records, main switch port assignments, and gateway port assignments across all documentation repos",
+            "description": "Ubiquiti UniFi home network documentation covering gateway, switches, access points, VLANs, firewall rules, VPN, and WiFi. Authoritative source for VLAN definitions, main switch port assignments, gateway port assignments, and the single-claimant Management (10.10.1.x) and IoT (10.10.30.x) IP reservations. References home-infrastructure for the Main-VLAN IP registry and DNS-of-record",
             "indexType": "best",
             "include": [
                 "**/*.md"
