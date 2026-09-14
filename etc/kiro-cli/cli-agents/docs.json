@@ -119,7 +119,7 @@
             "type": "knowledgeBase",
             "source": "file://~/projects/austinmcconnell/_documentation_/home-assistant-server",
             "name": "home-assistant-server-docs",
-            "description": "Dedicated Home Assistant server documentation covering HA Yellow (PoE) platform, Raspberry Pi CM5 compute module, HAOS installation, and component specifications. Operates independently from homelab. References home-infrastructure for IP addresses, DNS, rack slot, and PDU port. References tiny-lab for compute switch port assignments. References ubiquiti-network-stack for VLAN assignments",
+            "description": "Dedicated Home Assistant server documentation covering HA Yellow (PoE) platform, Raspberry Pi CM5 compute module, HAOS installation, and component specifications. Documents the planned dedicated appliance (hardware on hand, not yet built out); Home Assistant currently runs as an interim Proxmox VM (10.10.10.34) that depends on the homelab. References home-infrastructure for IP addresses, DNS, rack slot, and PDU port. References tiny-lab for compute switch port assignments. References ubiquiti-network-stack for VLAN assignments",
             "indexType": "best",
             "include": [
                 "**/*.md"
