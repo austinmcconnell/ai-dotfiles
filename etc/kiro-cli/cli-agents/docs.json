@@ -210,6 +210,8 @@
         "@engram/mem_doctor",
         "@engram/mem_get_observation",
         "@engram/mem_judge",
+        "@engram/mem_pin",
+        "@engram/mem_review",
         "@engram/mem_save",
         "@engram/mem_save_prompt",
         "@engram/mem_search",
@@ -219,6 +221,7 @@
         "@engram/mem_stats",
         "@engram/mem_suggest_topic_key",
         "@engram/mem_timeline",
+        "@engram/mem_unpin",
         "@engram/mem_update",
         "code",
         "glob",
@@ -703,6 +706,8 @@
                     "engram/mem_doctor",
                     "engram/mem_get_observation",
                     "engram/mem_judge",
+                    "engram/mem_pin",
+                    "engram/mem_review",
                     "engram/mem_save",
                     "engram/mem_save_prompt",
                     "engram/mem_search",
@@ -712,6 +717,7 @@
                     "engram/mem_stats",
                     "engram/mem_suggest_topic_key",
                     "engram/mem_timeline",
+                    "engram/mem_unpin",
                     "engram/mem_update"
                 ],
                 "effect": "allow"
