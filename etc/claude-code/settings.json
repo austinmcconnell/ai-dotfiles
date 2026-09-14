@@ -257,6 +257,8 @@
             }
         ]
     },
+    "cleanupPeriodDays": 90,
     "showThinkingSummaries": true,
+    "spinnerTipsEnabled": false,
     "theme": "dark"
 }
