@@ -1,3 +1,8 @@
+---
+name: research-delegation
+description: Delegate deep research to sub-agents without bloating context or trusting an unverified summary — sub-agents scan and rank, the orchestrator verifies decision-critical sources. Use when delegating research to sub-agents, dispatching parallel research tasks, or scoping a multi-source investigation.
+---
+
 # Research Delegation
 
 How to delegate deep research to sub-agents without either bloating your own context or trusting an

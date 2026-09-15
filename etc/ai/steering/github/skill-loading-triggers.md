@@ -7,6 +7,7 @@ that have explicit skills.
 | ------------------------------------ | ------------------------ |
 | Writing commit messages              | `commit-message-writing` |
 | Multi-commit implementation work     | `commit-workflow`        |
+| Delegating research to sub-agents    | `research-delegation`    |
 | Reviewing a PR / code review         | `pr-review`              |
 | Promoting corrections to steering    | `distill-learnings`      |
 | Navigating project docs / find a doc | `readme-pointer`         |

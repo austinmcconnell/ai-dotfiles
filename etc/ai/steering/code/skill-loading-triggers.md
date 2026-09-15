@@ -10,6 +10,7 @@ that have explicit skills.
 | Creating research files               | `create-research`                                 |
 | Updating existing research            | `update-research`                                 |
 | Verifying/fact-checking research      | `verify-research`                                 |
+| Delegating research to sub-agents     | `research-delegation`                             |
 | Researching countries for relocation  | `create-research` + `country-relocation-research` |
 | Updating country relocation research  | `update-research` + `country-relocation-research` |
 | Verifying country relocation research | `verify-research` + `country-relocation-research` |
