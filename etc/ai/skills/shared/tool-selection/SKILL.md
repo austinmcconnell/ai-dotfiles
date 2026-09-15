@@ -1,3 +1,8 @@
+---
+name: tool-selection
+description: Evaluate and recommend tools, libraries, or technical options — widen the field before scoring, judge on merit over stack familiarity, and size the recommendation to how close the field actually is. Use when recommending a tool/library, comparing technical options, or choosing between competing approaches.
+---
+
 # Tool & Library Selection
 
 How to evaluate and recommend tools, libraries, or technical options. Covers three phases: widen the
