@@ -165,6 +165,7 @@ agent_config() {
     local agent="$1" field="$2"
     case "$agent:$field" in
     claude-code:skills_path) echo "$HOME/.claude/skills" ;;
+    claude-code:skills_layout) echo "flat" ;;
     claude-code:steering) echo "rules:$HOME/.claude/rules:$HOME/.claude/CLAUDE.md" ;;
     codex:skills_path) echo "$HOME/.codex/skills" ;;
     codex:steering) echo "none" ;;
@@ -187,15 +188,35 @@ agent_config() {
 for agent in "${ENABLED_AGENTS[@]}"; do
     skills_path="$(agent_config "$agent" skills_path)"
     steering="$(agent_config "$agent" steering)"
+    skills_layout="$(agent_config "$agent" skills_layout)"
+    : "${skills_layout:=nested}"
 
     # Symlink skills
     mkdir -p "$(dirname "$skills_path")"
-    # Remove existing real directory (e.g., left over from prior per-category symlink layout)
-    if [ -d "$skills_path" ] && [ ! -L "$skills_path" ]; then
+    case "$skills_layout" in
+    flat)
+        # This agent only discovers <skills_path>/<skill-name>/SKILL.md one
+        # level deep (no recursion into category subfolders like kiro's
+        # skill://.../shared/**/SKILL.md resources support). Symlink each
+        # skill directory individually so it's directly visible.
         rm -rf "$skills_path"
-    fi
-    ln -sfn "$SKILLS_SOURCE" "$skills_path"
-    echo "✓ Linked skills to $agent ($skills_path)"
+        mkdir -p "$skills_path"
+        skill_count=0
+        while IFS= read -r -d '' skill_dir; do
+            ln -sfn "$skill_dir" "$skills_path/$(basename "$skill_dir")"
+            skill_count=$((skill_count + 1))
+        done < <(find "$SKILLS_SOURCE" -mindepth 2 -maxdepth 2 -type d ! -path "*/.system/*" -print0)
+        echo "✓ Linked $skill_count flattened skills to $agent ($skills_path)"
+        ;;
+    *)
+        # Remove existing real directory (e.g., left over from prior per-category symlink layout)
+        if [ -d "$skills_path" ] && [ ! -L "$skills_path" ]; then
+            rm -rf "$skills_path"
+        fi
+        ln -sfn "$SKILLS_SOURCE" "$skills_path"
+        echo "✓ Linked skills to $agent ($skills_path)"
+        ;;
+    esac
 
     # Generate steering adapter
     case "$steering" in
