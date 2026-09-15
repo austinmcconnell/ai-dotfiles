@@ -58,7 +58,7 @@ OBS_COUNT=$(engram context "${PROJECT_NAME}" 2>/dev/null |
 # The search seeds FTS on the sentinel word; we then post-filter each result's body
 # for that exact line. Prose that merely names the token or the topic_key does not
 # contain the exact KEY: value line, so it is rejected. (See the "Handoffs" section
-# of cross-session-memory.md.) `engram search` prints "[N] #<id> (<type>) — <title>"
+# of the memory-management skill.) `engram search` prints "[N] #<id> (<type>) — <title>"
 # followed by the body, so awk tracks the current #id per result block and records
 # ids whose block carries the marker line for this project.
 #

@@ -27,6 +27,7 @@ that have explicit skills.
 | Reviewing a PR / code review          | `pr-review`                                       |
 | Promoting corrections to steering     | `distill-learnings`                               |
 | Navigating project docs / find a doc  | `readme-pointer`                                  |
+| Saving/handing off engram memory      | `memory-management`                               |
 
 When citing existing research from a knowledge base, check `last_verified` in the file's YAML
 frontmatter. If older than 90 days, warn the user before presenting the data as current.

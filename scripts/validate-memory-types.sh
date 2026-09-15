@@ -6,7 +6,7 @@ set -euo pipefail
 #
 # Validation-only guard for the engram memory-type vocabulary and the
 # handoff convention documented in
-# etc/ai/steering/code/cross-session-memory.md.
+# etc/ai/skills/shared/memory-management/SKILL.md.
 #
 # WHY THIS EXISTS
 # engram's `type` field is free text — the store accepts any value and
@@ -22,9 +22,9 @@ set -euo pipefail
 #   - ENGRAM-GENERATED = learning (passive capture) + manual (default)
 #
 # WHAT IT CHECKS
-#   1. Every AGENT-CHOSEN type below is documented in the steering file.
-#   2. Every ENGRAM-GENERATED type below is documented in the steering file.
-#   3. The mandatory structured handoff marker line is documented in the steering
+#   1. Every AGENT-CHOSEN type below is documented in the memory-management skill.
+#   2. Every ENGRAM-GENERATED type below is documented in the memory-management skill.
+#   3. The mandatory structured handoff marker line is documented in the skill
 #      file (the recall hook confirms handoffs by it; an undocumented or bare-token
 #      form is a footgun — the bare token false-matches prose about the convention).
 #   4. BEST-EFFORT: if the engram binary is locatable WITHOUT a hardcoded
@@ -37,17 +37,17 @@ set -euo pipefail
 # The CHECKED-IN sets below are the source of truth. engram divergence is
 # surfaced for human review, not auto-adopted.
 #
-# Exit 0 when the steering file matches the canonical sets; exit 1 on drift.
+# Exit 0 when the skill file matches the canonical sets; exit 1 on drift.
 # ---------------------------------------------------------------
 
 DOTFILES_DIR="${DOTFILES_DIR:-$HOME/.dotfiles}"
 source "${DOTFILES_DIR}/install/utils.sh"
 
-STEERING_FILE="${DOTFILES_DIR}/etc/ai/steering/code/cross-session-memory.md"
+DOC_FILE="${DOTFILES_DIR}/etc/ai/skills/shared/memory-management/SKILL.md"
 
 # Mandatory STRUCTURED marker line the recall hook confirms a handoff by (see
 # recall-memory.sh). The bare token alone false-matches any memory that merely
-# mentions the convention, so the steering must document the self-referential
+# mentions the convention, so the skill must document the self-referential
 # KEY: value form. The <project> placeholder is how it appears in the doc.
 HANDOFF_SENTINEL="ENGRAM-HANDOFF-ACTIVE: handoff/<project>-active"
 
@@ -87,19 +87,19 @@ report_note() {
     echo -e "  ${YELLOW}[NOTE]${RESET} $1"
 }
 
-# Assert a literal token appears somewhere in the steering file.
+# Assert a literal token appears somewhere in the memory-management skill file.
 assert_documented() {
     local label="$1" token="$2"
-    if ! grep -qF -- "$token" "$STEERING_FILE"; then
-        report_fail "${label} not documented in steering: ${token}"
+    if ! grep -qF -- "$token" "$DOC_FILE"; then
+        report_fail "${label} not documented in memory-management skill: ${token}"
     fi
 }
 
 echo -e "${BOLD}Validating engram memory-type vocabulary + handoff convention${RESET}"
 echo "──────────────────────────────────────────────────────────────────────────"
 
-if [[ ! -f "$STEERING_FILE" ]]; then
-    report_fail "steering file not found: ${STEERING_FILE}"
+if [[ ! -f "$DOC_FILE" ]]; then
+    report_fail "memory-management skill file not found: ${DOC_FILE}"
     echo -e "${RED}✗ cannot validate${RESET}"
     exit 1
 fi
@@ -151,4 +151,4 @@ if ((FAILURES > 0)); then
     exit 1
 fi
 
-echo -e "${GREEN}✓ Steering memory-type vocabulary and handoff convention are consistent${RESET}"
+echo -e "${GREEN}✓ Memory-type vocabulary and handoff convention are consistent${RESET}"
