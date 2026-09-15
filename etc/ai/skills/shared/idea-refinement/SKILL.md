@@ -30,7 +30,7 @@ The funnel has three states. Only two files are required.
 - **`backlog.md` is optional and graduated.** Until it exists, the **Refined** section of `ideas.md`
   *is* the backlog. `backlog.md` is only created when the refined body earns its own file (see Tier
   Transitions).
-- **`todo.md` is owned by the `todo` skill** and tied to the `commit-workflow` steering. This skill
+- **`todo.md` is owned by the `todo` skill** and tied to the `commit-workflow` skill. This skill
   feeds it; it does not redefine it.
 
 See `references/ideas-template.md` and `references/backlog-template.md` for file structure.
@@ -89,7 +89,7 @@ sentences per section, not an essay.
   boundary of committed work; `commit-workflow` owns what happens after.
 
 Promotion is a write to git-ignored working files, so it follows the "non-committable work" note in
-`commit-workflow` steering — there is nothing to commit, so say so and move on.
+the `commit-workflow` skill — there is nothing to commit, so say so and move on.
 
 ## Detailed Designs
 

@@ -63,8 +63,8 @@ The report body must contain: the ranked orphaned-doc table, the scheme-violatio
 ## Phase 2 — Populate (choose a cadence; proposes diffs only)
 
 Populating means creating or editing README maps. This is bulk file authoring: **propose it as a
-reviewable diff and let the user commit.** Never auto-commit generated maps (per `commit-workflow`
-steering). Every map written must obey the skill's one-hop / flat / high-signal constraints.
+reviewable diff and let the user commit.** Never auto-commit generated maps (per the `commit-workflow`
+skill). Every map written must obey the skill's one-hop / flat / high-signal constraints.
 
 Pick the cadence with the user — do not assume:
 

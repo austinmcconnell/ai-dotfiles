@@ -6,6 +6,7 @@ that have explicit skills.
 | Task                                  | Skill to load first                               |
 | ------------------------------------- | ------------------------------------------------- |
 | Writing commit messages               | `commit-message-writing`                          |
+| Multi-commit implementation work      | `commit-workflow`                                 |
 | Creating research files               | `create-research`                                 |
 | Updating existing research            | `update-research`                                 |
 | Verifying/fact-checking research      | `verify-research`                                 |

@@ -1,3 +1,8 @@
+---
+name: commit-workflow
+description: Default cadence for multi-step implementation work — plan commits, work one at a time, verify, pause for review, confirm landed. Use for any task that naturally breaks into more than one commit, or when asked to follow the commit workflow.
+---
+
 # Commit Workflow
 
 This is the default cadence for multi-step implementation work. It applies when a task naturally
@@ -35,8 +40,8 @@ breaks into more than one commit. The user may override any part of it ("just do
 
 - **Plan before writing, not after.** Do steps 1–3 (scope → plan + get approval → record in todo.md)
   *before* editing any file. The commit message itself is written after the change (you can only
-  describe work that exists) — what must come first is the agreed plan, not the message. Having this
-  steering loaded is not the same as executing it.
+  describe work that exists) — what must come first is the agreed plan, not the message. Loading
+  this skill is not the same as executing it.
 - **The user commits by default.** Do not create commits unless the user explicitly asks you to
   (this reinforces `git-conventions.md` Commit Discipline). The default is: you prepare and verify,
   the user commits.

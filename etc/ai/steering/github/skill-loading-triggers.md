@@ -6,6 +6,7 @@ that have explicit skills.
 | Task                                 | Skill to load first      |
 | ------------------------------------ | ------------------------ |
 | Writing commit messages              | `commit-message-writing` |
+| Multi-commit implementation work     | `commit-workflow`        |
 | Reviewing a PR / code review         | `pr-review`              |
 | Promoting corrections to steering    | `distill-learnings`      |
 | Navigating project docs / find a doc | `readme-pointer`         |
