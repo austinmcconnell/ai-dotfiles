@@ -9,6 +9,8 @@ that have explicit skills.
 | Multi-commit implementation work     | `commit-workflow`        |
 | Delegating research to sub-agents    | `research-delegation`    |
 | Recommending/comparing tools or libs | `tool-selection`         |
+| Writing/reviewing pytest tests       | `pytest-conventions`     |
+| Running Python tools/commands        | `virtual-environment`    |
 | Reviewing a PR / code review         | `pr-review`              |
 | Promoting corrections to steering    | `distill-learnings`      |
 | Navigating project docs / find a doc | `readme-pointer`         |

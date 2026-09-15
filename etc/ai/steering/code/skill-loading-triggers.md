@@ -23,6 +23,8 @@ that have explicit skills.
 | Verifying all checks pass             | `verification-loop`                               |
 | Creating or editing skills            | `kiro-skill-authoring`                            |
 | Recommending/comparing tools or libs  | `tool-selection`                                  |
+| Writing/reviewing pytest tests        | `pytest-conventions`                              |
+| Running Python tools/commands         | `virtual-environment`                             |
 | Creating release analysis             | `release-analysis`                                |
 | Reviewing a PR / code review          | `pr-review`                                       |
 | Promoting corrections to steering     | `distill-learnings`                               |

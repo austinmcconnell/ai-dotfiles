@@ -19,7 +19,9 @@ description: Detect and activate Python virtual environments before running proj
 
 ### 1. Detect virtual environment
 
-Check for a virtual environment directory in the project root:
+Check for a virtual environment directory in the project root (see below for the common location
+list). If none exist and a Python command fails, suggest creating one before retrying rather than
+troubleshooting the failure some other way.
 
 - Common locations: `.venv/`, `venv/`, `.env/`, `env/`
 

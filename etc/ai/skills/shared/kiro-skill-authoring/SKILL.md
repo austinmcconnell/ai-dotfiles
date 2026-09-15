@@ -202,6 +202,18 @@ If content applies to every conversation (coding style, security rules, git conv
 in a steering doc. If content applies only to specific tasks (writing research, creating commits),
 it belongs in a skill.
 
+### Naming an Extracted Skill
+
+When a skill is extracted from a steering doc — splitting always-on policy from on-demand mechanics
+— give the skill a distinct name; do not reuse the steering doc's name. A same-named doc/skill pair
+resolves correctly but is ambiguous in trigger tables, logs, and cross-references. Prefer a name
+that reflects the skill's narrower mechanics scope, and parallel sibling names where they exist:
+
+- steering `testing-standards` (what/when to test) → skill `pytest-conventions` (fixtures,
+  factories, mocking), paralleling the existing `python-project-conventions` naming
+- steering `cross-session-memory` (which channel, when to save) → skill `memory-management`
+  (handoffs, memory types, hygiene)
+
 ## Sizing Guidelines
 
 **Skill metadata is always in context.** Every skill's name + description consumes tokens in every

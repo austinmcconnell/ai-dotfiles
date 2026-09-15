@@ -5,16 +5,8 @@ paths:
 
 # Python Project Conventions
 
-## Virtual Environment
-
-Before running any Python tool (pytest, pre-commit, pip, python, ruff), check for and activate the
-project's virtual environment:
-
-1. Look for `.venv/`, `venv/`, `.env/`, `env/` in the project root
-1. Run `source .venv/bin/activate` (or equivalent) before any Python command
-1. Verify with `which python` — it must point to the venv, not a global Python
-
-If no venv exists and a Python command fails, suggest creating one before retrying.
+Before running any Python tool (pytest, pre-commit, pip, python, ruff), see the
+`virtual-environment` skill for detecting and activating the project's virtual environment.
 
 ## Formatting
 
