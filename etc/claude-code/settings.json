@@ -12,6 +12,7 @@
             "Edit(~/.dotfiles/**)",
             "Edit(./**)",
             "TodoWrite",
+            "WebSearch",
             "mcp__engram__mem_capture_passive",
             "mcp__engram__mem_compare",
             "mcp__engram__mem_context",
@@ -45,6 +46,7 @@
             "Bash(command -v *)",
             "Bash(dirname *)",
             "Bash(echo *)",
+            "Bash(echo)",
             "Bash(find *)",
             "Bash(gh api *)",
             "Bash(gh issue list*)",
@@ -209,9 +211,6 @@
             "Bash(git add .)",
             "Bash(git add -A*)",
             "Bash(git add --all*)",
-            "Bash(git merge *)",
-            "Bash(git push *)",
-            "Bash(git rebase *)",
             "Bash(init *)",
             "Bash(kill -9 *)",
             "Bash(killall *)",
@@ -234,6 +233,14 @@
             "Bash(trash *)",
             "Bash(umount *)",
             "WebFetch(domain:pastebin.com)"
+        ],
+        "ask": [
+            "Bash(git merge *)",
+            "Bash(git push *)",
+            "Bash(git rebase *)",
+            "mcp__jira__jira_post",
+            "mcp__jira__jira_patch",
+            "mcp__jira__jira_put"
         ]
     },
     "hooks": {
