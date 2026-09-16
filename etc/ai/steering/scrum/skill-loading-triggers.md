@@ -16,5 +16,6 @@ that have explicit skills.
 | Backlog health or triage review              | `scrn-backlog-triage`    |
 | Validating Jira setup or API connectivity    | `jira-smoke-test`        |
 | Deployment readiness, "what can we deploy"   | `deployment-readiness`   |
+| Saving/handing off engram memory             | `memory-management`      |
 | Promoting corrections to steering            | `distill-learnings`      |
 | Navigating project docs / find a doc         | `readme-pointer`         |

@@ -12,5 +12,6 @@ that have explicit skills.
 | Reviewing Terraform DD changes on a PR  | `datadog-audit`          |
 | Checking DD resource configs for errors | `datadog-audit`          |
 | Writing commit messages                 | `commit-message-writing` |
+| Saving/handing off engram memory        | `memory-management`      |
 | Promoting corrections to steering       | `distill-learnings`      |
 | Navigating project docs / find a doc    | `readme-pointer`         |

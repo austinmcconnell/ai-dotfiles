@@ -28,6 +28,8 @@ that have explicit skills.
 | Creating release analysis                   | `release-analysis`                                |
 | Reviewing a PR / code review                | `pr-review`                                       |
 | Stress-testing an article / auditing claims | `stress-test-analysis`                            |
+| Brainstorming/refining ideas, picking work  | `idea-refinement`                                 |
+| Tracking open questions / blockers          | `todo`                                            |
 | Promoting corrections to steering           | `distill-learnings`                               |
 | Navigating project docs / find a doc        | `readme-pointer`                                  |
 | Saving/handing off engram memory            | `memory-management`                               |
