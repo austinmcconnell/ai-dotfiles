@@ -48,8 +48,10 @@ Never store:
 **First-response obligation:** if session-start context contains a `⚠️ ACTIVE HANDOFF exists` notice
 (emitted by the `recall-memory.sh` hook), call `mem_get_observation` on the cited id and read it IN
 FULL before doing any other work — a truncated preview cannot carry a handoff, so the notice is a
-directive to fetch it, not the handoff itself. See the `memory-management` skill's "Handoffs"
-section for how to write or close one.
+directive to fetch it, not the handoff itself. A handoff naming an item as "next work" records
+what's queued, not that it's refined — if the item is a raw idea, run the idea-refinement funnel
+before coding it rather than treating the handoff as approval to implement. See the
+`memory-management` skill's "Handoffs" section for how to write or close one.
 
 For how to save, structure, and hand off memories once you've decided to act — session-start recall,
 memory types, topic keys, writing/closing a handoff, hygiene, and conflict-relation cleanup — see

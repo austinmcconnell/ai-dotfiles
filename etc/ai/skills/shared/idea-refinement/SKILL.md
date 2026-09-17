@@ -44,6 +44,10 @@ bug or executing an already-planned commit. Concretely:
 - The user floats a new feature or expansion idea.
 - The user asks to stress-test, scope, or critique an idea.
 - `ideas.md` exists and the user is reviewing or triaging it.
+- A handoff or todo item names an idea as "next work" — being *queued* is not evidence it was
+  *refined*. Check its funnel tier (Unrefined vs Refined/backlog) before treating it as ready to
+  code; if settling its scope surfaces open questions, it belongs back in refinement, not in a
+  commit plan.
 
 If `ideas.md` and `todo.md` are auto-loaded into context (they are for the code/docs/ansible
 agents), use that content proactively: if the user raises an idea already captured, say so and pick

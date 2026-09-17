@@ -100,7 +100,10 @@ Save the handoff with `mem_save` using:
   **not** a type — it lives only in the topic_key. Adding it as a type would reintroduce the type
   drift the Memory Types section exists to prevent.
 - **content**: the full handoff body — what is done and committed, unresolved findings, next steps
-  in order, and any hard rules (e.g. "user commits himself; never git commit").
+  in order, and any hard rules (e.g. "user commits himself; never git commit"). For each next step,
+  mark its refinement state — a raw/captured idea still needs the idea-refinement funnel
+  (stress-test, scope, research flags) before coding; only a *refined, scoped* item is ready for a
+  commit plan. Naming a step as "next work" does not make it refined.
 - **The structured marker line `ENGRAM-HANDOFF-ACTIVE: handoff/<project>-active` on its own line in
   the body** (e.g. `ENGRAM-HANDOFF-ACTIVE: handoff/dotfiles-active`). This line is **mandatory**,
   not optional. The session-start recall hook (`recall-memory.sh`) seeds an FTS search on the
