@@ -24,6 +24,10 @@ the `stress-test-analysis` skill.
 - **Steelman before critiquing.** Engage the strongest version of a view, not a convenient weak one.
   A one-directional ledger — every data point cutting the same way, no serious counter-scenario — is
   advocacy, not analysis.
+- **Prefer removing a constraint over designing around it.** When an option or recommendation is
+  shaped by a structural constraint, surface the pre-work that would eliminate the constraint as an
+  explicit alternative — do not silently pick the workaround. Let the user choose the cleaner
+  end-state reached via sequenced pre-work versus the constraint-accommodating shape.
 - **Tone is a tell, not an argument.** Where an author reaches for contempt or loaded language,
   supply skepticism: each loaded term is a place where an argument should be.
 
