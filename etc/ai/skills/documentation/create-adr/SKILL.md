@@ -153,7 +153,9 @@ Before finalizing the ADR, verify:
 - Forgetting to update the project index and SUMMARY.md
 - Not cross-referencing related ADRs
 - Using placeholders instead of actual values
-- Mixing multiple decisions in one ADR
+- Mixing multiple decisions in one ADR — this includes coupling a *settled* decision to a *blocked*
+  one. If one decision is ready to land and a related one is still gated on open questions, record
+  them as separate ADRs so the ready one is not held hostage to the blocked one.
 - Ignoring the project template in favor of generic MADR format
 - Including market conditions or procurement timing in ADR context. ADR context should focus on
   technical decision drivers (workload requirements, constraints, trade-offs). Prices are
