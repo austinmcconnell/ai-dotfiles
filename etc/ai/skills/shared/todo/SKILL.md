@@ -1,6 +1,6 @@
 ---
 name: todo
-description: Create and maintain git-ignored todo.md working files for tracking open questions, blockers, and tasks. Use when starting a session in a project, when unresolved items arise, or when asked about todo.md conventions.
+description: Use at session start, or whenever open questions or blockers arise mid-task — create and maintain git-ignored todo.md working files that track open questions, blockers, and the committed tier of the idea-refinement funnel. Check for todo.md when a session begins; load when unresolved items need tracking or when asked about todo.md conventions.
 ---
 
 # Todo Working File

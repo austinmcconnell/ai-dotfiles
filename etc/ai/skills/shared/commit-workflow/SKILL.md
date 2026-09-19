@@ -1,6 +1,6 @@
 ---
 name: commit-workflow
-description: Default cadence for multi-step implementation work — plan commits, work one at a time, verify, pause for review, confirm landed. Use for any task that naturally breaks into more than one commit, or when asked to follow the commit workflow.
+description: Use when beginning any multi-commit work — the default cadence for multi-step implementation: plan the commits, work one at a time, verify, pause for review, confirm each landed. Load as soon as a task will span more than one commit, before writing code, or when asked to follow the commit workflow.
 ---
 
 # Commit Workflow

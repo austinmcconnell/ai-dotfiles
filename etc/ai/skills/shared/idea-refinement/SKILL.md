@@ -1,6 +1,6 @@
 ---
 name: idea-refinement
-description: Critically analyze, stress-test, and refine project ideas through a lightweight capture-refine-promote funnel using ideas.md, an optional backlog.md, and todo.md. Use when brainstorming next steps, reviewing captured ideas, deciding what to work on next, or asking to stress-test or scope a feature idea.
+description: Use when deciding what to work on next, scoping or stress-testing an idea, or otherwise in planning/ideation mode (not yet executing an agreed plan) — critically analyze and refine ideas through a lightweight capture-refine-promote funnel using ideas.md, an optional backlog.md, and todo.md. Load at the start of planning, before picking an idea to build.
 ---
 
 # Idea Refinement
