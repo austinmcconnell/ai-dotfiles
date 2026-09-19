@@ -8,7 +8,7 @@ artifact against it, even when you believe you already know the convention.
 | Task                                        | Skill to load first                               |
 | ------------------------------------------- | ------------------------------------------------- |
 | Writing commit messages                     | `commit-message-writing`                          |
-| Multi-commit implementation work            | `commit-workflow`                                 |
+| Beginning any multi-commit work             | `commit-workflow`                                 |
 | Creating research files                     | `create-research`                                 |
 | Updating existing research                  | `update-research`                                 |
 | Verifying/fact-checking research            | `verify-research`                                 |
@@ -30,8 +30,8 @@ artifact against it, even when you believe you already know the convention.
 | Creating release analysis                   | `release-analysis`                                |
 | Reviewing a PR / code review                | `pr-review`                                       |
 | Stress-testing an article / auditing claims | `stress-test-analysis`                            |
-| Brainstorming/refining ideas, picking work  | `idea-refinement`                                 |
-| Tracking open questions / blockers          | `todo`                                            |
+| Deciding what to work on / scoping an idea  | `idea-refinement`                                 |
+| Session start / open questions arise        | `todo`                                            |
 | Promoting corrections to steering           | `distill-learnings`                               |
 | Navigating project docs / find a doc        | `readme-pointer`                                  |
 | Saving/handing off engram memory            | `memory-management`                               |

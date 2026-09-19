@@ -8,7 +8,7 @@ artifact against it, even when you believe you already know the convention.
 | Task                                 | Skill to load first      |
 | ------------------------------------ | ------------------------ |
 | Writing commit messages              | `commit-message-writing` |
-| Multi-commit implementation work     | `commit-workflow`        |
+| Beginning any multi-commit work      | `commit-workflow`        |
 | Delegating research to sub-agents    | `research-delegation`    |
 | Recommending/comparing tools or libs | `tool-selection`         |
 | Writing/reviewing pytest tests       | `pytest-conventions`     |
