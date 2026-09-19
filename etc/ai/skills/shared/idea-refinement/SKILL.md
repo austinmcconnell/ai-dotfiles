@@ -95,6 +95,14 @@ sentences per section, not an essay.
 Promotion is a write to git-ignored working files, so it follows the "non-committable work" note in
 the `commit-workflow` skill — there is nothing to commit, so say so and move on.
 
+- **The verdict is the user's call, not yours.** Refinement produces a *recommendation* — present
+  the critique and proposed verdict, then PAUSE for the user to accept, reject, or adjust before
+  writing anything to `ideas.md`/`backlog.md`. Do not critique-and-promote in the same turn (the
+  files being git-ignored does not make the promotion yours to decide).
+- **Promotion is a MOVE, not a copy.** When an item graduates a tier, DELETE it from the source file
+  — leave no breadcrumb comment ("promoted to backlog.md") and no trailing prose behind. Each file
+  holds only its current-tier items.
+
 ## Detailed Designs
 
 When an item is complex enough to need a worked-out design before it can be broken into commits — a

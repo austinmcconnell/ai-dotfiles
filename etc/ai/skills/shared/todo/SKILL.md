@@ -51,8 +51,9 @@ Mark items as done with `[x]` and add a link to the outcome:
 - [x] Write initial setup procedure → [Procedure: Initial Setup](procedures/initial-setup.md)
 ```
 
-Resolved items stay in the file until actively cleaned out. They provide context for how decisions
-were reached.
+Resolved items stay in the file only while their surrounding work is still in flight — a `[x]`
+tracks progress WITHIN an active feature. Once the whole feature-set is complete, remove the entire
+set (see Cleanup); the durable record of what shipped lives in git history and docs, not here.
 
 ### Linking a detailed design
 
@@ -68,5 +69,7 @@ as they are resolved — todo.md is a scratchpad, not a permanent record.
 
 ### Cleanup
 
-Periodically remove resolved items that no longer provide useful context. No strict schedule — clean
-up when the file gets noisy.
+Remove a completed feature-set's items as soon as the whole feature is done — do not leave
+checked-off blocks accumulating (a todo.md with 150+ lines of finished work is the failure mode).
+`[x]` is transient progress-tracking within active work, not a permanent record. Mid-feature,
+resolved sub-items may stay until the set completes.
