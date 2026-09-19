@@ -114,6 +114,14 @@ The guide is a **point-in-time execution snapshot** — the before/after code, e
 step order are only true at one moment. It is throwaway and never committed. Durable reasoning (why
 the change was made, tradeoffs chosen) belongs in the commit message, not the guide.
 
+**Keep funnel items light; route substance out.** `ideas.md`/`backlog.md`/`todo.md` items are short
+lines with short sub-items — a one-line scope decision plus a pointer, never multi-paragraph prose.
+When refinement produces substantive reasoning worth keeping, put it in a linked file — a throwaway
+`plan-<slug>.md` for an execution snapshot, or an `analysis/<slug>.md` for durable
+reasoning/handover context — and leave only a `→ <file>` pointer on the item. The trigger: if an
+item grows past ~one line plus a few short sub-items, that is the signal to spin the detail out, not
+to keep writing. Valuable substance is not the problem — putting it inline in the tracker is.
+
 Most items do not need a guide. Reach for one only when the design is non-obvious enough that
 working it out separately de-risks the commit breakdown.
 
