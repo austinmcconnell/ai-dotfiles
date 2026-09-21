@@ -328,5 +328,6 @@
     },
     "showThinkingSummaries": true,
     "spinnerTipsEnabled": false,
-    "theme": "dark"
+    "theme": "dark",
+    "verbose": true
 }
