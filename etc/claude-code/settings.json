@@ -330,5 +330,10 @@
     "showThinkingSummaries": true,
     "spinnerTipsEnabled": false,
     "theme": "dark",
-    "verbose": true
+    "verbose": true,
+    "attribution": {
+        "commit": "",
+        "pr": "",
+        "sessionUrl": false
+    }
 }
