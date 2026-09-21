@@ -11,6 +11,7 @@
             "Edit(~/repositories/**)",
             "Edit(~/.dotfiles/**)",
             "Edit(./**)",
+            "Edit(~/.claude/projects/**)",
             "Agent",
             "TodoWrite",
             "WebSearch",
