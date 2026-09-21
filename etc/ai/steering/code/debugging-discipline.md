@@ -41,10 +41,3 @@ Present the situation crisply and let the user decide before spending:
 > Which do you prefer?"
 
 A timing perturbation in an unrelated test is not a mandate to fix that test.
-
-## Fetch narrowly
-
-When pulling documentation, don't `web_fetch` a full page from a large doc site (e.g. MapLibre /
-Mapbox API references) — the response carries tens of thousands of tokens of navigation chrome for a
-few sentences of signal. Use selective mode with tight `search_terms`, deep-link to the relevant
-anchor, or skip the fetch if a search snippet already answers the question.
