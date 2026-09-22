@@ -8,7 +8,11 @@ is nearest. This boundary is the seam the README-as-pointer scheme routes agains
 
 - **Persistent memory (engram)** — cross-session *narrative*: decisions and their rationale, failed
   approaches, corrections, handoffs, user preferences. Use engram for "why we did it this way" and
-  "what happened last session," not for facts that live in the repo.
+  "what happened last session," not for facts that live in the repo. Engram is also the *cross-tool*
+  memory channel (one shared DB across kiro-cli, Claude Code, and Cursor) — prefer it over Claude
+  Code's native auto memory (`~/.claude/projects/<project>/memory/MEMORY.md`), which is
+  Claude-Code-only and invisible to every other tool, whenever something needs to reach another AI
+  tool.
 - **Knowledge base (semantic retrieval)** — *facts that live in the repo or docs corpus*: how the
   code works, what a doc says, cited research. Query the KB for these instead of storing a copy in
   memory.
