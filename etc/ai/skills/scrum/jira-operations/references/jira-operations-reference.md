@@ -508,6 +508,18 @@ To discover available link types: `jira_get` → `/rest/api/3/issueLinkType`.
 - Check for proper issue type configurations
 - Validate custom field requirements
 
+### Updating Issues — Prefer PUT over PATCH
+
+- Updating an issue description via HTTP `PATCH` can fail with a persistent nginx `400 Bad Request`
+  (an HTML error page, not a JIRA validation error) for larger ADF bodies. Use `PUT` (full update
+  with the complete `fields` object) instead — the identical body succeeds.
+- A `PUT` full-update only changes the fields you supply; issue links and other fields are
+  preserved.
+- `PUT` returns `204 No Content` (empty body), so a success looks like an empty/`null` response —
+  verify by re-fetching `fields.description`.
+- Distinguish an nginx `400` (HTML page — transport/method/size layer) from a JIRA `400` (JSON
+  validation error — a real field problem).
+
 ### Performance Issues
 
 - Use specific JQL queries to limit results
