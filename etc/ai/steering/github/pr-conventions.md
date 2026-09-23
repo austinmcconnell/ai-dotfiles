@@ -46,6 +46,9 @@ For template sections that don't apply to the change, write "N/A" rather than re
 
 - One logical change per PR
 - Link related issues: `Closes #N` or `Relates to #N`
+- Never reference local-only files (gitignored/untracked working files like `jira/*.md` drafts or
+  `reports/*.md`) — reviewers can't open them. Restate the substance inline. Check with
+  `git check-ignore -v <path>` before citing a path; a real JIRA/issue link is fine.
 - Draft PRs for work-in-progress
 - Reference commits by SHA, not description
 

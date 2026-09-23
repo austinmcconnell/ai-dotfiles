@@ -71,6 +71,18 @@ Structure the description with these subsections:
 - **What Still Works** (usually not relevant for bug reports)
 - **Implementation steps** in Acceptance Criteria
 - **Generic sections** like "Logging and Observability"
+- **Out of Scope** — deferral/split discussion belongs in chat or working notes, not the ticket
+
+### Keep Ticket Content Durable and Self-Contained
+
+A ticket must read as a standalone work item a reviewer or dev can pick up cold:
+
+- No transient references in the body: branch names, "Ticket N of 3" sequencing, or other tickets'
+  relationships in prose. Cross-ticket dependencies go in the linked-issues section, not the text.
+- No process/meta-commentary ("recommend a separate ticket", "your call") — that's for discussion,
+  not the ticket.
+- No pointers to local-only files (gitignored `reports/*.md`, `jira/draft-*.md`) — carry the
+  evidence and file:line references in the ticket itself.
 
 ## Language Guidelines
 
