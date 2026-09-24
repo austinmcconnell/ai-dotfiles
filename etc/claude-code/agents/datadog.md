@@ -112,5 +112,6 @@ The following steering docs define this project's Datadog conventions and are lo
 startup. They are the canonical source in the dotfiles repo — edit them there, not here.
 
 @~/.dotfiles/etc/ai/steering/datadog/conventions.md
+@~/.dotfiles/etc/ai/steering/datadog/analysis-output.md
 @~/.dotfiles/etc/ai/steering/datadog/skill-loading-triggers.md
 @~/.dotfiles/etc/ai/steering/security/env-file-protection.md
