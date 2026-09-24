@@ -72,6 +72,15 @@
             "timeout": 5
         },
         {
+            "name": "agentSpawn-agent-fit",
+            "trigger": "agentSpawn",
+            "action": {
+                "type": "command",
+                "command": "$AI_DOTFILES_DIR/etc/kiro-cli/hooks/suggest-agent-fit.sh code"
+            },
+            "timeout": 5
+        },
+        {
             "name": "postToolUse-0",
             "trigger": "postToolUse",
             "matcher": "knowledge",

@@ -26,6 +26,16 @@ Suggest a switch **once** when a prompt is squarely in another agent's domain:
 
 "Squarely in the domain" means the domain work *is the task*, not a passing touch.
 
+- **Re-evaluate at the analysis→implementation transition.** Analyzing or auditing another domain's
+  artifacts (reading a playbook, reviewing its docs) stays in `code`. The nudge fires when the task
+  *crosses* into producing that domain's work — proposing or writing the role, playbook, or repo
+  edits. The transition is the trigger, not the first mention of the domain.
+
+This doc governs the *mid-session* case — a task crossing into a specialist's domain while you work.
+The *session-start* case (landing the default `code` agent in a repo that has a tuned specialist,
+detected from a root marker like `ansible.cfg`/`book.toml`) is owned by the `suggest-agent-fit.sh`
+agentSpawn hook, which emits its own one-time confirm-not-switch nudge.
+
 ## When to Stay Silent
 
 - **Incidental cross-domain touches** — editing a code comment that happens to be Markdown, reading
