@@ -82,12 +82,16 @@ These practices come from the
 
 ### What Claude Code Does NOT Have (vs Kiro CLI)
 
-- No agent/persona system (single mode)
-- No hook framework as flexible as Kiro CLI (no `agentSpawn`, no `matcher` patterns beyond tool
-  name)
 - No knowledge base integration (no semantic search over indexed repos)
-- No `allowedTools` concept (everything is allow/deny/prompt)
+- No `allowedTools` concept in the global permission model (everything is allow/deny/prompt) —
+  though a persona's `tools:` frontmatter is a coarser analog
 - No MCP server management in settings.json (configured separately in `~/.claude.json`)
+
+Claude Code 2.1.x *does* have a persona system (`claude --agent <name>`, markdown files with YAML
+frontmatter in `~/.claude/agents/`) and a broad hook framework (33 events including `SessionStart`,
+with `matcher` patterns). This repo uses both — see the "Personas (Subagents)" and hook sections of
+`AGENTS.md`. The `SessionStart` command hook is the Claude analog of kiro's `agentSpawn`; the shared
+`suggest-agent-fit.sh` nudge is wired via both.
 
 ## Intentional Deviations
 

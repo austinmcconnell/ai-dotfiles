@@ -90,6 +90,7 @@ expected_kiro_scope() {
     recall-memory.sh) echo "all5" ;;
     check-engram-hygiene.sh) echo "all5" ;;
     audit-shell-commands.sh) echo "default_only" ;;
+    suggest-agent-fit.sh) echo "default_only" ;;
     block-persona-shell-commands.sh) echo "none" ;;
     *) echo "unknown" ;;
     esac

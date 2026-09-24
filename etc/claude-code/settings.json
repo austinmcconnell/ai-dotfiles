@@ -248,6 +248,16 @@
                         "timeout": 5
                     }
                 ]
+            },
+            {
+                "matcher": "startup",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "$AI_DOTFILES_DIR/etc/ai/hooks/suggest-agent-fit.sh",
+                        "timeout": 5
+                    }
+                ]
             }
         ],
         "PreToolUse": [
