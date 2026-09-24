@@ -154,10 +154,17 @@ ones. Exploit this:
 
 1. **Phase 1 — parallel drafts.** The expensive, independent part (per-release commit log, PR
    details, diff, file changes, per-PR risk) parallelizes cleanly. Fan out one subagent per release
-   tag; each produces a draft report.
-1. **Phase 2 — sequential stitch.** Add cross-release linkage (relationship-to-prior-releases prose,
-   cumulative tables) afterward, in ascending version order, once all drafts exist. This is cheap
-   and needs the global view — do it in the orchestrator or a single follow-up pass.
+   tag; each **writes its draft to disk** at `releases/version-X-X-X-draft.md` and returns only a
+   short status plus its ground-truth notes inline — never the full report as a return value. A
+   context-heavy report passed back through the tool-result channel can be silently truncated or
+   summarized by the subagent; a file on disk survives regardless of what the final message says.
+   The orchestrator reads the draft files in Phase 2.
+1. **Phase 2 — verify, then stitch.** Once all draft files exist, the orchestrator reads each one,
+   diff-checks it (see "Orchestrator verifies ground truth"), then adds cross-release linkage
+   (relationship-to-prior-releases prose, cumulative tables) in ascending version order — this is
+   the step that needs the global view. Finally, rename each verified `version-X-X-X-draft.md` to
+   `version-X-X-X.md`. The `-draft` suffix marks a report as not-yet-verified; only a checked,
+   stitched report earns the final name.
 
 Do **not** run pure-serial (wastes time re-deriving independent data) or pure-parallel (drafts can't
 reference each other, producing duplicated or contradictory prior-release framing).
@@ -170,8 +177,15 @@ bodies contain placeholders and errors — e.g. a commit referencing migration `
 committed file is `139d6d86dd94`. Verify migration ids, index/column names, config keys, and any
 quantified impact claim against the diff and the real files. Never accept a draft wholesale.
 
+Scope the check to those decision-critical categories, not every sentence — re-diffing an entire
+report defeats the point of delegating. When two *authored* sources disagree with each other (e.g. a
+code docstring claiming "5-8x faster" while the PR's own benchmark table measures 4.4–5.5x), prefer
+the measured figure and flag the discrepancy in the report rather than repeating the rounder claim.
+
 ### Parallel git safety
 
 Keep subagent git/`gh` operations **strictly read-only** (`log`, `diff`, `show`, `pr view`). Do not
 let parallel subagents check out tags or mutate the working tree in a shared checkout — they will
-collide. If state changes are unavoidable, give each subagent its own worktree.
+collide. If git state changes are unavoidable, give each subagent its own worktree. This constraint
+is about **git/worktree state**, not file output: each subagent writing its own distinct
+`releases/version-X-X-X-draft.md` is safe and expected — separate per-release files never contend.
