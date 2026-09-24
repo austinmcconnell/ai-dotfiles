@@ -337,6 +337,7 @@
             }
         ]
     },
+    "autoMemoryEnabled": false,
     "showThinkingSummaries": true,
     "spinnerTipsEnabled": false,
     "theme": "dark",

@@ -100,6 +100,13 @@ with `matcher` patterns). This repo uses both — see the "Personas (Subagents)"
   `paths:` frontmatter for conditional loading. `CLAUDE.md` is a minimal pointer file.
 - **No project-level settings** — only user-level `~/.claude/settings.json` exists. Official docs
   recommend `.claude/settings.json` committed to git for team sharing. Acceptable for personal use.
+- **Built-in auto memory disabled (`autoMemoryEnabled: false`)** — Claude Code 2.1.x ships its own
+  memory system that writes typed notes (`user`/`feedback`/`project`/`reference`) to
+  `~/.claude/projects/<project>/memory/` on its own. This repo already has a more capable version of
+  that: the `engram` MCP server plus the `correction-capture.sh` hook and the `distill-learnings`
+  skill, which is cross-tool (shared with Kiro CLI) and promotes corrections to steering only after
+  explicit user review. Running both would just create two uncoordinated memory systems writing
+  about the same work.
 
 ## Official Documentation
 
