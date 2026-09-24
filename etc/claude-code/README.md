@@ -66,8 +66,8 @@ a minimal pointer file, not a concatenated dump.
 ## Best Practices Followed
 
 These practices come from the
-[official permissions documentation](https://docs.anthropic.com/en/docs/claude-code/permissions) and
-[hooks documentation](https://docs.anthropic.com/en/docs/claude-code/hooks):
+[official permissions documentation](https://code.claude.com/docs/en/permissions) and
+[hooks documentation](https://code.claude.com/docs/en/hooks):
 
 - **Deny rules for sensitive files** — `.env*`, `.key`, `.pem`, `credentials*` all blocked via
   `Read` deny patterns
@@ -103,13 +103,13 @@ with `matcher` patterns). This repo uses both — see the "Personas (Subagents)"
 
 ## Official Documentation
 
-- [Permissions](https://docs.anthropic.com/en/docs/claude-code/permissions)
-- [Settings](https://docs.anthropic.com/en/docs/claude-code/settings)
-- [CLAUDE.md / Memory](https://docs.anthropic.com/en/docs/claude-code/memory)
-- [Hooks](https://docs.anthropic.com/en/docs/claude-code/hooks)
-- [Hooks Guide](https://docs.anthropic.com/en/docs/claude-code/hooks-guide)
-- [MCP Servers](https://docs.anthropic.com/en/docs/claude-code/mcp)
-- [Security](https://docs.anthropic.com/en/docs/claude-code/security)
+- [Permissions](https://code.claude.com/docs/en/permissions)
+- [Settings](https://code.claude.com/docs/en/settings)
+- [CLAUDE.md / Memory](https://code.claude.com/docs/en/memory)
+- [Hooks](https://code.claude.com/docs/en/hooks)
+- [Hooks Guide](https://code.claude.com/docs/en/hooks-guide)
+- [MCP Servers](https://code.claude.com/docs/en/mcp)
+- [Security](https://code.claude.com/docs/en/security)
 
 ## Finding Specific Information
 

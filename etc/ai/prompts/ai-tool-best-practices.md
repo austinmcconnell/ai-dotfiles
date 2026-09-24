@@ -25,7 +25,7 @@ Search official documentation for the target tool's current best practices. Focu
 Use these official documentation sources:
 
 - Kiro CLI: <https://kiro.dev/docs/cli/>
-- Claude Code: <https://docs.anthropic.com/en/docs/claude-code/>
+- Claude Code: <https://code.claude.com/docs/en/>
 - Cursor: <https://docs.cursor.com/>
 
 Provide source URLs for every recommendation.
