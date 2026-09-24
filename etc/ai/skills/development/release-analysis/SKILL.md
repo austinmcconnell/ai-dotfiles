@@ -93,13 +93,17 @@ Read `references/output-template.md` for the document structure.
 
 ### Naming Convention
 
-Files are placed in the project's `analysis/` directory (create it if it doesn't exist):
+Files are placed in the project's `releases/` directory (create it if it doesn't exist):
 
 ```text
-analysis/version-X-X-X.md
+releases/version-X-X-X.md
 ```
 
 Version numbers use hyphens, not dots (e.g., `version-0-0-74.md`).
+
+**`releases/` is git-ignored** — these reports are local-only working artifacts for developer and
+agent use. The durable, shared record of what shipped in a release is the **GitHub Releases**
+feature, not these files. Do not commit them and do not reference them by path in commit messages.
 
 ### Categorizing Changes
 
@@ -122,3 +126,43 @@ Assign risk per component:
 - **MEDIUM** — changes shared code paths or configuration
 - **HIGH** — affects production data, auth, or critical hot paths
 - **CRITICAL** — architectural change with cascading effects
+
+## Delegating to Subagents
+
+### When to delegate
+
+- **Backfill of multiple releases** (several unanalyzed tags at once): delegate. Each report is
+  context-heavy (full commit logs, PR bodies, diffs) and offloading keeps the orchestrator's context
+  clean.
+- **Single new release at deploy time**: do it inline. Delegation overhead is not worth it for one
+  report.
+
+### Hybrid model: fan out, then stitch
+
+Release reports have a **one-directional** dependency — a report may reference *earlier* releases
+(e.g. "continues the cache-storm series from 0.0.79", cumulative-impact tables) but never later
+ones. Exploit this:
+
+1. **Phase 1 — parallel drafts.** The expensive, independent part (per-release commit log, PR
+   details, diff, file changes, per-PR risk) parallelizes cleanly. Fan out one subagent per release
+   tag; each produces a draft report.
+1. **Phase 2 — sequential stitch.** Add cross-release linkage (relationship-to-prior-releases prose,
+   cumulative tables) afterward, in ascending version order, once all drafts exist. This is cheap
+   and needs the global view — do it in the orchestrator or a single follow-up pass.
+
+Do **not** run pure-serial (wastes time re-deriving independent data) or pure-parallel (drafts can't
+reference each other, producing duplicated or contradictory prior-release framing).
+
+### Orchestrator verifies ground truth
+
+Subagents draft; the orchestrator (or a dedicated verifier subagent) **must diff-check
+decision-critical claims** against the actual code before accepting a draft. Commit messages and PR
+bodies contain placeholders and errors — e.g. a commit referencing migration `a1b2c3d4e5f6` when the
+committed file is `139d6d86dd94`. Verify migration ids, index/column names, config keys, and any
+quantified impact claim against the diff and the real files. Never accept a draft wholesale.
+
+### Parallel git safety
+
+Keep subagent git/`gh` operations **strictly read-only** (`log`, `diff`, `show`, `pr view`). Do not
+let parallel subagents check out tags or mutate the working tree in a shared checkout — they will
+collide. If state changes are unavoidable, give each subagent its own worktree.
