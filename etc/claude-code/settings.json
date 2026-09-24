@@ -337,6 +337,11 @@
             }
         ]
     },
+    "enabledPlugins": {
+        "desktop-commander@synced": false,
+        "zoom-plugin@synced": false,
+        "enterprise-search@synced": false
+    },
     "autoMemoryEnabled": false,
     "showThinkingSummaries": true,
     "spinnerTipsEnabled": false,
