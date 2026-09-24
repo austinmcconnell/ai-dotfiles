@@ -129,6 +129,15 @@ Assign risk per component:
 
 ## Delegating to Subagents
 
+### Runner
+
+Run this skill with an agent that has `gh` and unrestricted file operations (a **code** agent).
+Issue-tracker agents may have read-only git (`git log`/`diff`/`show`) but typically lack `gh` —
+needed for PR bodies and release metadata in Steps 4 and 6 — and deny `mv`/`cp`/`rm`, which breaks
+report relocation. Ticket IDs in reports are just PR labels; the procedure never calls a tracker
+API, so an issue-tracker agent is the wrong runner even though the tickets are its topic. Delegate
+per-release drafting to code sub-agents.
+
 ### When to delegate
 
 - **Backfill of multiple releases** (several unanalyzed tags at once): delegate. Each report is
