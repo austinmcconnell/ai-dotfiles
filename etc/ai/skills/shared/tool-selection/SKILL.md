@@ -26,6 +26,11 @@ list as a *starting point*, not the boundary of the search.
 
 - Find what else exists and what is currently recommended as best-in-class — not just the obvious
   names.
+- Verify each candidate is actually maintained, but do it cheaply — check signals visible on the
+  repo landing page first (archive badge, last-commit/release date, a "moved to fork" notice) rather
+  than pulling full files. An archived project can still show recent-looking commits and may
+  redirect to a community fork that is the real successor. If you must read a README, fetch only the
+  top (e.g. selective mode or the first screenful), not the whole file.
 - Research the surrounding context too: domain best practices, common gotchas, and real case
   studies, not only the tools themselves.
 - Only after widening should you narrow to a scored comparison.
