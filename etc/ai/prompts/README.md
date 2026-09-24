@@ -164,6 +164,7 @@ These prompts can be run at any time without prerequisites:
 
 - `branch-analysis` - Analyze current git branch changes
 - `branch-inventory` - Inventory all local branches with maturity and triage recommendations
+- `claude-code-analysis` - Research Claude Code releases and evaluate config updates
 - `commit-analysis` - Analyze commit history patterns and quality
 - `component-compatibility-review` - Review hardware component compatibility
 - `discover-previous-work` - Understand work-in-progress state
@@ -219,6 +220,7 @@ These prompts can be run at any time without prerequisites:
 
 ### Configuration and Tooling
 
+- `claude-code-analysis` - Research recent Claude Code releases and evaluate configuration updates
 - `component-compatibility-review` - Review hardware component compatibility and specifications
 - `docs-review` - Review documentation repository using the docs-review skill workflow
 - `kiro-analysis` - Research recent Kiro CLI releases and evaluate configuration updates
