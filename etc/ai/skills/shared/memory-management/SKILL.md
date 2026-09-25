@@ -18,6 +18,10 @@ cited id and read it IN FULL before doing any other work. The handoff is the liv
 ongoing effort — a truncated preview cannot carry it, so the notice is a directive to fetch it, not
 the handoff itself.
 
+The handoff is authoritative for the live *effort state*, but treat its incidental side-claims about
+repo structure or tooling (e.g. "directory X is unreadable/unused") as fallible — verify those
+against the actual repo before acting on them.
+
 At the beginning of a session, if the user describes a task or project:
 
 1. Use `mem_search` with relevant keywords to find prior context
