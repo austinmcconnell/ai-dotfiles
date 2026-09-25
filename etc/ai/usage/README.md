@@ -55,8 +55,38 @@ first.
 
 ## Deliberately out of scope (for now)
 
-- **No reporting/query layer.** This is the data store only. A `dotfiles cost`-style CLI, or
-  anything reading this DB, is a separate future step.
 - **No EAV/fully-generic metric schema.** Considered and rejected in favor of nullable typed columns
   plus a `raw_json` escape hatch — simpler to query at this scale (two known tools), and adding a
   column later is a one-line migration, not a rewrite.
+
+## Reporting: `bin/ai-usage`
+
+`bin/ai-usage` (`--summary`/`--by-model`/`--by-effort`) is a read-only canned-report CLI over this
+DB. All three views aggregate `sessions.total_cost_usd` alone — never add
+`subagent_tasks.estimated_cost_usd` on top of it. See "Does session cost already include subagent
+spend?" below for why; `subagent_tasks` is surfaced only as a separate, known-partial informational
+breakdown.
+
+### Does session cost already include subagent spend?
+
+**Yes — verified against official docs, 2026-09-25.** Claude Code's own `total_cost_usd` (the same
+figure the statusLine's `cost.total_cost_usd` reports) already counts subagent/Task-tool spend
+alongside the top-level loop:
+
+- [`code.claude.com/docs/en/agent-sdk/cost-tracking`](https://code.claude.com/docs/en/agent-sdk/cost-tracking)
+  gives an explicit table of what each result-level field counts when subagents run.
+  `total_cost_usd` (and `modelUsage`/`model_usage`) is marked **"Included. Counts subagent requests
+  alongside the top-level loop."** Only the separate `usage` field excludes subagents (main loop
+  only).
+- [`code.claude.com/docs/en/costs`](https://code.claude.com/docs/en/costs) confirms the statusLine's
+  cost field is the *same* number as the `/usage` Session block's `Total cost` line ("The same total
+  appears in the status line's cost field").
+- The one documented subagent exclusion on the *statusline* page is a different, unrelated field —
+  the `prompt_cache` object ("Claude Code doesn't count subagent requests in these statistics") —
+  not `cost.total_cost_usd`. Don't conflate the two; this was the trap that made the question worth
+  verifying explicitly rather than assuming from that one caveat.
+
+**Consequence for every aggregate query**: sum `sessions.total_cost_usd` alone for a "total cost"
+view. Summing it with `subagent_tasks.estimated_cost_usd` double-counts — the latter is already
+folded into the former. `subagent_tasks` remains useful only as a separate, informational,
+known-partial breakdown (see the visibility-window gap above), never as an addend.
