@@ -47,6 +47,16 @@ STEERING_SOURCE="$AI_DOTFILES_DIR/etc/ai/steering"
 # relevant Claude subagent body, so it doesn't pollute unrelated sessions.
 # Single source of truth: every generator loops this array, so adding a
 # universal domain here updates all three tools at once.
+#
+# This split only exists because these three tools have no per-session
+# resource scoping — unlike kiro-cli, where every invocation is an agent with
+# its own `resources` array, so steering filters natively at load time (see
+# kiro-cli:steering below: a raw symlink of the whole tree, no split needed).
+# Claude/Cursor/Gemini each have exactly one always-on global context surface
+# with no runtime filter, so whatever lands here loads on every session,
+# forever — the split has to happen at distribution time instead. See
+# etc/ai/README.md's "Why Some Steering Is Universal" section for the full
+# cross-tool rationale.
 UNIVERSAL_STEERING_DOMAINS=(code github security)
 
 # ---------------------------------------------------------------
