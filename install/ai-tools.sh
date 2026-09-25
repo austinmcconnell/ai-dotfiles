@@ -25,9 +25,9 @@ source "$AI_DOTFILES_DIR/install/utils.sh"
 # ---------------------------------------------------------------
 ENABLED_AGENTS=(
     "claude-code"
-    "codex"
-    "cursor"
     "kiro-cli"
+    # "codex"
+    # "cursor"
     # "gemini-cli"
     # "github-copilot"
     # "windsurf"

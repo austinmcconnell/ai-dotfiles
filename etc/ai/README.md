@@ -15,15 +15,18 @@ etc/ai/
 
 `install/ai-tools.sh` reads from these directories and generates tool-specific output:
 
-| Tool        | Skills                           | Steering                                                                                        |
-| ----------- | -------------------------------- | ----------------------------------------------------------------------------------------------- |
-| kiro-cli    | Symlinked to `~/.kiro/skills/`   | Symlinked to `~/.kiro/steering/`, loaded via `file://~/.kiro/steering/` resources in agent JSON |
-| Codex       | Symlinked to `~/.codex/skills/`  | Reads AGENTS.md (no adapter needed)                                                             |
-| Cursor      | Symlinked to `~/.cursor/skills/` | Generated as `.mdc` files in `~/.cursor/rules/`                                                 |
-| Claude Code | Symlinked to `~/.claude/skills/` | Generated as individual rule files in `~/.claude/rules/`, plus a slim pointer `CLAUDE.md`       |
-| Gemini CLI  | Symlinked to `~/.gemini/skills/` | Concatenated into `~/.gemini/GEMINI.md`                                                         |
+| Tool                  | Skills                           | Steering                                                                                        |
+| --------------------- | -------------------------------- | ----------------------------------------------------------------------------------------------- |
+| kiro-cli              | Symlinked to `~/.kiro/skills/`   | Symlinked to `~/.kiro/steering/`, loaded via `file://~/.kiro/steering/` resources in agent JSON |
+| Claude Code           | Symlinked to `~/.claude/skills/` | Generated as individual rule files in `~/.claude/rules/`, plus a slim pointer `CLAUDE.md`       |
+| Codex (disabled)      | Symlinked to `~/.codex/skills/`  | Reads AGENTS.md (no adapter needed)                                                             |
+| Cursor (disabled)     | Symlinked to `~/.cursor/skills/` | Generated as `.mdc` files in `~/.cursor/rules/`                                                 |
+| Gemini CLI (disabled) | Symlinked to `~/.gemini/skills/` | Concatenated into `~/.gemini/GEMINI.md`                                                         |
 
-Only tools listed in `ENABLED_AGENTS` within `install/ai-tools.sh` are active.
+Only `kiro-cli` and `Claude Code` are currently active. The rows above marked `(disabled)` are fully
+wired in the `agent_config` registry but commented out of `ENABLED_AGENTS` within
+`install/ai-tools.sh` — re-enable by uncommenting there. Check that array, not this table, for the
+authoritative current state.
 
 ## Prompts
 
