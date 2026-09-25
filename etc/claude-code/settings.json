@@ -1,6 +1,5 @@
 {
     "$schema": "https://json.schemastore.org/claude-code-settings.json",
-    "cleanupPeriodDays": 90,
     "permissions": {
         "allow": [
             "Read(*)",
@@ -342,14 +341,15 @@
         "zoom-plugin@synced": false,
         "enterprise-search@synced": false
     },
+    "attribution": {
+        "commit": "",
+        "pr": "",
+        "sessionUrl": false
+    },
     "autoMemoryEnabled": false,
     "showThinkingSummaries": true,
     "spinnerTipsEnabled": false,
     "theme": "dark",
     "verbose": true,
-    "attribution": {
-        "commit": "",
-        "pr": "",
-        "sessionUrl": false
-    }
+    "cleanupPeriodDays": 90
 }
