@@ -69,6 +69,7 @@ The following steering docs define this project's JIRA/SCRUM conventions and are
 at startup. They are the canonical source in the dotfiles repo — edit them there, not here.
 
 @~/.dotfiles/etc/ai/steering/scrum/jira-operations-guidance.md
+@~/.dotfiles/etc/ai/steering/scrum/jira-local-mirror.md
 @~/.dotfiles/etc/ai/steering/scrum/scrn-conventions.md
 @~/.dotfiles/etc/ai/steering/scrum/skill-loading-triggers.md
 @~/.dotfiles/etc/ai/steering/security/env-file-protection.md

@@ -8,6 +8,17 @@ For statuses, API body examples, sprint entry criteria, and acceptance criteria 
 the `scrn-backlog-triage` skill. For deployment frontier analysis and testing prioritization, load
 the `deployment-readiness` skill.
 
+## Local `jira/` Mirror Files
+
+SCRN follows the generic local-mirror convention (see `jira-local-mirror.md`). Specifics for this
+repo:
+
+- Files live in `jira/`, named `jira/scrn-XXXX.md` (lowercased), plus `jira/draft-*.md` for drafts.
+- Layout (match `jira/scrn-1673.md`): a metadata table
+  (Type/Status/Parent/Assignee/Labels/Created/Resolved), `## Description` with sub-sections
+  mirroring the ticket body, `## Comments`, `## Linked Issues`, and an optional
+  `## Appendix — Provenance`.
+
 ## Status Workflow
 
 | Jira Status               | Board Column         | Meaning                                          |
