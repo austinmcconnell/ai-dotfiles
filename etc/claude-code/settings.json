@@ -351,5 +351,13 @@
     "spinnerTipsEnabled": false,
     "theme": "dark",
     "verbose": true,
-    "cleanupPeriodDays": 90
+    "cleanupPeriodDays": 90,
+    "statusLine": {
+        "type": "command",
+        "command": "$AI_DOTFILES_DIR/etc/ai/usage/claude-statusline.sh"
+    },
+    "subagentStatusLine": {
+        "type": "command",
+        "command": "$AI_DOTFILES_DIR/etc/ai/usage/claude-subagent-statusline.sh"
+    }
 }
