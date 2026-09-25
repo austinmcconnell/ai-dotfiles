@@ -19,6 +19,9 @@ Save a memory **immediately** — without being asked — when the user:
 - Redirects mid-task ("actually, do it this way instead")
 - States a preference about tools, style, or workflow ("I prefer…", "always…", "never…")
 - Rejects a tool action and explains why
+- Pushes back with a question that turns out to be correct ("doesn't X actually...?", "am I missing
+  something?") — a Socratic correction counts the same as a blunt one once resolved in the user's
+  favor
 - Says "remember this" or an equivalent explicit marker
 
 Do **not** capture: simple factual questions, clarifications that don't change behavior, or one-off
