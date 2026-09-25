@@ -46,6 +46,10 @@ When writing or updating a README that should point to detailed docs:
   files that re-creates context pressure — deeper hierarchy hurts navigation, it does not help.
 - Keep the map to high-signal docs. A README that lists everything is as useless as one that lists
   nothing; name the docs a reader would actually need to find.
+- **These constraints govern the map, not the target docs.** One-hop and flat apply to how README
+  pointers are structured. They do not limit how much a target doc — the JIT/retrieval-channel doc a
+  pointer leads to — contains. Growing a target doc's content is not doc-sprawl; only adding it to
+  eager-context, or adding another pointer hop, is.
 
 ## Narrow exception: eager-loading a doc
 
