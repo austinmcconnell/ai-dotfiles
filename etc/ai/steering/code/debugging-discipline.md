@@ -16,6 +16,13 @@ citation for the next attempt. Applying researched fix A → it fails → resear
 - If three researched fixes in a row don't hold, the PREMISE is likely wrong. Question the test,
   fixture, or assumption itself — don't just add more mitigation ("wait harder").
 
+## Verify native support before building custom tooling
+
+Before proposing custom sync/DRY/automation tooling to replicate a capability a platform might
+already provide (wildcard imports, global hooks, native config merging), check official docs — or
+ask a docs-focused agent — whether a native equivalent exists first. Building custom tooling to
+replicate a platform feature is wasted effort and an extra thing to maintain.
+
 ## Verify the fix reached the running system before doubting the fix
 
 When a change that should be correct produces ZERO observable change, suspect the DELIVERY path — a
