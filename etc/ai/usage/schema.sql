@@ -1,11 +1,17 @@
 -- Local, tool-agnostic AI usage/cost tracking schema.
 --
--- Both tables are upserted, not appended: the AI tools that populate them
--- (currently Claude Code's statusLine/subagentStatusLine) report cumulative
--- per-session totals on every firing, not per-turn deltas, so each row is a
--- snapshot keyed by identity and overwritten in place. Treating this as an
--- events log would double-count, since every firing already carries the
--- running total.
+-- `sessions` and `subagent_tasks` are upserted, not appended: the AI tools
+-- that populate them (currently Claude Code's statusLine/subagentStatusLine)
+-- report cumulative per-session totals on every firing, not per-turn deltas,
+-- so each row is a snapshot keyed by identity and overwritten in place.
+-- Treating those as an events log would double-count, since every firing
+-- already carries the running total.
+--
+-- `compaction_events` is the deliberate exception: it's append-only, because
+-- the thing it records (a compaction firing) is itself a discrete event, not
+-- a running total — upserting it the way `sessions` does would overwrite the
+-- one snapshot that matters with whatever the next unrelated statusline
+-- firing produces.
 --
 -- Applied idempotently by usage_db_init() in lib.sh.
 
@@ -46,4 +52,22 @@ CREATE TABLE IF NOT EXISTS subagent_tasks (
     status               TEXT,
     raw_json             TEXT,
     PRIMARY KEY (tool, parent_session_id, task_id)
+);
+
+-- Append-only log of PreCompact/PostCompact hook firings. Neither hook's
+-- payload carries any token data (Claude Code hooks never do — see
+-- README.md's "Claude Code integration" section), so snapshot_input_tokens
+-- is read from this session's current `sessions.input_tokens` row at the
+-- moment the hook fires: an approximation of the token count right before
+-- (PreCompact) or after (PostCompact) compaction, not an exact figure from
+-- the compaction itself.
+CREATE TABLE IF NOT EXISTS compaction_events (
+    id                     INTEGER PRIMARY KEY AUTOINCREMENT,
+    tool                   TEXT NOT NULL,   -- 'claude-code', 'kiro-cli' (future), ...
+    session_id             TEXT NOT NULL,
+    hook_event             TEXT NOT NULL,   -- 'PreCompact' | 'PostCompact'
+    trigger                TEXT,            -- 'manual' | 'auto', from the hook payload
+    snapshot_input_tokens  INTEGER,         -- last known sessions.input_tokens at fire time; nullable if no prior row existed
+    occurred_at            TEXT NOT NULL,   -- ISO8601 UTC
+    raw_json               TEXT             -- the hook's raw stdin payload, as insurance against needing a column for every future field
 );
