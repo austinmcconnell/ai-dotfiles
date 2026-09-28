@@ -61,13 +61,24 @@ CREATE TABLE IF NOT EXISTS subagent_tasks (
 -- moment the hook fires: an approximation of the token count right before
 -- (PreCompact) or after (PostCompact) compaction, not an exact figure from
 -- the compaction itself.
+--
+-- The real_* columns fill that gap on PostCompact only: Claude Code writes a
+-- `compact_boundary` system message with an exact compactMetadata object
+-- into the session's transcript once compaction finishes, and the hook
+-- payload's transcript_path can be read to extract it. That record does not
+-- exist yet at PreCompact time, so these stay NULL on PreCompact rows (and
+-- on any PostCompact row where the transcript couldn't be parsed).
 CREATE TABLE IF NOT EXISTS compaction_events (
-    id                     INTEGER PRIMARY KEY AUTOINCREMENT,
-    tool                   TEXT NOT NULL,   -- 'claude-code', 'kiro-cli' (future), ...
-    session_id             TEXT NOT NULL,
-    hook_event             TEXT NOT NULL,   -- 'PreCompact' | 'PostCompact'
-    trigger                TEXT,            -- 'manual' | 'auto', from the hook payload
-    snapshot_input_tokens  INTEGER,         -- last known sessions.input_tokens at fire time; nullable if no prior row existed
-    occurred_at            TEXT NOT NULL,   -- ISO8601 UTC
-    raw_json               TEXT             -- the hook's raw stdin payload, as insurance against needing a column for every future field
+    id                       INTEGER PRIMARY KEY AUTOINCREMENT,
+    tool                     TEXT NOT NULL,   -- 'claude-code', 'kiro-cli' (future), ...
+    session_id               TEXT NOT NULL,
+    hook_event               TEXT NOT NULL,   -- 'PreCompact' | 'PostCompact'
+    trigger                  TEXT,            -- 'manual' | 'auto', from the hook payload
+    snapshot_input_tokens    INTEGER,         -- last known sessions.input_tokens at fire time; nullable if no prior row existed
+    real_pre_tokens          INTEGER,         -- exact compactMetadata.preTokens; NULL until PostCompact resolves it
+    real_post_tokens         INTEGER,         -- exact compactMetadata.postTokens; PostCompact only
+    cumulative_dropped_tokens INTEGER,        -- exact compactMetadata.cumulativeDroppedTokens; PostCompact only
+    duration_ms              INTEGER,         -- exact compactMetadata.durationMs; PostCompact only
+    occurred_at              TEXT NOT NULL,   -- ISO8601 UTC
+    raw_json                 TEXT             -- the hook's raw stdin payload, as insurance against needing a column for every future field
 );

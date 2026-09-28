@@ -13,9 +13,20 @@ USAGE_PRICING="$USAGE_DIR/pricing.json"
 
 # Create the DB directory and apply the schema. Safe to call on every
 # invocation: CREATE TABLE IF NOT EXISTS makes this idempotent.
+#
+# CREATE TABLE IF NOT EXISTS never adds columns to a table that already
+# exists on disk, so new nullable columns on an existing table need an
+# explicit ALTER TABLE here. sqlite has no "ADD COLUMN IF NOT EXISTS", so
+# each ALTER is run unconditionally and its "duplicate column" error (on a
+# DB that already has the column) is swallowed — this is the repo's first
+# schema migration; add future ones the same way.
 usage_db_init() {
     mkdir -p "$USAGE_DB_DIR"
     sqlite3 "$USAGE_DB" <"$USAGE_SCHEMA"
+    sqlite3 "$USAGE_DB" "ALTER TABLE compaction_events ADD COLUMN real_pre_tokens INTEGER;" 2>/dev/null || true
+    sqlite3 "$USAGE_DB" "ALTER TABLE compaction_events ADD COLUMN real_post_tokens INTEGER;" 2>/dev/null || true
+    sqlite3 "$USAGE_DB" "ALTER TABLE compaction_events ADD COLUMN cumulative_dropped_tokens INTEGER;" 2>/dev/null || true
+    sqlite3 "$USAGE_DB" "ALTER TABLE compaction_events ADD COLUMN duration_ms INTEGER;" 2>/dev/null || true
 }
 
 # Render a value as a single-quoted, escaped SQL string literal.
