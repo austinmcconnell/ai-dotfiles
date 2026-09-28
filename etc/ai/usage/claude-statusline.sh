@@ -1,7 +1,10 @@
 #!/bin/bash
 # Claude Code "statusLine" integration: records this session's cumulative
 # cost/token usage to the local ai-usage SQLite store as a side effect, then
-# prints the status line text Claude Code displays.
+# prints the status line text Claude Code displays. Also appends a
+# cost_snapshots row whenever total_cost_usd has changed since this
+# session's last recorded snapshot, preserving the trajectory that the
+# upsert-only sessions table would otherwise overwrite.
 #
 # Wired via etc/claude-code/settings.json "statusLine". Payload arrives as
 # JSON on stdin; see https://code.claude.com/docs/en/statusline.
@@ -60,6 +63,27 @@ if [[ -n "$SESSION_ID" ]]; then
             total_duration_ms = excluded.total_duration_ms,
             total_api_duration_ms = excluded.total_api_duration_ms,
             raw_json = excluded.raw_json;
+    "
+
+    # Comparing costs in SQL (not bash) so REAL equality is exact -- SQLite's
+    # text rendering of a REAL (e.g. "1.0") won't always string-match jq's
+    # rendering of the same number (e.g. "1.00"), so a bash string compare
+    # would false-negative and insert a duplicate row on every firing.
+    sqlite3 "$USAGE_DB" "
+        INSERT INTO cost_snapshots (
+            tool, session_id, total_cost_usd, input_tokens, output_tokens,
+            cache_creation_tokens, cache_read_tokens, context_used_percentage,
+            occurred_at, raw_json
+        )
+        SELECT 'claude-code', $(sql_str "$SESSION_ID"), $(sql_num "$COST_USD"),
+            $(sql_num "$INPUT_TOKENS"), $(sql_num "$OUTPUT_TOKENS"),
+            $(sql_num "$CACHE_CREATION"), $(sql_num "$CACHE_READ"), $(sql_num "$CTX_USED_PCT"),
+            $(sql_str "$NOW"), $(sql_str "$PAYLOAD")
+        WHERE (
+            SELECT total_cost_usd FROM cost_snapshots
+            WHERE tool = 'claude-code' AND session_id = $(sql_str "$SESSION_ID")
+            ORDER BY id DESC LIMIT 1
+        ) IS NOT $(sql_num "$COST_USD");
     "
 fi
 
