@@ -16,10 +16,17 @@
 - If pre-commit modifies files, re-read them before proceeding
 - For multi-commit work, follow the `commit-workflow` skill cadence (plan → one commit at a time →
   pause → verify)
+- When a commit needs correcting, check push status first
+  (`git rev-parse --abbrev-ref --symbolic-full-name @{u}`) — for a commit with no upstream that
+  serves the same logical goal, mention `git commit --amend`/fixup as an option rather than
+  defaulting straight to recommending a new commit. Still requires the user's explicit go-ahead,
+  like any commit action.
 
 ## Push Workflow
 
 - Push to a feature branch, not directly to main
+- Never delete branches, even as an offered option — state that a branch is ready to delete and let
+  the user run it themselves.
 
 ## Reading History
 
