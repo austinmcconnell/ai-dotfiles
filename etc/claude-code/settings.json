@@ -334,6 +334,30 @@
                     }
                 ]
             }
+        ],
+        "PreCompact": [
+            {
+                "matcher": "*",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "$AI_DOTFILES_DIR/etc/ai/hooks/log-compaction-event.sh",
+                        "timeout": 5
+                    }
+                ]
+            }
+        ],
+        "PostCompact": [
+            {
+                "matcher": "*",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "$AI_DOTFILES_DIR/etc/ai/hooks/log-compaction-event.sh",
+                        "timeout": 5
+                    }
+                ]
+            }
         ]
     },
     "enabledPlugins": {
