@@ -9,12 +9,15 @@ Code is wired up today — see "Why Kiro CLI isn't wired up" below.
 - **DB**: `~/.local/share/ai-usage/usage.db` — sibling to the existing `~/.local/share/ai-audit/`
   directory (`audit-shell-commands.sh`'s log), following that same convention rather than inventing
   a new one.
-- **Schema**: `schema.sql`, two tables — `sessions` (one row per top-level session) and
-  `subagent_tasks` (one row per subagent). Both are **upserted, not appended**: the source data
-  (Claude Code's `statusLine`/`subagentStatusLine`) reports cumulative totals on every firing, not
-  per-turn deltas, so each row is a snapshot overwritten in place, keyed by identity
-  (`(tool, session_id)` / `(tool, parent_session_id, task_id)`). Every tool-specific column
-  (`total_cost_usd`, `credits`, etc.) is nullable, since no single tool populates all of them.
+- **Schema**: `schema.sql`. `sessions` (one row per top-level session) and `subagent_tasks` (one row
+  per subagent) are **upserted, not appended**: the source data (Claude Code's
+  `statusLine`/`subagentStatusLine`) reports cumulative totals on every firing, not per-turn deltas,
+  so each row is a snapshot overwritten in place, keyed by identity (`(tool, session_id)` /
+  `(tool, parent_session_id, task_id)`). Every tool-specific column (`total_cost_usd`, `credits`,
+  etc.) is nullable, since no single tool populates all of them. `compaction_events` and
+  `cost_snapshots` (see "Cost trajectory" below) are the deliberate exceptions — both append-only,
+  since `sessions`' upsert-in-place would otherwise overwrite the one history they exist to
+  preserve.
 - **Pricing**: `pricing.json` — model → $/M-token rates, used only to estimate subagent $ cost
   (Claude Code's main session already reports `cost.total_cost_usd` itself; subagents only report a
   combined `tokenCount`, so `estimated_cost_usd` is a blended-rate approximation, not an exact
@@ -30,9 +33,28 @@ Claude Code's hook payloads carry no token/cost data at all (confirmed via
 payload on stdin and write to the DB as a side effect:
 
 - `claude-statusline.sh` — the main session. Prints the visible status line text
-  (model/cost/context%/effort) and upserts the `sessions` row.
+  (model/cost/context%/effort), upserts the `sessions` row, and appends a `cost_snapshots` row (see
+  "Cost trajectory" below).
 - `claude-subagent-statusline.sh` — per-subagent rows. Emits no stdout at all, so Claude Code keeps
   its default subagent-row rendering; this script's only job is the `subagent_tasks` upsert.
+
+## Cost trajectory: `cost_snapshots`
+
+`sessions` only ever holds the latest snapshot — once a session ends, there's no way to see how its
+cost/tokens grew over its lifetime, only the final number. `cost_snapshots` fixes that: an
+append-only row per statusline firing, but only when `total_cost_usd` has actually changed since
+this session's last recorded snapshot — skips true no-op re-renders while keeping every real
+cost-changing step, so a session's trajectory survives past `sessions`' own upsert.
+
+The cost-changed check runs entirely in SQL (`INSERT ... SELECT ... WHERE (subquery) IS NOT :cost`),
+not bash string comparison — SQLite's text rendering of a REAL (e.g. `1.0`) doesn't always
+string-match jq's rendering of the same number (e.g. `1.00`), which would false-negative a bash `!=`
+compare and insert a duplicate row on every firing.
+
+This exists to support future cost analysis (e.g. "does cost per turn climb as a session grows"),
+not to attribute cost by tool type — Claude Code's statusline only ever reports cumulative session
+totals, never a per-tool-call breakdown, so that finer-grained attribution isn't derivable from any
+data this repo has access to.
 
 ## Why Kiro CLI isn't wired up
 
