@@ -93,6 +93,7 @@ expected_kiro_scope() {
     suggest-agent-fit.sh) echo "default_only" ;;
     block-persona-shell-commands.sh) echo "none" ;;
     log-compaction-event.sh) echo "none" ;;
+    suggest-context-checkpoint.sh) echo "none" ;;
     *) echo "unknown" ;;
     esac
 }

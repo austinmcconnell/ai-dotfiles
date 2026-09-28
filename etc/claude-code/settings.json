@@ -333,6 +333,15 @@
                         "timeout": 5
                     }
                 ]
+            },
+            {
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "$AI_DOTFILES_DIR/etc/ai/hooks/suggest-context-checkpoint.sh",
+                        "timeout": 5
+                    }
+                ]
             }
         ],
         "PreCompact": [
