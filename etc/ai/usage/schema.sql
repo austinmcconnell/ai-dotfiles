@@ -7,11 +7,15 @@
 -- Treating those as an events log would double-count, since every firing
 -- already carries the running total.
 --
--- `compaction_events` is the deliberate exception: it's append-only, because
--- the thing it records (a compaction firing) is itself a discrete event, not
--- a running total — upserting it the way `sessions` does would overwrite the
--- one snapshot that matters with whatever the next unrelated statusline
--- firing produces.
+-- `compaction_events` and `cost_snapshots` are the deliberate exceptions:
+-- both are append-only. `compaction_events` records a discrete event (a
+-- compaction firing), not a running total — upserting it the way `sessions`
+-- does would overwrite the one snapshot that matters with whatever the next
+-- unrelated statusline firing produces. `cost_snapshots` deliberately
+-- duplicates data already in `sessions` (same cumulative totals) so a
+-- session's cost/token trajectory over its lifetime survives past the point
+-- `sessions` next overwrites itself — `sessions` only ever holds the latest
+-- snapshot, so history has nowhere else to live.
 --
 -- Applied idempotently by usage_db_init() in lib.sh.
 
@@ -81,4 +85,23 @@ CREATE TABLE IF NOT EXISTS compaction_events (
     duration_ms              INTEGER,         -- exact compactMetadata.durationMs; PostCompact only
     occurred_at              TEXT NOT NULL,   -- ISO8601 UTC
     raw_json                 TEXT             -- the hook's raw stdin payload, as insurance against needing a column for every future field
+);
+
+-- Append-only cost/token trajectory, one row per statusline firing where
+-- total_cost_usd actually changed since this session's last recorded
+-- snapshot (see claude-statusline.sh) -- skips true no-op re-renders while
+-- keeping every real cost-changing step, so a session's history survives
+-- past `sessions`' own upsert-in-place snapshot.
+CREATE TABLE IF NOT EXISTS cost_snapshots (
+    id                     INTEGER PRIMARY KEY AUTOINCREMENT,
+    tool                   TEXT NOT NULL,   -- 'claude-code', 'kiro-cli' (future), ...
+    session_id             TEXT NOT NULL,
+    total_cost_usd         REAL,
+    input_tokens           INTEGER,         -- cumulative for the session
+    output_tokens          INTEGER,         -- cumulative for the session
+    cache_creation_tokens  INTEGER,         -- most recent turn only; not cumulative (source data has no running total)
+    cache_read_tokens      INTEGER,         -- most recent turn only; not cumulative (source data has no running total)
+    context_used_percentage REAL,           -- relative to the model's native context ceiling, not autoCompactWindow
+    occurred_at            TEXT NOT NULL,   -- ISO8601 UTC
+    raw_json                TEXT            -- the statusline's raw stdin payload, as insurance against needing a column for every future field
 );
