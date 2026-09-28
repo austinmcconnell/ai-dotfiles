@@ -32,13 +32,13 @@ docs)
     PATTERNS=('aws .*' 'docker .*' 'kubectl .*')
     ;;
 jira)
-    PATTERNS=('aws .*' 'brew install .*' 'cp .*' 'docker .*' 'kubectl .*' 'npm install .*' 'pip install .*')
+    PATTERNS=('aws .*' 'brew install .*' 'cp .*' 'crontab .*' 'docker .*' 'kubectl .*' 'npm install .*' 'pip install .*')
     ;;
 datadog)
-    PATTERNS=('pup .* (create|update|delete|edit|mute|unmute).*' 'pup auth (login|logout|refresh).*' 'aws .*' 'brew install .*' 'docker .*' 'kubectl .*' 'npm install .*' 'pip install .*' 'ssh .*')
+    PATTERNS=('pup .* (create|update|delete|edit|mute|unmute).*' 'pup auth (login|logout|refresh).*' 'aws .*' 'brew install .*' 'crontab .*' 'docker .*' 'kubectl .*' 'npm install .*' 'pip install .*' 'ssh .*')
     ;;
 ansible)
-    PATTERNS=('ansible [^-].*' 'ansible-console .*' 'ansible-pull .*' 'ansible-vault (create|decrypt|edit|encrypt|rekey) .*' 'aws .*' 'brew install .*' 'docker (exec|kill|rm|rmi|run|stop|system prune|volume rm|network rm) .*' 'kubectl .*' 'npm install .*' 'pip install .*' 'ssh .*')
+    PATTERNS=('ansible [^-].*' 'ansible-console .*' 'ansible-pull .*' 'ansible-vault (create|decrypt|edit|encrypt|rekey) .*' 'aws .*' 'brew install .*' 'crontab .*' 'docker (exec|kill|rm|rmi|run|stop|system prune|volume rm|network rm) .*' 'kubectl .*' 'npm install .*' 'pip install .*' 'ssh .*')
     ;;
 *)
     exit 0
