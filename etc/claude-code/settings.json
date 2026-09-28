@@ -386,6 +386,16 @@
     "verbose": true,
     "cleanupPeriodDays": 90,
     "autoCompactWindow": 350000,
+    "model": "sonnet",
+    "modelSettings": {
+        "claude-sonnet-5": {
+            "effortLevel": "high"
+        },
+        "claude-haiku-4-5": {},
+        "claude-opus-5": {
+            "effortLevel": "high"
+        }
+    },
     "statusLine": {
         "type": "command",
         "command": "$AI_DOTFILES_DIR/etc/ai/usage/claude-statusline.sh"
