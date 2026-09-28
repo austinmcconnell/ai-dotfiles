@@ -376,7 +376,7 @@
     "theme": "dark",
     "verbose": true,
     "cleanupPeriodDays": 90,
-    "autoCompactWindow": 600000,
+    "autoCompactWindow": 350000,
     "statusLine": {
         "type": "command",
         "command": "$AI_DOTFILES_DIR/etc/ai/usage/claude-statusline.sh"
