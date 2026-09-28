@@ -38,6 +38,33 @@ payload on stdin and write to the DB as a side effect:
 - `claude-subagent-statusline.sh` — per-subagent rows. Emits no stdout at all, so Claude Code keeps
   its default subagent-row rendering; this script's only job is the `subagent_tasks` upsert.
 
+## Compaction tracking: `compaction_events`
+
+Claude Code's `PreCompact`/`PostCompact` hook payloads carry **no token data at all** (confirmed via
+`anthropics/claude-code#91767`) — the one structural exception to this doc's "not hooks" framing
+above, since `compaction_events` is the only table populated from hooks rather than the statusline.
+`log-compaction-event.sh` is wired to both events in `etc/claude-code/settings.json` and works
+around the missing payload data two different ways:
+
+- **`snapshot_input_tokens`** (both events): an approximation — the session's last-known
+  `sessions.input_tokens` at the moment the hook fires, not an exact figure from the compaction
+  itself.
+- **`real_pre_tokens`/`real_post_tokens`/`cumulative_dropped_tokens`/`duration_ms`** (`PostCompact`
+  only): exact figures. Claude Code writes a `compact_boundary` system message with a
+  `compactMetadata` object into the session's transcript once compaction finishes, and the hook
+  payload's `transcript_path` (which every hook payload *does* carry) can be read to extract it.
+  That record doesn't exist yet at `PreCompact` time, so these stay `NULL` on `PreCompact` rows.
+  Verified against the approximation on a real compaction: the approximation was off by up to 5.8x
+  in one direction, which is why the real columns exist rather than trusting the snapshot alone.
+
+**Empirical finding worth preserving**: the real compaction trigger point is a fraction of the
+configured `autoCompactWindow`, not a fixed token floor — but that fraction isn't flat either. Four
+real compactions: 100K configured → 48.5% (twice), 200K → 55.1%, 600K → 57.5%. The ratio rises with
+window size; neither a fixed percentage nor a fixed reserved-token buffer fits the data cleanly.
+`etc/ai/hooks/suggest-context-checkpoint.sh` (a `UserPromptSubmit` hook) reads this table's sibling
+data (`sessions.input_tokens`) to nudge at a fixed absolute threshold rather than trying to derive
+one from this still-uncertain ratio.
+
 ## Cost trajectory: `cost_snapshots`
 
 `sessions` only ever holds the latest snapshot — once a session ends, there's no way to see how its
