@@ -291,6 +291,16 @@
                 ]
             },
             {
+                "matcher": "*",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "$AI_DOTFILES_DIR/etc/ai/hooks/block-shell-trace-mode.sh",
+                        "timeout": 5
+                    }
+                ]
+            },
+            {
                 "matcher": "mcp__engram__.*",
                 "hooks": [
                     {

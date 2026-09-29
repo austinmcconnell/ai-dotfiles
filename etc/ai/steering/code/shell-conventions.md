@@ -11,6 +11,13 @@ paths:
 
 - Use the `working_dir` parameter instead of prefixing commands with `cd`. Write
   `cat file.md > out.md` with `working_dir` set, not `cd /path && cat file.md > out.md`.
+- Never diagnose a script with `bash -x` / `set -x` (trace mode) when it reads secrets or PII/PHI
+  from the environment — trace mode expands every variable and prints their values in cleartext,
+  defeating a script's no-secret-output design. Diagnose instead by capturing command output into
+  variables, echoing only non-secret state, and making the script degrade gracefully (e.g. a
+  `SKIPPED` line) so a trace is never needed. If a trace is genuinely unavoidable, unset or redact
+  the secret-bearing variables first. A `block-shell-trace-mode.sh` preToolUse hook hard-blocks
+  agent-run trace mode; run any needed trace yourself and paste back the (redacted) result.
 
 ## Formatting (enforced by pre-commit)
 

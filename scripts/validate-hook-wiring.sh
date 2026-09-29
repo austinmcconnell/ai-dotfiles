@@ -85,6 +85,7 @@ expected_kiro_scope() {
     block-env-files.sh) echo "all5" ;;
     block-sops-age-files.sh) echo "all5" ;;
     block-ssh-private-keys.sh) echo "all5" ;;
+    block-shell-trace-mode.sh) echo "all5" ;;
     block-memory-secrets.sh) echo "all5" ;;
     correction-capture.sh) echo "all5" ;;
     recall-memory.sh) echo "all5" ;;
