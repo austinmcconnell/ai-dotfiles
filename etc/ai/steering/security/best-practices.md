@@ -29,3 +29,12 @@ When generating or reviewing code:
 - Prevent XSS by escaping output in web applications
 - Set appropriate CORS policies
 - Implement proper error handling without leaking sensitive information
+
+## Disclosing Exposures
+
+If any action — including your own tooling, diagnostics, or command output — exposes a secret,
+credential, token, PII, or PHI, surface it immediately and prominently: state what leaked, where,
+the likely blast radius, and the remediation (rotate/revoke). Never downplay it, defer it to an
+end-of-task summary, or omit it to avoid looking bad. This holds even when the secret is likely
+already expired or harmless, and even when the exposure was caused by your own tooling — own it and
+report it plainly.
