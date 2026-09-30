@@ -85,9 +85,20 @@ Use when the release contains performance work:
 |---------|--------|-------|--------|
 ```
 
-### Cumulative Impact Table
+### Relationship to Prior Releases / Cumulative Impact
 
-Use when the release is part of a series addressing the same issue:
+The trigger is whether the release **builds on or continues prior work** — *not* whether an
+orchestrator analyzed multiple versions. A single release analyzed inline still gets this when it
+continues a thread (e.g. 0.0.85, a single-PR release, has a Relationship-to-Prior-Releases section).
+The orchestrator/Phase-2 workflow only *writes* this later because that phase has the global view —
+that is who writes it well, not the sole condition under which it belongs.
+
+- **Prose** ("Relationship to Prior Releases") — when the release builds on prior fixes or continues
+  a thread, even a distinct one. Explain the lineage.
+- **Cumulative Impact table** — narrower: only when the release is part of a *single-issue series*
+  progressing across releases.
+
+Cumulative Impact table format:
 
 ```markdown
 ## Cumulative Impact

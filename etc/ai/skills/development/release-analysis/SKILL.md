@@ -79,6 +79,11 @@ Get the published date and any auto-generated release notes.
 
 ## Writing the Analysis
 
+Before drafting, skim the most recent existing `releases/version-*.md` for house-style calibration —
+the template is a floor, but prior reports set the real bar (function/constant-level detail,
+before/after tables, inline ground-truth corrections). Match the newest report's depth, not just the
+template's skeleton.
+
 Read `references/output-template.md` for the document structure.
 
 ### Key Principles
