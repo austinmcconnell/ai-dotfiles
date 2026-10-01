@@ -396,6 +396,7 @@
     "verbose": true,
     "cleanupPeriodDays": 90,
     "autoCompactWindow": 350000,
+    "includeGitInstructions": false,
     "model": "sonnet",
     "modelSettings": {
         "claude-sonnet-5": {
