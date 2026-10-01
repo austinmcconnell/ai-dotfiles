@@ -32,6 +32,7 @@ artifact against it, even when you believe you already know the convention.
 | Stress-testing an article / auditing claims                          | `stress-test-analysis`                            |
 | Doubting a non-trivial decision before it stands                     | `doubt-driven-development`                        |
 | Hardening code / handling untrusted input, auth, secrets, LLM output | `security-and-hardening`                          |
+| Instrumenting a service / adding metrics, spans, or alerts           | `observability-and-instrumentation`               |
 | Deciding what to work on / scoping an idea                           | `idea-refinement`                                 |
 | Session start / open questions arise                                 | `todo`                                            |
 | Promoting corrections to steering                                    | `distill-learnings`                               |
