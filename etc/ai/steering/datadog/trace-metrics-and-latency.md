@@ -56,8 +56,41 @@ clarifying query in a latency investigation.
   (statement/gunicorn/proxy), not organic latency. Find the matching timeout config value.
 - `pup traces aggregate` over wide or high-traffic windows intermittently 408-times-out; narrow the
   window (per-day/per-hour) and retry.
+- **Uninstrumented gap = self-time, not root-minus-direct-children.** When a root request span is
+  slow but no child span is, the time is in work that emits NO span: an un-instrumented
+  decorator/middleware, an outbound HTTP client ddtrace didn't patch, or pure-Python CPU. Localize
+  it by computing **self-time per span** (span.duration − sum of its OWN direct children) across the
+  whole trace and taking the max — NOT root-minus-its-direct-children, because the gap is usually
+  nested several levels down (e.g. inside a `flask.dispatch_request → view` subtree, not at the
+  root). DB/redis/serialize spans each being fast while one ancestor span holds most of the
+  self-time is the signature. Pull all spans with `pup traces search --query='trace_id:<id>'` (only
+  within ~15d retention). App-emitted work you WANT visible should get its own `tracer.trace(...)`
+  span; recommending that instrument-the-gap span is often part of the fix.
+
+## Deploy-regression triage: split by version to defeat the traffic-ramp confound
+
+When latency rises "after a deploy", the aggregate p95 on a Deployments panel conflates TWO things:
+the code change AND whatever else moved at the same time (usually a request-rate ramp, since deploys
+often land near business-hours traffic growth). Do NOT conclude "the deploy did it" from the
+aggregate.
+
+- **Split p95 by `version` AND `resource_name` over the same day** (`... by {resource_name,version}`
+  or the harness `version` command). If one endpoint jumps N× while others are flat/improved, it's a
+  code change on that endpoint — the per-version split holds traffic constant, removing the ramp
+  confound. A broad, proportional rise across all endpoints points at load/infra instead.
+- **Confirm the step aligns with the cutover**: derive first/last-seen per version; the regressed
+  endpoint's p95 should step exactly at the old-version-last-seen == new-version-first-seen
+  boundary.
+- **Then localize with self-time** (above) on a slow trace of the regressed endpoint, and confirm
+  with the code diff between the two version tags (`git diff <old>..<new> -- <path>`). A one-line
+  decorator/middleware addition can be the entire cause even in an 18-PR release.
+- **Rule out same-window client changes and flag-gated features** before crediting/blaming a server
+  release: a coincident consumer deploy gets stamped with the live server version; a new integration
+  may be behind a flag that's OFF (check config/flag state, don't assume "shipped" == "on").
 
 ## Optional local harness
 
 A project may keep a git-ignored `analysis/datadog/latency-query.py` wrapping these patterns (p95 /
-max / service-p95 / version / availability / status-split). Local artifact, not shared.
+max / service-p95 / version / availability / status-split / trace-breakdown). The
+`trace-breakdown --trace-id <id>` mode decomposes one trace and reports **self-time per span** to
+localize an uninstrumented gap (see Diagnostic heuristics). Local artifact, not shared.
