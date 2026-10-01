@@ -33,6 +33,7 @@ artifact against it, even when you believe you already know the convention.
 | Doubting a non-trivial decision before it stands                     | `doubt-driven-development`                        |
 | Hardening code / handling untrusted input, auth, secrets, LLM output | `security-and-hardening`                          |
 | Instrumenting a service / adding metrics, spans, or alerts           | `observability-and-instrumentation`               |
+| Designing/changing a service endpoint or retried outbound call       | `api-idempotency-and-contracts`                   |
 | Deciding what to work on / scoping an idea                           | `idea-refinement`                                 |
 | Session start / open questions arise                                 | `todo`                                            |
 | Promoting corrections to steering                                    | `distill-learnings`                               |
