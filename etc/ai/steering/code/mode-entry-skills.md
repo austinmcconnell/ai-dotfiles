@@ -16,7 +16,13 @@ numbered loop lives in the skill).
   also covers session-start todo tracking: `idea-refinement`'s committed tier is `todo.md`, so
   reaching for it pulls in the `todo` skill's workflow — there is no separate mode-entry trigger for
   `todo`.
+- **Before a non-trivial decision stands** — when about to commit non-trivial code, cross a module
+  or service boundary, or assert a property a compiler cannot verify (thread-safety, idempotence,
+  ordering, invariants), load the `doubt-driven-development` skill. Its value is catching a wrong
+  direction *in flight*, while course-correction is cheap, so it must be loaded before the decision
+  stands — not after, when it degrades into a post-hoc review. Main-session `code` orchestrator
+  only; scoped personas surface the decision rather than run the loop.
 
 These pointers reinforce the mode-keyed rows in `skill-loading-triggers.md`; they do not restate the
 trigger table. When in doubt about which skill maps to a task, that table remains the single index —
-this file only ensures the two mode-entry cases are noticed at the moment the mode begins.
+this file only ensures these mode-entry cases are noticed at the moment the mode begins.

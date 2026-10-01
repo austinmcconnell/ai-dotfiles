@@ -30,6 +30,7 @@ artifact against it, even when you believe you already know the convention.
 | Creating release analysis                                            | `release-analysis`                                |
 | Reviewing a PR / code review                                         | `pr-review`                                       |
 | Stress-testing an article / auditing claims                          | `stress-test-analysis`                            |
+| Doubting a non-trivial decision before it stands                     | `doubt-driven-development`                        |
 | Deciding what to work on / scoping an idea                           | `idea-refinement`                                 |
 | Session start / open questions arise                                 | `todo`                                            |
 | Promoting corrections to steering                                    | `distill-learnings`                               |
