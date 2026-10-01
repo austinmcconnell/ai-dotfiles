@@ -31,6 +31,7 @@ artifact against it, even when you believe you already know the convention.
 | Reviewing a PR / code review                                         | `pr-review`                                       |
 | Stress-testing an article / auditing claims                          | `stress-test-analysis`                            |
 | Doubting a non-trivial decision before it stands                     | `doubt-driven-development`                        |
+| Hardening code / handling untrusted input, auth, secrets, LLM output | `security-and-hardening`                          |
 | Deciding what to work on / scoping an idea                           | `idea-refinement`                                 |
 | Session start / open questions arise                                 | `todo`                                            |
 | Promoting corrections to steering                                    | `distill-learnings`                               |

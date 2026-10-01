@@ -1,5 +1,10 @@
 # Security Best Practices
 
+These are the always-on principles. For the full hardening workflow — threat-model-first analysis,
+STRIDE, the Always/Ask-first/Never boundary system, and per-control patterns (injection, SSRF,
+destructive paths, secrets, dependencies, LLM output, privacy) — load the `security-and-hardening`
+skill when the task warrants it.
+
 When generating or reviewing code:
 
 ## Data Handling
@@ -25,9 +30,11 @@ When generating or reviewing code:
 
 ## Code Security
 
-- Avoid SQL injection by using parameterized queries
-- Prevent XSS by escaping output in web applications
-- Set appropriate CORS policies
+- Avoid SQL injection by using parameterized queries; build subprocess calls as an argument list,
+  never `shell=True` with interpolated input
+- Encode output for its sink — escape HTML for browser-facing output, and never pass untrusted input
+  (including LLM output) to `eval`/`exec`, a shell, or a file path
+- Restrict CORS and network egress to an explicit allowlist for services that expose them
 - Implement proper error handling without leaking sensitive information
 
 ## Disclosing Exposures
