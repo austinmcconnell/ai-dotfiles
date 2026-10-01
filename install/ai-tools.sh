@@ -40,6 +40,33 @@ print_section_header "Distributing Agent Skills"
 SKILLS_SOURCE="$AI_DOTFILES_DIR/etc/ai/skills"
 STEERING_SOURCE="$AI_DOTFILES_DIR/etc/ai/steering"
 
+# Extra skill sources — host-local, deliberately NOT tracked in this repo so
+# machine-specific skill locations stay out of the public dotfiles. Each entry
+# is a `name=path` pair: `name` is the mount label under the agent's `extra/`
+# umbrella category, `path` is a directory of skill dirs. Decoupling the mount
+# name from the source folder name lets the agent globs (which reference the
+# stable `extra/` umbrella) stay fixed regardless of where a source lives.
+#
+# Populated from two optional sources, mirroring the ~/.extra convention in
+# etc/zsh/custom/plugins/extra/:
+#   - $EXTRA_SKILL_SOURCES env var — colon-separated name=path pairs (PATH-like)
+#   - ~/.extra/skill-sources file  — one name=path pair per line (# comments ok)
+# Absent sources and missing paths are skipped silently (see the per-entry
+# [ -d ] guards in the distribution loop).
+EXTRA_SKILL_PAIRS=()
+if [ -n "${EXTRA_SKILL_SOURCES:-}" ]; then
+    IFS=':' read -r -a _env_pairs <<<"$EXTRA_SKILL_SOURCES"
+    EXTRA_SKILL_PAIRS+=("${_env_pairs[@]}")
+fi
+if [ -f "$HOME/.extra/skill-sources" ]; then
+    while IFS= read -r _line; do
+        _line="${_line%%#*}"
+        _line="${_line#"${_line%%[![:space:]]*}"}"
+        _line="${_line%"${_line##*[![:space:]]}"}"
+        [ -n "$_line" ] && EXTRA_SKILL_PAIRS+=("$_line")
+    done <"$HOME/.extra/skill-sources"
+fi
+
 # Steering domains shipped to every session by the steering-file generators
 # (Gemini GEMINI.md, Cursor .mdc, Claude rules/). These are universal — they
 # apply to any work in any session. Domain-specific steering (ansible,
@@ -192,6 +219,26 @@ agent_config() {
     esac
 }
 
+# Split a `name=path` entry into its parts and expand a leading ~ in the path.
+# Usage: pair_name "$entry" / pair_path "$entry". An entry with no `=` yields an
+# empty name (caller skips it).
+pair_name() {
+    case "$1" in
+    *=*) printf '%s' "${1%%=*}" ;;
+    *) printf '' ;;
+    esac
+}
+pair_path() {
+    local path="${1#*=}"
+    # Expand a leading ~/ to $HOME. The pattern is a literal prefix check, not
+    # shell tilde expansion (which does not fire inside quotes or variables).
+    if [ "${path#\~/}" != "$path" ]; then
+        printf '%s' "$HOME/${path#\~/}"
+    else
+        printf '%s' "$path"
+    fi
+}
+
 # ---------------------------------------------------------------
 # Distribution
 # ---------------------------------------------------------------
@@ -216,15 +263,61 @@ for agent in "${ENABLED_AGENTS[@]}"; do
             ln -sfn "$skill_dir" "$skills_path/$(basename "$skill_dir")"
             skill_count=$((skill_count + 1))
         done < <(find "$SKILLS_SOURCE" -mindepth 2 -maxdepth 2 -type d ! -path "*/.system/*" -print0)
+        # Extra skill sources: this layout has no category grouping, so the
+        # pair `name` is unused here — each skill dir under every source path is
+        # symlinked individually alongside the primary skills. Per-entry [ -d ]
+        # guard skips sources absent on this machine.
+        for _entry in "${EXTRA_SKILL_PAIRS[@]}"; do
+            _src="$(pair_path "$_entry")"
+            [ -n "$(pair_name "$_entry")" ] && [ -d "$_src" ] || continue
+            while IFS= read -r -d '' skill_dir; do
+                ln -sfn "$skill_dir" "$skills_path/$(basename "$skill_dir")"
+                skill_count=$((skill_count + 1))
+            done < <(find "$_src" -mindepth 1 -maxdepth 1 -type d -print0)
+        done
         echo "✓ Linked $skill_count flattened skills to $agent ($skills_path)"
         ;;
     *)
-        # Remove existing real directory (e.g., left over from prior per-category symlink layout)
-        if [ -d "$skills_path" ] && [ ! -L "$skills_path" ]; then
+        # Nested layout: this agent discovers skills via recursive globs per
+        # category (e.g. kiro's skill://~/.kiro/skills/shared/**/SKILL.md).
+        # <skills_path> is a REAL directory of per-category symlinks — one per
+        # dotfiles category plus any guarded optional sources — rather than a
+        # single whole-tree symlink, so an extra source can mount as its own
+        # category sibling instead of resolving through a tree-wide symlink.
+        #
+        # Idempotency: handle both leftover shapes. An old single whole-tree
+        # symlink is removed before building the real dir; a stale real dir is
+        # rebuilt cleanly each run.
+        if [ -L "$skills_path" ]; then
+            rm -f "$skills_path"
+        elif [ -d "$skills_path" ]; then
             rm -rf "$skills_path"
         fi
-        ln -sfn "$SKILLS_SOURCE" "$skills_path"
-        echo "✓ Linked skills to $agent ($skills_path)"
+        mkdir -p "$skills_path"
+        category_count=0
+        # Category list is glob-driven, not hardcoded, so adding a dotfiles
+        # skill category stays zero-config.
+        while IFS= read -r -d '' category_dir; do
+            ln -sfn "$category_dir" "$skills_path/$(basename "$category_dir")"
+            category_count=$((category_count + 1))
+        done < <(find "$SKILLS_SOURCE" -mindepth 1 -maxdepth 1 -type d ! -name ".system" -print0)
+        echo "✓ Linked $category_count skill categories to $agent ($skills_path)"
+
+        # Extra skill sources mount under a single `extra/` umbrella category:
+        # extra/<name> -> <path>. One stable umbrella keeps the agent globs
+        # (skill://.../extra/**/SKILL.md) fixed no matter which sources exist.
+        # Per-entry [ -d ] guard skips sources absent on this machine.
+        extra_count=0
+        for _entry in "${EXTRA_SKILL_PAIRS[@]}"; do
+            _name="$(pair_name "$_entry")"
+            _src="$(pair_path "$_entry")"
+            [ -n "$_name" ] && [ -d "$_src" ] || continue
+            mkdir -p "$skills_path/extra"
+            ln -sfn "$_src" "$skills_path/extra/$_name"
+            extra_count=$((extra_count + 1))
+        done
+        [ "$extra_count" -gt 0 ] &&
+            echo "✓ Linked $extra_count extra skill source(s) to $agent ($skills_path/extra)"
         ;;
     esac
 
