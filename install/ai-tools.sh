@@ -185,6 +185,41 @@ Skills are available in ~/.claude/skills/ (symlinked from dotfiles).
 EOF
 }
 
+# Link the steering tree at $dest and verify it resolves.
+# Used by: kiro-cli (file://~/.kiro/steering/ URIs cannot expand $AI_DOTFILES_DIR,
+# so the symlink is the relocation seam).
+#
+# Only an existing symlink or an empty real directory (kiro creates an empty
+# ~/.kiro/steering itself) is replaced; a non-empty directory fails loudly rather
+# than being deleted. The probe check catches a link whose target is missing, which
+# `ln -sfn` and `readlink` both accept silently.
+#
+# Args: $1 = link path, $2 = steering-relative probe file that must resolve.
+# Returns: 0 when linked and the probe resolves, 1 otherwise (message on stderr).
+link_steering_tree() {
+    local dest="$1" probe="$2"
+
+    if [[ -L "$dest" ]]; then
+        rm -f "$dest"
+    elif [[ -d "$dest" ]]; then
+        if ! rmdir "$dest" 2>/dev/null; then
+            echo "✗ $dest is a non-empty directory; refusing to replace it" >&2
+            return 1
+        fi
+    elif [[ -e "$dest" ]]; then
+        echo "✗ $dest exists and is not a symlink or directory; refusing to replace it" >&2
+        return 1
+    fi
+
+    mkdir -p "$(dirname "$dest")"
+    ln -sfn "$STEERING_SOURCE" "$dest"
+
+    if [[ ! -e "$dest/$probe" ]]; then
+        echo "✗ $dest does not resolve $probe (is AI_DOTFILES_DIR correct?)" >&2
+        return 1
+    fi
+}
+
 # ---------------------------------------------------------------
 # Agent Registry
 # Each agent defines:
@@ -326,13 +361,7 @@ for agent in "${ENABLED_AGENTS[@]}"; do
     none) ;;
     symlink:*)
         steering_link="${steering#symlink:}"
-        mkdir -p "$(dirname "$steering_link")"
-        # Remove existing real directory (e.g., the empty ~/.kiro/steering dir
-        # kiro creates) before linking, so ln -sfn creates a symlink not a nested one
-        if [ -d "$steering_link" ] && [ ! -L "$steering_link" ]; then
-            rm -rf "$steering_link"
-        fi
-        ln -sfn "$STEERING_SOURCE" "$steering_link"
+        link_steering_tree "$steering_link" "security/env-file-protection.md" || exit 1
         echo "✓ Linked steering to $agent ($steering_link)"
         ;;
     single:*)
