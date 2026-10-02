@@ -92,14 +92,5 @@ commenting.
 
 ## Steering
 
-The following steering docs define this project's documentation conventions and are loaded into
-context at startup. They are the canonical source in the dotfiles repo — edit them there, not here.
-
-@~/.dotfiles/etc/ai/steering/documentation/content-ownership.md
-@~/.dotfiles/etc/ai/steering/documentation/cross-repo-awareness.md
-@~/.dotfiles/etc/ai/steering/documentation/formatting-conventions.md
-@~/.dotfiles/etc/ai/steering/documentation/link-conventions.md
-@~/.dotfiles/etc/ai/steering/documentation/mdbook-conventions.md
-@~/.dotfiles/etc/ai/steering/documentation/writing-style.md
-@~/.dotfiles/etc/ai/steering/documentation/skill-loading-triggers.md
-@~/.dotfiles/etc/ai/steering/security/env-file-protection.md
+This persona's steering docs follow below. `scripts/generate-personas.sh` appends them when it
+builds the installed persona, so edit them in `etc/ai/steering/`, not here.

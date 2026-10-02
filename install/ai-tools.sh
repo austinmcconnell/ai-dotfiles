@@ -70,8 +70,9 @@ fi
 # Steering domains shipped to every session by the steering-file generators
 # (Gemini GEMINI.md, Cursor .mdc, Claude rules/). These are universal — they
 # apply to any work in any session. Domain-specific steering (ansible,
-# documentation, datadog, scrum) is loaded per-persona via @-imports in the
-# relevant Claude subagent body, so it doesn't pollute unrelated sessions.
+# documentation, datadog, scrum) is inlined per-persona into the relevant Claude
+# subagent file by scripts/generate-personas.sh, so it doesn't pollute unrelated
+# sessions.
 # Single source of truth: every generator loops this array, so adding a
 # universal domain here updates all three tools at once.
 #

@@ -25,7 +25,7 @@ their own scoped `hooks:` field for persona-specific hooks; see Personas below.
 ```text
 etc/claude-code/
 ├── settings.json    # Permissions (allow/deny) and hooks configuration
-└── agents/          # Persona markdown files (symlinked to ~/.claude/agents/)
+└── agents/          # Persona sources (generated into ~/.claude/agents/ with steering inlined)
     ├── docs.md
     ├── jira.md
     ├── ansible.md
@@ -112,7 +112,8 @@ frontmatter get conditional loading (only injected when Claude reads matching fi
 a minimal pointer file, not a concatenated dump. Only the `code`, `github`, and `security` steering
 domains are distributed this way (Claude Code has no per-persona resource scoping in the main
 session, unlike kiro's per-agent `resources` arrays) — domain-specific steering (`ansible`,
-`documentation`, `datadog`, `scrum`) instead loads per-persona via `@`-imports (see Personas below).
+`documentation`, `datadog`, `scrum`) is instead inlined into each persona at install time (see
+Personas below).
 
 ### MCP Servers
 
@@ -144,8 +145,8 @@ side by the shared `block-memory-secrets.sh` PreToolUse hook.
 ### Personas (Subagents)
 
 Claude Code supports custom subagents defined as markdown files with YAML frontmatter in
-`etc/claude-code/agents/` (symlinked to `~/.claude/agents/` by `install/claude-code.sh`, invoked via
-`claude --agent <name>`). Four personas mirror their kiro-cli counterparts: `docs`, `jira`,
+`etc/claude-code/agents/` (generated into `~/.claude/agents/` by `install/claude-code.sh`, invoked
+via `claude --agent <name>`). Four personas mirror their kiro-cli counterparts: `docs`, `jira`,
 `datadog`, `ansible`. There is no persona equivalent of kiro's `code` agent — the main Claude Code
 session fills that role directly.
 
@@ -154,12 +155,15 @@ session fills that role directly.
 - `disallowedTools:` blocks specific tools within an otherwise-available category (e.g. jira's
   `mcp__jira__jira_delete`), mirroring kiro's MCP `disabledTools`
 - `mcpServers:` scopes which MCP servers a persona can see (jira restricts to `jira`)
-- Domain steering loads via `@`-imports in the persona body (e.g.
-  `@~/.dotfiles/etc/ai/steering/ansible/*.md`), not a `resources` array — each persona should import
-  the same steering domain its kiro counterpart loads via
-  `file://~/.kiro/steering/<domain>/**/*.md`. Keep these in sync when adding steering files: a new
-  file in an imported domain directory needs an explicit new `@`-import line added to the persona
-  (unlike kiro's glob-based `resources` entries, Claude's `@`-imports are not wildcarded)
+- Domain steering is inlined into the installed persona, not loaded from a `resources` array. Claude
+  Code uses a persona body verbatim as its system prompt and does not expand `@`-imports there, so
+  `scripts/generate-personas.sh` appends every doc in the persona's steering domain (the same domain
+  its kiro counterpart loads via `file://~/.kiro/steering/<domain>/**/*.md`) plus
+  `security/env-file-protection.md`. The persona-to-domain mapping lives in
+  `install/persona-domains.sh`. A new steering file in a domain is picked up on the next install,
+  with no persona edit; edits to a persona source or steering doc take effect after re-running the
+  installer. `scripts/validate-persona-steering.sh` checks the mapping and the generator output at
+  commit time
 - Personas have no kiro-style `knowledgeBase` equivalent. Where the kiro agent indexes local repos
   semantically (docs, ansible), the Claude persona instead documents the same local paths in a
   "Reference Repositories" table so Grep/Glob can be pointed at them manually — functional, not
@@ -272,4 +276,5 @@ decision to keep the default rather than opt out.
 - **Steering content**: Check `~/.claude/rules/`; source files in `etc/ai/steering/`
 - **MCP servers**: Configured in `~/.claude.json` (bootstrapped by `install/claude-code.sh`)
 - **Skills**: Symlinked from `etc/ai/skills/` to `~/.claude/skills/`
-- **Personas**: `etc/claude-code/agents/*.md`, symlinked to `~/.claude/agents/`
+- **Personas**: `etc/claude-code/agents/*.md`, generated into `~/.claude/agents/` with steering
+  inlined (`scripts/generate-personas.sh`)

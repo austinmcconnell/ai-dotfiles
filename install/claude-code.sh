@@ -34,11 +34,13 @@ mkdir -p "$CLAUDE_DIR"
 # Link settings (permissions)
 ln -sfv "$AI_DOTFILES_DIR/etc/claude-code/settings.json" "$CLAUDE_DIR/settings.json"
 
-# Link subagents directory (jira, datadog personas — usable via `claude --agent <name>`).
+# Generate the subagent personas (usable via `claude --agent <name>`). Claude Code does
+# not expand @-imports in an agent body, so each installed persona is built with its
+# steering docs inlined rather than symlinked from the repo.
 # Note: Claude Code does not detect a newly created agents/ dir mid-session; a restart
-# is required the first time this symlink is added.
-ln -sfn "$AI_DOTFILES_DIR/etc/claude-code/agents" "$CLAUDE_DIR/agents"
-echo "✓ Linked subagents to ~/.claude/agents"
+# is required the first time this directory is created.
+"$AI_DOTFILES_DIR/scripts/generate-personas.sh" "$CLAUDE_DIR/agents"
+echo "✓ Generated subagents in ~/.claude/agents"
 
 # Bootstrap MCP servers in ~/.claude.json (user scope).
 #

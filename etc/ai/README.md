@@ -77,9 +77,9 @@ tools:
 - **Claude Code's main session, Cursor, and Gemini CLI** have exactly one always-on global context
   surface with no runtime scoping (`~/.claude/rules/` + `CLAUDE.md`, `.mdc` files with
   `alwaysApply: true`, `GEMINI.md`). Claude's four custom subagents
-  (`docs`/`jira`/`datadog`/`ansible`) claw back Kiro-style scoping via `@`-imports in their persona
-  bodies, but the main session — and Cursor and Gemini entirely — have no equivalent. Whatever a
-  generator writes there loads on *every* session, forever.
+  (`docs`/`jira`/`datadog`/`ansible`) claw back Kiro-style scoping by having their domain steering
+  inlined into the generated persona files, but the main session — and Cursor and Gemini entirely —
+  have no equivalent. Whatever a generator writes there loads on *every* session, forever.
 
 Because three of the five tools can't filter downstream, filtering has to happen at distribution
 time instead: `UNIVERSAL_STEERING_DOMAINS` is that preselected "safe for any session, any tool" set.

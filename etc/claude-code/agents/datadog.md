@@ -108,11 +108,5 @@ Every audit report must include:
 
 ## Steering
 
-The following steering docs define this project's Datadog conventions and are loaded into context at
-startup. They are the canonical source in the dotfiles repo — edit them there, not here.
-
-@~/.dotfiles/etc/ai/steering/datadog/conventions.md
-@~/.dotfiles/etc/ai/steering/datadog/analysis-output.md
-@~/.dotfiles/etc/ai/steering/datadog/trace-metrics-and-latency.md
-@~/.dotfiles/etc/ai/steering/datadog/skill-loading-triggers.md
-@~/.dotfiles/etc/ai/steering/security/env-file-protection.md
+This persona's steering docs follow below. `scripts/generate-personas.sh` appends them when it
+builds the installed persona, so edit them in `etc/ai/steering/`, not here.
