@@ -11,6 +11,8 @@
 ## Commit Discipline
 
 - Only create commits when the user explicitly asks
+- The user stages and commits: propose the `git add` list and message, and never run `git add`,
+  `git commit` or `--amend` yourself — including when offering to "finish up"
 - Stage specific files — never `git add .` or `git add -A`
 - Run pre-commit hooks before committing (see `pre-commit-validation` skill)
 - If pre-commit modifies files, re-read them before proceeding

@@ -49,6 +49,12 @@ paths:
 
 - Source `install/utils.sh` for helpers (`print_header`, `is-macos`, `is-debian`)
 - Must be idempotent — safe to run repeatedly
+- Never `rm -rf` a destination: replace only an existing symlink or an empty directory, and fail
+  loudly (stderr, exit 1) on anything else
+- After creating a link or seam, assert it resolves by probing a known file through it. On failure
+  remove the link and exit non-zero — never report success on a dangling link
+- Put that assertion in one shared helper used by every seam, and also add a commit-time validator,
+  since the two guard different failures
 - Check for existing installations before reinstalling
 - Handle both macOS and Linux where applicable
 
