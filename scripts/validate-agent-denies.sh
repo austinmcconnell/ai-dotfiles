@@ -32,10 +32,11 @@ set -euo pipefail
 # Exit 0 when every agent is consistent; exit 1 on any drift.
 # ---------------------------------------------------------------
 
-DOTFILES_DIR="${DOTFILES_DIR:-$HOME/.dotfiles}"
-source "${DOTFILES_DIR}/install/utils.sh"
+# Resolve the AI dotfiles root from this script's location so the validator
+# always checks THIS repo, not whatever $DOTFILES_DIR points at in the shell.
+AI_DOTFILES_DIR="${AI_DOTFILES_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 
-AGENTS_DIR="${DOTFILES_DIR}/etc/kiro-cli/cli-agents"
+AGENTS_DIR="${AI_DOTFILES_DIR}/etc/kiro-cli/cli-agents"
 AGENTS=(code docs jira datadog ansible)
 
 FAILURES=0

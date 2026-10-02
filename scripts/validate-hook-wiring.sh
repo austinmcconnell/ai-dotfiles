@@ -52,14 +52,15 @@ set -euo pipefail
 # Exit 0 when wiring matches expectations; exit 1 on any drift.
 # ---------------------------------------------------------------
 
-DOTFILES_DIR="${DOTFILES_DIR:-$HOME/.dotfiles}"
-source "${DOTFILES_DIR}/install/utils.sh"
+# Resolve the AI dotfiles root from this script's location so the validator
+# always checks THIS repo, not whatever $DOTFILES_DIR points at in the shell.
+AI_DOTFILES_DIR="${AI_DOTFILES_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 
-AI_HOOKS_DIR="${DOTFILES_DIR}/etc/ai/hooks"
-KIRO_HOOKS_DIR="${DOTFILES_DIR}/etc/kiro-cli/hooks"
-KIRO_AGENTS_DIR="${DOTFILES_DIR}/etc/kiro-cli/cli-agents"
-CLAUDE_SETTINGS="${DOTFILES_DIR}/etc/claude-code/settings.json"
-CLAUDE_AGENTS_DIR="${DOTFILES_DIR}/etc/claude-code/agents"
+AI_HOOKS_DIR="${AI_DOTFILES_DIR}/etc/ai/hooks"
+KIRO_HOOKS_DIR="${AI_DOTFILES_DIR}/etc/kiro-cli/hooks"
+KIRO_AGENTS_DIR="${AI_DOTFILES_DIR}/etc/kiro-cli/cli-agents"
+CLAUDE_SETTINGS="${AI_DOTFILES_DIR}/etc/claude-code/settings.json"
+CLAUDE_AGENTS_DIR="${AI_DOTFILES_DIR}/etc/claude-code/agents"
 
 KIRO_AGENTS=(code docs jira datadog ansible)
 

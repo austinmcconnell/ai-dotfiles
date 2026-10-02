@@ -26,12 +26,13 @@ set -euo pipefail
 # Exit 0 when both servers match on command+args; exit 1 on any drift.
 # ---------------------------------------------------------------
 
-DOTFILES_DIR="${DOTFILES_DIR:-$HOME/.dotfiles}"
-source "${DOTFILES_DIR}/install/utils.sh"
+# Resolve the AI dotfiles root from this script's location so the validator
+# always checks THIS repo, not whatever $DOTFILES_DIR points at in the shell.
+AI_DOTFILES_DIR="${AI_DOTFILES_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 
-KIRO_MCP_JSON="${DOTFILES_DIR}/etc/kiro-cli/settings/mcp.json"
-KIRO_JIRA_JSON="${DOTFILES_DIR}/etc/kiro-cli/cli-agents/jira.json"
-CLAUDE_INSTALL_SH="${DOTFILES_DIR}/install/claude-code.sh"
+KIRO_MCP_JSON="${AI_DOTFILES_DIR}/etc/kiro-cli/settings/mcp.json"
+KIRO_JIRA_JSON="${AI_DOTFILES_DIR}/etc/kiro-cli/cli-agents/jira.json"
+CLAUDE_INSTALL_SH="${AI_DOTFILES_DIR}/install/claude-code.sh"
 
 FAILURES=0
 

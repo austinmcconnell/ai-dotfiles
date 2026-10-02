@@ -28,11 +28,12 @@ set -euo pipefail
 # Exit 0 when every persona is in sync; exit 1 on any drift.
 # ---------------------------------------------------------------
 
-DOTFILES_DIR="${DOTFILES_DIR:-$HOME/.dotfiles}"
-source "${DOTFILES_DIR}/install/utils.sh"
+# Resolve the AI dotfiles root from this script's location so the validator
+# always checks THIS repo, not whatever $DOTFILES_DIR points at in the shell.
+AI_DOTFILES_DIR="${AI_DOTFILES_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 
-STEERING_DIR="${DOTFILES_DIR}/etc/ai/steering"
-PERSONAS_DIR="${DOTFILES_DIR}/etc/claude-code/agents"
+STEERING_DIR="${AI_DOTFILES_DIR}/etc/ai/steering"
+PERSONAS_DIR="${AI_DOTFILES_DIR}/etc/claude-code/agents"
 
 FAILURES=0
 

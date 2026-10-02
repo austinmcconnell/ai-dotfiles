@@ -40,10 +40,11 @@ set -euo pipefail
 # Exit 0 when the skill file matches the canonical sets; exit 1 on drift.
 # ---------------------------------------------------------------
 
-DOTFILES_DIR="${DOTFILES_DIR:-$HOME/.dotfiles}"
-source "${DOTFILES_DIR}/install/utils.sh"
+# Resolve the AI dotfiles root from this script's location so the validator
+# always checks THIS repo, not whatever $DOTFILES_DIR points at in the shell.
+AI_DOTFILES_DIR="${AI_DOTFILES_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 
-DOC_FILE="${DOTFILES_DIR}/etc/ai/skills/shared/memory-management/SKILL.md"
+DOC_FILE="${AI_DOTFILES_DIR}/etc/ai/skills/shared/memory-management/SKILL.md"
 
 # Mandatory STRUCTURED marker line the recall hook confirms a handoff by (see
 # recall-memory.sh). The bare token alone false-matches any memory that merely
