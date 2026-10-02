@@ -2,8 +2,9 @@
 
 # ---------------------------------------------------------------
 # Engram Configuration
-# Creates data directory for engram (persistent memory for AI agents)
-# Binary installation is handled by install/brew.sh
+# Installs the engram binary (persistent memory for AI agents) from its
+# Homebrew tap, then creates its data directory. Self-contained: does not
+# assume a parent dotfiles installer tapped/installed engram first.
 # ---------------------------------------------------------------
 
 set -euo pipefail
@@ -15,6 +16,14 @@ AI_DOTFILES_DIR="${AI_DOTFILES_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && 
 source "$AI_DOTFILES_DIR/install/utils.sh"
 
 print_section_header "Configuring Engram"
+
+# engram lives in a third-party tap, not homebrew-core — tap before installing.
+if is-executable brew; then
+    tap_if_needed "gentleman-programming/tap"
+    install_if_needed "engram" "formula"
+else
+    log_warning "brew not found — cannot install engram"
+fi
 
 if ! is-executable engram; then
     log_warning "engram not found on PATH — skipping configuration"
