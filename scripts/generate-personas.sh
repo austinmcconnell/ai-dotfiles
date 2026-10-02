@@ -22,6 +22,11 @@ set -euo pipefail
 
 AI_DOTFILES_DIR="${AI_DOTFILES_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 
+if [[ ! -f "$AI_DOTFILES_DIR/install/persona-domains.sh" || ! -d "$AI_DOTFILES_DIR/etc/ai/steering" ]]; then
+    echo "✗ AI_DOTFILES_DIR=$AI_DOTFILES_DIR does not look like the ai-dotfiles repo" >&2
+    exit 1
+fi
+
 source "$AI_DOTFILES_DIR/install/persona-domains.sh"
 
 SOURCE_DIR="$AI_DOTFILES_DIR/etc/claude-code/agents"
