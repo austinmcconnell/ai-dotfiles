@@ -217,6 +217,7 @@ link_steering_tree() {
 
     if [[ ! -e "$dest/$probe" ]]; then
         echo "✗ $dest does not resolve $probe (is AI_DOTFILES_DIR correct?)" >&2
+        rm -f "$dest"
         return 1
     fi
 }
