@@ -1,0 +1,5 @@
+[formatting]
+  align_comments = false
+  compact_arrays = false
+  indent_entries = true
+  indent_tables = true

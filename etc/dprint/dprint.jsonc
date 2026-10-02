@@ -1,0 +1,16 @@
+{
+    "lineWidth": 100,
+    "json": {
+        "indentWidth": 4,
+        "associations": [
+            "**/*.json",
+            "**/*.sublime-settings"
+        ]
+    },
+    "yaml": {},
+    "excludes": [],
+    "plugins": [
+        "https://plugins.dprint.dev/json-0.21.3.wasm",
+        "https://plugins.dprint.dev/g-plane/pretty_yaml-v0.6.0.wasm"
+    ]
+}

@@ -1,0 +1,115 @@
+---
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: check-executables-have-shebangs
+      - id: check-json
+        types: [file]
+        files: \.(json)$
+      - id: check-merge-conflict
+      - id: check-yaml
+        args:
+          - --allow-multiple-documents
+      - id: debug-statements
+      - id: double-quote-string-fixer
+      - id: end-of-file-fixer
+      - id: mixed-line-ending
+      - id: trailing-whitespace
+  - repo: local
+    hooks:
+      - id: sort-claude-settings-json
+        name: Sort claude-code settings.json top-level keys
+        language: script
+        entry: scripts/sort-claude-settings-json.sh
+        files: ^etc/claude-code/settings\.json$
+        pass_filenames: false
+      - id: validate-agent-denies
+        name: Validate agent deny lists
+        language: script
+        entry: scripts/validate-agent-denies.sh
+        files: ^etc/kiro-cli/cli-agents/.*\.json$
+        pass_filenames: false
+      - id: validate-memory-types
+        name: Validate memory-type vocabulary and handoff convention
+        language: script
+        entry: scripts/validate-memory-types.sh
+        files: ^etc/ai/skills/shared/memory-management/SKILL\.md$|^scripts/validate-memory-types\.sh$
+        pass_filenames: false
+      - id: validate-persona-steering-imports
+        name: Validate persona steering imports
+        language: script
+        entry: scripts/validate-persona-steering-imports.sh
+        files: ^etc/ai/steering/.*\.md$|^etc/claude-code/agents/.*\.md$
+        pass_filenames: false
+      - id: validate-mcp-server-parity
+        name: Validate MCP server parity
+        language: script
+        entry: scripts/validate-mcp-server-parity.sh
+        files: ^etc/kiro-cli/settings/mcp\.json$|^etc/kiro-cli/cli-agents/jira\.json$|^install/claude-code\.sh$
+        pass_filenames: false
+      - id: validate-hook-wiring
+        name: Validate hook wiring parity
+        language: script
+        entry: scripts/validate-hook-wiring.sh
+        files: ^etc/ai/hooks/.*\.sh$|^etc/kiro-cli/hooks/.*\.sh$|^etc/kiro-cli/cli-agents/.*\.json$|^etc/claude-code/settings\.json$|^etc/claude-code/agents/.*\.md$
+        pass_filenames: false
+      - id: shfmt
+        name: shfmt
+        minimum_pre_commit_version: 2.4.0
+        language: golang
+        additional_dependencies: [mvdan.cc/sh/v3/cmd/shfmt@v3.10.0]
+        entry: shfmt
+        args: ["-w", "-i", "4"]
+        types: [shell]
+        exclude_types: ["zsh"]
+      - id: shellcheck
+        name: ShellCheck
+        description: Static analysis tool for shell scripts (installed via CLI)
+        language: system
+        entry: shellcheck
+        types: [shell]
+        exclude_types: ["zsh"]
+      - id: dprint
+        name: dprint
+        language: system
+        entry: dprint fmt
+        args: ["--config", "etc/dprint/dprint.jsonc", "--allow-no-files"]
+        files: \.(json|sublime-settings|yaml|yml)$
+  - repo: https://github.com/openstack/bashate
+    rev: 2.1.1
+    hooks:
+      - id: bashate
+        args: ["--max-line-length", "100", "--ignore", "E004,E006,E040,E044"]
+        exclude_types: ["zsh"]
+  - repo: https://github.com/hukkin/mdformat
+    rev: 1.0.0
+    hooks:
+      - id: mdformat
+        exclude: "etc/ai/prompts/"
+        additional_dependencies:
+          - mdformat-gfm
+          - mdformat-gfm-alerts
+          - mdformat-frontmatter
+          - mdformat-simple-breaks
+  - repo: https://github.com/rvben/rumdl-pre-commit
+    rev: v0.1.84
+    hooks:
+      - id: rumdl-fmt
+  - repo: https://github.com/adrienverge/yamllint
+    rev: v1.38.0
+    hooks:
+      - id: yamllint
+        args: ["-c", "etc/yaml/yamllint"]
+  - repo: https://github.com/codespell-project/codespell
+    rev: v2.4.2
+    hooks:
+      - id: codespell
+        args: ["--skip", "*.json,*.yaml"]
+  - repo: https://github.com/ComPWA/taplo-pre-commit
+    rev: v0.9.3
+    hooks:
+      - id: taplo-format
+        args: ["--config", "etc/taplo/taplo.toml"]
+      - id: taplo-lint
+        args: ["--config", "etc/taplo/taplo.toml"]
