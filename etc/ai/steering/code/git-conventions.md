@@ -35,3 +35,18 @@
 - Never use `git log --oneline` — it strips the commit body where the WHY context lives. Use the
   default `git log` format (or a `--format` that keeps subject + body) so multi-line messages are
   visible.
+- When investigating *why* code is the way it is — before changing or debugging a file whose
+  rationale isn't obvious from the code itself — search history for the commit that introduced or
+  last touched it, and read the **full multi-line body**, not just the subject. The
+  `commit-message-writing` skill puts the motivation (WHY) in the body, so the context you need is
+  usually already recorded there rather than needing to be reverse-engineered or asked for.
+  - `git log -G'<regex>'` / `git log -S'<string>'` — find the commit where a line or string entered
+    or left (pickaxe); the most direct way to reach the change that created the behavior.
+  - `git log --grep='<keyword>'` — find commits whose message mentions a feature, bug, or concept.
+  - `git log -- <path>` — history scoped to one file; add `-p` to see each change with its message.
+  - `git blame <path>` then `git show <sha>` — go from a specific line to the commit that set it and
+    read that commit's full message.
+- **When NOT to dig:** skip commit archaeology when the code is self-explanatory, the change is
+  trivial (typo, rename, formatting), or the rationale is already in context (a doc, an ADR, the
+  current task). Reserve it for the case where the WHY is load-bearing for what you're about to do
+  and not obvious — don't reflexively `git log` every file you read.
