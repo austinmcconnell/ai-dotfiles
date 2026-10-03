@@ -390,6 +390,9 @@
         "sessionUrl": false
     },
     "autoMemoryEnabled": false,
+    "env": {
+        "CLAUDE_CODE_SUBAGENT_MODEL": "haiku"
+    },
     "showThinkingSummaries": true,
     "spinnerTipsEnabled": false,
     "theme": "dark",
@@ -398,13 +401,14 @@
     "autoCompactWindow": 350000,
     "includeGitInstructions": false,
     "model": "sonnet",
+    "maxEffortLevel": "high",
     "modelSettings": {
         "claude-sonnet-5": {
-            "effortLevel": "high"
+            "effortLevel": "medium"
         },
         "claude-haiku-4-5": {},
         "claude-opus-5": {
-            "effortLevel": "high"
+            "effortLevel": "medium"
         }
     },
     "statusLine": {
