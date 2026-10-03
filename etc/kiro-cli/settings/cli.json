@@ -40,5 +40,12 @@
     "cleanup.periodDays": 90,
     "hooks.showStatus": true,
     "compaction.excludeContextWindowPercent": 15,
-    "compaction.excludeMessages": 4
+    "compaction.excludeMessages": 4,
+    "chat.modelDefaults": {
+        "claude-sonnet-4.6": {
+            "output_config": {
+                "effort": "medium"
+            }
+        }
+    }
 }
