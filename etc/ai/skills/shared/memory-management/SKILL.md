@@ -107,7 +107,19 @@ Save the handoff with `mem_save` using:
   in order, and any hard rules (e.g. "user commits himself; never git commit"). For each next step,
   mark its refinement state — a raw/captured idea still needs the idea-refinement funnel
   (stress-test, scope, research flags) before coding; only a *refined, scoped* item is ready for a
-  commit plan. Naming a step as "next work" does not make it refined.
+  commit plan. Naming a step as "next work" does not make it refined. When a next step lives in the
+  idea-refinement funnel, name the artifact and tier that holds its detail (`ideas.md` Unrefined/
+  Refined, `backlog.md`, `todo.md`, or a linked `plan-<slug>.md`/`analysis/<slug>.md`) rather than
+  restating that detail inline, and instruct the resuming agent to read that artifact *together with
+  its owning skill* before acting — the artifact→skill pairing is a stable 1:1 map (`todo.md` →
+  `todo`, `ideas.md`/`backlog.md` → `idea-refinement`, a recorded commit plan → `commit-workflow`).
+  Spell the pairing out because reading the file is not itself a skill trigger: an agent that opens
+  `todo.md` to see what's next may never hit the task-keyed trigger that would load the skill, so
+  the handoff must make "read the file AND its skill" explicit rather than hope the trigger fires.
+  This is *not* the "list skills to read" anti-pattern — the skill is named as the artifact's owner,
+  not as a free-floating reading list, so it never misfires on handoffs whose remaining work isn't
+  funnel work at all (operator actions, cross-repo follow-ups, a decision to facilitate), which name
+  no funnel artifact and therefore invoke no skill.
 - **The structured marker line `ENGRAM-HANDOFF-ACTIVE: handoff/<project>-active` on its own line in
   the body** (e.g. `ENGRAM-HANDOFF-ACTIVE: handoff/dotfiles-active`). This line is **mandatory**,
   not optional. The session-start recall hook (`recall-memory.sh`) seeds an FTS search on the
@@ -123,6 +135,36 @@ Save the handoff with `mem_save` using:
 Then **pin** the handoff (`mem_pin`) and **unpin** the prior one. Pinning is local, unsynced, and
 ordering-only — it raises salience in `mem_context` output but carries no lifecycle meaning, so it
 does not replace the topic_key upsert.
+
+### Suggesting a resume prompt
+
+After writing or refreshing an active handoff, end the turn by presenting a suggested **resume
+prompt** in chat — a short, pasteable prompt (aim for 1–5 sentences; the bar is "not a wall of
+prose," not a literal single line) the user can use to open the next session on this effort. The
+session-start obligation guarantees the handoff is *read*, not that the user *wants to act on it*
+today: a handoff from N days ago is often not what the user came to do this session. The resume
+prompt is what lets the user — and the next agent — decide between continuing and redirecting.
+
+The chat copy is authoritative (the user won't open the engram observation to find it); echo the
+same prompt into the handoff body too so a resuming agent can reconstruct it. A good resume prompt:
+
+- **Names the target** — repo/project and working dir, so a cold-start agent lands in the right
+  place. Name any must-read file by absolute path rather than making the agent discover it.
+- **States where the work stands briefly**, including its funnel tier when it's funnel work (e.g.
+  "refined but not yet approved — run idea-refinement first", not "start coding").
+- **Ends with an explicit redirect escape hatch** — "…or tell me what you'd rather work on instead."
+  This trailing *or* is the point: it hands the continue-vs-redirect choice to the user instead of
+  assuming the handoff is today's task.
+
+Example:
+
+> Resume the state-geometry simplification handoff in relocation-map-viz
+> (`~/projects/.../relocation-map-viz`). It's refined-but-not-approved — run idea-refinement on the
+> simplify-tolerance question first (detail in `analysis/state-geometry-simplification.md`), don't
+> jump to a commit plan. Or tell me what you'd rather work on instead.
+
+A resume prompt is only for work that will actually span sessions — skip it for an effort you're
+closing out (see below).
 
 ### Closing an effort
 

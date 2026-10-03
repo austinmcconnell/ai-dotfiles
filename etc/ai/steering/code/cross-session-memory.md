@@ -57,6 +57,13 @@ what's queued, not that it's refined — if the item is a raw idea, run the idea
 before coding it rather than treating the handoff as approval to implement. See the
 `memory-management` skill's "Handoffs" section for how to write or close one.
 
+When you *write* a handoff for work that will span sessions, end the turn with a suggested **resume
+prompt** in chat — a short, pasteable prompt (a few sentences, not a wall of prose) to reopen the
+effort that ends in an explicit "…or tell me what you'd rather work on instead." Reading a handoff
+is guaranteed by the obligation above; *acting* on it is the user's call, and the resume prompt is
+what hands them that choice. See the `memory-management` skill's "Suggesting a resume prompt"
+section for the shape.
+
 For how to save, structure, and hand off memories once you've decided to act — session-start recall,
 memory types, topic keys, writing/closing a handoff, hygiene, and conflict-relation cleanup — see
 the `memory-management` skill.
