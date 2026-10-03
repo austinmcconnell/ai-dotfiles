@@ -217,6 +217,10 @@
             "WebFetch(domain:pastebin.com)"
         ],
         "ask": [
+            "Agent(model:claude-fable*)",
+            "Agent(model:claude-opus*)",
+            "Agent(model:fable)",
+            "Agent(model:opus)",
             "Bash(git merge *)",
             "Bash(git push *)",
             "Bash(git rebase *)",
@@ -396,15 +400,18 @@
     "verbose": true,
     "cleanupPeriodDays": 90,
     "autoCompactWindow": 350000,
+    "env": {
+        "CLAUDE_CODE_SUBAGENT_MODEL": "haiku"
+    },
     "includeGitInstructions": false,
+    "maxEffortLevel": "high",
     "model": "sonnet",
     "modelSettings": {
         "claude-sonnet-5": {
-            "effortLevel": "high"
+            "effortLevel": "medium"
         },
-        "claude-haiku-4-5": {},
         "claude-opus-5": {
-            "effortLevel": "high"
+            "effortLevel": "medium"
         }
     },
     "statusLine": {
