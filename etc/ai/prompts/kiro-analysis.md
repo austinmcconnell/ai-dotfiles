@@ -13,6 +13,9 @@ Search online for the latest Kiro CLI releases and changes from the past 3-6 mon
 1. Changes to agent configuration schema (new fields, deprecated fields, syntax changes)
 1. Current best practices for custom CLI agent configuration
 1. New tools, permissions, or security features
+1. Changes to model selection, reasoning-effort/thinking controls, or other credit/cost-relevant
+   settings — new model IDs, retired/EOL models, new `chat.modelDefaults` fields, changes to Auto's
+   routing behavior or credit multipliers
 1. Breaking changes or migration requirements
 
 Provide a summary with specific version numbers, dates, and concrete configuration examples.
@@ -20,7 +23,9 @@ Provide a summary with specific version numbers, dates, and concrete configurati
 ## Analysis Phase
 
 Compare those findings with my current kiro-cli config in `etc/kiro-cli/`. Also read
-`install/kiro-cli.sh` and `AGENTS.md` to understand my setup and usage patterns.
+`install/kiro-cli.sh` and `AGENTS.md` to understand my setup and usage patterns. For the cost check
+below, also read `etc/kiro-cli/settings/cli.json`'s `chat.modelDefaults` block and run `/model` in a
+live session to get the current credit multipliers and `[active]`/`[EOL]` tags for each model ID.
 
 Analyze:
 
@@ -28,6 +33,11 @@ Analyze:
    anymore?
 1. **Deprecations** - Are there any features that currently work but won't in the future?
 1. **Recommended updates** - Are there non-breaking changes or new features I should adopt?
+1. **Cost drift** - Does `chat.modelDefaults` still cover the active, non-EOL models Auto can route
+   to? Flag model IDs in the config that `/model` now shows as `[EOL]` or removed, and model IDs
+   `/model` shows as active/non-experimental that are missing a default. Note any new effort levels,
+   `thinking` options, or Auto routing/pricing changes that would change the cost-vs-quality
+   tradeoff of the current baseline.
 
 ## Evaluation Criteria
 
@@ -39,6 +49,10 @@ setup:
 - Consider maintenance burden vs. actual benefit
 - Skip recommendations that add complexity without solving a real problem
 - Prioritize changes that fix issues or improve maintainability
+- For cost-related recommendations, verify the actual billing mechanics before recommending a
+  change (e.g. Auto's credit multiplier is flat regardless of which model it routes to internally —
+  don't assume switching away from Auto to a named model is cheaper without checking the multiplier
+  table in `/model` output and the current docs)
 
 ## Output Format
 

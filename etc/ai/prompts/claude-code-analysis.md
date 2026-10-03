@@ -15,6 +15,9 @@ Search online for the latest Claude Code releases and changes from the past 3-6 
 1. Changes to the hooks system (new events, matcher syntax, payload fields)
 1. Changes to subagents/personas (`agents/` frontmatter fields, invocation syntax)
 1. Current best practices for `CLAUDE.md` / memory, MCP server configuration, and skills
+1. Changes to model selection, `effortLevel`/`maxEffortLevel`, subagent model pinning
+   (`CLAUDE_CODE_SUBAGENT_MODEL`), or other credit/cost-relevant settings — new model IDs,
+   retired/deprecated models, new cost-control env vars or settings fields
 1. Breaking changes or migration requirements
 
 Provide a summary with specific version numbers, dates, and concrete configuration examples.
@@ -23,7 +26,9 @@ Provide a summary with specific version numbers, dates, and concrete configurati
 
 Compare those findings with my current Claude Code config in `etc/claude-code/`. Also read
 `install/claude-code.sh` and the "Claude Code Conventions" section of `AGENTS.md` to understand my
-setup and usage patterns.
+setup and usage patterns. For the cost check below, also read `etc/claude-code/settings.json`'s
+`effortLevel`/`maxEffortLevel` and `CLAUDE_CODE_SUBAGENT_MODEL` settings against the model IDs
+currently documented as active/supported.
 
 Analyze:
 
@@ -31,6 +36,11 @@ Analyze:
    anymore?
 1. **Deprecations** - Are there any features that currently work but won't in the future?
 1. **Recommended updates** - Are there non-breaking changes or new features I should adopt?
+1. **Cost drift** - Are `effortLevel`/`maxEffortLevel` still set below each model's own built-in
+   default, and does `CLAUDE_CODE_SUBAGENT_MODEL` still point at a currently-supported, low-cost
+   model? Flag any pinned model ID that's been deprecated or superseded, and note any new
+   cost-control fields (e.g. a session-total token/cost cap) that didn't exist when this was last
+   configured.
 
 ## Evaluation Criteria
 
@@ -45,6 +55,10 @@ setup:
 - Consider maintenance burden vs. actual benefit
 - Skip recommendations that add complexity without solving a real problem
 - Prioritize changes that fix issues, close security gaps, or improve maintainability
+- For cost-related recommendations, verify the actual billing/token mechanics in current official
+  docs before recommending a change — don't assume a model swap or effort change is cheaper without
+  checking how that surface actually bills (flat multiplier vs. per-model rate, per-response cap vs.
+  session-total spend) first
 
 ## Output Format
 
