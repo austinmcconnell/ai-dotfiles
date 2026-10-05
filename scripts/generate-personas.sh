@@ -43,7 +43,7 @@ fail() {
 # means nothing inside a system prompt).
 strip_frontmatter() {
     if head -1 "$1" | grep -q '^---$'; then
-        sed '1{/^---$/!q}; 1,/^---$/d' "$1"
+        sed '1,/^---$/d' "$1"
     else
         cat "$1"
     fi

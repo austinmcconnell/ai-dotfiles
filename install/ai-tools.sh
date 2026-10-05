@@ -136,7 +136,7 @@ generate_mdc_steering() {
             basename="$(basename "$f" .md)"
             # Strip any existing YAML frontmatter before extracting content
             if head -1 "$f" | grep -q '^---$'; then
-                content="$(sed '1{/^---$/!q}; 1,/^---$/d' "$f")"
+                content="$(sed '1,/^---$/d' "$f")"
             else
                 content="$(cat "$f")"
             fi
