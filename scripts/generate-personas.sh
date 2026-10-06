@@ -49,6 +49,51 @@ strip_frontmatter() {
     fi
 }
 
+# Collect host-local steering source `domain=path` pairs, mirroring the
+# skill-sources seam in install/ai-tools.sh. Company-specific steering lives
+# outside this (soon public) repo under ~/.extra, so it is never published yet
+# still loads for the author. Pairs come from two optional sources:
+#   - $EXTRA_STEERING_SOURCES env var — colon-separated domain=path pairs
+#   - ~/.extra/steering-sources file  — one domain=path pair per line (# ok)
+# Both absent (the public-cloner case) is normal: the array stays empty and the
+# generator inlines only in-repo steering. An entry with no `=` is skipped.
+extra_steering_pairs() {
+    local line
+    if [[ -n "${EXTRA_STEERING_SOURCES:-}" ]]; then
+        local env_pairs
+        IFS=':' read -r -a env_pairs <<<"$EXTRA_STEERING_SOURCES"
+        for line in "${env_pairs[@]}"; do
+            [[ "$line" == *=* ]] && printf '%s\n' "$line"
+        done
+    fi
+    if [[ -f "$HOME/.extra/steering-sources" ]]; then
+        while IFS= read -r line; do
+            line="${line%%#*}"
+            line="${line#"${line%%[![:space:]]*}"}"
+            line="${line%"${line##*[![:space:]]}"}"
+            [[ "$line" == *=* ]] && printf '%s\n' "$line"
+        done <"$HOME/.extra/steering-sources"
+    fi
+}
+
+# Print the host-local directory for each pair whose domain matches $1. Expands a
+# leading ~/ to $HOME (literal prefix check — tilde expansion does not fire inside
+# a variable). Does not test existence; the caller decides how to treat a missing
+# path (A1 skips it silently; A2 adds the resolve-or-skip assertion).
+extra_steering_dirs_for_domain() {
+    local want="$1" pair pair_domain pair_path
+    while IFS= read -r pair; do
+        [[ -n "$pair" ]] || continue
+        pair_domain="${pair%%=*}"
+        [[ "$pair_domain" == "$want" ]] || continue
+        pair_path="${pair#*=}"
+        if [[ "${pair_path#\~/}" != "$pair_path" ]]; then
+            pair_path="$HOME/${pair_path#\~/}"
+        fi
+        printf '%s\n' "$pair_path"
+    done < <(extra_steering_pairs)
+}
+
 # Make OUT_DIR a real directory. A symlink there (the previous install linked the
 # whole repo directory) is removed without touching its target.
 prepare_out_dir() {
@@ -110,6 +155,16 @@ for persona in "${PERSONAS[@]}"; do
     for doc in "$STEERING_DIR/$domain"/*.md; do
         [[ -f "$doc" ]] && docs+=("$doc")
     done
+
+    # Append host-local steering for this domain (see extra_steering_pairs).
+    # Absent sources add nothing — the in-repo docs above satisfy the guard.
+    while IFS= read -r extra_dir; do
+        [[ -n "$extra_dir" && -d "$extra_dir" ]] || continue
+        for doc in "$extra_dir"/*.md; do
+            [[ -f "$doc" ]] && docs+=("$doc")
+        done
+    done < <(extra_steering_dirs_for_domain "$domain")
+
     ((${#docs[@]} > 0)) || fail "no steering docs found in $STEERING_DIR/$domain"
 
     security_doc="$STEERING_DIR/security/env-file-protection.md"
