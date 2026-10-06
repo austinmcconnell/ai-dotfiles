@@ -1,7 +1,7 @@
 # Local `jira/` Mirror Files
 
 Some repos keep a git-ignored `jira/` directory that mirrors their Jira tickets as local markdown —
-one file per ticket, named `<project-prefix>-<number>.md` (e.g. `scrn-1677.md`), plus `draft-*.md`
+one file per ticket, named `<project-prefix>-<number>.md` (e.g. `proj-1677.md`), plus `draft-*.md`
 for pre-creation drafts. `code` agents read these files to understand the scope of work, so they
 must stay in sync with remote Jira.
 

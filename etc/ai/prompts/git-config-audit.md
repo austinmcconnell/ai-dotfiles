@@ -1,6 +1,6 @@
 # Git Config Audit
 
-Read all files in etc/git/ (config, config-uniteus, config-macos, config-linux, attributes, ignore,
+Read all files in etc/git/ (config, config-work, config-macos, config-linux, attributes, ignore,
 commit-template, hooks/\*, and README.md). Determine my git version by running `git --version`.
 
 For each file, identify git features or config options introduced since the last audit (April 2026,

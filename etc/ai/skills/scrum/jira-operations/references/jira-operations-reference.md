@@ -568,21 +568,21 @@ format in URLs:
 
 #### Correct URL Format
 
-- **Browse URL**: `https://uniteus.atlassian.net/browse/{ISSUE-KEY}`
-- **Example**: `https://uniteus.atlassian.net/browse/SCRN-936`
+- **Browse URL**: `https://your-org.atlassian.net/browse/{ISSUE-KEY}`
+- **Example**: `https://your-org.atlassian.net/browse/PROJ-936`
 
 #### Incorrect URL Format
 
 - **Avoid**: Using internal issue IDs in URLs
-- **Example**: `https://uniteus.atlassian.net/browse/461282` ❌
+- **Example**: `https://your-org.atlassian.net/browse/461282` ❌
 
 #### Implementation Guidelines
 
 When the `jira_post` tool returns response data:
 
-1. **Extract the Issue Key**: Use the returned issue key (e.g., "SCRN-936") for user-facing URLs
+1. **Extract the Issue Key**: Use the returned issue key (e.g., "PROJ-936") for user-facing URLs
 1. **Format Browse URL**: Construct the browse URL as
-   `https://uniteus.atlassian.net/browse/{ISSUE-KEY}`
+   `https://your-org.atlassian.net/browse/{ISSUE-KEY}`
 1. **Present to User**: Always show the issue key-based URL to users for easy reference
 
 #### Example Success Response Format
@@ -591,9 +591,9 @@ When the `jira_post` tool returns response data:
 
 ✅ Issue Created Successfully
 
-- **Issue Key**: SCRN-936
+- **Issue Key**: PROJ-936
 - **Issue ID**: 461282
-- **Jira URL**: [View in Browser](https://uniteus.atlassian.net/browse/SCRN-936)
+- **Jira URL**: [View in Browser](https://your-org.atlassian.net/browse/PROJ-936)
 
 ---
 *Issue created at: 2025-08-12 20:26:53 UTC*
@@ -688,7 +688,7 @@ priority.
 To assign an issue to an epic, use the `parent` field with the epic's key:
 
 ```json
-{"parent": {"key": "SCRN-928"}}
+{"parent": {"key": "PROJ-928"}}
 ```
 
 **Not** `customfield_10014` or `epicLink` — those are deprecated in v3.
@@ -742,10 +742,10 @@ differences from the deprecated `/rest/api/3/search`:
 
 ```text
 # First page
-GET /rest/api/3/search/jql?jql=project=SCRN&maxResults=50
+GET /rest/api/3/search/jql?jql=project=PROJ&maxResults=50
 
 # Next page (use nextPageToken from previous response)
-GET /rest/api/3/search/jql?jql=project=SCRN&maxResults=50&nextPageToken=<token>
+GET /rest/api/3/search/jql?jql=project=PROJ&maxResults=50&nextPageToken=<token>
 
 # Stop when response contains "isLast": true
 ```
@@ -780,7 +780,7 @@ When reading links back from the API on a specific issue:
 - If the linked issue appears as `outwardIssue`, the queried issue "is blocked by" it
 - If the linked issue appears as `inwardIssue`, the queried issue "blocks" it
 
-## SCRN Statuses
+## Workflow Statuses
 
 ### Active Workflow Statuses (for stories/tasks/bugs)
 
@@ -809,17 +809,17 @@ happening.
 
 ### Statuses to Avoid in Queries
 
-- `To Do` — legacy status, equivalent to Backlog. A few old issues use it.
-- `Reopened` — not used in SCRN.
+- `To Do` — legacy status, equivalent to Backlog. A few old issues may use it.
+- `Reopened` — not used in this project's workflow.
 
-## SCRN Issue Creation API Body
+## Issue Creation API Body
 
 Minimal valid body for creating a story:
 
 ```json
 {
   "fields": {
-    "project": {"key": "SCRN"},
+    "project": {"key": "PROJ"},
     "issuetype": {"name": "Story"},
     "summary": "Clear summary here",
     "description": {
@@ -836,18 +836,18 @@ With optional fields:
 ```json
 {
   "fields": {
-    "project": {"key": "SCRN"},
+    "project": {"key": "PROJ"},
     "issuetype": {"name": "Story"},
     "summary": "Clear summary here",
     "description": {"type": "doc", "version": 1, "content": [...]},
-    "parent": {"key": "SCRN-1200"},
+    "parent": {"key": "PROJ-1200"},
     "labels": ["tech-debt"]
   }
 }
 ```
 
-**Do not include** `components`, `fixVersions`, `priority`, or `customfield_10004` (story points)
-unless the user explicitly asks.
+**Do not include** `components`, `fixVersions`, or `priority` unless the user explicitly asks.
+Instance-specific custom fields (e.g. a story-points field) are omitted unless requested.
 
 ## Sprint Entry Criteria
 

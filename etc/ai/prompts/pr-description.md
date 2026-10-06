@@ -22,7 +22,7 @@ git diff main HEAD
 
 ## **JIRA Ticket**
 
-[SCRN-XXX](https://uniteus.atlassian.net/browse/SCRN-XXX)
+[PROJ-XXX](https://your-org.atlassian.net/browse/PROJ-XXX)
 
 ## **Implementation Details**
 

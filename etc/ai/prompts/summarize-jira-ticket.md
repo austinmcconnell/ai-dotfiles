@@ -7,7 +7,7 @@ Fetch all linked/related tickets as well. For each linked ticket, note the link 
 
 ## Output
 
-Write a markdown summary file for each ticket, named by issue key (e.g., `SCRN-1360.md`).
+Write a markdown summary file for each ticket, named by issue key (e.g., `PROJ-1360.md`).
 
 Each summary should include:
 

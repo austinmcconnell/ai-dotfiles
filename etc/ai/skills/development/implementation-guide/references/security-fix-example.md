@@ -2800,7 +2800,7 @@ Modify: `app/auth_routes.py` in `callback()` function
 def callback():
     """Handle OAuth callback."""
     try:
-        token = oauth.unite_us.authorize_access_token()
+        token = oauth.example_provider.authorize_access_token()
 
         # Extract user info from token response
         userinfo = token.get('userinfo', {})
