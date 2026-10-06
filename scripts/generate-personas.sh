@@ -94,6 +94,33 @@ extra_steering_dirs_for_domain() {
     done < <(extra_steering_pairs)
 }
 
+# Print a listed domain's host-local *.md paths to stdout (one per line). Every
+# path reaching here was explicitly listed in a steering-source, so a missing
+# path or an empty dir is a stale/typo'd entry, not the public-cloner case —
+# warn loudly to stderr and skip (non-fatal: the overlay is optional, and the
+# in-repo docs already satisfy the generator's non-empty guard). This is the
+# shell-conventions "never silently pass a dangling path" rule for this seam;
+# it deliberately diverges from the skill-sources seam's silent skip. Printing
+# rather than a nameref keeps this bash 3.2-compatible (macOS system bash).
+extra_steering_docs() {
+    local domain="$1" dir doc found
+    while IFS= read -r dir; do
+        [[ -n "$dir" ]] || continue
+        if [[ ! -d "$dir" ]]; then
+            echo "⚠ SKIPPED host-local steering for '$domain': $dir does not exist" >&2
+            continue
+        fi
+        found=0
+        for doc in "$dir"/*.md; do
+            [[ -f "$doc" ]] || continue
+            printf '%s\n' "$doc"
+            found=1
+        done
+        ((found)) ||
+            echo "⚠ SKIPPED host-local steering for '$domain': no *.md in $dir" >&2
+    done < <(extra_steering_dirs_for_domain "$domain")
+}
+
 # Make OUT_DIR a real directory. A symlink there (the previous install linked the
 # whole repo directory) is removed without touching its target.
 prepare_out_dir() {
@@ -157,13 +184,10 @@ for persona in "${PERSONAS[@]}"; do
     done
 
     # Append host-local steering for this domain (see extra_steering_pairs).
-    # Absent sources add nothing — the in-repo docs above satisfy the guard.
-    while IFS= read -r extra_dir; do
-        [[ -n "$extra_dir" && -d "$extra_dir" ]] || continue
-        for doc in "$extra_dir"/*.md; do
-            [[ -f "$doc" ]] && docs+=("$doc")
-        done
-    done < <(extra_steering_dirs_for_domain "$domain")
+    # Absent sources add nothing; a listed-but-missing path warns (see helper).
+    while IFS= read -r extra_doc; do
+        [[ -n "$extra_doc" ]] && docs+=("$extra_doc")
+    done < <(extra_steering_docs "$domain")
 
     ((${#docs[@]} > 0)) || fail "no steering docs found in $STEERING_DIR/$domain"
 
