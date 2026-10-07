@@ -42,6 +42,12 @@ repos:
         entry: scripts/validate-persona-steering.sh
         files: ^etc/ai/steering/.*\.md$|^etc/claude-code/agents/.*\.md$|^install/persona-domains\.sh$|^scripts/generate-personas\.sh$
         pass_filenames: false
+      - id: validate-kiro-steering-globs
+        name: Validate kiro steering per-domain glob contract
+        language: script
+        entry: scripts/validate-kiro-steering-globs.sh
+        files: ^etc/ai/steering/.*\.md$|^etc/kiro-cli/cli-agents/.*\.json$|^install/ai-tools\.sh$|^scripts/validate-kiro-steering-globs\.sh$
+        pass_filenames: false
       - id: validate-mcp-server-parity
         name: Validate MCP server parity
         language: script

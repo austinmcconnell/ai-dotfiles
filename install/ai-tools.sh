@@ -67,6 +67,28 @@ if [ -f "$HOME/.extra/skill-sources" ]; then
     done <"$HOME/.extra/skill-sources"
 fi
 
+# Extra steering sources — host-local, deliberately NOT tracked in this repo so
+# company-specific steering stays out of the public dotfiles. Each entry is a
+# `domain=path` pair: `domain` is the steering domain whose dir the overlay
+# merges into, `path` is a directory of *.md docs. Populated from two optional
+# sources (both absent is the normal public-cloner case):
+#   - $EXTRA_STEERING_SOURCES env var — colon-separated domain=path pairs
+#   - ~/.extra/steering-sources file  — one domain=path pair per line (# ok)
+# A listed-but-missing path is not silent — see link_steering_tree.
+EXTRA_STEERING_PAIRS=()
+if [ -n "${EXTRA_STEERING_SOURCES:-}" ]; then
+    IFS=':' read -r -a _env_pairs <<<"$EXTRA_STEERING_SOURCES"
+    EXTRA_STEERING_PAIRS+=("${_env_pairs[@]}")
+fi
+if [ -f "$HOME/.extra/steering-sources" ]; then
+    while IFS= read -r _line; do
+        _line="${_line%%#*}"
+        _line="${_line#"${_line%%[![:space:]]*}"}"
+        _line="${_line%"${_line##*[![:space:]]}"}"
+        [ -n "$_line" ] && EXTRA_STEERING_PAIRS+=("$_line")
+    done <"$HOME/.extra/steering-sources"
+fi
+
 # Steering domains shipped to every session by the steering-file generators
 # (Gemini GEMINI.md, Cursor .mdc, Claude rules/). These are universal — they
 # apply to any work in any session. Domain-specific steering (ansible,
@@ -79,7 +101,8 @@ fi
 # This split only exists because these three tools have no per-session
 # resource scoping — unlike kiro-cli, where every invocation is an agent with
 # its own `resources` array, so steering filters natively at load time (see
-# kiro-cli:steering below: a raw symlink of the whole tree, no split needed).
+# kiro-cli:steering below: a per-domain tree under ~/.kiro/steering, globbed
+# per-domain by each agent, so no distribution-time split is needed).
 # Claude/Cursor/Gemini each have exactly one always-on global context surface
 # with no runtime filter, so whatever lands here loads on every session,
 # forever — the split has to happen at distribution time instead. See
@@ -186,38 +209,80 @@ Skills are available in ~/.claude/skills/ (symlinked from dotfiles).
 EOF
 }
 
-# Link the steering tree at $dest and verify it resolves.
-# Used by: kiro-cli (file://~/.kiro/steering/ URIs cannot expand $AI_DOTFILES_DIR,
-# so the symlink is the relocation seam).
+# Build the kiro steering tree at $dest and verify it resolves.
+# Used by: kiro-cli (file://~/.kiro/steering/<domain>/**/*.md URIs cannot expand
+# $AI_DOTFILES_DIR, so this on-disk tree under ~/.kiro is the relocation seam).
 #
-# Only an existing symlink or an empty real directory (kiro creates an empty
-# ~/.kiro/steering itself) is replaced; a non-empty directory fails loudly rather
-# than being deleted. The probe check catches a link whose target is missing, which
-# `ln -sfn` and `readlink` both accept silently.
+# $dest is a real directory of per-domain real directories, each holding
+# per-file symlinks to the public steering docs (etc/ai/steering/<domain>/*.md)
+# plus any host-local overlay docs for that domain (from EXTRA_STEERING_PAIRS).
+# Per-file (not whole-domain) symlinks let public and overlay *.md coexist in one
+# <domain>/ namespace, so kiro's per-domain glob (<domain>/**/*.md) matches both.
 #
-# Args: $1 = link path, $2 = steering-relative probe file that must resolve.
-# Returns: 0 when linked and the probe resolves, 1 otherwise (message on stderr).
+# Idempotency: an old whole-tree symlink is removed, a stale real dir rebuilt; a
+# non-symlink, non-directory at $dest fails loudly rather than being deleted.
+#
+# Overlay-path discipline (shell-conventions "never silently pass a dangling
+# path", decision/extra-sources-dangling-path-warn): a domain with no overlay
+# entry is silent, but an entry whose path is missing or holds no *.md warns to
+# stderr and is skipped (non-fatal — the public docs still populate the domain).
+#
+# On probe failure the whole tree is removed and the function returns non-zero,
+# so the caller never reports success on a broken seam.
+#
+# Args: $1 = steering root path, $2 = steering-relative probe file that must
+#       resolve (e.g. security/env-file-protection.md).
+# Returns: 0 when built and the probe resolves, 1 otherwise (message on stderr).
 link_steering_tree() {
     local dest="$1" probe="$2"
 
     if [[ -L "$dest" ]]; then
         rm -f "$dest"
     elif [[ -d "$dest" ]]; then
-        if ! rmdir "$dest" 2>/dev/null; then
-            echo "✗ $dest is a non-empty directory; refusing to replace it" >&2
-            return 1
-        fi
+        rm -rf "${dest:?}"
     elif [[ -e "$dest" ]]; then
         echo "✗ $dest exists and is not a symlink or directory; refusing to replace it" >&2
         return 1
     fi
 
-    mkdir -p "$(dirname "$dest")"
-    ln -sfn "$STEERING_SOURCE" "$dest"
+    mkdir -p "$dest"
+
+    # Public domains: one real dir per domain, per-file symlinks to its *.md.
+    local domain_dir domain steering_file
+    while IFS= read -r -d '' domain_dir; do
+        domain="$(basename "$domain_dir")"
+        mkdir -p "$dest/$domain"
+        for steering_file in "$domain_dir"/*.md; do
+            [[ -f "$steering_file" ]] || continue
+            ln -sfn "$steering_file" "$dest/$domain/$(basename "$steering_file")"
+        done
+    done < <(find "$STEERING_SOURCE" -mindepth 1 -maxdepth 1 -type d -print0)
+
+    # Host-local overlay: merge each pair's *.md into its domain dir alongside
+    # the public docs (a domain with no public dir is created on demand).
+    local entry name src overlay_file
+    for entry in "${EXTRA_STEERING_PAIRS[@]:-}"; do
+        name="$(pair_name "$entry")"
+        [[ -n "$name" ]] || continue
+        src="$(pair_path "$entry")"
+        if [[ ! -d "$src" ]]; then
+            echo "⚠ SKIPPED host-local steering for '$name': $src does not exist" >&2
+            continue
+        fi
+        local found=0
+        for overlay_file in "$src"/*.md; do
+            [[ -f "$overlay_file" ]] || continue
+            mkdir -p "$dest/$name"
+            ln -sfn "$overlay_file" "$dest/$name/$(basename "$overlay_file")"
+            found=1
+        done
+        ((found)) ||
+            echo "⚠ SKIPPED host-local steering for '$name': no *.md in $src" >&2
+    done
 
     if [[ ! -e "$dest/$probe" ]]; then
         echo "✗ $dest does not resolve $probe (is AI_DOTFILES_DIR correct?)" >&2
-        rm -f "$dest"
+        rm -rf "${dest:?}"
         return 1
     fi
 }
@@ -231,9 +296,11 @@ link_steering_tree() {
 #                  "single:PATH" = single concatenated file
 #                  "mdc:DIR"     = .mdc files with frontmatter
 #                  "rules:DIR"   = individual .md files (Claude Code rules/)
-#                  "symlink:DIR" = symlink the steering tree to DIR (kiro-cli
-#                                  reads it via file://~/.kiro/steering/ URIs in
-#                                  each agent's resources)
+#                  "symlink:DIR" = build the kiro steering tree at DIR — a real
+#                                  dir of per-domain real dirs with per-file
+#                                  symlinks (public docs + host-local overlay),
+#                                  read via file://~/.kiro/steering/<domain>/**/*.md
+#                                  URIs in each agent's resources
 # ---------------------------------------------------------------
 agent_config() {
     local agent="$1" field="$2"
@@ -364,7 +431,7 @@ for agent in "${ENABLED_AGENTS[@]}"; do
     symlink:*)
         steering_link="${steering#symlink:}"
         link_steering_tree "$steering_link" "security/env-file-protection.md" || exit 1
-        echo "✓ Linked steering to $agent ($steering_link)"
+        echo "✓ Built steering tree for $agent ($steering_link)"
         ;;
     single:*)
         output_file="${steering#single:}"

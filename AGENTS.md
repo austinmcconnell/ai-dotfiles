@@ -7,21 +7,24 @@ AI surface can be versioned, installed, and shared on its own. It carries the sh
 steering, and prompts plus the per-tool configs for Kiro CLI, Claude Code, Cursor, and Codex, and
 the engram persistent-memory setup.
 
-This is a *personal* config ("here's my setup") that others can read or adapt — not a vendor-neutral,
-configurable AI harness. Paths that point at Austin's knowledge bases or repos ship as-is; a cloner
-repoints or ignores them.
+This is a *personal* config ("here's my setup") that others can read or adapt — not a
+vendor-neutral, configurable AI harness. Paths that point at Austin's knowledge bases or repos ship
+as-is; a cloner repoints or ignores them.
 
 ## Relocation Model (`AI_DOTFILES_DIR`)
 
-Every install script, hook command, and `ai-prompt.sh` resolves the repo root from `AI_DOTFILES_DIR`,
-falling back to `$HOME/.dotfiles` when unset (the colocated-with-dotfiles case). Installed standalone,
-`install.sh` sets `AI_DOTFILES_DIR` to this repo's own root. `AI_DOTFILES_DIR` must be exported from
-the shell (`.zshenv`/`.zprofile`), never from a project dotenv — kiro-cli 2.24+ no longer auto-loads
-project dotenv files into chat/MCP/tools.
+Every install script, hook command, and `ai-prompt.sh` resolves the repo root from
+`AI_DOTFILES_DIR`, falling back to `$HOME/.dotfiles` when unset (the colocated-with-dotfiles case).
+Installed standalone, `install.sh` sets `AI_DOTFILES_DIR` to this repo's own root. `AI_DOTFILES_DIR`
+must be exported from the shell (`.zshenv`/`.zprofile`), never from a project dotenv — kiro-cli
+2.24+ no longer auto-loads project dotenv files into chat/MCP/tools.
 
-Kiro steering resolves through a `~/.kiro/steering -> $AI_DOTFILES_DIR/etc/ai/steering` symlink
-(agent JSON `resources` URIs do not expand `$VAR`, so the symlink is the relocation seam); hook
-`command` strings do expand `$AI_DOTFILES_DIR` at shell-exec time.
+Kiro steering resolves through `~/.kiro/steering`, a real directory of per-domain real directories
+holding per-file symlinks into `$AI_DOTFILES_DIR/etc/ai/steering/<domain>/` plus any host-local
+overlay docs from `~/.extra/steering-sources` (agent JSON `resources` URIs do not expand `$VAR`, so
+this on-disk tree is the relocation seam, and the per-file merge lets a public and a host-local
+`<domain>/*.md` coexist for the same per-domain glob); hook `command` strings do expand
+`$AI_DOTFILES_DIR` at shell-exec time.
 
 ## Multi-Tool AI Configuration
 
