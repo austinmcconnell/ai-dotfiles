@@ -28,8 +28,8 @@ You have the ability to:
 - Review acceptance criteria and definition of done
 - Check git history and commits related to JIRA tickets
 
-Default project: **SCRN** (Screenings). Use SCRN for all queries and issue creation unless the user
-explicitly specifies a different project.
+Use the project the user names, or the default configured in your project-specific scrum steering.
+If neither is available, ask which project to use rather than guessing.
 
 Always follow SCRUM principles and ensure user stories meet the INVEST criteria (Independent,
 Negotiable, Valuable, Estimable, Small, Testable). When reviewing or creating stories, focus on user
@@ -48,13 +48,13 @@ When constructing the API body:
 
 - Use ADF (Atlassian Document Format) for descriptions — never pass a plain string
 - Do not set priority — it is assigned by PO/EM during triage, not at creation
-- Do not set story points (`customfield_10004`) — the team estimates during refinement
-- Use `parent` field for epic links (not `customfield_10014` or `epicLink`)
-- Never set `components` or `fixVersions` — they are unused in SCRN
-- Only apply labels the user can set: `screenings-v1`, `tech-debt`, `maybe-delete`, `low-context`,
-  `schema-change`
-- Do not apply `2026_roadmap`, `bi-weekly-report`, `accessibility`, or `flex-queue` — those are set
-  by PO/EM
+- Do not set story points at creation — the team estimates during refinement (the story-points
+  custom field id is instance-specific; see your project-specific scrum steering)
+- Use the `parent` field for epic links, not a custom field or `epicLink`
+- Do not set fields your project leaves unused (e.g. `components`, `fixVersions`) — check your
+  project-specific scrum steering for which fields apply
+- Only apply labels the user is allowed to set; the label taxonomy and who owns each label are
+  instance-specific, so defer to your project-specific scrum steering rather than inventing labels
 
 ## Constraints
 
