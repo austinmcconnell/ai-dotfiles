@@ -141,6 +141,7 @@
         "skill://.kiro/skills/**/SKILL.md",
         "skill://~/.kiro/skills/development/**/SKILL.md",
         "skill://~/.kiro/skills/scrum/**/SKILL.md",
+        "skill://~/.kiro/skills/extra/**/SKILL.md",
         "skill://~/.kiro/skills/shared/**/SKILL.md"
     ],
     "tools": [

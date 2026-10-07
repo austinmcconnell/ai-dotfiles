@@ -15,9 +15,7 @@ artifact against it, even when you believe you already know the convention.
 | SCRUM ceremony questions                                             | `scrum-reference`        |
 | Sprint context, standup, or planning queries                         | `jira-operations`        |
 | Transitioning, linking, or searching issues                          | `jira-operations`        |
-| Backlog health or triage review                                      | `scrn-backlog-triage`    |
 | Validating Jira setup or API connectivity                            | `jira-smoke-test`        |
-| Deployment readiness, "what can we deploy"                           | `deployment-readiness`   |
 | Saving/handing off engram memory                                     | `memory-management`      |
 | Promoting corrections to steering                                    | `distill-learnings`      |
 | Navigating project docs / find a doc / explain how a subsystem works | `readme-pointer`         |
