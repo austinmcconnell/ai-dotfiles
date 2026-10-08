@@ -122,6 +122,7 @@ Level 0 (No Dependencies - Can run anytime):
 ├── refactor-plan            # Create refactoring plans
 ├── run-all-analyses         # Orchestrate all 9 analyses in dependency order
 ├── run-core-analyses        # Orchestrate core 4 analyses (P/A/S/I)
+├── vim-native-coverage-audit # Audit ~/.dotfiles Vim plugins for stock-Vim coverage
 └── vim-practice-session     # Interactive vim skills practice
 
 Level 1 (Requires: project-analysis):
@@ -177,6 +178,7 @@ These prompts can be run at any time without prerequisites:
 - `steering-gap-analysis` - Analyze kiro-cli agent steering docs for gaps
 - `steering-vs-skill-review` - Evaluate steering doc placement vs skill conversion
 - `summarize-jira-ticket` - Fetch and summarize JIRA tickets
+- `vim-native-coverage-audit` - Audit ~/.dotfiles Vim plugins for stock-Vim coverage
 - `vim-practice-session` - Practice vim skills
 
 ## Example Prompts
@@ -235,6 +237,11 @@ These prompts can be run at any time without prerequisites:
 ### Git and Commit Analysis
 
 - `commit-analysis` - Analyze commit history patterns and quality
+
+### Dotfiles Audits
+
+- `vim-native-coverage-audit` - Audit the ~/.dotfiles Vim plugin list for drop candidates that stock
+  Vim now implements natively (run from the dotfiles repo)
 
 ### Skills Development
 
