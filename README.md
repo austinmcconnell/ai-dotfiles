@@ -32,13 +32,30 @@ not from a project dotenv (kiro-cli 2.24+ no longer auto-loads project dotenv fi
 The self-update step (`git pull` on launch) only runs for a standalone git clone with a remote; set
 `AI_DOTFILES_SKIP_SELF_UPDATE=1` to skip it.
 
-## Documentation
+## Directory map
 
 - Repo-wide conventions for AI tools: [AGENTS.md](./AGENTS.md)
 - Skill/steering/prompt distribution matrix: [etc/ai/README.md](./etc/ai/README.md)
+- Reusable prompts and the `ai-prompt` commands:
+  [etc/ai/prompts/README.md](./etc/ai/prompts/README.md)
+- Shared hook scripts and where each is wired: [etc/ai/hooks/README.md](./etc/ai/hooks/README.md)
+- Token/cost tracking store and statusline scripts:
+  [etc/ai/usage/README.md](./etc/ai/usage/README.md)
 - Kiro CLI custom agents, hooks, MCP: [etc/kiro-cli/README.md](./etc/kiro-cli/README.md)
 - Claude Code permissions, hooks, personas: [etc/claude-code/README.md](./etc/claude-code/README.md)
 - Cursor CLI permissions and MCP: [etc/cursor/README.md](./etc/cursor/README.md)
+- Install scripts and their order: [install/README.md](./install/README.md)
+- Validators, persona generator, and `ai-prompt.sh`: [scripts/README.md](./scripts/README.md)
+
+Directories without their own README:
+
+| Directory     | What it holds                                     | How it is used                                                   |
+| ------------- | ------------------------------------------------- | ---------------------------------------------------------------- |
+| `bin/`        | `engram-hygiene`, `is-executable`, `trace-search` | Put on `PATH` by `install.sh`.                                   |
+| `etc/codex/`  | `config.toml`                                     | Copied to `~/.codex/` by `install/codex.sh` (codex is disabled). |
+| `etc/dprint/` | `dprint.jsonc`                                    | Passed to `dprint fmt` by the `dprint` pre-commit hook.          |
+| `etc/taplo/`  | `taplo.toml`                                      | Passed to the `taplo-format` and `taplo-lint` pre-commit hooks.  |
+| `etc/yaml/`   | `yamllint`                                        | Passed to the `yamllint` pre-commit hook.                        |
 
 ## Development
 
