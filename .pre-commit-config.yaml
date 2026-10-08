@@ -24,6 +24,12 @@ repos:
         entry: scripts/sort-claude-settings-json.sh
         files: ^etc/claude-code/settings\.json$
         pass_filenames: false
+      - id: validate-claude-path-rules
+        name: Validate Claude Code path rules are absolute
+        language: script
+        entry: scripts/validate-claude-path-rules.sh
+        files: ^etc/claude-code/settings\.json$|^scripts/validate-claude-path-rules\.sh$
+        pass_filenames: false
       - id: validate-agent-denies
         name: Validate agent deny lists
         language: script
