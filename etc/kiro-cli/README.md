@@ -39,7 +39,7 @@ etc/kiro-cli/
 │   └── rotate-traces.sh         # Trace file cleanup (agentSpawn, code agent only)
 ├── settings/
 │   ├── cli.json               # Global CLI settings (telemetry, knowledge, diff tool)
-│   └── mcp.json               # Global MCP servers (empty — servers defined per-agent)
+│   └── mcp.json               # Global MCP servers (engram; other servers defined per-agent)
 └── mcp-servers.conf           # Node.js MCP package list for install scripts
 ```
 
@@ -49,8 +49,9 @@ audit-shell-commands, `recall-memory.sh`/`check-engram-hygiene.sh`) live in `etc
 of here, referenced via the `$AI_DOTFILES_DIR` env var (`$AI_DOTFILES_DIR/etc/ai/hooks/<script>.sh`,
 resolving to `~/.dotfiles` by default) — they moved out of `etc/kiro-cli/hooks/` once Claude Code
 started wiring them too. Steering docs (principles) live in `etc/ai/steering/<domain>/**/*.md`;
-skills (workflows, templates) live in `.kiro/skills/<category>/**/SKILL.md` — see the
-`skill-loading-triggers` steering for the mapping.
+skills (workflows, templates) live in `etc/ai/skills/<category>/**/SKILL.md` and are symlinked into
+`~/.kiro/skills/` by `install/ai-tools.sh` — see the `skill-loading-triggers` steering for the
+mapping.
 
 ## Configuration Model
 
@@ -79,15 +80,16 @@ user must approve each write operation. Git write commands (`git add`, `git comm
 Security is enforced at three levels, evaluated in order:
 
 1. **Hooks** — `preToolUse` with `matcher: "*"` runs `block-env-files.sh`,
-   `block-sops-age-files.sh`, and `block-ssh-private-keys.sh` on *every* agent. These inspect all
-   tool inputs for sensitive file paths and exit `2` (block) if found. This is the first line of
-   defense and cannot be bypassed by `allowedTools` or `permissions`. `block-memory-secrets.sh` runs
-   on `matcher: "@engram/*"` to prevent storing credentials in persistent memory — the glob (`/*`)
-   is required because kiro-cli reports MCP tools with the `@server/` prefix (e.g.
-   `@engram/mem_save`); a bare `@engram` matcher does not fire and the hook is silently skipped. The
-   hook normalizes both MCP naming conventions before comparing (`${TOOL_NAME##*/}` strips kiro's
-   `@server/` prefix, `${TOOL_NAME##mcp__*__}` strips Claude Code's `mcp__server__` prefix), so it
-   works for both tools.
+   `block-sops-age-files.sh`, `block-ssh-private-keys.sh`, and `block-shell-trace-mode.sh` on
+   *every* agent. These inspect all tool inputs for sensitive file paths (or, for the trace-mode
+   hook, shell `set -x` tracing that would print secrets) and exit `2` (block) if found. This is the
+   first line of defense and cannot be bypassed by `allowedTools` or `permissions`.
+   `block-memory-secrets.sh` runs on `matcher: "@engram/*"` to prevent storing credentials in
+   persistent memory — the glob (`/*`) is required because kiro-cli reports MCP tools with the
+   `@server/` prefix (e.g. `@engram/mem_save`); a bare `@engram` matcher does not fire and the hook
+   is silently skipped. The hook normalizes both MCP naming conventions before comparing
+   (`${TOOL_NAME##*/}` strips kiro's `@server/` prefix, `${TOOL_NAME##mcp__*__}` strips Claude
+   Code's `mcp__server__` prefix), so it works for both tools.
 1. **Permissions / toolsSettings** — per-tool path and command restrictions. The configs contain
    both formats for V2/V3 compatibility:
    - **V2 (`toolsSettings`)** — regex-based `shell.deniedCommands` / `shell.allowedCommands`, path
@@ -152,14 +154,16 @@ Hooks use the V3 array format: each hook is an object with `name`, `trigger`, `m
   Both are read-only — conflict resolution stays user-approved via `mem_judge`/`mem_compare`, never
   auto-applied. The `code`, `docs`, and `ansible` agents additionally run `check-research-kb.sh` for
   KB staleness detection (their agent name must appear in the `kb-staleness.sh` sentinel for the
-  warning to fire). The `code` agent additionally runs `rotate-traces.sh` for trace file cleanup.
-  Claude Code runs the same `recall-memory.sh`/`check-engram-hygiene.sh` pair via `SessionStart`
-  (see `etc/claude-code/README.md`) — that pair has parity across both tools. The KB-staleness and
-  trace hooks remain kiro-only; see "What Claude Code Does NOT Have" there for why.
-- `preToolUse` — every agent has the `block-env-files.sh`, `block-sops-age-files.sh`, and
-  `block-ssh-private-keys.sh` hooks on `matcher: "*"`. The `code` agent adds audit hooks for
-  `use_aws`, `@kubernetes`, and `execute_bash`. All agents have `block-memory-secrets.sh` on
-  `matcher: "@engram/*"` (see Security Layers above for the matcher/normalization detail).
+  warning to fire). The `code` agent additionally runs `rotate-traces.sh` for trace file cleanup and
+  `suggest-agent-fit.sh code`, a one-time nudge when the generalist lands in a repo with a tuned
+  specialist agent. Claude Code runs the same `recall-memory.sh`/`check-engram-hygiene.sh` pair via
+  `SessionStart` (see `etc/claude-code/README.md`) — that pair has parity across both tools. The
+  KB-staleness and trace hooks remain kiro-only; see "What Claude Code Does NOT Have" there for why.
+- `preToolUse` — every agent has the `block-env-files.sh`, `block-sops-age-files.sh`,
+  `block-ssh-private-keys.sh`, and `block-shell-trace-mode.sh` hooks on `matcher: "*"`. The `code`
+  agent adds audit hooks for `use_aws`, `@kubernetes`, and `execute_bash`. All agents have
+  `block-memory-secrets.sh` on `matcher: "@engram/*"` (see Security Layers above for the
+  matcher/normalization detail).
 - `postToolUse` — the `code` and `docs` agents use this (runs `clear-research-kb-stale.sh` after
   knowledge operations to clear staleness warnings). The `code` agent also runs `trace-tool-call.sh`
   on `matcher: "*"` for session-scoped trace logging.
@@ -311,7 +315,8 @@ and [hooks documentation](https://kiro.dev/docs/cli/hooks/):
   `read.deniedPaths`, `grep.deniedPaths`, `glob.deniedPaths`, and `shell.deniedCommands`
   simultaneously
 - **Hook-based enforcement** — `preToolUse` with exit code 2 for hard blocks
-- **Hook timeouts** — `timeout_ms: 5000` on all hooks to prevent hangs
+- **Hook timeouts** — `timeout` (seconds) on every hook to prevent hangs: 5 on all hooks except
+  `trace-tool-call.sh` (3)
 - **Audit logging** — sensitive operations (AWS, kubectl, shell) logged to JSONL files
 - **MCP secrets via interpolation** — never hardcoded in config
 - **Knowledge base scoping** — `"best"` for docs, `"fast"` for code; descriptive `description`
