@@ -264,14 +264,14 @@ one per-project file with no skill or steering needed — a repository's own `AG
 directly as project instructions whenever no `CLAUDE.md`, `.claude/CLAUDE.md`, or `CLAUDE.local.md`
 exists in the working directory or above it. A *user-scope* `~/.claude/CLAUDE.md` (what this repo
 generates) does not count against that check, so the condition is met here: `AGENTS.md` auto-loads
-in any Claude Code session started in `~/.dotfiles`. This repo deliberately keeps the default
-**Project instructions** setting (`claude-md-or-agents-md`) rather than opting out, so a session
-here — or in any other personal repo with an `AGENTS.md` and no `CLAUDE.md` — gets that file for
-free, matching the cross-tool parity goal `AGENTS.md` itself states. This is also *why* this README
-absorbed the bulk of what used to live in `AGENTS.md`'s "Claude Code Conventions" section: once
-`AGENTS.md` became live Claude context on every session here, keeping Claude-only configuration
-mechanics there meant Claude re-reading meta-documentation about its own plumbing every session for
-no coding-task benefit.
+in any Claude Code session started in this repo's checkout (`$AI_DOTFILES_DIR`; `~/.ai-dotfiles`
+standalone). This repo deliberately keeps the default **Project instructions** setting
+(`claude-md-or-agents-md`) rather than opting out, so a session here — or in any other personal repo
+with an `AGENTS.md` and no `CLAUDE.md` — gets that file for free, matching the cross-tool parity
+goal `AGENTS.md` itself states. This is also *why* this README absorbed the bulk of what used to
+live in `AGENTS.md`'s "Claude Code Conventions" section: once `AGENTS.md` became live Claude context
+on every session here, keeping Claude-only configuration mechanics there meant Claude re-reading
+meta-documentation about its own plumbing every session for no coding-task benefit.
 
 ## Intentional Deviations
 
