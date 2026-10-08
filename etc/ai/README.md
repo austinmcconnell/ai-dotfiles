@@ -25,8 +25,9 @@ etc/ai/
 
 Only `kiro-cli` and `Claude Code` are currently active. The rows above marked `(disabled)` are fully
 wired in the `agent_config` registry (`install/ai-tools.sh`) but commented out of `ENABLED_AGENTS`
-in `install/enabled-agents.sh` — re-enable by uncommenting there. Check that array, not this table,
-for the authoritative current state.
+in `install/enabled-agents.sh` — re-enable by uncommenting there. That array gates both skill and
+steering distribution and the per-agent install scripts (`install/<agent>.sh`); a disabled agent is
+skipped, never uninstalled. Check that array, not this table, for the authoritative current state.
 
 ## Prompts
 

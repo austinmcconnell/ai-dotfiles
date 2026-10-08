@@ -21,6 +21,18 @@ AI_DOTFILES_DIR="${AI_DOTFILES_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd
 PATH="$AI_DOTFILES_DIR/bin:$PATH"
 
 source "$AI_DOTFILES_DIR/install/utils.sh"
+source "$AI_DOTFILES_DIR/install/enabled-agents.sh"
+
+# Source install/<agent>.sh only when the agent is in ENABLED_AGENTS. Disabling
+# an agent just stops future installs; nothing already installed is removed.
+install_agent() {
+    if agent_enabled "$1"; then
+        # shellcheck source=/dev/null
+        . "$AI_DOTFILES_DIR/install/$1.sh"
+    else
+        log_info "Skipping $1 (not in ENABLED_AGENTS)"
+    fi
+}
 
 # Self-update: only when run standalone from a git clone with a remote. Guarded
 # so a colocated/sourced run (dotfiles already pulled) or a non-git copy is a
@@ -41,16 +53,17 @@ mkdir -p "$HOME/.cache/ai-dotfiles"
 
 # Install and configure the AI tooling, in dependency order:
 #   kiro-cli    — installs the kiro-cli cask + agents/settings/MCP servers
-#   engram      — configures persistent memory (binary via brew)
+#   engram      — configures persistent memory (binary via brew); always runs
 #   ai-tools    — distributes skills + generates steering adapters to each agent
 #   codex       — Codex CLI config
 #   cursor      — Cursor CLI config
 #   claude-code — Claude Code cask + config
-. "$AI_DOTFILES_DIR/install/kiro-cli.sh"
+# The per-agent scripts run only when enabled in install/enabled-agents.sh.
+install_agent kiro-cli
 . "$AI_DOTFILES_DIR/install/engram.sh"
 . "$AI_DOTFILES_DIR/install/ai-tools.sh"
-. "$AI_DOTFILES_DIR/install/codex.sh"
-. "$AI_DOTFILES_DIR/install/cursor.sh"
-. "$AI_DOTFILES_DIR/install/claude-code.sh"
+install_agent codex
+install_agent cursor
+install_agent claude-code
 
 print_section_header "ai-dotfiles install complete"
