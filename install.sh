@@ -51,17 +51,19 @@ fi
 # Cache dir used by the brew helpers in utils.sh.
 mkdir -p "$HOME/.cache/ai-dotfiles"
 
-# Install and configure the AI tooling, in dependency order:
+# Install and configure the AI tooling. ai-tools runs first so the skills and
+# steering trees the agent configs reference already exist when each per-agent
+# script runs; the rest are independent.
+#   ai-tools    — distributes skills + generates steering adapters to each agent
 #   kiro-cli    — installs the kiro-cli cask + agents/settings/MCP servers
 #   engram      — configures persistent memory (binary via brew); always runs
-#   ai-tools    — distributes skills + generates steering adapters to each agent
 #   codex       — Codex CLI config
 #   cursor      — Cursor CLI config
 #   claude-code — Claude Code cask + config
 # The per-agent scripts run only when enabled in install/enabled-agents.sh.
+. "$AI_DOTFILES_DIR/install/ai-tools.sh"
 install_agent kiro-cli
 . "$AI_DOTFILES_DIR/install/engram.sh"
-. "$AI_DOTFILES_DIR/install/ai-tools.sh"
 install_agent codex
 install_agent cursor
 install_agent claude-code
