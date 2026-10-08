@@ -70,13 +70,15 @@ The deny list mirrors protections from kiro-cli and Cursor:
 
 - `.env` files blocked via `Read(./.env*)` and `Read(**/.env*)`
 - Credential files blocked (`.key`, `.pem`, `credentials*`)
-- System paths blocked for writes (`/etc/`, `/usr/`, `/bin/`, `/sbin/`, `/System/`)
+- System paths blocked for reads and writes (`/etc/`, `/usr/`, `/bin/`, `/sbin/`, `/System/`),
+  anchored with `//` (see Pattern Syntax); `scripts/validate-claude-path-rules.sh` rejects the
+  single-slash form at commit time
 - Destructive commands blocked (`rm`, `sudo`, mutating `gh` commands, `kubectl apply/create/delete`)
 
 ### Hooks
 
-Five global hook events configured in `settings.json` (all commands resolve via `$AI_DOTFILES_DIR`
-to `etc/ai/hooks/`, the same shared scripts kiro-cli uses):
+Six global hook events configured in `settings.json` (all commands resolve via `$AI_DOTFILES_DIR` to
+`etc/ai/hooks/`, the same shared scripts kiro-cli uses):
 
 - **`SessionStart`** (`matcher: "startup|resume"`) — runs `recall-memory.sh` (surfaces engram
   memories for the current project, tagged `AI_AGENT_NAME=claude-code`) and
@@ -84,14 +86,15 @@ to `etc/ai/hooks/`, the same shared scripts kiro-cli uses):
   the Claude analog of kiro's `agentSpawn` — see `etc/kiro-cli/README.md`'s Hook Patterns section
   for the shared cadence/scoping logic. A third hook, matcher `"startup"` only (not `"resume"`),
   runs `suggest-agent-fit.sh`.
-- **`PreToolUse`** with `matcher: "*"` — runs `block-env-files.sh`, `block-sops-age-files.sh`, and
-  `block-ssh-private-keys.sh` on every tool call, each blocking access to its class of sensitive
-  file by inspecting tool inputs and exiting `2` if found. A `matcher: "mcp__engram__.*"` hook runs
-  `block-memory-secrets.sh` to stop credentials from being stored in persistent memory (see the
-  MCP-prefix normalization note in `etc/kiro-cli/README.md`'s Security Layers section — the same
-  script handles both tools' naming conventions). A `matcher: "Bash"` hook runs
-  `block-persona-shell-commands.sh`, which self-scopes via the `agent_type` field in the hook
-  payload (see Personas below).
+- **`PreToolUse`** with `matcher: "*"` — runs `block-env-files.sh`, `block-sops-age-files.sh`,
+  `block-ssh-private-keys.sh`, and `block-shell-trace-mode.sh` on every tool call, each blocking
+  access to its class of sensitive file (or, for the trace-mode hook, shell `set -x` output that
+  would print secrets in cleartext) by inspecting tool inputs and exiting `2` if found. A
+  `matcher: "mcp__engram__.*"` hook runs `block-memory-secrets.sh` to stop credentials from being
+  stored in persistent memory (see the MCP-prefix normalization note in `etc/kiro-cli/README.md`'s
+  Security Layers section — the same script handles both tools' naming conventions). A
+  `matcher: "Bash"` hook runs `block-persona-shell-commands.sh`, which self-scopes via the
+  `agent_type` field in the hook payload (see Personas below).
 - **`PostToolUse`** with `matcher: "Bash"` — runs `audit-shell-commands.sh` asynchronously
   (`async: true`) to log AWS and kubectl commands to `~/.local/share/ai-audit/command-audit.jsonl`
   (a single shared log, not split per-tool like kiro's `aws-audit.jsonl`/`kubectl-audit.jsonl`). The
@@ -102,9 +105,36 @@ to `etc/ai/hooks/`, the same shared scripts kiro-cli uses):
 - **`UserPromptSubmit`** — runs `correction-capture.sh` on every prompt, the capture half of the
   capture-and-promote learning system (see the `capturing-corrections` steering and the
   `distill-learnings` skill; full mechanics documented in `etc/kiro-cli/README.md`'s Hook Patterns
-  section, which is cross-tool).
+  section, which is cross-tool). A second hook, `suggest-context-checkpoint.sh`, nudges once per
+  growth phase when the session crosses a fixed token count, so there is a visible warning before
+  auto-compaction fires. Claude Code only: kiro has no local token data.
+- **`PreCompact`** and **`PostCompact`** (`matcher: "*"`) — both run `log-compaction-event.sh`,
+  which records each compaction to the local ai-usage store. Purely observational.
 - Claude has no MCP `aws`/`kubernetes` tools to audit, so there's no equivalent to kiro's
   `use_aws`/`@kubernetes` matchers.
+
+### Cost Controls
+
+Spend is bounded by four settings, none of which is a spend cap (Claude Code has no persistent
+session-total budget; `--max-budget-usd` is a per-invocation CLI flag only):
+
+- **Effort pins** — `modelSettings` sets `effortLevel: "medium"` for `claude-sonnet-5` and
+  `claude-opus-5`. Keys prefix-match, so they cover the 5.5 releases too. Sonnet 5 and Opus 5
+  default to `high`, so the pin saves tokens there; on the 5.5 models `medium` is already the
+  default, so the pin only guards against a future default increase.
+- **Effort ceiling** — top-level `maxEffortLevel: "high"` stops a session from escalating to `xhigh`
+  or `max`.
+- **Haiku floor for delegation** — `env.CLAUDE_CODE_SUBAGENT_MODEL=haiku` runs anonymous subagents
+  (no model pinned) on Haiku. It is third in the documented precedence, below a per-call `model`
+  parameter and a persona's `model:` frontmatter.
+- **Agent model gate** — `Agent(model:opus)`, `Agent(model:fable)`, and the `claude-opus*` /
+  `claude-fable*` full-ID forms are in `permissions.ask`, so a per-call override to an expensive
+  model prompts instead of silently outranking the Haiku floor. Rules match the literal value Claude
+  sends, hence the separate alias and full-ID patterns. `ask` outranks the bare `Agent` allow.
+
+**Caveat:** all four personas (`docs`, `jira`, `datadog`, `ansible`) set `model: inherit`, so they
+run on the main session model and bypass the Haiku floor. Only anonymous delegations (for example
+`Explore` or `general-purpose`) get Haiku.
 
 ### Steering Distribution
 
@@ -190,7 +220,8 @@ These practices come from the
 
 - **Deny rules for sensitive files** — `.env*`, `.key`, `.pem`, `credentials*` all blocked via
   `Read` deny patterns
-- **System path protection** — `/etc/`, `/usr/`, `/bin/`, `/sbin/`, `/System/` blocked for `Edit`
+- **System path protection** — `/etc/`, `/usr/`, `/bin/`, `/sbin/`, `/System/` blocked for `Read`
+  and `Edit`
 - **Destructive command blocking** — `rm`, `sudo`, `kill`, `reboot`, mutating `gh` and `kubectl`
   commands denied
 - **`git add .` blocked** — prevents accidental bulk staging
@@ -240,8 +271,7 @@ free, matching the cross-tool parity goal `AGENTS.md` itself states. This is als
 absorbed the bulk of what used to live in `AGENTS.md`'s "Claude Code Conventions" section: once
 `AGENTS.md` became live Claude context on every session here, keeping Claude-only configuration
 mechanics there meant Claude re-reading meta-documentation about its own plumbing every session for
-no coding-task benefit. See `analysis/claude-code-changes.md` for the research behind the original
-decision to keep the default rather than opt out.
+no coding-task benefit.
 
 ## Intentional Deviations
 
