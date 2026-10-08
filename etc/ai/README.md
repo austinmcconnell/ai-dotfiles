@@ -6,10 +6,15 @@ Shared AI tool assets that are distributed to multiple tools by `install/ai-tool
 
 ```text
 etc/ai/
+├── hooks/      Shared lifecycle hook scripts (wired by Kiro agent JSON and Claude settings.json)
 ├── prompts/    Reusable prompts (clipboard-based, tool-agnostic)
 ├── skills/     Workflow definitions (SKILL.md format)
-└── steering/   Always-on coding principles and conventions
+├── steering/   Always-on coding principles and conventions
+└── usage/      Claude Code statusline scripts and SQLite schema for token/cost tracking
 ```
+
+`hooks/` and `usage/` are not distributed by `install/ai-tools.sh`: the tool configs call the
+scripts in place through `$AI_DOTFILES_DIR` (see `etc/ai/usage/README.md` for the usage store).
 
 ## How Distribution Works
 
@@ -39,6 +44,7 @@ clipboard for use with any AI chat service. See `ai-prompt help` for usage.
 Structured workflow definitions following the SKILL.md format (name/description frontmatter plus
 step-by-step instructions). Organized by category:
 
+- `ansible/` — Ansible role, playbook, and project workflows
 - `shared/` — cross-cutting (commit messages, todo management)
 - `development/` — coding workflows (specs, implementation, pre-commit)
 - `documentation/` — doc creation and review
