@@ -18,22 +18,7 @@ set -euo pipefail
 AI_DOTFILES_DIR="${AI_DOTFILES_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 
 source "$AI_DOTFILES_DIR/install/utils.sh"
-
-# ---------------------------------------------------------------
-# Enable the agents you actively use. Others are defined in the
-# agent_config registry below but won't be linked until added here.
-# ---------------------------------------------------------------
-ENABLED_AGENTS=(
-    "claude-code"
-    "kiro-cli"
-    # "codex"
-    # "cursor"
-    # "gemini-cli"
-    # "github-copilot"
-    # "windsurf"
-)
-
-# ---------------------------------------------------------------
+source "$AI_DOTFILES_DIR/install/enabled-agents.sh"
 
 print_section_header "Distributing Agent Skills"
 

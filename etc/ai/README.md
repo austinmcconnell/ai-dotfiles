@@ -24,9 +24,9 @@ etc/ai/
 | Gemini CLI (disabled) | Symlinked to `~/.gemini/skills/` | Concatenated into `~/.gemini/GEMINI.md`                                                         |
 
 Only `kiro-cli` and `Claude Code` are currently active. The rows above marked `(disabled)` are fully
-wired in the `agent_config` registry but commented out of `ENABLED_AGENTS` within
-`install/ai-tools.sh` — re-enable by uncommenting there. Check that array, not this table, for the
-authoritative current state.
+wired in the `agent_config` registry (`install/ai-tools.sh`) but commented out of `ENABLED_AGENTS`
+in `install/enabled-agents.sh` — re-enable by uncommenting there. Check that array, not this table,
+for the authoritative current state.
 
 ## Prompts
 
