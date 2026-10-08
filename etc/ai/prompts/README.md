@@ -118,12 +118,18 @@ Level 0 (No Dependencies - Can run anytime):
 ├── branch-analysis           # Git branch and commit analysis
 ├── branch-inventory          # All-branch inventory and triage
 ├── discover-previous-work    # Understand current implementation state
+├── ai-tool-best-practices    # Compare one AI tool's config against current best practices
+├── ai-tool-parity-audit      # Check permission/security parity across AI tools
+├── git-config-audit          # Audit etc/git/ for newer git features (dotfiles repo)
 ├── pr-description           # Generate pull request descriptions
+├── readme-coverage-audit     # Find missing and drifted READMEs
+├── readme-pointer-audit      # Check docs are reachable from README maps
 ├── refactor-plan            # Create refactoring plans
 ├── run-all-analyses         # Orchestrate all 9 analyses in dependency order
 ├── run-core-analyses        # Orchestrate core 4 analyses (P/A/S/I)
 ├── vim-native-coverage-audit # Audit ~/.dotfiles Vim plugins for stock-Vim coverage
-└── vim-practice-session     # Interactive vim skills practice
+├── vim-practice-session     # Interactive vim skills practice
+└── zsh-best-practices        # Compare zsh/Zephyr config against current best practices
 
 Level 1 (Requires: project-analysis):
 ├── architecture-analysis     # System design and architecture
@@ -164,14 +170,20 @@ For comprehensive project analysis, run prompts in this order:
 These prompts can be run at any time without prerequisites:
 
 - `branch-analysis` - Analyze current git branch changes
+- `ai-tool-best-practices` - Research best practices for one AI tool and compare against local config
+- `ai-tool-parity-audit` - Audit permission and security parity across the AI tool configs
 - `branch-inventory` - Inventory all local branches with maturity and triage recommendations
 - `claude-code-analysis` - Research Claude Code releases and evaluate config updates
 - `commit-analysis` - Analyze commit history patterns and quality
 - `component-compatibility-review` - Review hardware component compatibility
 - `discover-previous-work` - Understand work-in-progress state
 - `docs-review` - Review documentation repository structure and quality
+- `git-config-audit` - Audit `etc/git/` for newer git features (run from the dotfiles repo)
 - `kiro-analysis` - Research Kiro CLI releases and evaluate config updates
 - `pr-description` - Generate pull request descriptions
+- `readme-coverage-audit` - Find directories that need a README and READMEs that have drifted
+- `readme-pointer-audit` - Check docs are reachable from README maps (aborts unless on `main` or
+  `master`)
 - `refactor-plan` - Create refactoring strategies
 - `run-all-analyses` - Run all 9 analysis prompts in dependency order (orchestrator)
 - `run-core-analyses` - Run core 4 analyses: project, architecture, schema, integration
@@ -180,6 +192,7 @@ These prompts can be run at any time without prerequisites:
 - `summarize-jira-ticket` - Fetch and summarize JIRA tickets
 - `vim-native-coverage-audit` - Audit ~/.dotfiles Vim plugins for stock-Vim coverage
 - `vim-practice-session` - Practice vim skills
+- `zsh-best-practices` - Research zsh/Zephyr best practices and compare against local config
 
 ## Example Prompts
 
@@ -222,6 +235,10 @@ These prompts can be run at any time without prerequisites:
 
 ### Configuration and Tooling
 
+- `ai-tool-best-practices` - Research best practices for one AI tool and compare against local config
+  (outputs to `analysis/<tool>-best-practices-audit.md`)
+- `ai-tool-parity-audit` - Audit permission and security parity across tools (outputs to
+  `analysis/ai-tool-parity-audit.md`)
 - `claude-code-analysis` - Research recent Claude Code releases and evaluate configuration updates
 - `component-compatibility-review` - Review hardware component compatibility and specifications
 - `docs-review` - Review documentation repository using the docs-review skill workflow
@@ -240,8 +257,19 @@ These prompts can be run at any time without prerequisites:
 
 ### Dotfiles Audits
 
+- `git-config-audit` - Audit `etc/git/` for git features introduced since the last audit (run from
+  the dotfiles repo)
 - `vim-native-coverage-audit` - Audit the ~/.dotfiles Vim plugin list for drop candidates that stock
   Vim now implements natively (run from the dotfiles repo)
+- `zsh-best-practices` - Research zsh/Zephyr best practices and compare against the local zsh config
+  (outputs to `analysis/zsh-best-practices-audit.md`)
+
+### README Audits
+
+- `readme-coverage-audit` - Find directories that deserve a README and READMEs that have drifted
+  (outputs to `analysis/readme-coverage-audit.md`)
+- `readme-pointer-audit` - Check docs are reachable from README maps (outputs to
+  `analysis/readme-pointer-audit.md`)
 
 ### Skills Development
 
