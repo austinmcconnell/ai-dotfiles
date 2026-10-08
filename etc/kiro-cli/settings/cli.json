@@ -1,7 +1,7 @@
 {
     "autocomplete.disable": true,
     "autocomplete.insertSpaceAutomatically": true,
-    "chat.defaultAgent": "default",
+    "chat.defaultAgent": "code",
     "chat.disableInheritingDefaultResources": true,
     "codeWhisperer.shareCodeWhispererContentWithAWS": false,
     "inline.enabled": false,

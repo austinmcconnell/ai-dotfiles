@@ -61,11 +61,12 @@ else
     echo "No CLI agents directory found in dotfiles"
 fi
 
-# Set default agent to use custom 'code' agent instead of built-in kiro_default
-if is-executable kiro-cli; then
-    echo "Setting default agent to 'code'..."
-    kiro-cli agent set-default code 2>/dev/null || echo "⚠️  Could not set default agent (may need to run manually)"
-fi
+# Default agent is set via "chat.defaultAgent": "code" in the symlinked
+# settings/cli.json, NOT via `kiro-cli agent set-default`. The set-default
+# subcommand writes cli.json through an atomic lock+rename, which replaces the
+# symlink with a regular file — silently defeating the symlink and letting the
+# live config drift from the repo. Baking the key into the versioned file keeps
+# the repo the single source of truth and the symlink intact.
 
 # Validate agent configs against the schema (non-fatal — warn only).
 # The hand-maintained dual-format (V2 toolsSettings + V3 permissions) configs
