@@ -48,7 +48,9 @@ For template sections that don't apply to the change, write "N/A" rather than re
 - Link related issues: `Closes #N` or `Relates to #N`
 - Never reference local-only files (gitignored/untracked working files like `jira/*.md` drafts or
   `reports/*.md`) — reviewers can't open them. Restate the substance inline. Check with
-  `git check-ignore -v <path>` before citing a path; a real JIRA/issue link is fine.
+  `git check-ignore -v <path>` before citing a path; a real JIRA/issue link is fine. Likewise, never
+  name personal or machine-specific tooling (e.g. a local memory store, dotfiles, personal analysis
+  notes) — it's meaningless to reviewers.
 - Draft PRs for work-in-progress
 - Reference commits by SHA, not description
 

@@ -13,6 +13,8 @@
 - Don't add comments that repeat the function name
 - Don't comment obvious operations
 - Don't add comments for simple variable assignments
+- Don't restate in an inline comment what a nearby docstring already explains — a one-line "why"
+  beats a paragraph duplicating the docstring
 
 ## When to Comment
 

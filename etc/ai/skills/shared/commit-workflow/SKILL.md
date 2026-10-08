@@ -49,6 +49,10 @@ breaks into more than one commit. The user may override any part of it ("just do
   sequenced by dependency.
 - **Pausing is per commit, not per file.** Finish a whole logical change before pausing, not each
   edit.
+- **Present multi-commit messages together.** When the working tree holds changes spanning several
+  planned commits, present all the messages in ONE message at commit time, each paired with its
+  explicit `git add <files>` list — don't rely on messages suggested in earlier turns, which the
+  user may not see together when they commit.
 - **Non-committable work** (e.g. git-ignored analysis docs) still follows the plan/verify rhythm,
   but there is nothing to commit — say so and move on rather than waiting for a commit that will not
   happen.

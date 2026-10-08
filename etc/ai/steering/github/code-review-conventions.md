@@ -27,6 +27,15 @@ Present blockers first. If there are no blockers, say so explicitly.
 - Check for unresolved prior feedback — if previous reviewers left comments, assess whether they
   were addressed before adding new findings.
 
+## Responding to Review Feedback
+
+- Lead with the technical substance. Acknowledge a valid point with a plain concession ("Confirmed",
+  "Agreed on X") — not gratitude or praise for the reviewer raising it ("thanks for pushing on it",
+  "great catch"). Deferential filler is performative and carries no information.
+- Before asking the reviewer a question, check whether the codebase answers it. If so, investigate
+  (delegate a focused audit when broad) and reply with the finding. Reserve questions for genuine
+  judgment calls or information only they hold.
+
 ## Output Format
 
 For each finding, use severity tags with file and line references:
