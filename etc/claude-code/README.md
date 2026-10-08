@@ -61,6 +61,8 @@ persona's `tools:` frontmatter is a coarser analog (see Personas below).
 - `*` matches any sequence of characters including spaces
 - Paths support gitignore-style patterns: `./relative`, `**/recursive`, `~/home`
 - `//path` for absolute filesystem paths
+- A single leading slash is NOT absolute: `/path` anchors at the settings source, so `Read(/etc/**)`
+  in user settings matches `~/.claude/etc/**`, not `/etc`. System-path rules must use `//etc/**`
 
 ### Security Parity with Other Tools
 
