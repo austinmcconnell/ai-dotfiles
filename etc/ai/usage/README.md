@@ -108,13 +108,12 @@ first.
   plus a `raw_json` escape hatch — simpler to query at this scale (two known tools), and adding a
   column later is a one-line migration, not a rewrite.
 
-## Reporting: `bin/ai-usage`
+## Reporting
 
-`bin/ai-usage` (`--summary`/`--by-model`/`--by-effort`) is a read-only canned-report CLI over this
-DB. All three views aggregate `sessions.total_cost_usd` alone — never add
-`subagent_tasks.estimated_cost_usd` on top of it. See "Does session cost already include subagent
-spend?" below for why; `subagent_tasks` is surfaced only as a separate, known-partial informational
-breakdown.
+No reporting CLI is tracked in this repo; query the DB directly (e.g. with `sqlite3`). Any aggregate
+should sum `sessions.total_cost_usd` alone — never add `subagent_tasks.estimated_cost_usd` on top of
+it. See "Does session cost already include subagent spend?" below for why; `subagent_tasks` is
+useful only as a separate, informational breakdown.
 
 ### Does session cost already include subagent spend?
 
@@ -138,4 +137,4 @@ alongside the top-level loop:
 **Consequence for every aggregate query**: sum `sessions.total_cost_usd` alone for a "total cost"
 view. Summing it with `subagent_tasks.estimated_cost_usd` double-counts — the latter is already
 folded into the former. `subagent_tasks` remains useful only as a separate, informational,
-known-partial breakdown (see the visibility-window gap above), never as an addend.
+breakdown, never as an addend.
