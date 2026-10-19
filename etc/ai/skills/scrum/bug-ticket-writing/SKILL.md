@@ -108,6 +108,20 @@ Processing Issues**: Original data exists but derived/computed fields are incorr
 
 Most bugs are processing issues, not actual data loss.
 
+### Calibrate Frequency Language to Evidence
+
+Match claim strength to what the data supports. A one-time or conditional failure must not be
+written as unconditional present-tense behavior.
+
+❌ "Worker holds a transaction open across validation, hitting the 60s timeout and dropping the
+ingest" (reads as every time)
+✅ "Worker can hold a transaction open...; if that phase exceeds 60s the ingest is dropped. Observed
+once in prod (2026-10-12)."
+
+- Distinguish "happens every time" from "can happen under condition X; observed N times."
+- Prefer conditional framing + the observed occurrence count over unqualified present tense.
+- Gather supporting data (occurrence count, trigger rate, success baseline) to justify the wording.
+
 ### Use Specific Numbers
 
 ❌ **Vague**: "Many assessment screens are affected" ✅ **Specific**: "28,067 assessment screens in
@@ -148,6 +162,16 @@ production database have empty identified_needs arrays"
 - Using "data loss" when no data is actually lost
 - Overstating the severity or impact
 - Using technical jargon that confuses stakeholders
+
+### Wall-of-Text / Poor Scannability
+
+A refinement reader skims. Dense prose creates friction.
+
+- Lead each section with a one-line statement; push numeric detail and branch/path enumerations into
+  tables, not sentences.
+- Keep the summary short (aim ≤ ~90 chars) — a title, not a full sentence that restates the body.
+- Use plain words over jargon coinages ("already failed" not "terminally-settled"; "this is rare"
+  not "rare tail event"). Reserve exact technical terms (identifiers, config keys, percentiles).
 
 ## Validation Checklist
 
