@@ -83,6 +83,9 @@ A ticket must read as a standalone work item a reviewer or dev can pick up cold:
   not the ticket.
 - No pointers to local-only files (gitignored `reports/*.md`, `jira/draft-*.md`) — carry the
   evidence and file:line references in the ticket itself.
+- When carrying an enumerated item (path #3, finding N2, case 4) from a larger analysis into a
+  ticket, renumber it to the ticket's own local sequence. The source's index is a dangling
+  reference to a table the reader can't see.
 
 ## Language Guidelines
 
