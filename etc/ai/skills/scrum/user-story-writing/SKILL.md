@@ -199,8 +199,8 @@ Before marking a story ready:
 
 - Read `references/user-story-standards.md` when evaluating story quality or coaching on INVEST
   criteria
-- Read `references/technical-story-guidance.md` when writing stories for system behavior changes,
-  API integrations, or infrastructure work
+- Read `references/story-guidance.md` when writing stories for system behavior changes, API
+  integrations, or infrastructure work
 - Read `references/story-templates-examples.md` when the user asks for examples or you need a model
   for an unfamiliar domain
 - Read `references/story-review-checklist.md` when reviewing or refining existing stories
