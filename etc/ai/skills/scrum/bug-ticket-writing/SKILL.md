@@ -86,8 +86,8 @@ A ticket must read as a standalone work item a reviewer or dev can pick up cold:
 - No pointers to local-only files (gitignored `reports/*.md`, `jira/draft-*.md`) — carry the
   evidence and file:line references in the ticket itself.
 - When carrying an enumerated item (path #3, finding N2, case 4) from a larger analysis into a
-  ticket, renumber it to the ticket's own local sequence. The source's index is a dangling
-  reference to a table the reader can't see.
+  ticket, renumber it to the ticket's own local sequence. The source's index is a dangling reference
+  to a table the reader can't see.
 
 ## Language Guidelines
 
@@ -119,9 +119,8 @@ Match claim strength to what the data supports. A one-time or conditional failur
 written as unconditional present-tense behavior.
 
 ❌ "Worker holds a transaction open across validation, hitting the 60s timeout and dropping the
-ingest" (reads as every time)
-✅ "Worker can hold a transaction open...; if that phase exceeds 60s the ingest is dropped. Observed
-once in prod (2026-10-12)."
+ingest" (reads as every time) ✅ "Worker can hold a transaction open...; if that phase exceeds 60s
+the ingest is dropped. Observed once in prod (2026-10-12)."
 
 - Distinguish "happens every time" from "can happen under condition X; observed N times."
 - Prefer conditional framing + the observed occurrence count over unqualified present tense.
