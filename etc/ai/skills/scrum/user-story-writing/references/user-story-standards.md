@@ -105,26 +105,21 @@ Then [some outcome is expected].
 - **Leave room for questions**: Don't over-specify; allow for clarification during development
 - **Document assumptions**: Capture important assumptions that come up during discussions
 
-## Technical Story Patterns
+## System-Behavior Story Patterns
 
-### When Writing Technical Implementation Stories
+### When a Story Changes System Behavior
 
-For stories that involve changing system behavior or fixing technical issues:
+For stories that change internal system behavior or fix technical issues:
 
 #### Structure
-- **User Role**: Use specific technical roles (e.g., "data integration specialist", "system administrator")
+- **User Role** (value-gated): when the role line adds scoping information, use a specific technical role (e.g., "screenings developer", "data integration specialist"); omit it if it would be filler
 - **Goal**: Focus on the desired system behavior change
 - **Benefit**: Explain the business impact, often contrasting with current problematic behavior
 
-#### Background Section
-- Provide context about current system behavior
-- Reference specific analysis or evidence (e.g., "Analysis of real-world X reveals...")
-- Keep it brief but informative
-
-#### Current Issue Section
-- Use bullet points to list specific problems
-- Focus on concrete, observable issues
-- Include the business impact/consequence
+#### Background Information Section
+- Provide context about current system behavior and why it's problematic
+- List the specific, concrete, observable problems and their business impact/consequence
+- Reference specific analysis or evidence (e.g., "Analysis of real-world X reveals...") — keep it brief
 
 #### Acceptance Criteria Organization
 - **Core Functionality**: High-level system behavior changes
@@ -256,11 +251,11 @@ Split stories by different interfaces or platforms:
 
 ## Common User Story Anti-Patterns
 
-### Technical Stories
+### Implementation-Perspective Stories
 
-- **Problem**: Stories written from a technical perspective
+- **Problem**: Stories written from a technical/implementation perspective with no user or system-behavior value
 - **Example**: "As a developer, I want to refactor the database schema"
-- **Solution**: Frame in terms of user value or create a technical task
+- **Solution**: Frame in terms of user or business value, or make it a technical task
 
 ### Too Large (Epics)
 

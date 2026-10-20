@@ -370,14 +370,10 @@ Additional Criteria:
 As a [technical role],
 I want [system behavior change]
 so that [business outcome is achieved instead of current problematic behavior].
+(persona line is value-gated — omit if it adds no scoping information)
 
-Background
-[Brief context about current system behavior and why it's problematic]
-
-Current Issue
-• [Specific problem 1 with current implementation]
-• [Specific problem 2 with current implementation]
-• [Impact/consequence of current problems]
+Background Information
+[Current system behavior, why it's problematic, and the impact/consequence of the current problems]
 
 Acceptance Criteria
 
@@ -397,13 +393,8 @@ As a healthcare data integration specialist,
 I want FHIR bundle processing to use the organization referenced in the observations (primary care provider)
 so that screenings are correctly attributed to the appropriate healthcare provider instead of the first organization found.
 
-Background
-Analysis of real-world SHIN-NY bundles reveals that the current provider lookup logic treats all organizations equally and returns the first match found. However, the observations in these bundles reference a specific performing organization that should be used as the primary care provider.
-
-Current Issue
-• Provider lookup processes organizations sequentially and returns the first match found
-• Ignores the fact that observations reference a specific performing organization
-• Can result in screenings being attributed to technology platforms or payers instead of the actual care provider
+Background Information
+Analysis of real-world SHIN-NY bundles reveals that the current provider lookup logic treats all organizations equally and returns the first match found. The observations in these bundles reference a specific performing organization that should be used as the primary care provider, so attributing to the first match can assign screenings to technology platforms or payers instead of the actual care provider.
 
 Acceptance Criteria
 

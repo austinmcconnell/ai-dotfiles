@@ -29,42 +29,36 @@ Use specs for:
 
 ## Story Structure
 
-### Standard Template
+A Story covers both user-facing features and system-behavior/technical work. Both use the one
+template below. See the `ticket-writing` skill for the cross-cutting rules (acceptance-criteria
+count, sensitive data, what to omit) that apply to every ticket.
+
+### Story Template
 
 ```text
-As a [type of user],
-I want [some goal]
-so that [some reason/benefit].
+As a [real domain persona], I want [goal] so that [benefit].
 
-Acceptance Criteria:
-- [Specific, testable criterion 1]
-- [Specific, testable criterion 2]
-- [Specific, testable criterion 3]
-```
-
-### Technical Story Template
-
-```text
-As a [specific technical role],
-I want [system behavior change]
-so that [business outcome] instead of [current problematic behavior].
-
-Background
-[Context about current system and why change is needed]
-
-Current Issue
-• [Specific problem 1]
-• [Specific problem 2]
-• [Business impact]
+Background Information
+[2–5 sentences: why this matters, the current behavior, and where it shows up]
 
 Acceptance Criteria
-• [Primary system behavior change]
-• [Secondary system behavior change]
+- [Observable, testable criterion]
+- [Observable, testable criterion]
 
-Technical Implementation
-• [Specific technical task 1]
-• [Specific technical task 2]
+Technical Implementation   (optional — for system-behavior stories)
+- [Specific technical task]
+
+Out of scope   (optional — one tightly-bounded line)
 ```
+
+**The persona line is value-gated, not mandatory.** Include "As a… I want… so that…" only when the
+role and benefit add real scoping information. Omit it when it would be performative (e.g. "As a
+developer, I want cleaner code"). When used, the role must be a real domain persona — e.g.
+"screenings developer" or a real end-user role like "care coordinator" — never a generic "developer"
+or an invented title.
+
+Add the **Technical Implementation** section only for stories that change system behavior and need
+to sketch the how. Keep it to high-level tasks, not a step-by-step plan.
 
 ## INVEST Principles
 
@@ -101,7 +95,8 @@ Every story should be:
 
 ### Count
 
-- **3–8 criteria per story** — fewer means under-specified, more means split the story
+- **2–4 criteria per story** (an optional 5th when the case genuinely needs it) — fewer means
+  under-specified, more means split the story
 - Each criterion covers one condition — no compound "and" statements
 
 ### Format
@@ -129,18 +124,20 @@ Every story should be:
 
 ### By Issue Type
 
-- **Stories**: Observable user behavior and outcomes (3–8 criteria)
+- **Stories**: Observable user behavior and outcomes (2–4 criteria, optional 5th)
 - **Bugs**: Corrected behavior + regression guard + environment context
 - **Tasks**: Completion conditions and verification steps
 - **Spikes**: Deliverable definition + questions to answer + timebox (no story points)
 
-**Technical stories:**
+**System-behavior stories (technical work):**
 
-- Use specific technical roles (not "developer")
-- Focus on system behavior changes
-- Provide background context
-- List current issues with business impact
-- Keep acceptance criteria clean (no over-engineering)
+A Story that changes internal system behavior uses the same Story template, adding the optional
+Technical Implementation section. See `references/story-guidance.md` for depth.
+
+- Use a real technical persona in the (value-gated) role line — e.g. "screenings developer", never
+  "developer"
+- Focus on the system behavior change and its business impact
+- Provide background context; keep acceptance criteria clean (no over-engineering)
 
 ## Common Patterns
 

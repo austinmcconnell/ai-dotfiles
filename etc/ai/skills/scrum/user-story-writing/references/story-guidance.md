@@ -1,38 +1,34 @@
-# Technical Story Creation Guidance
+# System-Behavior Story Guidance
 
-## Key Principles for Technical Stories
+Guidance for writing a Story whose change is to internal system behavior (data processing, API
+integrations, infrastructure, reliability) rather than a visible UI feature. It is an ordinary Story
+using the one Story template — this file covers the judgment specific to system-behavior work.
+
+## Key Principles
 
 ### 1. Focus on System Behavior Changes
 
-Technical stories should describe **what the system should do differently**, not just what code to
-write.
+A system-behavior story should describe **what the system should do differently**, not just what
+code to write.
 
 **Good**: "System identifies which organization is referenced in the Observation resources"
 **Poor**: "Add a function to extract performer references"
 
-### 2. Provide Context with Background
+### 2. Provide Context in Background Information
 
-Always include a "Background" section that explains:
+The Background Information section carries the context for a system-behavior story:
 
-- Current system behavior
-- Why it's problematic
-- Evidence or analysis supporting the change
+- Current system behavior and why it's problematic
+- Observable consequences and business impact
+- Evidence or analysis supporting the change (kept brief — link out rather than dump)
 
-### 3. Structure Current Issues Clearly
-
-Use bullet points to list:
-
-- Specific problems with current implementation
-- Observable consequences
-- Business impact
-
-### 4. Organize Acceptance Criteria Simply
+### 3. Organize Acceptance Criteria Simply
 
 - Use simple bullet points for Acceptance Criteria (not checklists or subsections)
 - Add a separate "Technical Implementation" section with bullet points (not checklists) for
   implementation details
 
-### 5. Avoid Over-Engineering
+### 4. Avoid Over-Engineering
 
 Don't include generic sections unless specifically needed:
 
@@ -42,7 +38,7 @@ Don't include generic sections unless specifically needed:
 - ❌ Priority Justification
 - ❌ Backward Compatibility (unless required by specifications)
 
-### 6. Transform Source Analysis — Don't Mirror It
+### 5. Transform Source Analysis — Don't Mirror It
 
 When the ticket originates from a rich writeup (an investigation, a Slack thread, a detailed
 analysis doc), **map the content onto the template — do not carry the source's structure into the
@@ -50,8 +46,9 @@ ticket.** A well-organized source (Problem / Root cause / Evidence / Reasoning /
 seductive: its sections feel legitimate because the user wrote them, so they slip past the "no
 generic boilerplate" check. They are still over-building.
 
-- The ticket has exactly the template's sections (Background, Current Issue, Acceptance Criteria,
-  Technical Implementation). Everything from the source lands in one of those or gets relocated.
+- The ticket has exactly the template's sections (Background Information, Acceptance Criteria, and
+  optionally Technical Implementation). Everything from the source lands in one of those or gets
+  relocated.
 - **Decision-support belongs elsewhere**: full evidence dumps, "why we chose value X" reasoning, and
   "not-yet-verified" caveats go in a **ticket comment** or the analysis file — not the description.
   The description says *what* changes and *what "done" looks like*; the forensics are what convinced
@@ -59,29 +56,24 @@ generic boilerplate" check. They are still over-building.
 - If a chunk of the source has no home in the template, that is the signal to drop or relocate it —
   not to add a section for it.
 
-### 7. Use Technical Personas
+### 6. Use Technical Personas
 
-For system-level changes, use specific technical roles:
+When the (value-gated) role line is used for system-level changes, use a specific technical role:
 
 - "healthcare data integration specialist"
 - "system administrator"
 - "API integration developer"
 - "data processing engineer"
 
-## Template for Technical Stories
+## Template for System-Behavior Stories
 
 ```text
-As a [specific technical role],
-I want [system behavior change]
-so that [business outcome] instead of [current problematic behavior].
+As a [real domain technical persona], I want [system behavior change] so that [business outcome]
+instead of [current problematic behavior].
+(persona line is value-gated — omit if it adds no scoping information)
 
-Background
-[Context about current system and why change is needed]
-
-Current Issue
-• [Specific problem 1]
-• [Specific problem 2]
-• [Business impact]
+Background Information
+[Current system behavior, why it's problematic, observable consequences, and business impact]
 
 Acceptance Criteria
 • [Primary system behavior change]
@@ -92,7 +84,7 @@ Technical Implementation
 • [Specific technical task 2]
 ```
 
-## Examples of Good Technical Stories
+## Examples of Good System-Behavior Stories
 
 ### Data Processing Story
 
@@ -101,13 +93,8 @@ As a healthcare data integration specialist,
 I want FHIR bundle processing to use the organization referenced in the observations (primary care provider)
 so that screenings are correctly attributed to the appropriate healthcare provider instead of the first organization found.
 
-Background
-Analysis of real-world SHIN-NY bundles reveals that the current provider lookup logic treats all organizations equally and returns the first match found. However, the observations in these bundles reference a specific performing organization that should be used as the primary care provider.
-
-Current Issue
-• Provider lookup processes organizations sequentially and returns the first match found
-• Ignores the fact that observations reference a specific performing organization
-• Can result in screenings being attributed to technology platforms or payers instead of the actual care provider
+Background Information
+Analysis of real-world SHIN-NY bundles reveals that the current provider lookup logic treats all organizations equally and returns the first match found. The observations in these bundles reference a specific performing organization that should be used as the primary care provider, so attributing to the first match can assign screenings to technology platforms or payers instead of the actual care provider.
 
 Acceptance Criteria
 • **Observation-Referenced Organization**: System identifies which organization is referenced in the Observation resources as the performing organization
@@ -125,13 +112,8 @@ As an API integration developer,
 I want the authentication service to return structured error responses with specific error codes
 so that client applications can handle authentication failures appropriately instead of receiving generic error messages.
 
-Background
-Current authentication API returns generic HTTP 401 responses without specific error details, making it difficult for client applications to distinguish between expired tokens, invalid credentials, and account lockouts.
-
-Current Issue
-• All authentication failures return the same generic 401 response
-• Client applications cannot differentiate between different failure types
-• Users receive unhelpful error messages that don't guide them toward resolution
+Background Information
+The current authentication API returns generic HTTP 401 responses without specific error details, so client applications cannot distinguish expired tokens, invalid credentials, and account lockouts, and users receive unhelpful errors that don't guide them toward resolution.
 
 Acceptance Criteria
 • **Structured Error Responses**: API returns JSON error responses with specific error codes and messages
@@ -199,9 +181,9 @@ I want the system to use normalized database tables for user preferences
 so that preference updates are consistent across all user interfaces instead of requiring updates in multiple places.
 ```
 
-## When to Use Technical Stories vs User Stories
+## When a Story Needs the System-Behavior Treatment
 
-### Use Technical Stories When
+Apply this guidance (technical persona, Technical Implementation section) when the Story is:
 
 - Changing internal system behavior that affects business outcomes
 - Fixing technical debt that impacts user experience
@@ -209,20 +191,17 @@ so that preference updates are consistent across all user interfaces instead of 
 - Integrating with external systems or APIs
 - Implementing infrastructure changes that enable new features
 
-### Use Regular User Stories When
+A Story that adds a user-facing feature, changes the UI/UX, or implements a user-workflow business
+rule uses the plain Story template without the Technical Implementation section.
 
-- Adding new user-facing features
-- Changing user interface or user experience
-- Implementing business rules that directly affect user workflows
-- Adding user-requested functionality
+## Review Checklist for System-Behavior Stories
 
-## Review Checklist for Technical Stories
-
-- [ ] **Technical Role**: Uses specific technical persona, not generic "developer"
+- [ ] **Technical Role**: If the role line is used, it names a specific technical persona, not
+  generic "developer"
 - [ ] **System Behavior**: Focuses on what the system should do differently
 - [ ] **Business Impact**: Clearly explains why the change matters
 - [ ] **Background**: Provides context about current problematic behavior
-- [ ] **Current Issues**: Lists specific, observable problems
+- [ ] **Background Information**: Lists specific, observable problems and their business impact
 - [ ] **Clean Acceptance Criteria**: Uses simple bullet points for Acceptance Criteria and separate
   Technical Implementation section
 - [ ] **No Over-Engineering**: Avoids unnecessary generic sections
