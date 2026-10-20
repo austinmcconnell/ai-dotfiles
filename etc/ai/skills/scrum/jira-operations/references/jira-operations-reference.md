@@ -519,6 +519,15 @@ To discover available link types: `jira_get` → `/rest/api/3/issueLinkType`.
   verify by re-fetching `fields.description`.
 - Distinguish an nginx `400` (HTML page — transport/method/size layer) from a JIRA `400` (JSON
   validation error — a real field problem).
+- The MCP tool can reject a very large/complex request body with a client-side `Invalid input:
+  expected record, received string at body` error (the `body` argument gets stringified before
+  schema validation above some size/complexity). This is a per-call body-size limit, not a ban on
+  any node type — a normally-scoped description (a few hundred words with a table or two) is well
+  within it. Tables are fine; they just encode ~1.5-2x the bytes/nodes of the same text as bullets
+  (each cell nests `tableCell > paragraph > text`), so an already-large body hits the limit sooner.
+  Fix by tightening the description, not by avoiding tables. Note: Jira PUT/PATCH both *replace* the
+  whole `description` and ADF has no partial-field append, so you cannot split one field's content
+  across two calls — each write must carry the entire field.
 
 ### Performance Issues
 
