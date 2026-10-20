@@ -21,11 +21,9 @@ clearly communicate what's broken, why it's broken, and how to verify the fix.
 
 ### Required Sections
 
-#### Summary
-
-- Clear, concise description of the bug
-- Include the main impact or affected functionality
-- Avoid technical jargon in the summary
+The Jira **summary field is the ticket title** — keep it clear, concise, and non-technical, naming
+the main impact or affected functionality. Do not repeat it as a body section; the description body
+leads with Background.
 
 #### Description
 
@@ -52,17 +50,22 @@ Structure the description with these subsections:
 
 ##### Evidence
 
-- Database queries and their results
-- Log entries or error messages
-- Screenshots or other supporting materials
-- Actual data showing the problem
+Keep evidence short and tightly worded — enough to prove the defect, not a dump. Prefer a link to
+the dashboard/query over pasting walls of output.
+
+- A metrics table, one representative log excerpt (with trace_id), or a key query + its result
+- The actual error string or data showing the problem
+- Screenshots/recordings only when they add what text cannot
 
 #### Acceptance Criteria
 
+- Target 2–4 criteria (an optional 5th when the case genuinely needs it)
 - Focus on observable outcomes, not implementation steps
-- What should work correctly after the fix
-- How to verify the fix is working
+- What should work correctly after the fix, and how to verify it
 - Keep criteria testable and measurable
+
+See the `ticket-writing` skill for the cross-cutting rules (acceptance-criteria quality, sensitive
+data, scannability, what to omit) that apply to every ticket type.
 
 ### Sections to Avoid Unless Specifically Requested
 
@@ -71,7 +74,8 @@ Structure the description with these subsections:
 - **What Still Works** (usually not relevant for bug reports)
 - **Implementation steps** in Acceptance Criteria
 - **Generic sections** like "Logging and Observability"
-- **Out of Scope** — deferral/split discussion belongs in chat or working notes, not the ticket
+- **Multi-paragraph Out of Scope** discussion — a single tightly-bounded "Out of scope" line is fine
+  when it prevents scope creep, but deferral/split discussion belongs in chat or working notes
 
 ### Keep Ticket Content Durable and Self-Contained
 
@@ -179,7 +183,7 @@ A refinement reader skims. Dense prose creates friction.
 
 ## Validation Checklist
 
-- [ ] Summary is clear and non-technical
+- [ ] Summary (ticket title) is clear and non-technical
 - [ ] Background explains the expected vs actual behavior
 - [ ] Root cause is specific with file/line references
 - [ ] Impact is organized into logical categories
@@ -192,7 +196,7 @@ A refinement reader skims. Dense prose creates friction.
 ## Example
 
 ````markdown
-## Summary
+## Summary (ticket title)
 
 Fix typo preventing user data from being processed correctly
 
