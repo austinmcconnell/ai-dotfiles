@@ -8,6 +8,7 @@ artifact against it, even when you believe you already know the convention.
 | Task                                                                 | Skill to load first      |
 | -------------------------------------------------------------------- | ------------------------ |
 | Writing commit messages                                              | `commit-message-writing` |
+| Deciding which sections any Jira ticket needs                        | `ticket-writing`         |
 | Writing user stories                                                 | `user-story-writing`     |
 | Writing bug tickets                                                  | `bug-ticket-writing`     |
 | Creating any JIRA ticket/issue/task                                  | `user-story-writing`     |
