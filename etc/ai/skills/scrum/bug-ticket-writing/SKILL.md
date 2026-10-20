@@ -81,10 +81,11 @@ data, scannability, what to omit) that apply to every ticket type.
 
 A ticket must read as a standalone work item a reviewer or dev can pick up cold:
 
-- No transient references in the body: branch names, "Ticket N of 3" sequencing, or other tickets'
-  relationships in prose. Cross-ticket dependencies go in the linked-issues section, not the text —
-  and only as a real functional dependency (Blocks/is-blocked-by); do not link a ticket that is
-  already Done.
+- No transient references in the body: branch names, commit SHAs, "Ticket N of 3" sequencing, or
+  other tickets' relationships in prose. Cross-ticket dependencies go in the linked-issues section,
+  not the text — and only as a real functional dependency (Blocks/is-blocked-by). A
+  Blocks/is-blocked-by link must never point at a Done ticket; a Relates-to a recent, relevant Done
+  ticket is fine.
 - No process/meta-commentary ("recommend a separate ticket", "your call") — that's for discussion,
   not the ticket.
 - No pointers to local-only files (gitignored `reports/*.md`, `jira/draft-*.md`) — carry the

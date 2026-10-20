@@ -62,7 +62,11 @@ deferral discussion. If deferred work is substantial, it is its own ticket, not 
 ### Dependencies are links, not prose
 
 Record real functional dependencies as Jira issue links (Blocks / is-blocked-by), never as prose in
-the body. Do not link a ticket that is already Done.
+the body. A Blocks / is-blocked-by link must never point at a Done ticket — already-shipped work
+can't be an active dependency. A generic associative link (Relates to) to a Done ticket is fine when
+it's genuinely useful context. Either way, link by relevance: a recent, directly-related ticket is
+worth linking; avoid stale/archaeological links (years old or many hundreds of numbers back). Leave
+existing links in place even if their target later became Done.
 
 ### Scannable and durable
 
@@ -108,6 +112,8 @@ Apply all cross-cutting rules above. Keep Acceptance Criteria to 2–4 (optional
 - [ ] No person full-names/secrets in the body; org data and minimal identifiers only
 - [ ] No omit-by-default sections unless genuinely needed
 - [ ] Any Out-of-scope note is a single bounded line
-- [ ] Dependencies are issue links (not prose), and none point at a Done ticket
+- [ ] Dependencies are issue links (not prose); no Blocks/is-blocked-by link points at a Done ticket
+  (a Relates-to a recent, relevant Done ticket is fine); new links aren't stale; existing links left
+  as-is
 - [ ] No session/workflow framing; scannable sections with tables for detail
 - [ ] Type/priority/labels/points left for PO/EM
