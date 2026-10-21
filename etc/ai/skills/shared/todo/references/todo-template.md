@@ -4,7 +4,9 @@
 
 <!-- open questions, blockers, and tasks. Git-ignored. -->
 
-<!-- Resolved items stay (with a link to the outcome) until actively cleaned out. -->
+<!-- Mark [x] (with a link to the outcome) only while the surrounding work is in flight. -->
+
+<!-- Remove the whole set once it is done: git history is the record, not this file. -->
 
 ## Open questions
 
