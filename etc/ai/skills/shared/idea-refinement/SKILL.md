@@ -1,6 +1,6 @@
 ---
 name: idea-refinement
-description: Use when deciding what to work on next, scoping or stress-testing an idea, or otherwise in planning/ideation mode (not yet executing an agreed plan) — critically analyze and refine ideas through a lightweight capture-refine-promote funnel using ideas.md, an optional backlog.md, and todo.md. Load at the start of planning, before picking an idea to build.
+description: Use when deciding what to work on next, scoping or stress-testing an idea, or otherwise in planning/ideation mode (not yet executing an agreed plan) — critically analyze and refine ideas through a lightweight capture-refine-promote funnel using ideas.md, an optional backlog.md, and todo.md. Also use to audit, clean up, or prune those files. Load at the start of planning, before picking an idea to build.
 ---
 
 # Idea Refinement
@@ -140,6 +140,14 @@ size thresholds.
   plan.
 
 Surface these as recommendations for the user to accept, not automatic restructures.
+
+## Auditing the Funnel
+
+The funnel files drift: items finish, ideas get dropped, and open items grow long. Audit when the
+user asks to clean up, prune, or audit the working files, or when you notice an item described as
+open that the code shows is done. The signal is behavioral (stale or hard-to-scan items), never file
+size. Read `references/audit.md` for the evidence-first workflow, which covers `ideas.md`,
+`backlog.md`, `todo.md`, and the `plan-*.md` / `analysis/` files they link.
 
 ## What This Skill Does Not Do
 

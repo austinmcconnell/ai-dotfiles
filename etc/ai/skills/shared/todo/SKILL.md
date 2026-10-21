@@ -73,3 +73,6 @@ Remove a completed feature-set's items as soon as the whole feature is done — 
 checked-off blocks accumulating (a todo.md with 150+ lines of finished work is the failure mode).
 `[x]` is transient progress-tracking within active work, not a permanent record. Mid-feature,
 resolved sub-items may stay until the set completes.
+
+To check whether items are still open, not just checked off, use the `idea-refinement` skill's audit
+(`references/audit.md`).
