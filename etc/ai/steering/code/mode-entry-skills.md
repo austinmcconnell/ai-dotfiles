@@ -26,7 +26,8 @@ numbered loop lives in the skill).
 Loading one skill never satisfies another skill's trigger. When a skill says "hand to X" or "see the
 X skill", X is a trigger: load it as soon as you decide to act on the item, before the first
 `Edit`/`Write` of work you intend to git-commit and before the first write to `todo.md`. Treat a
-user's "yes" to a refinement verdict as approval to plan the git commits, not to start editing.
+user's "yes" to a refinement verdict, or any go-ahead to "make the changes", as approval to plan the
+git commits, not to start editing; once `commit-workflow` is loaded, the next output is that plan.
 
 These pointers reinforce the mode-keyed rows in `skill-loading-triggers.md`; they do not restate the
 trigger table. When in doubt about which skill maps to a task, that table remains the single index —

@@ -41,7 +41,10 @@ breaks into more than one commit. The user may override any part of it ("just do
 - **Plan before writing, not after.** Do steps 1–3 (scope → plan + get approval → record in todo.md)
   *before* editing any file. The commit message itself is written after the change (you can only
   describe work that exists) — what must come first is the agreed plan, not the message. Loading
-  this skill is not the same as executing it.
+  this skill is not the same as executing it: once it is loaded, your next output is the plan, with
+  no `Edit`/`Write` until the user approves it. A go-ahead on the work ("make the changes", "do X
+  first") approves the scope, not skipping the plan. Count the repos touched at scoping time; work
+  that spans more than one is multi-commit by definition.
 - **The user commits by default.** Do not create commits unless the user explicitly asks you to
   (this reinforces `git-conventions.md` Commit Discipline). The default is: you prepare and verify,
   the user commits.
