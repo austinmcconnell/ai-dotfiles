@@ -190,8 +190,8 @@ session fills that role directly.
 - Domain steering is inlined into the installed persona, not loaded from a `resources` array. Claude
   Code uses a persona body verbatim as its system prompt and does not expand `@`-imports there, so
   `scripts/generate-personas.sh` appends every doc in the persona's steering domain (the same domain
-  its kiro counterpart loads via `file://~/.kiro/steering/<domain>/**/*.md`) plus
-  `security/env-file-protection.md`. The persona-to-domain mapping lives in
+  its kiro counterpart loads via `file://~/.kiro/steering/<domain>/**/*.md`), every doc in the
+  `shared/` domain, and `security/env-file-protection.md`. The persona-to-domain mapping lives in
   `install/persona-domains.sh`. A new steering file in a domain is picked up on the next install,
   with no persona edit; edits to a persona source or steering doc take effect after re-running the
   installer. `scripts/validate-persona-steering.sh` checks the mapping and the generator output at

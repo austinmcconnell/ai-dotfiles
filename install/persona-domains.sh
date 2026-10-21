@@ -6,8 +6,8 @@
 # Sourced by scripts/generate-personas.sh (installs the personas) and
 # scripts/validate-persona-steering.sh (commit-time check), so both read
 # one list. Each domain matches the steering the persona's kiro counterpart
-# loads via file://~/.kiro/steering/<domain>/**/*.md. Every persona also gets
-# security/env-file-protection.md, appended by the generator.
+# loads via file://~/.kiro/steering/<domain>/**/*.md. Every persona also gets the
+# shared/ domain and security/env-file-protection.md, appended by the generator.
 # ---------------------------------------------------------------
 
 # shellcheck disable=SC2034 # consumed by the scripts that source this file

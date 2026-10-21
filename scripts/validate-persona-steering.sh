@@ -15,8 +15,9 @@ set -euo pipefail
 #      doc.
 #   2. The source has no `@`-import lines (they would reach the model as
 #      literal text).
+# The shared/ domain every persona inherits must also hold at least one doc.
 # Then the generator runs into a temporary directory, which fails if any
-# persona is missing an inlined steering doc.
+# persona is missing an inlined steering doc (domain, shared, or security).
 #
 # This script does NOT touch ~/.claude. Exit 0 when everything holds; exit 1 on
 # any problem.
@@ -47,6 +48,10 @@ report_fail() {
 
 echo -e "${BOLD}Validating persona steering against etc/ai/steering/${RESET}"
 echo "──────────────────────────────────────────────────────────────────────────"
+
+if [[ -z "$(find "${STEERING_DIR}/shared" -maxdepth 1 -name '*.md' -print -quit 2>/dev/null)" ]]; then
+    report_fail "shared" "no steering docs found in steering/shared/"
+fi
 
 for persona in "${PERSONAS[@]}"; do
     persona_file="${PERSONAS_DIR}/${persona}.md"

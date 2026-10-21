@@ -191,6 +191,15 @@ for persona in "${PERSONAS[@]}"; do
 
     ((${#docs[@]} > 0)) || fail "no steering docs found in $STEERING_DIR/$domain"
 
+    # Every persona also gets the shared domain, the same one every kiro agent
+    # globs (file://~/.kiro/steering/shared/**/*.md).
+    shared_docs=()
+    for doc in "$STEERING_DIR/shared"/*.md; do
+        [[ -f "$doc" ]] && shared_docs+=("$doc")
+    done
+    ((${#shared_docs[@]} > 0)) || fail "no steering docs found in $STEERING_DIR/shared"
+    docs+=("${shared_docs[@]}")
+
     security_doc="$STEERING_DIR/security/env-file-protection.md"
     [[ -f "$security_doc" ]] || fail "steering doc not found: $security_doc"
     docs+=("$security_doc")
