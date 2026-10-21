@@ -213,6 +213,7 @@
         "file://~/.kiro/steering/code/**/*.md",
         "file://~/.kiro/steering/github/**/*.md",
         "file://~/.kiro/steering/security/**/*.md",
+        "file://~/.kiro/steering/shared/**/*.md",
         "file://.kiro/steering/**/*.md",
         "file://README.md",
         "file://ideas.md",

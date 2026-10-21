@@ -141,9 +141,9 @@ run on the main session model and bypass the Haiku floor. Only anonymous delegat
 Steering is not configured in this directory. `install/ai-tools.sh` generates per-file rules in
 `~/.claude/rules/` from shared steering sources in `etc/ai/steering/`. Files with `paths:`
 frontmatter get conditional loading (only injected when Claude reads matching files). `CLAUDE.md` is
-a minimal pointer file, not a concatenated dump. Only the `code`, `github`, and `security` steering
-domains are distributed this way (Claude Code has no per-persona resource scoping in the main
-session, unlike kiro's per-agent `resources` arrays) — domain-specific steering (`ansible`,
+a minimal pointer file, not a concatenated dump. Only the `code`, `github`, `security`, and `shared`
+steering domains are distributed this way (Claude Code has no per-persona resource scoping in the
+main session, unlike kiro's per-agent `resources` arrays) — domain-specific steering (`ansible`,
 `documentation`, `datadog`, `scrum`) is instead inlined into each persona at install time (see
 Personas below).
 

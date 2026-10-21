@@ -93,7 +93,7 @@ fi
 # forever — the split has to happen at distribution time instead. See
 # etc/ai/README.md's "Why Some Steering Is Universal" section for the full
 # cross-tool rationale.
-UNIVERSAL_STEERING_DOMAINS=(code github security)
+UNIVERSAL_STEERING_DOMAINS=(code github security shared)
 
 # ---------------------------------------------------------------
 # Steering Generators

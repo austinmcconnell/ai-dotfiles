@@ -136,6 +136,7 @@
         "file://AGENTS.md",
         "file://~/.kiro/steering/scrum/**/*.md",
         "file://~/.kiro/steering/security/env-file-protection.md",
+        "file://~/.kiro/steering/shared/**/*.md",
         "file://.kiro/steering/**/*.md",
         "file://README.md",
         "skill://.kiro/skills/**/SKILL.md",

@@ -5,6 +5,7 @@
     "resources": [
         "file://~/.kiro/steering/documentation/**/*.md",
         "file://~/.kiro/steering/security/env-file-protection.md",
+        "file://~/.kiro/steering/shared/**/*.md",
         "file://.kiro/steering/**/*.md",
         "file://AGENTS.md",
         "file://README.md",

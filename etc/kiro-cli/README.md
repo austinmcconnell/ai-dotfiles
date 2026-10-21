@@ -239,7 +239,7 @@ route between the eager map, the KB, and engram.
 
 Resource scoping per agent:
 
-- **code** — all steering domains (`code/`, `github/`, `security/`),
+- **code** — all steering domains (`code/`, `github/`, `security/`, `shared/`),
   development/operations/research/ shared skill categories, multiple knowledge bases (research,
   project code, analysis docs)
 - **docs** — `documentation/` steering, documentation + shared skills, many knowledge bases for

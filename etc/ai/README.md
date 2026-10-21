@@ -59,6 +59,7 @@ Always-on principles that guide AI behavior. Organized by domain:
 - `code/` — python, shell, git, testing conventions
 - `github/` — PR, issue, code review, actions conventions
 - `security/` — env file protection, best practices
+- `shared/` — skill-loading triggers common to every agent
 - `documentation/` — writing style, formatting, mdbook
 - `scrum/` — JIRA operations, sprint conventions
 - `datadog/` — observability and UST conventions
@@ -71,10 +72,10 @@ markdown file).
 
 ### Why Some Steering Is Universal and Some Is Per-Persona
 
-`install/ai-tools.sh` only ships `code`, `github`, and `security` (`UNIVERSAL_STEERING_DOMAINS`) to
-every session on every tool. `datadog`, `ansible`, `documentation`, and `scrum` are deliberately
-left out — not an oversight, but a consequence of a structural asymmetry between the distributed
-tools:
+`install/ai-tools.sh` only ships `code`, `github`, `security`, and `shared`
+(`UNIVERSAL_STEERING_DOMAINS`) to every session on every tool. `datadog`, `ansible`,
+`documentation`, and `scrum` are deliberately left out — not an oversight, but a consequence of a
+structural asymmetry between the distributed tools:
 
 - **kiro-cli** has no "main session" distinct from its agents — every invocation is an agent, and
   each agent JSON declares its own `resources` array. Steering scoping is native and per-invocation
