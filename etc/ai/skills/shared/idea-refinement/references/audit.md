@@ -3,6 +3,18 @@
 Leave only items that are still open, each stated briefly. Applies to `ideas.md`, `backlog.md`,
 `todo.md`, and the `plan-*.md` / `analysis/*.md` files they link.
 
+## Drift signals
+
+Cheap signals visible from the files alone, used by the drift check on load and as audit pointers:
+
+- **Wrong tier**: an item with a scope decision or verdict in `ideas.md`, an unrefined item in
+  `backlog.md`, or a raw idea in `todo.md`.
+- **Bloat**: an item longer than one line plus a few short sub-items.
+- **Finished work**: a `[x]` block lingering in `todo.md` after its set is done, or an item you have
+  seen ship this session.
+- **Dangling links**: a `→ <file>` pointer to a file that does not exist, or a `plan-*.md` that no
+  item points to.
+
 ## Workflow
 
 1. **Read** the funnel files and the `idea-refinement` and `todo` skills first.

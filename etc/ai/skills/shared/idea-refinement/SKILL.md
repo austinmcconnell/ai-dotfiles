@@ -50,6 +50,31 @@ If `ideas.md`, `backlog.md`, and `todo.md` are auto-loaded into context (they ar
 code/docs/ansible agents), use that content proactively: if the user raises an idea already
 captured, say so and pick up where refinement left off rather than starting over.
 
+## Drift Check on Load
+
+When this skill loads, glance at the funnel files already in context for drift signals (listed in
+`references/audit.md`). This is a cheap, context-only look: no git history, no extra searching.
+Suggest an audit when there is one clear signal (an item in the wrong tier, a dangling `→` pointer,
+or work you have seen ship) or two or more minor ones.
+
+- Say it once per session, in one or two sentences: name the signals with an example each, and offer
+  the audit.
+- Carry on with the user's actual request. Never run the audit or edit the files uninvited.
+
+## Picking What's Next
+
+When asked what to work on next, read the funnel files and answer in tier order. This is read-only;
+write nothing.
+
+1. **`todo.md`** — open items: an in-flight commit plan first, then unblocked items. List blocked
+   items last with their blocker.
+1. **`backlog.md`** — refined items under Ready to sequence, each a candidate for a commit plan.
+   Mention Parked items only when nothing else is available or the user asks.
+1. **`ideas.md`** — unrefined ideas, offered as candidates to *refine*, not to build.
+
+Return a short ranked list: tier, item, a one-line reason, and any blocker. Name one top
+recommendation. If a tier is empty or its file is missing, say so and move to the next.
+
 ## Capturing Ideas
 
 When the user floats an idea, append it to the **Unrefined** section of `ideas.md` verbatim enough
@@ -137,10 +162,10 @@ Surface this as a recommendation for the user to accept, not an automatic restru
 ## Auditing the Funnel
 
 The funnel files drift: items finish, ideas get dropped, and open items grow long. Audit when the
-user asks to clean up, prune, or audit the working files, or when you notice an item described as
-open that the code shows is done. The signal is behavioral (stale or hard-to-scan items), never file
-size. Read `references/audit.md` for the evidence-first workflow, which covers `ideas.md`,
-`backlog.md`, `todo.md`, and the `plan-*.md` / `analysis/` files they link.
+user asks to clean up, prune, or audit the working files, or accepts an audit suggested by the drift
+check. The signal is behavioral (stale or hard-to-scan items), never file size. Read
+`references/audit.md` for the drift signals and the evidence-first workflow, which covers
+`ideas.md`, `backlog.md`, `todo.md`, and the `plan-*.md` / `analysis/` files they link.
 
 ## What This Skill Does Not Do
 
