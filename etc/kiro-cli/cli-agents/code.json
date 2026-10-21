@@ -423,14 +423,13 @@
                 "chmod g\\+s .*",
                 "chown .*",
                 "cp /.*",
-                "crontab -e",
-                "crontab -r",
+                "crontab (-([^l].*)?|[^-].*)",
                 "dd .*",
                 "docker exec --privileged .*",
                 "docker run --privileged .*",
                 "fdisk .*",
                 "init .*",
-                "kill -9 .*",
+                "kill .*",
                 "killall .*",
                 "kubectl apply .*",
                 "kubectl create .*",
@@ -707,14 +706,13 @@
                     "chmod g+s *",
                     "chown *",
                     "cp /*",
-                    "crontab -e",
-                    "crontab -r",
+                    "crontab *",
                     "dd *",
                     "docker exec --privileged *",
                     "docker run --privileged *",
                     "fdisk *",
                     "init *",
-                    "kill -9 *",
+                    "kill *",
                     "killall *",
                     "kubectl apply *",
                     "kubectl create *",
@@ -736,7 +734,8 @@
                     "umount *"
                 ],
                 "exclude": [
-                    "chmod +x *"
+                    "chmod +x *",
+                    "crontab -l*"
                 ],
                 "effect": "deny"
             },
