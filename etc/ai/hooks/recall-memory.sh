@@ -3,7 +3,7 @@ set -euo pipefail
 
 # Surface recent memory context at session start
 # Called from agentSpawn hook — output is injected into session context
-# Relies on agent config timeout_ms (5000ms) as safety net if engram hangs
+# Relies on the hook config timeout (5 seconds) as safety net if engram hangs
 #
 # Emits one of three things, in priority order:
 #   1. If exactly one ACTIVE HANDOFF exists (an observation carrying the structured
