@@ -100,7 +100,8 @@ For each idea, produce:
    - **Reshape** — worth doing but not as asked; record the recommended change to scope/approach.
    - **Needs research** — sound but blocked on a named unknown; stays in Unrefined with the question
      recorded.
-   - **Drop** — doesn't fit; record the one-line reason so it isn't re-proposed.
+   - **Drop** — doesn't fit; remove it from the funnel files with no breadcrumb. If the reason is
+     worth keeping across sessions, save it to engram, not a funnel file.
 
 Use the output contract in `references/critique-output.md`. Keep each critique tight — a few
 sentences per section, not an essay.

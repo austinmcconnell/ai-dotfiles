@@ -28,7 +28,8 @@ One primary verdict per idea; add a secondary note when an idea genuinely stradd
 - **Reshape** — worth doing but not as asked; record the recommended change to scope or approach.
 - **Needs research** — sound but blocked on a named unknown; stays in Unrefined with the question
   written down.
-- **Drop** — doesn't fit; record the one-line reason so it isn't re-proposed later.
+- **Drop** — doesn't fit; remove it from the funnel files with no breadcrumb. If the reason is worth
+  keeping across sessions, save it to engram, not a funnel file.
 
 ## Batch reviews
 
