@@ -80,7 +80,6 @@ commenting.
 | Path                                                                   | Covers                                              |
 | ---------------------------------------------------------------------- | --------------------------------------------------- |
 | `~/projects/austinmcconnell/_research_`                                | Product/technology research, cited and dated        |
-| `~/projects/unite-us/sdohcc-screening-observations`                    | SDOHCC screening FHIR observation mappings          |
 | `~/projects/austinmcconnell/_documentation_/automatic-ripping-machine` | Multi-drive ARM build                               |
 | `~/projects/austinmcconnell/_documentation_/email-provider-selection`  | Email provider evaluation                           |
 | `~/projects/austinmcconnell/_documentation_/family-dashboard`          | Family dashboard build                              |

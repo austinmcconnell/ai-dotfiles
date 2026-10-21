@@ -289,7 +289,7 @@
             "type": "knowledgeBase",
             "source": "file://~/projects/unite-us",
             "name": "analysis-all-projects",
-            "description": "Analysis docs (the WHY) across all Unite Us WORK projects — architecture decisions, tradeoff rationale, research findings, and technical comparisons. Search here for 'why was this decided/designed this way' across work repos. Scope: Unite Us work projects only (use analysis-personal-projects for personal repos).",
+            "description": "Analysis docs (the WHY) across all WORK projects — architecture decisions, tradeoff rationale, research findings, and technical comparisons. Search here for 'why was this decided/designed this way' across work repos. Scope: work projects only (use analysis-personal-projects for personal repos).",
             "indexType": "best",
             "include": [
                 "*/analysis/*.md"
@@ -303,7 +303,7 @@
             "type": "knowledgeBase",
             "source": "file://~/projects/austinmcconnell",
             "name": "analysis-personal-projects",
-            "description": "Analysis docs (the WHY) across PERSONAL projects — architecture decisions, tradeoff rationale, research findings, and technical comparisons. Search here for 'why was this decided/designed this way' across personal repos. Scope: personal projects only (use analysis-all-projects for Unite Us work repos).",
+            "description": "Analysis docs (the WHY) across PERSONAL projects — architecture decisions, tradeoff rationale, research findings, and technical comparisons. Search here for 'why was this decided/designed this way' across personal repos. Scope: personal projects only (use analysis-all-projects for work repos).",
             "indexType": "best",
             "include": [
                 "*/analysis/*.md"
