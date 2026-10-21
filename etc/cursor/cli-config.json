@@ -7,6 +7,7 @@
             "Write(~/projects/**)",
             "Write(~/repositories/**)",
             "Write(~/.dotfiles/**)",
+            "Write(~/.ai-dotfiles/**)",
             "Shell(awk *)",
             "Shell(cat *)",
             "Shell(chmod +x *)",

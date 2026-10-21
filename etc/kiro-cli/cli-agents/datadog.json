@@ -248,6 +248,7 @@
                 "~/projects/**",
                 "~/repositories/**",
                 "~/.dotfiles/**",
+                "~/.ai-dotfiles/**",
                 "./**"
             ],
             "deniedPaths": [
@@ -264,6 +265,7 @@
                 "~/repositories/**",
                 "~/sources/**",
                 "~/.dotfiles/**",
+                "~/.ai-dotfiles/**",
                 "./**"
             ],
             "deniedPaths": [
@@ -290,6 +292,7 @@
                 "~/repositories/**",
                 "~/sources/**",
                 "~/.dotfiles/**",
+                "~/.ai-dotfiles/**",
                 "./**"
             ],
             "deniedPaths": [
@@ -528,6 +531,7 @@
                     "~/projects/**",
                     "~/repositories/**",
                     "~/.dotfiles/**",
+                    "~/.ai-dotfiles/**",
                     "./**"
                 ],
                 "effect": "allow"

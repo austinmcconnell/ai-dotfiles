@@ -9,6 +9,7 @@
             "Edit(~/projects/**)",
             "Edit(~/repositories/**)",
             "Edit(~/.dotfiles/**)",
+            "Edit(~/.ai-dotfiles/**)",
             "Edit(./**)",
             "Edit(~/.claude/projects/**)",
             "Agent",
