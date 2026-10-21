@@ -23,6 +23,11 @@ numbered loop lives in the skill).
   stands — not after, when it degrades into a post-hoc review. Main-session `code` orchestrator
   only; scoped personas surface the decision rather than run the loop.
 
+Loading one skill never satisfies another skill's trigger. When a skill says "hand to X" or "see the
+X skill", X is a trigger: load it as soon as you decide to act on the item, before the first
+`Edit`/`Write` of work you intend to git-commit and before the first write to `todo.md`. Treat a
+user's "yes" to a refinement verdict as approval to plan the git commits, not to start editing.
+
 These pointers reinforce the mode-keyed rows in `skill-loading-triggers.md`; they do not restate the
 trigger table. When in doubt about which skill maps to a task, that table remains the single index —
 this file only ensures these mode-entry cases are noticed at the moment the mode begins.

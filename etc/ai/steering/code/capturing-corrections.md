@@ -22,6 +22,9 @@ Save a memory **immediately** — without being asked — when the user:
 - Pushes back with a question that turns out to be correct ("doesn't X actually...?", "am I missing
   something?") — a Socratic correction counts the same as a blunt one once resolved in the user's
   favor
+- Points out that you skipped a rule that is already documented — capture the correction anyway; a
+  rule that exists but was not followed is the strongest signal that its loading or wording needs
+  fixing
 - Says "remember this" or an equivalent explicit marker
 
 Do **not** capture: simple factual questions, clarifications that don't change behavior, or one-off

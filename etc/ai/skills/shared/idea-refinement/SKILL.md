@@ -109,10 +109,13 @@ sentences per section, not an essay.
 
 - **Unrefined → Refined**: on a `Promote` verdict, move the idea (with its scope decision) from
   `ideas.md` into `backlog.md`, creating the file if it does not exist.
-- **Refined → committed**: when an item is validated and the user is ready to commit to it, hand it
-  to the `commit-workflow` cadence — break it into atomic commits in dependency order and record the
-  plan in `todo.md` (see the `todo` skill's template for its structure). This skill stops at the
-  boundary of committed work; `commit-workflow` owns what happens after.
+- **Refined → committed** (into the `todo.md` tier): when an item is validated and the user is ready
+  to start work on it, load the `commit-workflow` and `todo` skills before recording a plan or
+  editing any file (loading this skill does not count). Then break the item into atomic git commits
+  in dependency order, present the plan for approval, and record it in `todo.md` (see the `todo`
+  skill's template for its structure). This skill's work ends once that plan is recorded in
+  `todo.md`; `commit-workflow` governs everything after: editing files, verifying, and the user's
+  git commits.
 
 Promotion is a write to git-ignored working files, so it follows the "non-committable work" note in
 the `commit-workflow` skill — there is nothing to commit, so say so and move on.
