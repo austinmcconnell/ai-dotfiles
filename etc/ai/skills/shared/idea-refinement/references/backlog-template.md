@@ -1,10 +1,8 @@
 # Backlog
 
-<!-- Optional, graduated tier. Git-ignored. -->
+<!-- Refined tier. Git-ignored. Created on the first promotion out of ideas.md. -->
 
-<!-- Created only when ideas.md's Refined section grows enough to warrant its own file. -->
-
-<!-- Holds validated, stress-tested items that are not yet sequenced into planned commits. -->
+<!-- Holds every validated, stress-tested item that is not yet sequenced into planned commits. -->
 
 <!-- Drains forward into todo.md (via commit-workflow) when there is downstream demand. -->
 

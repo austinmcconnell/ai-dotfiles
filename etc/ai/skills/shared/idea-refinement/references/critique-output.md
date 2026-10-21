@@ -24,8 +24,7 @@ with, duplicate, or break?>
 One primary verdict per idea; add a secondary note when an idea genuinely straddles two (e.g.
 "Reshape — also needs research on X before promoting").
 
-- **Promote** — survived critique; move to the Refined section (or `backlog.md`) with its scope
-  decision recorded.
+- **Promote** — survived critique; move to `backlog.md` with its scope decision recorded.
 - **Reshape** — worth doing but not as asked; record the recommended change to scope or approach.
 - **Needs research** — sound but blocked on a named unknown; stays in Unrefined with the question
   written down.

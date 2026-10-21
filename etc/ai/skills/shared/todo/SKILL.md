@@ -14,10 +14,10 @@ session to understand what still needs to be figured out.
 ## Relationship to the idea-refinement funnel
 
 `todo.md` is the **committed** tier of the idea-refinement funnel (see the `idea-refinement` skill):
-`ideas.md` captures and refines, the optional `backlog.md` holds validated-but-unsequenced work, and
-`todo.md` holds work that has been broken into planned commits in dependency order. When work is
-promoted out of the funnel, its commit plan is recorded here (this is the same plan that the
-`commit-workflow` skill writes in step 3).
+`ideas.md` captures raw ideas, `backlog.md` holds refined-but-unsequenced work, and `todo.md` holds
+work that has been broken into planned commits in dependency order. When work is promoted out of the
+funnel, its commit plan is recorded here (this is the same plan that the `commit-workflow` skill
+writes in step 3).
 
 Keep upstream refinement in `ideas.md`/`backlog.md` — do not use `todo.md` as a capture pad for raw
 ideas. Reach for the `idea-refinement` skill when beginning planning or ideation work; `todo.md` is

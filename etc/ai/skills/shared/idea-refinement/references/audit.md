@@ -17,10 +17,19 @@ Leave only items that are still open, each stated briefly. Applies to `ideas.md`
    with a caller in another repo, a count that is higher than stated).
 1. **Check the links.** A `plan-<slug>.md` no remaining item points to is an orphan candidate. A
    `→ <file>` pointer to a missing file is broken. A plan whose work landed is obsolete.
-1. **Present one proposal, then pause.** Three groups, each row with commit or file evidence:
+1. **Check tier placement.** Each item must sit in the file matching its tier:
+   - `ideas.md` holds only unrefined ideas. An item carrying a scope decision, verdict, or critique
+     is refined and moves to `backlog.md`.
+   - `backlog.md` holds refined, unsequenced work. An item with no scope decision goes back to
+     `ideas.md`; one already broken into a commit plan belongs in `todo.md`.
+   - `todo.md` holds work with a planned commit breakdown. A raw or unplanned idea goes back
+     upstream.
+1. **Present one proposal, then pause.** Three groups, each row with commit or file evidence, plus
+   any tier moves as a fourth group (item, from file, to file):
    - **Remove**: done, dropped, or obsolete.
    - **Keep, trimmed**: still open, restated briefly.
    - **Keep, evidence changed**: still open but the item's premise or scope is no longer accurate.
+   - **Move**: still open but in the wrong tier file.
 1. **Wait for approval.** The verdict is the user's call. Deleting a git-ignored plan file cannot be
    undone, so name each file to delete in the proposal.
 1. **Apply the whole approved proposal** in one pass.
