@@ -15,6 +15,12 @@
 - Don't add comments for simple variable assignments
 - Don't restate in an inline comment what a nearby docstring already explains — a one-line "why"
   beats a paragraph duplicating the docstring
+- Default to no inline comment. A comment is the exception you justify, not the norm — add one only
+  when a reader genuinely cannot infer the "why" from the code, and then keep it to a single short
+  line
+- Don't narrate a change's rationale at the code. The reason a change was made (root cause, the
+  problem it fixes, why this approach) belongs in the commit message and PR, not in an inline
+  comment duplicating it
 
 ## When to Comment
 
