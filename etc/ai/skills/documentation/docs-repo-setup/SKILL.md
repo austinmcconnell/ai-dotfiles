@@ -241,8 +241,9 @@ Three sections:
 - **Blockers** — external dependencies or waits that prevent progress
 - **Tasks** — internal action items (docs review, cleanup, procedures to write)
 
-Resolved items stay with a link to the outcome (e.g., `[x] Question → [ADR-001](...)`) until
-actively cleaned out.
+Mark an item `[x]` with a link to the outcome (e.g., `[x] Question → [ADR-001](...)`) only while the
+surrounding work is in flight. Once the whole set is done, remove it: git history and the linked
+docs are the record, not this file.
 
 **What does not belong here:** Decisions, specifications, or anything that should be the source of
 truth. Move items to tracked files as they are resolved.
