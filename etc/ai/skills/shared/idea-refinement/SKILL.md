@@ -68,8 +68,8 @@ write nothing.
 
 1. **`todo.md`** — open items: an in-flight commit plan first, then unblocked items. List blocked
    items last with their blocker.
-1. **`backlog.md`** — refined items under Ready to sequence, each a candidate for a commit plan.
-   Mention Parked items only when nothing else is available or the user asks.
+1. **`backlog.md`** — refined items under Ready to sequence, each a candidate for a commit plan. An
+   item waiting on something names that blocker and is listed after unblocked items.
 1. **`ideas.md`** — unrefined ideas, offered as candidates to *refine*, not to build.
 
 Return a short ranked list: tier, item, a one-line reason, and any blocker. Name one top

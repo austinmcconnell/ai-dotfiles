@@ -14,6 +14,8 @@ Cheap signals visible from the files alone, used by the drift check on load and 
   seen ship this session.
 - **Dangling links**: a `→ <file>` pointer to a file that does not exist, or a `plan-*.md` that no
   item points to.
+- **Stale blocker**: a Ready item whose named blocker has cleared, or whose open question has been
+  settled. It is now unblocked and belongs at the top of the pick order.
 
 ## Workflow
 
