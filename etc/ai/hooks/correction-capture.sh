@@ -44,6 +44,14 @@ fi
 PROMPT=$(echo "${INPUT}" | jq -r '.prompt // empty' 2>/dev/null)
 [[ -z "${PROMPT}" ]] && exit 0
 
+# Drop pasted blocks (Claude Code wraps them in <pasted_content id=...> tags): quoted
+# analysis and logs matched far more often than the user's own phrasing did. The first
+# expression removes blocks that open and close on one line, since a sed range would
+# otherwise run on past a same-line close to the next one (or end of input).
+PROMPT=$(echo "${PROMPT}" | sed -e 's/<pasted_content[^>]*>.*<\/pasted_content[^>]*>//' \
+    -e '/<pasted_content/,/<\/pasted_content/d')
+[[ -z "${PROMPT}" ]] && exit 0
+
 # High-confidence correction / redirection / preference phrasing. Anchored to the
 # start of a clause (line start or after sentence punctuation) to avoid firing on
 # benign mid-sentence prose like "I always run tests first". Conservative by design:
@@ -54,7 +62,9 @@ PROMPT=$(echo "${INPUT}" | jq -r '.prompt // empty' 2>/dev/null)
 # shell quote-splicing; `.` matches the apostrophe (and any stray char, harmlessly).
 clause='(^|[.!?;][[:space:]]+)'
 anchored="${clause}(no,|nope|actually,|wrong|that.s (wrong|incorrect|not right)|i (said|meant)|stop (using|doing)|i prefer|remember (this|that)|do not (use|do)|don.t (use|do))"
-correction_re="${anchored}|use [^ ]+ not |instead of "
+# No bare "instead of": it appears mid-sentence in ordinary prose and was most of the
+# false positives in real prompts. "use X not Y" is kept because it is a directive.
+correction_re="${anchored}|use [^ ]+ not "
 
 if echo "${PROMPT}" | grep -qiE "${correction_re}"; then
     echo "↳ That looked like a correction, redirection, or stated preference. Per the capturing-corrections steering, save it now with mem_save (type: preference, topic_key: correction/<area>-<slug>) before continuing — do not wait until end of session."
