@@ -9,6 +9,7 @@
         "file://AGENTS.md",
         "file://README.md",
         "file://ideas.md",
+        "file://backlog.md",
         "file://todo.md",
         "file://ansible.cfg",
         "skill://.kiro/skills/**/SKILL.md",

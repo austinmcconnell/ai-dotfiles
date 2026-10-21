@@ -212,11 +212,12 @@ Resources use three URI schemes with different loading behavior:
   load both project-local (`.kiro/skills/`) and global (`~/.kiro/skills/`) skills.
 - `knowledgeBase` objects — indexed for semantic search. Used for large doc sets and codebases.
 
-The `code`, `docs`, and `ansible` agents additionally load `file://ideas.md` and `file://todo.md`
-(relative → per-project, silently skipped when absent) so the idea-refinement funnel's working files
-are in context without the agent stumbling onto them. `backlog.md` is deliberately NOT auto-loaded —
-it can grow large, so it is read on demand instead. `jira` and `datadog` omit all three (no
-planning/ideation work). See the `idea-refinement` and `todo` skills for the funnel itself.
+The `code`, `docs`, and `ansible` agents additionally load `file://ideas.md`, `file://backlog.md`,
+and `file://todo.md` (relative → per-project, silently skipped when absent) so the idea-refinement
+funnel's working files are in context without the agent stumbling onto them. `backlog.md` is the
+home for refined ideas, so it is loaded to keep them visible; keeping it small is the audit's job
+(long detail moves to a linked file). `jira` and `datadog` omit all three (no planning/ideation
+work). See the `idea-refinement` and `todo` skills for the funnel itself.
 
 Documentation follows a **README-as-pointer** scheme rather than eager-loading a `docs/` tree. The
 top-level `file://README.md` (already loaded on all five agents) is the always-on entry point and
