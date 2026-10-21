@@ -11,7 +11,7 @@ branch, abort and inform the user that the README pointer audit should be done f
 
 **Read the convention first:** This audit APPLIES the `readme-pointer` skill at repo scale — it does
 not restate the rules. Read `~/.kiro/skills/shared/readme-pointer/SKILL.md` (or
-`~/.dotfiles/etc/ai/skills/shared/readme-pointer/SKILL.md`) before proposing any map, and obey its
+`~/.ai-dotfiles/etc/ai/skills/shared/readme-pointer/SKILL.md`) before proposing any map, and obey its
 hard constraints when authoring: **one-hop** (a pointer names the actual target doc, never another
 README), **flat, not deep** (one level of indexing — do NOT create nested index trees), and
 **high-signal only** (name the docs a reader would actually need, not every file).

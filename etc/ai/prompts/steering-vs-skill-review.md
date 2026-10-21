@@ -1,6 +1,6 @@
 # Steering vs Skill Review
 
-Review all steering documents in `~/.dotfiles/etc/ai/steering/` and evaluate whether each one is
+Review all steering documents in `~/.ai-dotfiles/etc/ai/steering/` and evaluate whether each one is
 correctly placed as a steering doc or would be better as a skill.
 
 ## Context
@@ -26,7 +26,7 @@ For each steering document, evaluate against these questions in priority order:
    activity (e.g., creating JIRA tickets, scaffolding a project) is a candidate for a skill, unless
    it contains safety guardrails that must be always-loaded.
 1. **Does an existing skill already cover the same ground?** Check skill descriptions in
-   `~/.dotfiles/etc/ai/skills/` for overlap. If a skill exists, determine whether the steering doc
+   `~/.ai-dotfiles/etc/ai/skills/` for overlap. If a skill exists, determine whether the steering doc
    duplicates it or provides complementary always-needed rules.
 
 **Important:** Content format (tables, code examples, diagrams) is a weak signal. A terminology

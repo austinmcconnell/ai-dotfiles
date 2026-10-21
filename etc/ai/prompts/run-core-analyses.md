@@ -30,7 +30,7 @@ If everything is current, inform the user and ask whether to force a refresh.
 ## Step 3: Run analyses in dependency order
 
 Create the analysis directory if needed (`mkdir -p analysis`). For each analysis that needs
-updating, read the prompt file from `~/.dotfiles/etc/ai/prompts/` and follow its instructions
+updating, read the prompt file from `~/.ai-dotfiles/etc/ai/prompts/` and follow its instructions
 completely. Each prompt contains its own output format, metadata header, and update strategy.
 
 Work through each level sequentially. Do not start a level until all analyses in the previous level
