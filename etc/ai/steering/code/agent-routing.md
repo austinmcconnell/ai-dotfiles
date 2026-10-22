@@ -34,7 +34,8 @@ Suggest a switch **once** when a prompt is squarely in another agent's domain:
 This doc governs the *mid-session* case — a task crossing into a specialist's domain while you work.
 The *session-start* case (landing the default `code` agent in a repo that has a tuned specialist,
 detected from a root marker like `ansible.cfg`/`book.toml`) is owned by the `suggest-agent-fit.sh`
-agentSpawn hook, which emits its own one-time confirm-not-switch nudge.
+session-start hook (`agentSpawn` on kiro, `SessionStart` on Claude), which emits its own one-time
+confirm-not-switch nudge.
 
 ## When to Stay Silent
 
@@ -53,9 +54,10 @@ channel and trains the maintainer to ignore it.
 Name the target agent and give the maintainer the switch-vs-relaunch tradeoff, which is *not*
 symmetric:
 
-> This looks squarely like `docs` work. `/agent docs` switches steering + skills in place
-> immediately, but a switch does NOT run the new agent's startup checks (KB-staleness + handoff
-> recall are skipped) — for a clean start, relaunch with `--agent docs`.
+> This looks squarely like `docs` work. Relaunch with `--agent docs` (`kiro-cli chat --agent docs`
+> or `claude --agent docs`) for the agent's tuned steering and skills. On kiro only, `/agent docs`
+> switches steering + skills in place immediately, but a switch does NOT run the new agent's startup
+> checks (KB-staleness + handoff recall are skipped), so a relaunch is the clean start.
 
 Substitute the right agent name. Keep it to one short aside, then proceed with the work if the
 maintainer doesn't switch — this is a routing hint, not a gate.
