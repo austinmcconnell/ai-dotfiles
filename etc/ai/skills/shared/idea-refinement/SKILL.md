@@ -57,8 +57,13 @@ When this skill loads, glance at the funnel files already in context for drift s
 Suggest an audit when there is one clear signal (an item in the wrong tier, a dangling `→` pointer,
 or work you have seen ship) or two or more minor ones.
 
-- Say it once per session, in one or two sentences: name the signals with an example each, and offer
-  the audit.
+- Surface it up front, not buried. Lead with it, or give it its own short paragraph before the body
+  of your answer, so a one-line suggestion at the tail of a long response can't be missed. Say it
+  once per session, in one or two sentences: name the signals with an example each, and offer the
+  audit.
+- When the drift signal is itself the honest answer to what the user asked — e.g. they asked what's
+  next and `todo.md` is dominated by finished work — the audit *is* the lead recommendation, not a
+  footnote under the pick list.
 - Carry on with the user's actual request. Never run the audit or edit the files uninvited.
 
 ## Picking What's Next
@@ -74,6 +79,9 @@ write nothing.
 
 Return a short ranked list: tier, item, a one-line reason, and any blocker. Name one top
 recommendation. If a tier is empty or its file is missing, say so and move to the next.
+
+If the Drift Check fired this turn (e.g. `todo.md` is full of finished items), surface that audit
+suggestion *before* the ranked list, not appended after it.
 
 ## Capturing Ideas
 
