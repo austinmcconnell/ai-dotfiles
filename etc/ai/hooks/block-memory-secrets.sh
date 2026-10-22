@@ -29,4 +29,13 @@ if echo "$TOOL_INPUT" | jq -r '.. | strings' 2>/dev/null | grep -qiE \
     exit 2
 fi
 
+# Zero-width and bidi-control codepoints have no legitimate place in a memory body. Match UTF-8 byte
+# sequences in the C locale: bracket byte ranges do not match reliably across grep implementations.
+INVISIBLE_UNICODE_BYTES=$'\xe2\x80\x8b|\xe2\x80\x8c|\xe2\x80\x8d|\xe2\x80\xaa|\xe2\x80\xab|\xe2\x80\xac|\xe2\x80\xad|\xe2\x80\xae|\xe2\x81\xa6|\xe2\x81\xa7|\xe2\x81\xa8|\xe2\x81\xa9|\xef\xbb\xbf'
+STRING_VALUES=$(echo "$TOOL_INPUT" | jq -r '.. | strings' 2>/dev/null || true)
+if LC_ALL=C grep -qE "${INVISIBLE_UNICODE_BYTES}" <<<"${STRING_VALUES}"; then
+    echo "BLOCKED: Memory save contains invisible or bidi-control Unicode characters. Refusing to store." >&2
+    exit 2
+fi
+
 exit 0
