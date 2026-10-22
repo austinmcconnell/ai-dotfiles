@@ -6,7 +6,19 @@ paths:
 # Python Project Conventions
 
 Before running any Python tool (pytest, pre-commit, pip, python, ruff), see the
-`virtual-environment` skill for detecting and activating the project's virtual environment.
+`virtual-environment` skill for detecting and activating the project's virtual environment — prefer
+`uv run` / `uv sync` when the project uses uv (see below).
+
+## Dependencies & Environment
+
+- **uv is the default** for dependency management and running tools. Install dependencies with
+  `uv sync` and run project commands with `uv run <cmd>` (e.g. `uv run pytest`) — `uv run`
+  auto-syncs against the lockfile, so no manual venv activation is needed.
+- Commit `uv.lock` so environments are reproducible across machines and CI.
+- Declare dev/optional dependencies as `[dependency-groups]` in `pyproject.toml`; install a group
+  with `uv sync --group <name>`.
+- `pip` and `pipenv` remain explicit fallbacks only — for projects that predate uv or cannot use it.
+  New work should default to uv.
 
 ## Formatting
 

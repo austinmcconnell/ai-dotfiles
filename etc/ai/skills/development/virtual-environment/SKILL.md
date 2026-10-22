@@ -8,7 +8,7 @@ description: Detect and activate Python virtual environments before running proj
 ## When to Use
 
 - Working with Python projects or executing project-specific tools
-- Running package management tools (pip, poetry, pipenv)
+- Running package management tools (uv is the default; pip/pipenv are fallbacks)
 - Running testing frameworks (pytest, unittest)
 - Running linters and formatters (flake8, black, isort)
 - Running pre-commit hooks
@@ -17,22 +17,37 @@ description: Detect and activate Python virtual environments before running proj
 
 ## Workflow
 
-### 1. Detect virtual environment
+### 1. Prefer uv when the project uses it
 
-Check for a virtual environment directory in the project root (see below for the common location
-list). If none exist and a Python command fails, suggest creating one before retrying rather than
-troubleshooting the failure some other way.
+If the project has a `uv.lock` (or a `pyproject.toml` with `[tool.uv]` / `[dependency-groups]`), uv
+is the default — it manages the virtual environment for you:
+
+```bash
+uv sync                 # create/populate the venv from uv.lock (add --group <name> for a dep group)
+uv run pytest           # run a tool in the project env — no manual activation needed
+uv run pre-commit run --all-files
+```
+
+`uv run` auto-syncs against `uv.lock` before running, so you do not need to activate the environment
+or install dependencies first. Reach for `uv sync` explicitly when you want the env populated
+without running a command.
+
+### 2. Detect virtual environment (non-uv projects)
+
+For projects that do not use uv, check for a virtual environment directory in the project root (see
+below for the common location list). If none exist and a Python command fails, suggest creating one
+before retrying rather than troubleshooting the failure some other way.
 
 - Common locations: `.venv/`, `venv/`, `.env/`, `env/`
 
-### 2. Activate before running commands
+### 3. Activate before running commands
 
 ```bash
 source .venv/bin/activate  # For .venv directory
 source venv/bin/activate   # For venv directory
 ```
 
-### 3. Verify activation
+### 4. Verify activation
 
 ```bash
 which python      # Should point to the virtual environment's Python
