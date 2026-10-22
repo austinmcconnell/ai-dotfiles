@@ -16,8 +16,8 @@
 - Stage specific files — never `git add .` or `git add -A`
 - Run pre-commit hooks before committing (see `pre-commit-validation` skill)
 - If pre-commit modifies files, re-read them before proceeding
-- For multi-commit work, follow the `commit-workflow` skill cadence (plan → one commit at a time →
-  pause → verify)
+- For work you intend to commit, follow the `commit-workflow` skill cadence (plan → verify → pause →
+  confirm it landed); for multi-commit work, add working one commit at a time
 - When a commit needs correcting, check push status first
   (`git rev-parse --abbrev-ref --symbolic-full-name @{u}`) — for a commit with no upstream that
   serves the same logical goal, mention `git commit --amend`/fixup as an option rather than

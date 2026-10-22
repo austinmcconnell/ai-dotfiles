@@ -5,7 +5,7 @@ Triggers common to every agent, and the rule for applying them, live in
 
 | Task                                       | Skill to load first        |
 | ------------------------------------------ | -------------------------- |
-| Multi-commit implementation work           | `commit-workflow`          |
+| Beginning any work you intend to commit    | `commit-workflow`          |
 | Creating new ansible projects              | `scaffold-ansible-project` |
 | Updating ansible projects from template    | `scaffold-ansible-project` |
 | Creating Ansible roles                     | `create-role`              |

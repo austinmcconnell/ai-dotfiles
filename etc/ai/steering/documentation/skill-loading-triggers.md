@@ -5,7 +5,7 @@ Triggers common to every agent, and the rule for applying them, live in
 
 | Task                                       | Skill to load first     |
 | ------------------------------------------ | ----------------------- |
-| Multi-commit implementation work           | `commit-workflow`       |
+| Beginning any work you intend to commit    | `commit-workflow`       |
 | Creating ADRs/decisions                    | `create-adr`            |
 | Creating component files                   | `create-component`      |
 | Creating configuration files               | `create-configuration`  |

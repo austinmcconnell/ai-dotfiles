@@ -5,7 +5,7 @@ Triggers common to every agent, and the rule for applying them, live in
 
 | Task                                                                 | Skill to load first                 |
 | -------------------------------------------------------------------- | ----------------------------------- |
-| Beginning any multi-commit work                                      | `commit-workflow`                   |
+| Beginning any work you intend to commit                              | `commit-workflow`                   |
 | Creating research files                                              | `create-research`                   |
 | Updating existing research                                           | `update-research`                   |
 | Verifying/fact-checking research                                     | `verify-research`                   |
