@@ -22,6 +22,12 @@ call. The other hooks only print to stdout or write a log and always exit `0`.
 | `block-memory-secrets.sh`         | Denies engram `mem_save`, `mem_update`, `mem_save_prompt`, `mem_session_summary` and `mem_capture_passive` calls whose strings match credential patterns. | Kiro: `preToolUse`, `@engram/*`, all 5 agents. Claude: `PreToolUse`, `mcp__engram__.*`. |
 | `block-persona-shell-commands.sh` | Denies per-persona shell command patterns (`docs`, `jira`, `datadog`, `ansible`), selected by `agent_type` in the payload. Other sessions pass through.   | Claude only: `PreToolUse`, `Bash`.                                                      |
 
+## Warning hooks
+
+| Script                 | What it does                                                                                                                                                                                                                                    | How it is run                                                                                         |
+| ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| `warn-memory-exfil.sh` | Warns, without blocking, when an engram save contains a download piped into a shell, a reverse-shell construct, a credential-named variable in an outbound request, or an SSH `authorized_keys` or backdoor config directive. Always exits `0`. | Claude only: `PreToolUse`, `mcp__engram__.*`. Emits `hookSpecificOutput.additionalContext` to Claude. |
+
 ## Audit and logging hooks
 
 | Script                    | What it does                                                                                                              | How it is run                                                                                        |

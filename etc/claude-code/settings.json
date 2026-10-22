@@ -316,6 +316,16 @@
                 ]
             },
             {
+                "matcher": "mcp__engram__.*",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "$AI_DOTFILES_DIR/etc/ai/hooks/warn-memory-exfil.sh",
+                        "timeout": 5
+                    }
+                ]
+            },
+            {
                 "matcher": "Bash",
                 "hooks": [
                     {

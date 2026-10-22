@@ -94,6 +94,7 @@ expected_kiro_scope() {
     audit-shell-commands.sh) echo "default_only" ;;
     suggest-agent-fit.sh) echo "default_only" ;;
     block-persona-shell-commands.sh) echo "none" ;;
+    warn-memory-exfil.sh) echo "none" ;;
     log-compaction-event.sh) echo "none" ;;
     suggest-context-checkpoint.sh) echo "none" ;;
     *) echo "unknown" ;;
