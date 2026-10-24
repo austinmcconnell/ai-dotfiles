@@ -11,7 +11,10 @@ paths:
 ## What to Test
 
 - Every new feature gets tests before or alongside implementation
-- Bug fixes include a regression test that fails without the fix
+- Bug fixes include a regression test that fails without the fix — but only for a regression in
+  shipped/tested behavior. When a first-draft, uncommitted heuristic is corrected on its first
+  contact with real data, re-run and verify instead of standing up a test suite ahead of need; offer
+  the test, don't impose it
 - Test behavior, not implementation — assert outputs and side effects, not internal state
 - Cover error paths: invalid input, network failures, empty results, edge cases
 - Integration tests for DB queries and multi-component flows
