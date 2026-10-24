@@ -18,6 +18,16 @@ working files (`todo.md`, handoffs), not committed prose.
 A verification/source **timestamp** is fine as a factual field (frontmatter `last_verified`, a dated
 source line). It is not fine as narrative "what I changed this session" framing.
 
+## No Pointers to Git-Ignored or Temporary Files
+
+A committed artifact must not reference a git-ignored or temporary working file — a future reader
+cannot open it, so the pointer dangles. This commonly bites when a committed README or code comment
+points at a working/design doc under a git-ignored path (`analysis/`, `todo.md`, a handoff). Restate
+the needed substance inline in the committed file instead. Before citing a path in committed text,
+confirm it is tracked (`git check-ignore -v <path>` — a match means it is ignored and must not be
+cited). Referencing another *tracked* file is fine; the hazard is specifically the git-ignored or
+temporary ones.
+
 ## Relationship to Commit Messages
 
 This is the same principle the `commit-message-writing` skill states for commit messages ("write
