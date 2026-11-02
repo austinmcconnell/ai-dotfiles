@@ -39,7 +39,7 @@ fi
 # per-project because the debt it gates is per-project — a global stamp would let
 # a check in one project suppress the nudge for every other project for the whole
 # cadence window.
-readonly STAMP_DIR="$HOME/.kiro/engram-hygiene"
+readonly STAMP_DIR="${ENGRAM_HYGIENE_STAMP_DIR:-$HOME/.kiro/engram-hygiene}"
 
 # Resolve the current project the way engram does: git remote repo name (strip
 # ".git"), falling back to the working-directory basename when there is no remote.

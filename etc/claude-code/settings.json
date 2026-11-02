@@ -247,7 +247,7 @@
                 "hooks": [
                     {
                         "type": "command",
-                        "command": "$AI_DOTFILES_DIR/etc/ai/hooks/check-engram-hygiene.sh",
+                        "command": "$AI_DOTFILES_DIR/etc/ai/hooks/check-engram-hygiene.sh claude",
                         "timeout": 5
                     }
                 ]

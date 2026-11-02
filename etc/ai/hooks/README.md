@@ -48,7 +48,9 @@ call. The other hooks only print to stdout or write a log and always exit `0`.
 ## Notes
 
 - `check-engram-hygiene.sh` resolves `bin/engram-hygiene` from `${AI_DOTFILES_DIR:-$HOME/.dotfiles}`
-  and exits `0` silently when it is not executable.
+  and exits `0` silently when it is not executable. It takes the agent name as its argument
+  (`claude` or `kiro`, default `kiro`) and keeps each agent's cadence stamps under
+  `~/.<agent>/engram-hygiene`. An unknown name exits `1` with a message.
 - The header comment of `recall-memory.sh` says it relies on `timeout_ms (5000ms)`; the agent JSON
   and `settings.json` set `timeout` (seconds, `5`) instead.
 - Kiro-only hooks (`check-research-kb.sh`, `clear-research-kb-stale.sh`, `kb-staleness.sh`,
