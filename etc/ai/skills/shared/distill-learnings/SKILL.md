@@ -32,6 +32,10 @@ exact edit to a specific file and applied only after the user approves it.
 Pull captured corrections for the current project from engram:
 
 - `mem_search` with `type: preference` and query terms like `correction`, plus the topic area.
+- `mem_search` with query `correction` and no type filter. Corrections saved under other types (for
+  example `bugfix` or `decision`) appear only in this search.
+- Merge both result sets by `topic_key`. Keep entries whose key starts with `correction/`. List
+  entries titled "Correction:" with no `correction/` key for manual review; do not promote them.
 - Corrections are saved under `topic_key: correction/<area>-<slug>` (see `capturing-corrections`
   steering). Prefer `mem_context` to see recent session captures if search is too narrow.
 - Skip corrections already marked promoted (see step 5).
