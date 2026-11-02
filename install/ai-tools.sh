@@ -229,6 +229,10 @@ link_steering_tree() {
     local dest="$1" probe="$2"
 
     if [[ -L "$dest" ]]; then
+        if ! is_installer_link "$dest"; then
+            echo "✗ $dest is a symlink this installer did not create; refusing to replace it" >&2
+            return 1
+        fi
         rm -f "$dest"
     elif [[ -d "$dest" ]]; then
         remove_installer_links "$dest" 2 || return 1
