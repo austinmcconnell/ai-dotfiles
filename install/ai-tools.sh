@@ -193,7 +193,7 @@ generate_rules_steering() {
     cat >"$claude_md" <<'EOF'
 # Coding Guidelines
 
-Steering rules are loaded from ~/.claude/rules/ (auto-generated from dotfiles).
+Steering rules are loaded from ~/.claude/rules/ (symlinked from dotfiles).
 EOF
     printf 'See %s/ for source files.\n\n' "$STEERING_SOURCE" >>"$claude_md"
     cat >>"$claude_md" <<'EOF'
