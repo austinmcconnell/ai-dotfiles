@@ -442,7 +442,7 @@ for agent in "${ENABLED_AGENTS[@]}"; do
         # pair `name` is unused here — each skill dir under every source path is
         # symlinked individually alongside the primary skills. Per-entry [ -d ]
         # guard skips sources absent on this machine.
-        for _entry in "${EXTRA_SKILL_PAIRS[@]}"; do
+        for _entry in "${EXTRA_SKILL_PAIRS[@]:-}"; do
             _src="$(pair_path "$_entry")"
             [ -n "$(pair_name "$_entry")" ] && [ -d "$_src" ] || continue
             while IFS= read -r -d '' skill_dir; do
@@ -481,7 +481,7 @@ for agent in "${ENABLED_AGENTS[@]}"; do
         if [[ -d "$skills_path/extra" ]]; then
             remove_owned_links "$skills_path/extra"
         fi
-        for _entry in "${EXTRA_SKILL_PAIRS[@]}"; do
+        for _entry in "${EXTRA_SKILL_PAIRS[@]:-}"; do
             _name="$(pair_name "$_entry")"
             _src="$(pair_path "$_entry")"
             [ -n "$_name" ] && [ -d "$_src" ] || continue
