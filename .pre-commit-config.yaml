@@ -54,6 +54,12 @@ repos:
         entry: scripts/validate-kiro-steering-globs.sh
         files: ^etc/ai/steering/.*\.md$|^etc/kiro-cli/cli-agents/.*\.json$|^install/ai-tools\.sh$|^scripts/validate-kiro-steering-globs\.sh$
         pass_filenames: false
+      - id: validate-steering-seams
+        name: Validate steering seam links (scratch HOME)
+        language: script
+        entry: scripts/validate-steering-seams.sh
+        files: ^install/ai-tools\.sh$|^scripts/validate-steering-seams\.sh$
+        pass_filenames: false
       - id: validate-mcp-server-parity
         name: Validate MCP server parity
         language: script
