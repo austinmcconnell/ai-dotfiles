@@ -11,11 +11,16 @@ set -euo pipefail
 #
 # Relies on the agent config hook timeout as a safety net if engram hangs.
 #
-# Usage: check-engram-hygiene.sh [claude|kiro]
+# Usage: check-engram-hygiene.sh <claude|kiro>
 # The agent name picks the stamp dir (~/.<agent>/engram-hygiene) so one tool's check
-# cannot silence the other tool's nudge. Defaults to kiro.
+# cannot silence the other tool's nudge.
 
-AGENT="${1:-kiro}"
+if [[ $# -ne 1 ]]; then
+    echo "usage: check-engram-hygiene.sh <claude|kiro>" >&2
+    exit 1
+fi
+
+AGENT="$1"
 HYGIENE="${AI_DOTFILES_DIR:-$HOME/.dotfiles}/bin/engram-hygiene"
 
 case "${AGENT}" in

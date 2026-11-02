@@ -40,7 +40,7 @@ call. The other hooks only print to stdout or write a log and always exit `0`.
 | Script                          | What it does                                                                                                                                                                                             | How it is run                                                                                                  |
 | ------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
 | `recall-memory.sh`              | Prints a recall nudge for the current project's engram memories, or a directive to fetch the active handoff when one exists.                                                                             | Kiro: `agentSpawn`, all 5 agents. Claude: `SessionStart`, `startup\|resume`, with `AI_AGENT_NAME=claude-code`. |
-| `check-engram-hygiene.sh`       | Runs `bin/engram-hygiene check`, which prints a nudge when the current project has pending engram conflict relations.                                                                                    | Kiro: `agentSpawn`, all 5 agents. Claude: `SessionStart`, `startup\|resume`.                                   |
+| `check-engram-hygiene.sh`       | Runs `bin/engram-hygiene check`, which prints a nudge when the current project has pending engram conflict relations.                                                                                    | Kiro: `agentSpawn`, all 5 agents, passing `kiro`. Claude: `SessionStart`, `startup\|resume`, passing `claude`. |
 | `suggest-agent-fit.sh`          | Prints a one-time relaunch suggestion when the generalist session starts in a repo with `ansible.cfg` (`ansible`) or `book.toml` (`docs`).                                                               | Kiro: `agentSpawn`, `code` agent only, passing `code`. Claude: `SessionStart`, `startup`.                      |
 | `correction-capture.sh`         | Nudges the agent to `mem_save` a prompt that looks like a correction, and reminds the user to run `distill-learnings` on the next turn. Keeps a session sentinel under `${TMPDIR:-/tmp}/ai-corrections`. | Kiro: `userPromptSubmit`, all 5 agents. Claude: `UserPromptSubmit`.                                            |
 | `suggest-context-checkpoint.sh` | Prints a compaction warning once per growth phase when the session's input tokens reach `THRESHOLD` (135000 in the script).                                                                              | Claude only: `UserPromptSubmit`.                                                                               |
@@ -48,9 +48,9 @@ call. The other hooks only print to stdout or write a log and always exit `0`.
 ## Notes
 
 - `check-engram-hygiene.sh` resolves `bin/engram-hygiene` from `${AI_DOTFILES_DIR:-$HOME/.dotfiles}`
-  and exits `0` silently when it is not executable. It takes the agent name as its argument
-  (`claude` or `kiro`, default `kiro`) and keeps each agent's cadence stamps under
-  `~/.<agent>/engram-hygiene`. An unknown name exits `1` with a message.
+  and exits `0` silently when it is not executable. It requires the agent name as its argument
+  (`claude` or `kiro`) and keeps each agent's cadence stamps under `~/.<agent>/engram-hygiene`. A
+  missing, extra, or unknown name exits `1` with a message.
 - The header comment of `recall-memory.sh` says it relies on `timeout_ms (5000ms)`; the agent JSON
   and `settings.json` set `timeout` (seconds, `5`) instead.
 - Kiro-only hooks (`check-research-kb.sh`, `clear-research-kb-stale.sh`, `kb-staleness.sh`,
