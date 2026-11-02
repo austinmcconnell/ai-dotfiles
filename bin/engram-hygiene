@@ -83,12 +83,14 @@ engram_available() {
 # silently reads the relation-type count on projects with no judgment_status
 # pending line (e.g. all relations judged but some of kind "pending").
 judgment_count() {
-    local project="$1" field="$2"
-    engram conflicts stats --project "${project}" 2>/dev/null | awk -v f="${field}" '
+    local project="$1" field="$2" stats
+    # A failed engram call returns non-zero; the caller must not read it as a zero count.
+    stats="$(engram conflicts stats --project "${project}" 2>/dev/null)" || return 1
+    awk -v f="${field}" '
         /By judgment_status:/ { inblock = 1; next }
         /By relation type:/   { inblock = 0 }
         inblock && $1 ~ "^"f":" { gsub(/[^0-9]/, "", $2); print $2; exit }
-    '
+    ' <<<"${stats}"
 }
 
 # Unjudged relations awaiting a verdict (judgment_status=pending). This is the
@@ -143,10 +145,14 @@ mode_status() {
     divider=$(printf '─%.0s' $(seq 1 $((max_name + 12))))
     echo " ${divider}"
 
-    local total_unjudged=0 flagged=0
+    local total_unjudged=0 flagged=0 failed=0
     for p in "${projects[@]}"; do
         local pending
-        pending="$(pending_count "${p}")"
+        if ! pending="$(pending_count "${p}")"; then
+            printf " ${dim}%-${max_name}s${reset} │ %8s\n" "${p}" "unavailable"
+            failed=$((failed + 1))
+            continue
+        fi
         pending="${pending:-0}"
         total_unjudged=$((total_unjudged + pending))
 
@@ -160,12 +166,15 @@ mode_status() {
     done
 
     echo ""
-    if [[ ${total_unjudged} -eq 0 ]]; then
+    if [[ ${total_unjudged} -eq 0 && ${failed} -eq 0 ]]; then
         echo -e "${green}✓ No unjudged conflict relations across ${#projects[@]} project(s).${reset}"
-    else
+    elif [[ ${total_unjudged} -gt 0 ]]; then
         echo -e "${yellow}${total_unjudged} unjudged conflict relation(s) across ${flagged} project(s) awaiting a verdict.${reset}"
         echo "  Review with: engram conflicts list --project <name> --status pending"
         echo "  Or ask an agent to judge them with mem_judge / mem_compare."
+    fi
+    if [[ ${failed} -gt 0 ]]; then
+        echo -e "${yellow}${failed} project(s) could not be checked: engram returned an error.${reset}"
     fi
     # Orphaned relations (dangling rows from deleted observations) are deliberately
     # NOT shown: engram provides no way to resolve or prune them, so the count only
@@ -192,11 +201,12 @@ mode_check() {
     fi
 
     local pending
-    pending="$(pending_count "${project}")"
+    # No stamp on failure: the next session retries instead of going quiet for the window.
+    if ! pending="$(pending_count "${project}")"; then
+        exit 0
+    fi
     pending="${pending:-0}"
 
-    # Record that this project was checked, regardless of outcome, so the interval
-    # resets and we don't nudge every session once overdue.
     mkdir -p "${STAMP_DIR}"
     : >"${stamp_file}"
 
