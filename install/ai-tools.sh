@@ -170,7 +170,7 @@ generate_rules_steering() {
 
     # Clean previously generated rules
     for domain in "${UNIVERSAL_STEERING_DOMAINS[@]}"; do
-        rm -rf "${output_dir:?}/${domain}"
+        clear_generated_rules "$output_dir/$domain" || return 1
     done
 
     # Copy each steering doc preserving subdirectory structure
@@ -224,7 +224,7 @@ link_steering_tree() {
     if [[ -L "$dest" ]]; then
         rm -f "$dest"
     elif [[ -d "$dest" ]]; then
-        rm -rf "${dest:?}"
+        remove_installer_links "$dest" 2 || return 1
     elif [[ -e "$dest" ]]; then
         echo "✗ $dest exists and is not a symlink or directory; refusing to replace it" >&2
         return 1
@@ -267,7 +267,7 @@ link_steering_tree() {
 
     if [[ ! -e "$dest/$probe" ]]; then
         echo "✗ $dest does not resolve $probe (is AI_DOTFILES_DIR correct?)" >&2
-        rm -rf "${dest:?}"
+        remove_installer_links "$dest" 2
         return 1
     fi
 }
@@ -328,6 +328,66 @@ pair_path() {
     fi
 }
 
+# True when the symlink at $1 points into this repo or into a configured extra
+# source. Only the link's target is checked, so a real directory or a link to
+# anything else (e.g. org-synced skills) never matches.
+is_installer_link() {
+    local target entry src
+    target="$(readlink "$1")"
+    [[ "$target" == "$AI_DOTFILES_DIR"/* ]] && return 0
+    for entry in "${EXTRA_SKILL_PAIRS[@]:-}" "${EXTRA_STEERING_PAIRS[@]:-}"; do
+        [[ -n "$entry" ]] || continue
+        src="$(pair_path "$entry")"
+        [[ "$target" == "$src" || "$target" == "$src"/* ]] && return 0
+    done
+    return 1
+}
+
+# Remove the installer-created symlinks from the tree at $1, down to $2 levels,
+# so a rebuild starts clean. Real files and directories are left in place. A
+# symlink at $1 itself is an old whole-tree shape: it is removed only if it is an
+# installer link, otherwise we fail rather than write through a foreign link.
+remove_installer_links() {
+    local root="$1" depth="$2" entry
+    if [[ -L "$root" ]]; then
+        if ! is_installer_link "$root"; then
+            echo "✗ $root is a symlink outside the installer's sources; refusing to replace it" >&2
+            return 1
+        fi
+        rm -f "$root"
+        return 0
+    fi
+    [[ -d "$root" ]] || return 0
+    while IFS= read -r -d '' entry; do
+        if is_installer_link "$entry"; then
+            rm -f "$entry"
+        fi
+    done < <(find "$root" -mindepth 1 -maxdepth "$depth" -type l -print0)
+}
+
+# Remove every symlink directly under $1. Only for a directory the installer owns
+# outright (the extra/ umbrella), where any link there was created by this script.
+remove_owned_links() {
+    find "$1" -mindepth 1 -maxdepth 1 -type l -exec rm -f {} +
+}
+
+# Remove the rule copies a previous run wrote into $1. Only *.md files are removed,
+# and a symlinked domain dir is unlinked only if it is an installer link, so the
+# copy that follows can never write back into a source directory.
+clear_generated_rules() {
+    local dest="$1"
+    if [[ -L "$dest" ]]; then
+        if ! is_installer_link "$dest"; then
+            echo "✗ $dest is a symlink outside the installer's sources; refusing to replace it" >&2
+            return 1
+        fi
+        rm -f "$dest"
+        return 0
+    fi
+    [[ -d "$dest" ]] || return 0
+    find "$dest" -mindepth 1 -maxdepth 1 -type f -name '*.md' -exec rm -f {} +
+}
+
 # ---------------------------------------------------------------
 # Distribution
 # ---------------------------------------------------------------
@@ -345,7 +405,7 @@ for agent in "${ENABLED_AGENTS[@]}"; do
         # level deep (no recursion into category subfolders like kiro's
         # skill://.../shared/**/SKILL.md resources support). Symlink each
         # skill directory individually so it's directly visible.
-        rm -rf "$skills_path"
+        remove_installer_links "$skills_path" 1 || exit 1
         mkdir -p "$skills_path"
         skill_count=0
         while IFS= read -r -d '' skill_dir; do
@@ -374,14 +434,9 @@ for agent in "${ENABLED_AGENTS[@]}"; do
         # single whole-tree symlink, so an extra source can mount as its own
         # category sibling instead of resolving through a tree-wide symlink.
         #
-        # Idempotency: handle both leftover shapes. An old single whole-tree
-        # symlink is removed before building the real dir; a stale real dir is
-        # rebuilt cleanly each run.
-        if [ -L "$skills_path" ]; then
-            rm -f "$skills_path"
-        elif [ -d "$skills_path" ]; then
-            rm -rf "$skills_path"
-        fi
+        # Idempotency: an old single whole-tree symlink is removed before building
+        # the real dir, and repo-owned category links from the last run are cleared.
+        remove_installer_links "$skills_path" 1 || exit 1
         mkdir -p "$skills_path"
         category_count=0
         # Category list is glob-driven, not hardcoded, so adding a dotfiles
@@ -397,6 +452,9 @@ for agent in "${ENABLED_AGENTS[@]}"; do
         # (skill://.../extra/**/SKILL.md) fixed no matter which sources exist.
         # Per-entry [ -d ] guard skips sources absent on this machine.
         extra_count=0
+        if [[ -d "$skills_path/extra" ]]; then
+            remove_owned_links "$skills_path/extra"
+        fi
         for _entry in "${EXTRA_SKILL_PAIRS[@]}"; do
             _name="$(pair_name "$_entry")"
             _src="$(pair_path "$_entry")"
