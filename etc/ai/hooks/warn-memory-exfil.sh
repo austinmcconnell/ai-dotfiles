@@ -14,7 +14,8 @@ fi
 TOOL_NAME=$(echo "$TOOL_INPUT" | jq -r '.tool_name // empty')
 TOOL_NAME="${TOOL_NAME##*/}"
 TOOL_NAME="${TOOL_NAME##mcp__*__}"
-if [[ "${TOOL_NAME}" != "mem_save" && "${TOOL_NAME}" != "mem_update" && "${TOOL_NAME}" != "mem_save_prompt" && "${TOOL_NAME}" != "mem_session_summary" && "${TOOL_NAME}" != "mem_capture_passive" ]]; then
+source "$(dirname "${BASH_SOURCE[0]}")/lib/memory-write-tools.sh"
+if ! is_checked_memory_tool "${TOOL_NAME}"; then
     exit 0
 fi
 

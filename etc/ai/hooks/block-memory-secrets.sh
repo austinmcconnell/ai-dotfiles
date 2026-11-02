@@ -16,7 +16,7 @@ if ! echo "$TOOL_INPUT" | jq -e . >/dev/null 2>&1; then
     exit 2
 fi
 
-# Only check memory save/update operations
+# Only check memory write and judge operations
 TOOL_NAME=$(echo "$TOOL_INPUT" | jq -r '.tool_name // empty' 2>/dev/null)
 # Normalize MCP tool-name prefixes so the bare tool name is compared:
 #   kiro-cli:     "@engram/mem_save"        -> "mem_save"  (prefix ends with "/")
@@ -25,7 +25,8 @@ TOOL_NAME=$(echo "$TOOL_INPUT" | jq -r '.tool_name // empty' 2>/dev/null)
 # "mcp__server__" prefix. Order is safe: the patterns don't overlap.
 TOOL_NAME="${TOOL_NAME##*/}"
 TOOL_NAME="${TOOL_NAME##mcp__*__}"
-if [[ "${TOOL_NAME}" != "mem_save" && "${TOOL_NAME}" != "mem_update" && "${TOOL_NAME}" != "mem_save_prompt" && "${TOOL_NAME}" != "mem_session_summary" && "${TOOL_NAME}" != "mem_capture_passive" ]]; then
+source "$(dirname "${BASH_SOURCE[0]}")/lib/memory-write-tools.sh"
+if ! is_checked_memory_tool "${TOOL_NAME}"; then
     exit 0
 fi
 
