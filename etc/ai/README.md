@@ -23,7 +23,7 @@ scripts in place through `$AI_DOTFILES_DIR` (see `etc/ai/usage/README.md` for th
 | Tool                  | Skills                           | Steering                                                                                        |
 | --------------------- | -------------------------------- | ----------------------------------------------------------------------------------------------- |
 | kiro-cli              | Symlinked to `~/.kiro/skills/`   | Symlinked to `~/.kiro/steering/`, loaded via `file://~/.kiro/steering/` resources in agent JSON |
-| Claude Code           | Symlinked to `~/.claude/skills/` | Generated as individual rule files in `~/.claude/rules/`, plus a slim pointer `CLAUDE.md`       |
+| Claude Code           | Symlinked to `~/.claude/skills/` | Symlinked per domain into `~/.claude/rules/`, plus a slim pointer `CLAUDE.md`                   |
 | Codex (disabled)      | Symlinked to `~/.codex/skills/`  | Reads AGENTS.md (no adapter needed)                                                             |
 | Cursor (disabled)     | Symlinked to `~/.cursor/skills/` | Generated as `.mdc` files in `~/.cursor/rules/`                                                 |
 | Gemini CLI (disabled) | Symlinked to `~/.gemini/skills/` | Concatenated into `~/.gemini/GEMINI.md`                                                         |
@@ -67,8 +67,8 @@ Always-on principles that guide AI behavior. Organized by domain:
 
 These are the *source of truth*. Each tool consumes them differently (kiro-cli reads them through a
 `~/.kiro/steering/` symlink referenced by `file://~/.kiro/steering/` resource globs in each agent
-JSON, Cursor gets `.mdc` files, Claude gets individual rule files, Gemini gets a concatenated
-markdown file).
+JSON, Cursor gets `.mdc` files, Claude gets symlinked rule dirs, Gemini gets a concatenated markdown
+file).
 
 ### Why Some Steering Is Universal and Some Is Per-Persona
 

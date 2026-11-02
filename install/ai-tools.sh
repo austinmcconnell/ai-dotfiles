@@ -161,25 +161,32 @@ generate_mdc_steering() {
     done
 }
 
-# Generate individual rule files from steering docs.
-# Used by: Claude Code (one .md per steering doc in ~/.claude/rules/)
+# Link one steering domain into the rules dir and verify it resolves. A real dir
+# left by the old copy layout is replaced only if it holds nothing but this
+# installer's own copies (see clear_generated_rules).
+link_rules_domain() {
+    local dest="$1" source="$2"
+    local first_doc=("$source"/*.md)
+    if [[ ! -f "${first_doc[0]}" ]]; then
+        echo "✗ no *.md in $source; nothing to link" >&2
+        return 1
+    fi
+    clear_generated_rules "$dest" "$source" || return 1
+    mkdir -p "$(dirname "$dest")"
+    ln -sfn "$source" "$dest"
+    assert_link_resolves "$dest" "$(basename "${first_doc[0]}")"
+}
+
+# Link each universal steering domain into the Claude Code rules dir, so an edit
+# in the repo reaches Claude without a regenerate step.
+# Used by: Claude Code (~/.claude/rules/<domain> → etc/ai/steering/<domain>/)
 # Files with paths: frontmatter get conditional loading; others load unconditionally.
 generate_rules_steering() {
     local output_dir="$1"
     local claude_md="$2"
 
-    # Clean previously generated rules
     for domain in "${UNIVERSAL_STEERING_DOMAINS[@]}"; do
-        clear_generated_rules "$output_dir/$domain" || return 1
-    done
-
-    # Copy each steering doc preserving subdirectory structure
-    for domain in "${UNIVERSAL_STEERING_DOMAINS[@]}"; do
-        for f in "$STEERING_SOURCE/$domain"/*.md; do
-            [ -f "$f" ] || continue
-            mkdir -p "$output_dir/$domain"
-            cp "$f" "$output_dir/$domain/"
-        done
+        link_rules_domain "$output_dir/$domain" "$STEERING_SOURCE/$domain" || return 1
     done
 
     # Write slim CLAUDE.md
@@ -379,11 +386,11 @@ remove_owned_links() {
     find "$1" -mindepth 1 -maxdepth 1 -type l -exec rm -f {} +
 }
 
-# Remove the rule copies a previous run wrote into $1. Only *.md files are removed,
-# and a symlinked domain dir is unlinked only if it is an installer link, so the
-# copy that follows can never write back into a source directory.
+# Clear $1 so a symlink can take its place. An installer link is unlinked. A real
+# dir is removed only when every entry is a copy this installer wrote (a regular
+# file whose name matches a file in $2); anything else fails before any deletion.
 clear_generated_rules() {
-    local dest="$1"
+    local dest="$1" source="$2" entry
     if [[ -L "$dest" ]]; then
         if ! is_installer_link "$dest"; then
             echo "✗ $dest is a symlink outside the installer's sources; refusing to replace it" >&2
@@ -392,8 +399,19 @@ clear_generated_rules() {
         rm -f "$dest"
         return 0
     fi
-    [[ -d "$dest" ]] || return 0
-    find "$dest" -mindepth 1 -maxdepth 1 -type f -name '*.md' -exec rm -f {} +
+    [[ -e "$dest" ]] || return 0
+    if [[ ! -d "$dest" ]]; then
+        echo "✗ $dest exists and is not a directory or symlink; refusing to replace it" >&2
+        return 1
+    fi
+    while IFS= read -r -d '' entry; do
+        if [[ ! -f "$entry" || ! -e "$source/$(basename "$entry")" ]]; then
+            echo "✗ $entry is not an installer-written rule; refusing to replace $dest" >&2
+            return 1
+        fi
+    done < <(find "$dest" -mindepth 1 -maxdepth 1 -print0)
+    find "$dest" -mindepth 1 -maxdepth 1 -type f -exec rm -f {} +
+    rmdir "$dest"
 }
 
 # ---------------------------------------------------------------
@@ -502,8 +520,8 @@ for agent in "${ENABLED_AGENTS[@]}"; do
         rules_dir="${rules_spec%%:*}"
         claude_md="${rules_spec#*:}"
         mkdir -p "$rules_dir"
-        generate_rules_steering "$rules_dir" "$claude_md"
-        echo "✓ Generated steering for $agent ($rules_dir/)"
+        generate_rules_steering "$rules_dir" "$claude_md" || exit 1
+        echo "✓ Linked steering for $agent ($rules_dir/)"
         ;;
     esac
 done
