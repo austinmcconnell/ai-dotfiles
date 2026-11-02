@@ -265,11 +265,7 @@ link_steering_tree() {
             echo "⚠ SKIPPED host-local steering for '$name': no *.md in $src" >&2
     done
 
-    if [[ ! -e "$dest/$probe" ]]; then
-        echo "✗ $dest does not resolve $probe (is AI_DOTFILES_DIR correct?)" >&2
-        remove_installer_links "$dest" 2
-        return 1
-    fi
+    assert_link_resolves "$dest" "$probe"
 }
 
 # ---------------------------------------------------------------
@@ -363,6 +359,18 @@ remove_installer_links() {
             rm -f "$entry"
         fi
     done < <(find "$root" -mindepth 1 -maxdepth "$depth" -type l -print0)
+}
+
+# Assert that $2 resolves through the link tree at $1. On failure, remove the
+# installer links under $1 so a dangling seam is never left in place, then return 1.
+assert_link_resolves() {
+    local dest="$1" probe="$2"
+    if [[ -e "$dest/$probe" ]]; then
+        return 0
+    fi
+    echo "✗ $dest does not resolve $probe (is AI_DOTFILES_DIR correct?)" >&2
+    remove_installer_links "$dest" 2
+    return 1
 }
 
 # Remove every symlink directly under $1. Only for a directory the installer owns
