@@ -161,11 +161,23 @@ generate_mdc_steering() {
     done
 }
 
+# Refuse a seam whose parent directory is a symlink: writes would land wherever
+# that link points, outside the seam this installer owns.
+refuse_symlinked_parent() {
+    local parent
+    parent="$(dirname "$1")"
+    if [[ -L "$parent" ]]; then
+        echo "✗ $parent is a symlink; refusing to write through it" >&2
+        return 1
+    fi
+}
+
 # Link one steering domain into the rules dir and verify it resolves. A real dir
 # left by the old copy layout is replaced only if it holds nothing but this
 # installer's own copies (see clear_generated_rules).
 link_rules_domain() {
     local dest="$1" source="$2"
+    refuse_symlinked_parent "$dest" || return 1
     local first_doc=("$source"/*.md)
     if [[ ! -f "${first_doc[0]}" ]]; then
         echo "✗ no *.md in $source; nothing to link" >&2
@@ -227,6 +239,7 @@ EOF
 # Returns: 0 when built and the probe resolves, 1 otherwise (message on stderr).
 link_steering_tree() {
     local dest="$1" probe="$2"
+    refuse_symlinked_parent "$dest" || return 1
 
     if [[ -L "$dest" ]]; then
         if ! is_installer_link "$dest"; then
