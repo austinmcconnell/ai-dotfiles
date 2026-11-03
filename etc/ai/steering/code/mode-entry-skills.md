@@ -20,8 +20,8 @@ numbered loop lives in the skill).
   or service boundary, or assert a property a compiler cannot verify (thread-safety, idempotence,
   ordering, invariants), load the `doubt-driven-development` skill. Its value is catching a wrong
   direction *in flight*, while course-correction is cheap, so it must be loaded before the decision
-  stands — not after, when it degrades into a post-hoc review. Main-session `code` orchestrator
-  only; scoped personas surface the decision rather than run the loop.
+  stands — not after, when it degrades into a post-hoc review. An agent that cannot spawn a reviewer
+  surfaces the decision to its parent instead.
 - **Writing, closing, or resuming a cross-session handoff** — when an effort will span sessions and
   you are about to write its `handoff/<project>-active` pointer, when a session opens with an
   `ACTIVE HANDOFF` notice, or when an effort finishes, load the `handoff-management` skill. Its

@@ -18,7 +18,7 @@ of `stress-test-analysis` (which audits an outside article; this audits your own
 decision).
 
 > Adapted from [`addyosmani/agent-skills`](https://github.com/addyosmani/agent-skills) (MIT),
-> re-idiomed to this repo's subagent trust model and external-CLI posture.
+> re-idiomed to this repo's conventions and external-CLI posture.
 
 ## When to Use
 
@@ -40,15 +40,19 @@ A decision is **non-trivial** when at least one is true:
 - Pure tooling operations (running tests, listing files)
 - The user has explicitly asked for speed over verification
 
-## Loading Constraint — main-session / `code` orchestrator only
+## Who Runs the Loop
 
-Step 3 (DOUBT) spawns a fresh-context reviewer via the `subagent` tool. Per the subagent trust model
-(`etc/kiro-cli/README.md`), only the `code` agent is trusted to spawn subagents that inherit tool
-approval, and the kiro-only `etc/ai/steering/kiro/agent-routing.md` establishes `code` as the
-generalist orchestrator. The four scoped personas (`docs`, `ansible`, `jira`, `datadog`) **must
-not** run this loop — a persona spawning a reviewer subagent is the "personas don't invoke personas"
-anti-pattern. If a scoped persona reaches a non-trivial decision that warrants doubt, surface it to
-the user and let the main `code` session run the loop rather than spawning from inside the persona.
+Any agent that can spawn a fresh-context reviewer may run this loop. An agent that cannot spawn one
+surfaces the non-trivial decision to its parent session rather than skipping the check.
+
+Two constraints hold on every platform:
+
+- The reviewer is read-only: it reads the artifact and contract and does not write or mutate state.
+- The reviewer receives ARTIFACT + CONTRACT only, never the CLAIM or the author's reasoning.
+
+Spawning uses each platform's own mechanism. On Kiro, that is the `subagent` tool; subagents spawned
+from a non-`code` agent need per-tool approval (see `etc/kiro-cli/README.md`, Subagent Trust Model).
+On Claude Code, it is the Agent tool, which scoped persona agents do not have.
 
 ## The Process
 
@@ -88,8 +92,8 @@ unit must be small enough to hold in one read — if it's a 500-line change, dec
 
 ### Step 3: DOUBT — invoke the fresh-context reviewer
 
-Spawn a fresh-context **`code`** subagent via the `subagent` tool from the main session. The
-reviewer's prompt **must be adversarial** — framing decides the answer:
+Spawn a fresh-context, read-only reviewer subagent using the platform's mechanism (see Who Runs the
+Loop). The reviewer's prompt **must be adversarial** — framing decides the answer:
 
 ```text
 Adversarial review. Find what is wrong with this artifact. Assume the author is overconfident.
@@ -202,7 +206,8 @@ artifact is large, the artifact is too big: return to Step 2 and decompose. Do n
   classified actionable — you are validating, not doubting. Stop and escalate.
 - Passing the CLAIM or your reasoning to the reviewer (biases toward agreement)
 - Stripping the contract from the reviewer's input
-- A scoped persona running this loop instead of surfacing to the main `code` session
+- An agent that cannot spawn a reviewer skipping the check instead of surfacing the decision to its
+  parent
 - Invoking an external CLI without a PATH check, working-binary test, syntax confirmation, and
   explicit authorization — or interpolating the artifact into a shell-quoted argument
 - Silently skipping or silently falling back on cross-model — the skip is fine, the silence is not

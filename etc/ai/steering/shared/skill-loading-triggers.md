@@ -8,9 +8,10 @@ artifact against it, even when you believe you already know the convention.
 These are the triggers common to every agent. Each domain's own `skill-loading-triggers.md` adds the
 rows specific to that domain.
 
-| Task                                                                 | Skill to load first      |
-| -------------------------------------------------------------------- | ------------------------ |
-| Writing commit messages                                              | `commit-message-writing` |
-| Promoting corrections to steering                                    | `distill-learnings`      |
-| Navigating project docs / find a doc / explain how a subsystem works | `readme-pointer`         |
-| Writing, closing, or resuming an engram handoff                      | `handoff-management`     |
+| Task                                                                 | Skill to load first        |
+| -------------------------------------------------------------------- | -------------------------- |
+| Writing commit messages                                              | `commit-message-writing`   |
+| Promoting corrections to steering                                    | `distill-learnings`        |
+| Navigating project docs / find a doc / explain how a subsystem works | `readme-pointer`           |
+| Writing, closing, or resuming an engram handoff                      | `handoff-management`       |
+| Doubting a non-trivial decision before it stands                     | `doubt-driven-development` |
