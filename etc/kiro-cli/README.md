@@ -244,8 +244,8 @@ any agent that needs it.
 
 Resource scoping per agent:
 
-- **code** — all steering domains (`code/`, `github/`, `security/`, `shared/`),
-  development/operations/research/ shared skill categories, multiple knowledge bases (research,
+- **code** — all steering domains (`code/`, `github/`, `kiro/`, `security/`, `shared/`),
+  development/operations/research/kiro/ shared skill categories, multiple knowledge bases (research,
   project code, analysis docs)
 - **docs** — `documentation/` steering, documentation + shared skills, many knowledge bases for
   cross-project doc work
