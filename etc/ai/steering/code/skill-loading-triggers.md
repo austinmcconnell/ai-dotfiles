@@ -27,6 +27,10 @@ Triggers common to every agent, and the rule for applying them, live in
 | Optimizing backend performance / N+1, slow queries, pooling, caching | `backend-performance`               |
 | Deciding what to work on / scoping an idea                           | `idea-refinement`                   |
 | Session start / open questions arise / writing or editing `todo.md`  | `todo`                              |
+| Detecting stale refs in steering or skills                           | `drift-detection`                   |
+| Accessing AWS resources or running AWS CLI                           | `aws-operations`                    |
+| Accessing a Kubernetes cluster or running kubectl                    | `kubernetes-operations`             |
+| Authoring or editing kiro-cli skills                                 | `kiro-skill-authoring`              |
 
 When citing existing research from a knowledge base, check `last_verified` in the file's YAML
 frontmatter. If older than 90 days, warn the user before presenting the data as current.

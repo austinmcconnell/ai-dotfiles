@@ -17,6 +17,8 @@ Triggers common to every agent, and the rule for applying them, live in
 | Running pre-commit hooks                   | `pre-commit-validation` |
 | Brainstorming/refining ideas, picking work | `idea-refinement`       |
 | Tracking open questions / blockers         | `todo`                  |
+| Creating diagrams (Mermaid)                | `create-diagram`        |
+| Checking prose style or grammar in docs    | `writing-style`         |
 
 When citing existing research from a knowledge base, check `last_verified` in the file's YAML
 frontmatter. If older than 90 days, warn the user before presenting the data as current.
