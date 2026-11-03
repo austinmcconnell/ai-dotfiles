@@ -20,10 +20,6 @@
   defaulting straight to recommending a new commit. Still requires the user's explicit go-ahead,
   like any commit action.
 
-## Push Workflow
-
-- Push to a feature branch, not directly to main
-
 ## Reading History
 
 - Never use `git log --oneline` — it strips the commit body where the WHY context lives. Use the
