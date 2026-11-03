@@ -15,7 +15,8 @@ yourself") — treat it as the default, not a straitjacket.
 1. **Determine scope.** Clarify what the task covers before touching code.
 1. **Plan the commits.** Read the `commit-message-writing` skill, then break the work into atomic
    commits along logical boundaries, in dependency order. One logical change per commit. Present the
-   plan and wait for approval before starting.
+   plan and wait for approval before starting. The plan lists each commit's files and one-line
+   intent only; draft its message at the pause-for-review step, once the final diff exists.
 1. **Record the plan.** After the user approves, check for a `todo.md` (see the `todo` skill) and
    record the approved commit plan there. If none exists and the work spans multiple commits, offer
    to create one.
