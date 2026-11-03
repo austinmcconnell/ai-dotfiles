@@ -67,7 +67,9 @@ Each agent's `allowedTools` is scoped to its purpose:
 - **code** — broad read access, git read tools, `gh` CLI commands, code search, knowledge, web,
   subagent
 - **docs** — same read tools as code, no domain-specific MCP tools
-- **jira** — adds `@jira/*` read tools, no mutating JIRA tools in allowedTools
+- **jira** — adds `@jira/jira_get` read tool to allowedTools; mutating JIRA tools (`jira_post`,
+  `jira_patch`, `jira_put`) stay available but prompt for approval on each use. `jira_delete` is
+  disabled.
 - **datadog** — read tools + Pup CLI read-only commands for querying Datadog (monitors, logs,
   metrics, dashboards, synthetics)
 
