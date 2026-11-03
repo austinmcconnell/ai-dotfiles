@@ -47,8 +47,8 @@ yourself") — treat it as the default, not a straitjacket.
   first") approves the scope, not skipping the plan. Count the repos touched at scoping time; work
   that spans more than one is multi-commit by definition.
 - **The user commits by default.** Do not create commits unless the user explicitly asks you to
-  (this reinforces `git-conventions.md` Commit Discipline). The default is: you prepare and verify,
-  the user commits.
+  (this reinforces the user-commits rule in `shared/guardrails.md`). The default is: you prepare and
+  verify, the user commits.
 - **Commits never cross repos.** If a change spans repositories, it is at least one commit per repo,
   sequenced by dependency.
 - **Pausing is per commit, not per file.** Finish a whole logical change before pausing, not each

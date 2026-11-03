@@ -1,15 +1,15 @@
 # Security Best Practices
 
-These are the always-on principles. For the full hardening workflow — threat-model-first analysis,
-STRIDE, the Always/Ask-first/Never boundary system, and per-control patterns (injection, SSRF,
-destructive paths, secrets, dependencies, LLM output, privacy) — load the `security-and-hardening`
-skill when the task warrants it.
+These are the always-on principles for writing and reviewing code. Rules that apply to every agent,
+whatever its domain, live in `shared/guardrails.md`. For the full hardening workflow —
+threat-model-first analysis, STRIDE, the Always/Ask-first/Never boundary system, and per-control
+patterns (injection, SSRF, destructive paths, secrets, dependencies, LLM output, privacy) — load the
+`security-and-hardening` skill when the task warrants it.
 
 When generating or reviewing code:
 
 ## Data Handling
 
-- Never hardcode credentials or secrets
 - Use environment variables for sensitive configuration
 - Sanitize user inputs to prevent injection attacks
 - Validate and sanitize data before storing or processing
@@ -36,12 +36,3 @@ When generating or reviewing code:
   (including LLM output) to `eval`/`exec`, a shell, or a file path
 - Restrict CORS and network egress to an explicit allowlist for services that expose them
 - Implement proper error handling without leaking sensitive information
-
-## Disclosing Exposures
-
-If any action — including your own tooling, diagnostics, or command output — exposes a secret,
-credential, token, PII, or PHI, surface it immediately and prominently: state what leaked, where,
-the likely blast radius, and the remediation (rotate/revoke). Never downplay it, defer it to an
-end-of-task summary, or omit it to avoid looking bad. This holds even when the secret is likely
-already expired or harmless, and even when the exposure was caused by your own tooling — own it and
-report it plainly.

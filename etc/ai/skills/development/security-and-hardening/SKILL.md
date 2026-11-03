@@ -9,10 +9,11 @@ Treat every external input as hostile, every secret as sacred, and every authori
 mandatory. Security is a constraint on every line that touches untrusted data, authentication, or
 external systems â€” not a phase bolted on at the end.
 
-This skill is the on-demand *workflow* tier. The always-on *principles* tier is the
-`security/best-practices.md` steering doc (the short "never hardcode secrets / parameterize queries
-/ validate input" list loaded for the `code` agent). Reach here for the threat-model process, the
-boundary system, and the per-control patterns; the steering doc remains the standing summary.
+This skill is the on-demand *workflow* tier. The always-on *principles* are split across two
+steering docs: `security/best-practices.md` holds the code-writing principles (loaded for the `code`
+agent), and `shared/guardrails.md` holds the rules that apply to every agent, including the secrets
+and disclosure rules. Reach here for the threat-model process, the boundary system, and the
+per-control patterns; the steering docs remain the standing summary.
 
 > Adapted from [`addyosmani/agent-skills`](https://github.com/addyosmani/agent-skills) (MIT),
 > re-idiomed from its web/Node origin to this repo's Python-service / bash / infra surface. The
@@ -182,7 +183,7 @@ files kept out of git, with the dotenv file for a project likewise git-ignored â
 not (see `security/env-file-protection.md`). Commit a placeholder example file, never the real one;
 grep the staged diff for secrets before committing. **A secret that reaches a remote is compromised
 the moment it lands: rotate it first, then purge history.** If your own tooling leaks a secret,
-disclose it immediately per `security/best-practices.md` "Disclosing Exposures." Pattern:
+disclose it immediately per `shared/guardrails.md` "Disclosing Exposures." Pattern:
 [Secrets management](references/hardening-patterns.md#secrets-management).
 
 ### Dependencies and supply chain
