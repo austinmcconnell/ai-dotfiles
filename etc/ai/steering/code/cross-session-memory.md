@@ -27,14 +27,28 @@ high-signal + a map → eager context.
 
 ## When to Save Memories
 
-Save to engram (`mem_save`) when:
+Save to engram (`mem_save`) at natural breakpoints, not after every small action, when:
 
 - Making an architectural decision with rationale
-- Discovering a failed approach (what was tried, why it failed)
+- Discovering a failed approach (what was tried, why it failed) — don't retry without fixing the
+  cause
 - Establishing a project convention not documented elsewhere
 - Completing a significant milestone in multi-session work
 - Finding a non-obvious workaround or solution
-- Receiving explicit user preferences about workflow
+- Receiving explicit user preferences about workflow ("User prefers …")
+
+Use descriptive titles. For corrections, use the What/Why/Where/Learned structure in
+`etc/ai/steering/code/capturing-corrections.md`.
+
+## Session Start Recall
+
+If the user describes a task or project at the start of a session:
+
+1. Use `mem_search` with relevant keywords to find prior context
+1. Use `mem_context` to get recent session history for the project
+1. Mention relevant findings briefly: "From a previous session, I recall..."
+
+Surface only what is relevant to the current task. Do not dump every memory into the response.
 
 ## When NOT to Save Memories
 
@@ -46,6 +60,38 @@ Never store:
 - Personally identifiable information (PII)
 - Temporary debugging state that won't matter next session
 - Information already captured in project docs, READMEs, or steering files
+
+## Memory Types
+
+Engram's `type` field is free text — the store accepts any value and enforces nothing at runtime. So
+drift is prevented by convention, not by engram. Engram publishes two type lists that do not fully
+agree (the README Memory Protocol and the `mem_save` tool schema), so we standardize by
+**function**:
+
+**Agent-chosen types** — the types you deliberately pass to `mem_save`. Use one of these:
+
+- `decision` — architectural or design choices with rationale
+- `architecture` — system structure, module boundaries, data models
+- `bugfix` — bugs found, root causes, and fixes
+- `pattern` — conventions established (naming, structure, idioms)
+- `config` — configuration changes or environment setup
+- `discovery` — non-obvious findings about the codebase or tooling
+- `preference` — explicit user preferences about tools or workflow
+
+**Engram-generated types** — engram assigns these; you do not hand-pick them:
+
+- `learning` — produced by `mem_capture_passive` from a `## Key Learnings:` section
+- `manual` — the default type when a save supplies no `type`
+
+If engram adds a type in a future version, it joins whichever category fits (something you'd choose
+→ agent-chosen; something engram assigns → engram-generated). Do not describe the set by count — the
+membership will change, the rule will not. `scripts/validate-memory-types.sh` guards the
+agent-chosen list against drift.
+
+## Topic Keys
+
+Use `mem_suggest_topic_key` to get a consistent topic key before saving. This ensures related
+memories cluster together for retrieval.
 
 ## Handoff Notices
 
@@ -64,6 +110,5 @@ is guaranteed by the obligation above; *acting* on it is the user's call, and th
 what hands them that choice. See the `memory-management` skill's "Suggesting a resume prompt"
 section for the shape.
 
-For how to save, structure, and hand off memories once you've decided to act — session-start recall,
-memory types, topic keys, writing/closing a handoff, hygiene, and conflict-relation cleanup — see
-the `memory-management` skill.
+For writing or closing a handoff, memory hygiene, and conflict relations, load the
+`memory-management` skill.

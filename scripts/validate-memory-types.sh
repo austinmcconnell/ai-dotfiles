@@ -4,9 +4,9 @@ set -euo pipefail
 # ---------------------------------------------------------------
 # validate-memory-types.sh
 #
-# Validation-only guard for the engram memory-type vocabulary and the
-# handoff convention documented in
-# etc/ai/skills/shared/memory-management/SKILL.md.
+# Validation-only guard for the engram memory-type vocabulary (documented in
+# etc/ai/steering/code/cross-session-memory.md) and the handoff convention
+# (documented in etc/ai/skills/shared/memory-management/SKILL.md).
 #
 # WHY THIS EXISTS
 # engram's `type` field is free text — the store accepts any value and
@@ -22,8 +22,8 @@ set -euo pipefail
 #   - ENGRAM-GENERATED = learning (passive capture) + manual (default)
 #
 # WHAT IT CHECKS
-#   1. Every AGENT-CHOSEN type below is documented in the memory-management skill.
-#   2. Every ENGRAM-GENERATED type below is documented in the memory-management skill.
+#   1. Every AGENT-CHOSEN type below is documented in cross-session-memory steering.
+#   2. Every ENGRAM-GENERATED type below is documented in cross-session-memory steering.
 #   3. The mandatory structured handoff marker line is documented in the skill
 #      file (the recall hook confirms handoffs by it; an undocumented or bare-token
 #      form is a footgun — the bare token false-matches prose about the convention).
@@ -44,7 +44,8 @@ set -euo pipefail
 # always checks THIS repo, not whatever $DOTFILES_DIR points at in the shell.
 AI_DOTFILES_DIR="${AI_DOTFILES_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 
-DOC_FILE="${AI_DOTFILES_DIR}/etc/ai/skills/shared/memory-management/SKILL.md"
+TYPES_DOC="${AI_DOTFILES_DIR}/etc/ai/steering/code/cross-session-memory.md"
+HANDOFF_DOC="${AI_DOTFILES_DIR}/etc/ai/skills/shared/memory-management/SKILL.md"
 
 # Mandatory STRUCTURED marker line the recall hook confirms a handoff by (see
 # recall-memory.sh). The bare token alone false-matches any memory that merely
@@ -88,19 +89,23 @@ report_note() {
     echo -e "  ${YELLOW}[NOTE]${RESET} $1"
 }
 
-# Assert a literal token appears somewhere in the memory-management skill file.
+# Assert a literal token appears somewhere in the given doc.
 assert_documented() {
-    local label="$1" token="$2"
-    if ! grep -qF -- "$token" "$DOC_FILE"; then
-        report_fail "${label} not documented in memory-management skill: ${token}"
+    local label="$1" doc="$2" token="$3"
+    if ! grep -qF -- "$token" "$doc"; then
+        report_fail "${label} not documented in ${doc#"${AI_DOTFILES_DIR}"/}: ${token}"
     fi
 }
 
 echo -e "${BOLD}Validating engram memory-type vocabulary + handoff convention${RESET}"
 echo "──────────────────────────────────────────────────────────────────────────"
 
-if [[ ! -f "$DOC_FILE" ]]; then
-    report_fail "memory-management skill file not found: ${DOC_FILE}"
+for doc in "$TYPES_DOC" "$HANDOFF_DOC"; do
+    if [[ ! -f "$doc" ]]; then
+        report_fail "memory doc not found: ${doc}"
+    fi
+done
+if ((FAILURES > 0)); then
     echo -e "${RED}✗ cannot validate${RESET}"
     exit 1
 fi
@@ -108,14 +113,14 @@ fi
 # 1 + 2: every canonical type is documented. Match the backtick-quoted form
 # (`decision`) so a stray prose mention of the word doesn't satisfy the check.
 for t in "${AGENT_CHOSEN_TYPES[@]}"; do
-    assert_documented "agent-chosen type" "\`${t}\`"
+    assert_documented "agent-chosen type" "$TYPES_DOC" "\`${t}\`"
 done
 for t in "${ENGRAM_GENERATED_TYPES[@]}"; do
-    assert_documented "engram-generated type" "\`${t}\`"
+    assert_documented "engram-generated type" "$TYPES_DOC" "\`${t}\`"
 done
 
 # 3: the structured handoff marker line must be documented.
-assert_documented "handoff marker" "$HANDOFF_SENTINEL"
+assert_documented "handoff marker" "$HANDOFF_DOC" "$HANDOFF_SENTINEL"
 
 # 4: best-effort engram cross-check via DYNAMIC resolution only.
 engram_bin=""
