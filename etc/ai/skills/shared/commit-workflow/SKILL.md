@@ -35,7 +35,7 @@ yourself") — treat it as the default, not a straitjacket.
 1. **After the user commits, verify it landed.** Run `git log -1` (and `git status` for a clean
    tree). Then mark that commit's item done in `todo.md`.
 1. **Continue** with the next commit's worth of work, repeating from step 4, until the plan is
-   complete.
+   complete. Begin it without asking permission to start; the approved plan already authorizes it.
 
 ## Notes
 
