@@ -40,7 +40,7 @@ repos:
         name: Validate memory-type vocabulary and handoff convention
         language: script
         entry: scripts/validate-memory-types.sh
-        files: ^etc/ai/steering/code/cross-session-memory\.md$|^etc/ai/skills/shared/handoff-management/SKILL\.md$|^scripts/validate-memory-types\.sh$
+        files: ^etc/ai/steering/shared/cross-session-memory\.md$|^etc/ai/skills/shared/handoff-management/SKILL\.md$|^scripts/validate-memory-types\.sh$
         pass_filenames: false
       - id: validate-persona-steering
         name: Validate persona steering

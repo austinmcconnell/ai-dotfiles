@@ -38,7 +38,7 @@ Save to engram (`mem_save`) at natural breakpoints, not after every small action
 - Receiving explicit user preferences about workflow ("User prefers …")
 
 Use descriptive titles. For corrections, use the What/Why/Where/Learned structure in
-`etc/ai/steering/code/capturing-corrections.md`.
+`etc/ai/steering/shared/capturing-corrections.md`.
 
 ## Session Start Recall
 

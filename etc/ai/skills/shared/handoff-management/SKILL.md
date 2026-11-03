@@ -31,7 +31,7 @@ Save the handoff with `mem_save` using:
   key makes every new handoff **upsert** the prior one (same `project + scope + topic_key` updates
   in place and bumps `revision_count`), so there is never more than one live handoff per project.
   This is the mechanism, not a convention you must police by hand.
-- **type**: an agent-chosen type from `etc/ai/steering/code/cross-session-memory.md` (usually
+- **type**: an agent-chosen type from `etc/ai/steering/shared/cross-session-memory.md` (usually
   `decision`). `handoff` is **not** a type — it lives only in the topic_key. Adding it as a type
   would reintroduce the type drift that the steering vocabulary exists to prevent.
 - **content**: the full handoff body — what is done and committed, unresolved findings, next steps
