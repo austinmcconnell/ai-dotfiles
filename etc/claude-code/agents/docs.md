@@ -68,7 +68,7 @@ directory.
 ## Reference
 
 For detailed examples, templates, checklists, and workflows, read the relevant documentation skill
-(available in ~/.claude/skills/documentation/) before acting.
+(available as ~/.claude/skills/<skill-name>/, e.g. docs-review) before acting.
 
 ## Reference Repositories
 
