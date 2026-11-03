@@ -27,6 +27,7 @@ set -euo pipefail
 #   3. The mandatory structured handoff marker line is documented in the skill
 #      file (the recall hook confirms handoffs by it; an undocumented or bare-token
 #      form is a footgun — the bare token false-matches prose about the convention).
+#   3b. The "## Handoffs" heading exists — the recall hook cites it by name.
 #   4. BEST-EFFORT: if the engram binary is locatable WITHOUT a hardcoded
 #      version path, cross-check that its embedded mem_save type list has not
 #      diverged from our AGENT-CHOSEN set. If the binary is not found, this
@@ -121,6 +122,12 @@ done
 
 # 3: the structured handoff marker line must be documented.
 assert_documented "handoff marker" "$HANDOFF_DOC" "$HANDOFF_SENTINEL"
+
+# 3b: the recall hook's comments cite the "Handoffs" section by name, so the
+# heading must exist for those pointers to resolve.
+if ! grep -qx -- "## Handoffs" "$HANDOFF_DOC"; then
+    report_fail "handoff section heading not found in ${HANDOFF_DOC#"${AI_DOTFILES_DIR}"/}: ## Handoffs"
+fi
 
 # 4: best-effort engram cross-check via DYNAMIC resolution only.
 engram_bin=""

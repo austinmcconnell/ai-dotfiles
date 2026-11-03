@@ -99,7 +99,9 @@ closing out (see below).
 
 ### Closing an effort
 
-When an effort is genuinely finished, write a `mem_session_summary` (the historical record) and stop
-refreshing the `handoff/<project>-active` pointer. Not every session needs a handoff — a one-off
-task that completes within the session needs only the summary, if anything. Reserve the active
-handoff for work that will span sessions.
+When an effort is genuinely finished, overwrite the `handoff/<project>-active` observation with a
+closed body that drops the `ENGRAM-HANDOFF-ACTIVE` marker line. The same topic_key upserts it, so
+the session-start hook no longer matches it and stops emitting the ACTIVE HANDOFF notice. Then
+`mem_unpin` the handoff and write a `mem_session_summary` (the historical record). Not every session
+needs a handoff — a one-off task that completes within the session needs only the summary, if
+anything. Reserve the active handoff for work that will span sessions.
