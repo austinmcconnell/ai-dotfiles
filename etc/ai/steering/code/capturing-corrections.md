@@ -39,8 +39,12 @@ Use `mem_save` with this exact shape so corrections are consistently findable:
   `correction/git-no-force-push`, `correction/pr-description-format`. Use `mem_suggest_topic_key` if
   unsure, then normalize it under the `correction/` prefix.
 - **title**: a short, searchable imperative — e.g. "Use single quotes for Python strings"
-- **content**: the What/Why/Where/Learned structure. Capture the *rule*, the *reason* the user gave,
-  and (if known) *where* it should eventually live (a steering doc or skill).
+- **content**: four labeled sections, in this order:
+  - **What**: the rule, stated as an imperative.
+  - **Why**: the reason the user gave, in their words where possible.
+  - **Where**: the steering doc or skill it should eventually live in, or `none` if it is
+    situational.
+  - **Learned**: what generalizes beyond this instance, or `none` if it only applies here.
 
 The `correction/` topic_key prefix is the retrieval handle: the `distill-learnings` skill and the
 promotion-prompt hook both find candidates by searching that prefix. Reusing a topic_key updates the

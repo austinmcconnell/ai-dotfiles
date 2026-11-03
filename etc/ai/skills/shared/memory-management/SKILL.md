@@ -38,7 +38,8 @@ Save memories at natural breakpoints — not after every small action. Good trig
 - "Approach X failed because of Z — don't retry without fixing Z first"
 - "User prefers [specific workflow/style/tool]"
 
-Use descriptive titles and the What/Why/Where/Learned structure.
+Use descriptive titles. For corrections, use the What/Why/Where/Learned content structure defined in
+`etc/ai/steering/code/capturing-corrections.md`.
 
 ## Memory Types
 
