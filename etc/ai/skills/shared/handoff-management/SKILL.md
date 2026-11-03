@@ -67,6 +67,28 @@ Then **pin** the handoff (`mem_pin`) and **unpin** the prior one. Pinning is loc
 ordering-only — it raises salience in `mem_context` output but carries no lifecycle meaning, so it
 does not replace the topic_key upsert.
 
+### Handoff body structure
+
+Write the body under these headings, in this order. Keep each short. Leave out a heading only when
+it has nothing to say.
+
+1. **Resume prompt** — the pasteable prompt from the section below, echoed verbatim.
+1. **State** — committed SHAs and what each covers. Verified facts only.
+1. **Decisions** — each with its reason and the alternatives rejected, so a resuming agent does not
+   re-litigate them.
+1. **Ruled out** — approaches tried and why they failed. Do not retry one without fixing its cause.
+1. **Next steps** — ordered. Each names the mode-entry skill it needs, when it is mode work, and its
+   gate (e.g. "needs approval first"). The refinement-state rule above still applies.
+1. **Needs the user** — user-owned actions and open questions, kept apart from agent work.
+1. **Unverified** — side-claims and assumptions, marked as such. Re-check them before acting.
+1. **Constraints** — hard rules for this effort: what never to do, what needs approval.
+
+The marker line from above goes in the body as well; it is not listed as a heading.
+
+Why these headings: decisions with their reasons stop a resuming agent from reopening settled
+questions. Splitting "Needs the user" from "Next steps" keeps an agent from attempting user-owned
+actions. "Ruled out" and "Unverified" carry the two things a cold start is most likely to repeat.
+
 ### Suggesting a resume prompt
 
 After writing or refreshing an active handoff, end the turn by presenting a suggested **resume
