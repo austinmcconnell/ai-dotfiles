@@ -69,6 +69,8 @@ check_path_refs() {
     while IFS= read -r doc; do
         while IFS= read -r ref; do
             [[ -n "${ref}" ]] || continue
+            # Drop arguments after the path, e.g. `bin/engram-hygiene status`.
+            ref="${ref%% *}"
             is_external_or_pattern "${ref}" && continue
             [[ -e "${AI_DOTFILES_DIR}/${ref}" ]] ||
                 fail "${doc#"${AI_DOTFILES_DIR}"/}: references missing path '${ref}'"
