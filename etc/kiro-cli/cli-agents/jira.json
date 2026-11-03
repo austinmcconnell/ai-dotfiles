@@ -137,13 +137,15 @@
         "file://~/.kiro/steering/scrum/**/*.md",
         "file://~/.kiro/steering/security/env-file-protection.md",
         "file://~/.kiro/steering/shared/**/*.md",
+        "file://~/.kiro/steering/kiro/**/*.md",
         "file://.kiro/steering/**/*.md",
         "file://README.md",
         "skill://.kiro/skills/**/SKILL.md",
         "skill://~/.kiro/skills/development/**/SKILL.md",
         "skill://~/.kiro/skills/scrum/**/SKILL.md",
         "skill://~/.kiro/skills/extra/**/SKILL.md",
-        "skill://~/.kiro/skills/shared/**/SKILL.md"
+        "skill://~/.kiro/skills/shared/**/SKILL.md",
+        "skill://~/.kiro/skills/kiro/**/SKILL.md"
     ],
     "tools": [
         "*"

@@ -6,6 +6,7 @@
         "file://~/.kiro/steering/documentation/**/*.md",
         "file://~/.kiro/steering/security/env-file-protection.md",
         "file://~/.kiro/steering/shared/**/*.md",
+        "file://~/.kiro/steering/kiro/**/*.md",
         "file://.kiro/steering/**/*.md",
         "file://AGENTS.md",
         "file://README.md",
@@ -17,6 +18,7 @@
         "skill://.kiro/skills/**/SKILL.md",
         "skill://~/.kiro/skills/documentation/**/SKILL.md",
         "skill://~/.kiro/skills/shared/**/SKILL.md",
+        "skill://~/.kiro/skills/kiro/**/SKILL.md",
         {
             "type": "knowledgeBase",
             "source": "file://~/projects/austinmcconnell/_research_",

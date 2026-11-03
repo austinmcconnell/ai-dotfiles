@@ -47,6 +47,7 @@ step-by-step instructions). Organized by category:
 - `ansible/` — Ansible role, playbook, and project workflows
 - `shared/` — cross-cutting (commit messages, todo management)
 - `development/` — coding workflows (specs, implementation, pre-commit)
+- `kiro/` — Kiro CLI skill authoring (loaded by every kiro agent)
 - `documentation/` — doc creation and review
 - `operations/` — AWS and Kubernetes operations
 - `research/` — structured research creation and verification

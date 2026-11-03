@@ -239,6 +239,9 @@ runbook); the KB scoping is unchanged. See the `readme-pointer` skill for the co
 "Which Channel" boundary in `knowledge-base-usage` (`etc/ai/steering/kiro/`) /
 `cross-session-memory` steering for how agents route between the eager map, the KB, and engram.
 
+Every kiro agent loads the `kiro/` steering and skill categories, so Kiro-specific context reaches
+any agent that needs it.
+
 Resource scoping per agent:
 
 - **code** — all steering domains (`code/`, `github/`, `security/`, `shared/`),

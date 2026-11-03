@@ -6,12 +6,14 @@
         "file://~/.kiro/steering/datadog/**/*.md",
         "file://~/.kiro/steering/security/env-file-protection.md",
         "file://~/.kiro/steering/shared/**/*.md",
+        "file://~/.kiro/steering/kiro/**/*.md",
         "file://.kiro/steering/**/*.md",
         "file://AGENTS.md",
         "file://README.md",
         "skill://.kiro/skills/**/SKILL.md",
         "skill://~/.kiro/skills/operations/**/SKILL.md",
-        "skill://~/.kiro/skills/shared/**/SKILL.md"
+        "skill://~/.kiro/skills/shared/**/SKILL.md",
+        "skill://~/.kiro/skills/kiro/**/SKILL.md"
     ],
     "allowedTools": [
         "@engram/mem_capture_passive",

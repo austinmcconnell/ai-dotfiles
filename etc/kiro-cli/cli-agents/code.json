@@ -223,11 +223,13 @@
         "skill://.kiro/skills/development/**/SKILL.md",
         "skill://.kiro/skills/operations/**/SKILL.md",
         "skill://.kiro/skills/shared/**/SKILL.md",
+        "skill://.kiro/skills/kiro/**/SKILL.md",
         "skill://~/.kiro/skills/development/**/SKILL.md",
         "skill://~/.kiro/skills/operations/**/SKILL.md",
         "skill://~/.kiro/skills/research/**/SKILL.md",
         "skill://~/.kiro/skills/extra/**/SKILL.md",
         "skill://~/.kiro/skills/shared/**/SKILL.md",
+        "skill://~/.kiro/skills/kiro/**/SKILL.md",
         {
             "type": "knowledgeBase",
             "source": "file://~/projects/austinmcconnell/_research_",
