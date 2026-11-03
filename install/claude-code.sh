@@ -76,14 +76,14 @@ EOF
 if ! command -v jq >/dev/null 2>&1; then
     echo "⚠ jq not found; skipping ~/.claude.json MCP bootstrap"
 elif [ -f "$CLAUDE_JSON" ]; then
-    # Merge desired servers into existing config; existing servers win on
-    # collision (* the existing object is applied last in the multiply).
+    # Desired servers replace same-named entries so repo edits reach existing
+    # installs; servers the repo does not manage are left as they are.
     tmp_claude_json="$(mktemp)"
     if jq --argjson desired "$DESIRED_MCP_SERVERS" \
-        '.mcpServers = ($desired + (.mcpServers // {}))' \
+        '.mcpServers = ((.mcpServers // {}) + $desired)' \
         "$CLAUDE_JSON" >"$tmp_claude_json"; then
         mv "$tmp_claude_json" "$CLAUDE_JSON"
-        echo "✓ Merged MCP servers into ~/.claude.json (existing servers preserved)"
+        echo "✓ Merged MCP servers into ~/.claude.json (unmanaged servers preserved)"
     else
         rm -f "$tmp_claude_json"
         echo "⚠ Failed to merge MCP servers into ~/.claude.json; leaving it unchanged"
