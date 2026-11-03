@@ -18,18 +18,17 @@ source "$AI_DOTFILES_DIR/install/utils.sh"
 print_section_header "Configuring Engram"
 
 # engram lives in a third-party tap, not homebrew-core — tap before installing.
-if is-executable brew; then
+if command -v brew >/dev/null 2>&1; then
     tap_if_needed "gentleman-programming/tap"
     install_if_needed "engram" "formula"
 else
     log_warning "brew not found — cannot install engram"
 fi
 
-if ! is-executable engram; then
+if ! command -v engram >/dev/null 2>&1; then
     log_warning "engram not found on PATH — skipping configuration"
-    return
+else
+    mkdir -p "$HOME/.config/engram"
+
+    log_info "Engram installed: $(engram version)"
 fi
-
-mkdir -p "$HOME/.config/engram"
-
-log_info "Engram installed: $(engram version)"
