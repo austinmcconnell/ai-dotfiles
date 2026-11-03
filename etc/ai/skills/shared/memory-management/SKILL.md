@@ -1,6 +1,6 @@
 ---
 name: memory-management
-description: How to write, close, and resume engram handoffs, review memory hygiene and conflict relations, and present knowledge-base results. Use when writing or closing a cross-session handoff, resuming an effort from an ACTIVE HANDOFF notice, reviewing memory hygiene or unjudged conflicts, or presenting KB results.
+description: How to write, close, and resume engram handoffs. Use when writing or closing a cross-session handoff, or resuming an effort from an ACTIVE HANDOFF notice.
 ---
 
 # Memory Management
@@ -103,39 +103,3 @@ When an effort is genuinely finished, write a `mem_session_summary` (the histori
 refreshing the `handoff/<project>-active` pointer. Not every session needs a handoff — a one-off
 task that completes within the session needs only the summary, if anything. Reserve the active
 handoff for work that will span sessions.
-
-## Memory Hygiene
-
-- Keep memories concise — a few sentences, not paragraphs
-- Include the "why" — bare facts without rationale are less useful
-- Use project names consistently so memories are findable
-- Don't duplicate information that belongs in docs or code comments
-
-## Conflict Relations
-
-Engram surfaces when a new memory may conflict with or supersede an existing one, storing these as
-relations with a `judgment_status`. The judge-flow for unjudged (`pending`) relations — when to call
-`mem_judge`/`mem_compare` and the ASK-vs-RESOLVE heuristic — is injected automatically by the engram
-MCP server's own instructions each session; it is not repeated here.
-
-What that server injection does **not** cover — local dotfiles tooling built on top of engram:
-
-- **Orphaned** — a dangling relation whose source or target observation was deleted. Informational
-  only: there is no judge path and no supported cleanup command, so do not attempt to delete
-  orphaned relations (that would require unsupported direct-SQL edits that bypass sync). They are
-  inert and can be left as-is.
-- `bin/engram-hygiene` in `status` mode reports the unjudged count per project; the session-start
-  hygiene nudge fires only on unjudged relations for the current project. Orphaned relations are
-  intentionally not shown there — engram provides no way to resolve or prune them, so the count only
-  grows and is not actionable debt. The raw orphaned count is available via `engram conflicts stats`
-  if ever needed.
-
-## Presenting Knowledge Base Results
-
-- Mention the source file and verification date
-- Distinguish verified facts from conclusions/opinions
-- If partial overlap exists, present what's available and identify remaining gaps
-- When citing results that mix official and community sources, note the source type if it affects
-  reliability. Official vendor documentation is authoritative for specs and supported
-  configurations. Community sources (forums, blogs, GitHub repos) are authoritative for workarounds,
-  real-world behavior, and undocumented features — but may be version-specific or anecdotal.

@@ -22,11 +22,10 @@ numbered loop lives in the skill).
   direction *in flight*, while course-correction is cheap, so it must be loaded before the decision
   stands — not after, when it degrades into a post-hoc review. Main-session `code` orchestrator
   only; scoped personas surface the decision rather than run the loop.
-- **Writing, closing, or resuming a cross-session handoff, or reviewing memory hygiene** — when an
-  effort will span sessions and you are about to write its `handoff/<project>-active` pointer, when
-  a session opens with an `ACTIVE HANDOFF` notice, when an effort finishes, or when reviewing memory
-  hygiene or conflicts, load the `memory-management` skill. Its marker-line and resume-prompt rules
-  only apply if loaded before the handoff is drafted.
+- **Writing, closing, or resuming a cross-session handoff** — when an effort will span sessions and
+  you are about to write its `handoff/<project>-active` pointer, when a session opens with an
+  `ACTIVE HANDOFF` notice, or when an effort finishes, load the `memory-management` skill. Its
+  marker-line and resume-prompt rules only apply if loaded before the handoff is drafted.
 
 Loading one skill never satisfies another skill's trigger. When a skill says "hand to X" or "see the
 X skill", X is a trigger: load it as soon as you decide to act on the item, before the first

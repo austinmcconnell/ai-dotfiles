@@ -93,6 +93,32 @@ agent-chosen list against drift.
 Use `mem_suggest_topic_key` to get a consistent topic key before saving. This ensures related
 memories cluster together for retrieval.
 
+## Memory Hygiene
+
+- Keep memories concise — a few sentences, not paragraphs
+- Include the "why" — bare facts without rationale are less useful
+- Use project names consistently so memories are findable
+- Don't duplicate information that belongs in docs or code comments
+
+## Conflict Relations
+
+Engram surfaces when a new memory may conflict with or supersede an existing one, storing these as
+relations with a `judgment_status`. The judge-flow for unjudged (`pending`) relations — when to call
+`mem_judge`/`mem_compare` and the ASK-vs-RESOLVE heuristic — is injected automatically by the engram
+MCP server's own instructions each session; it is not repeated here.
+
+What that server injection does **not** cover — local dotfiles tooling built on top of engram:
+
+- **Orphaned** — a dangling relation whose source or target observation was deleted. Informational
+  only: there is no judge path and no supported cleanup command, so do not attempt to delete
+  orphaned relations (that would require unsupported direct-SQL edits that bypass sync). They are
+  inert and can be left as-is.
+- `bin/engram-hygiene` in `status` mode reports the unjudged count per project; the session-start
+  hygiene nudge fires only on unjudged relations for the current project. Orphaned relations are
+  intentionally not shown there — engram provides no way to resolve or prune them, so the count only
+  grows and is not actionable debt. The raw orphaned count is available via `engram conflicts stats`
+  if ever needed.
+
 ## Handoff Notices
 
 **First-response obligation:** if session-start context contains a `⚠️ ACTIVE HANDOFF exists` notice
@@ -112,5 +138,4 @@ is guaranteed by the obligation above; *acting* on it is the user's call, and th
 what hands them that choice. See the `memory-management` skill's "Suggesting a resume prompt"
 section for the shape.
 
-For writing or closing a handoff, memory hygiene, and conflict relations, load the
-`memory-management` skill.
+For writing or closing a handoff, load the `memory-management` skill.

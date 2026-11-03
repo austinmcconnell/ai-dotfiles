@@ -58,8 +58,15 @@ When citing KB results, check `last_verified` in YAML frontmatter:
 - **90–180 days**: Warn user findings may be outdated
 - **> 180 days**: Warn and suggest re-verification before relying on data
 
-For how to present KB findings once you have them (source attribution, verified-vs-opinion framing,
-official-vs-community source weighting), see the `memory-management` skill.
+## Presenting Knowledge Base Results
+
+- Mention the source file and verification date
+- Distinguish verified facts from conclusions/opinions
+- If partial overlap exists, present what's available and identify remaining gaps
+- When citing results that mix official and community sources, note the source type if it affects
+  reliability. Official vendor documentation is authoritative for specs and supported
+  configurations. Community sources (forums, blogs, GitHub repos) are authoritative for workarounds,
+  real-world behavior, and undocumented features — but may be version-specific or anecdotal.
 
 ## Updating Research
 

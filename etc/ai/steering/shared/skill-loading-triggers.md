@@ -13,4 +13,4 @@ rows specific to that domain.
 | Writing commit messages                                              | `commit-message-writing` |
 | Promoting corrections to steering                                    | `distill-learnings`      |
 | Navigating project docs / find a doc / explain how a subsystem works | `readme-pointer`         |
-| Writing, closing, or resuming an engram handoff; memory hygiene      | `memory-management`      |
+| Writing, closing, or resuming an engram handoff                      | `memory-management`      |
