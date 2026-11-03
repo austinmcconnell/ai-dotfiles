@@ -38,7 +38,8 @@ Additional files managed elsewhere (not stored here):
   Skills below), not a concatenated dump
 - `~/.claude/rules/` — per-domain symlinks to `etc/ai/steering/<domain>/`, created by
   `install/ai-tools.sh`
-- `~/.claude/skills/` — symlink to `etc/ai/skills/`
+- `~/.claude/skills/` — one symlink per skill directory from `etc/ai/skills/<category>/`, flattened
+  (no category folders), created by `install/ai-tools.sh`
 - `~/.claude.json` — MCP servers and session state, bootstrapped by `install/claude-code.sh` (not
   symlinked — contains local state)
 
@@ -307,6 +308,6 @@ meta-documentation about its own plumbing every session for no coding-task benef
 - **Hook scripts**: `etc/ai/hooks/block-env-files.sh` and `etc/ai/hooks/audit-shell-commands.sh`
 - **Steering content**: Check `~/.claude/rules/`; source files in `etc/ai/steering/`
 - **MCP servers**: Configured in `~/.claude.json` (bootstrapped by `install/claude-code.sh`)
-- **Skills**: Symlinked from `etc/ai/skills/` to `~/.claude/skills/`
+- **Skills**: Symlinked per skill from `etc/ai/skills/<category>/` into the flat `~/.claude/skills/`
 - **Personas**: `etc/claude-code/agents/*.md`, generated into `~/.claude/agents/` with steering
   inlined (`scripts/generate-personas.sh`)
