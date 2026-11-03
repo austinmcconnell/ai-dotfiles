@@ -26,9 +26,9 @@ Brief descriptions of how each agent is primarily used:
 
 For each agent (default, github, jira, docs), review:
 
-1. **Agent prompt** in `~/.dotfiles/etc/kiro-cli/cli-agents/{name}-prompt.md`
+1. **Agent prompt** in `~/.ai-dotfiles/etc/kiro-cli/cli-agents/{name}-prompt.md`
 1. **Current steering docs** loaded via resources in
-   `~/.dotfiles/etc/kiro-cli/cli-agents/{name}.json` (follow the `file://` resource globs to find
+   `~/.ai-dotfiles/etc/kiro-cli/cli-agents/{name}.json` (follow the `file://` resource globs to find
    which steering docs each agent loads)
 1. **Skills available** to the agent (follow the `skill://` resource globs)
 1. **Tool permissions** in toolsSettings (what the agent can and can't do)

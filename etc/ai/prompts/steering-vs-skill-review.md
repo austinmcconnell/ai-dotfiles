@@ -39,7 +39,7 @@ For each steering document:
 
 1. Read the full file
 1. Identify which agent(s) load it (check resource globs in
-   `~/.dotfiles/etc/kiro-cli/cli-agents/*.json`)
+   `~/.ai-dotfiles/etc/kiro-cli/cli-agents/*.json`)
 1. Classify content against the decision criteria above
 1. Note file size for context cost awareness
 1. Check for overlapping skills
