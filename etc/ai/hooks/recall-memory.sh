@@ -13,6 +13,8 @@ set -euo pipefail
 #   2. If MORE than one such marker is found, a fail-loud warning to verify manually
 #      (the convention allows only one active handoff per project).
 #   3. Otherwise, if the project has any memories, a generic recall nudge.
+#   4. In addition to the above, a backlog line when captured corrections are still
+#      unpromoted to steering (distill-learnings marks promoted ones with a title prefix).
 
 ENGRAM_DB="$HOME/.config/engram/engram.db"
 
@@ -88,6 +90,37 @@ elif [[ "${HANDOFF_COUNT}" -gt 1 ]]; then
     echo "⚠️  Multiple active-handoff markers for '${PROJECT_NAME}' (#: ${joined}). The convention allows only one — verify with mem_get_observation before continuing; do not assume which is current."
 elif [[ -n "${OBS_COUNT}" && "${OBS_COUNT}" -gt 0 ]]; then
     echo "💡 Engram has memories about '${PROJECT_NAME}'. Use mem_search or mem_context to recall prior decisions and context."
+fi
+
+# A correction is an observation whose topic_key starts with correction/ (see the
+# capturing-corrections steering). distill-learnings marks a promoted one by prefixing its
+# title with "Correction [promoted]". The CLI search output has no topic_key, so the count
+# reads `engram export` JSON. An export failure or missing jq counts as zero: the line is advisory.
+count_unpromoted_corrections() {
+    command -v jq &>/dev/null || {
+        echo 0
+        return 0
+    }
+    local export_file count
+    export_file="$(mktemp)" || {
+        echo 0
+        return 0
+    }
+    if engram export "${export_file}" --project "${PROJECT_NAME}" >/dev/null 2>&1; then
+        count="$(jq '[.observations[]
+            | select((.topic_key // "") | startswith("correction/"))
+            | select((.title // "") | startswith("Correction [promoted]") | not)] | length' \
+            "${export_file}" 2>/dev/null || echo 0)"
+    else
+        count=0
+    fi
+    rm -f "${export_file}"
+    echo "${count}"
+}
+
+BACKLOG_COUNT=$(count_unpromoted_corrections)
+if [[ "${BACKLOG_COUNT}" -gt 0 ]]; then
+    echo "📋 ${BACKLOG_COUNT} captured correction(s) for '${PROJECT_NAME}' not yet promoted to steering. Run the distill-learnings skill to review them."
 fi
 
 exit 0

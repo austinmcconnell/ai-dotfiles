@@ -38,7 +38,7 @@ Pull captured corrections for the current project from engram:
   entries titled "Correction:" with no `correction/` key for manual review; do not promote them.
 - Corrections are saved under `topic_key: correction/<area>-<slug>` (see `capturing-corrections`
   steering). Prefer `mem_context` to see recent session captures if search is too narrow.
-- Skip corrections already marked promoted (see step 5).
+- Skip any correction whose title starts with `Correction [promoted]` (see step 5).
 
 If there are no candidates, say so and stop — do not manufacture promotions.
 
@@ -97,8 +97,10 @@ For each approved item:
 
 For each promoted correction, mark it so it is not re-proposed next time:
 
-- `mem_update` the observation to note where it was promoted (e.g. append
-  `Promoted to: etc/ai/steering/code/git-conventions.md` to its content), **or**
+- `mem_update` the observation's title to start with `Correction [promoted]:` (the recall hook
+  counts unpromoted corrections by this prefix), and append the target to its content, e.g.
+  `Promoted to: etc/ai/steering/code/git-conventions.md`. Pass the full content, since `mem_update`
+  replaces it. **or**
 - If the correction is now fully captured by the durable doc, consider whether it still needs to
   live in engram at all. Prefer annotating over deleting — the engram record is cheap and provides
   provenance.
