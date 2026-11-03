@@ -41,7 +41,7 @@ paths:
 
 ## Zsh Autoloaded Functions
 
-- Files in `etc/zsh/functions/` have NO shebang and NO function wrapper
+- Files in `~/.dotfiles/etc/zsh/functions/` have NO shebang and NO function wrapper
 - The function body is the entire file content — the filename IS the function name
 - Not checked by shfmt/shellcheck/bashate (zsh excluded from all three)
 

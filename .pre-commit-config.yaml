@@ -72,6 +72,12 @@ repos:
         entry: scripts/validate-hook-wiring.sh
         files: ^etc/ai/hooks/.*\.sh$|^etc/kiro-cli/hooks/.*\.sh$|^etc/kiro-cli/cli-agents/.*\.json$|^etc/claude-code/settings\.json$|^etc/claude-code/agents/.*\.md$
         pass_filenames: false
+      - id: validate-steering-references
+        name: Validate steering and skill references
+        language: script
+        entry: scripts/validate-steering-references.sh
+        files: ^etc/ai/steering/.*\.md$|^etc/ai/skills/.*/SKILL\.md$|^scripts/validate-steering-references\.sh$
+        pass_filenames: false
       - id: shfmt
         name: shfmt
         minimum_pre_commit_version: 2.4.0
