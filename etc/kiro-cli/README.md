@@ -245,12 +245,12 @@ any agent that needs it.
 Resource scoping per agent:
 
 - **code** — all steering domains (`code/`, `github/`, `kiro/`, `security/`, `shared/`),
-  development/operations/research/kiro/extra/shared skill categories, multiple knowledge bases
-  (research, project code, analysis docs)
+  development/operations/research/kiro/shared skill categories plus host-local `extra/`, multiple
+  knowledge bases (research, project code, analysis docs)
 - **docs** — `documentation/`, `kiro/`, `shared/` steering and `env-file-protection.md`;
   documentation, kiro, shared skills; many knowledge bases for cross-project doc work
-- **jira** — `scrum/`, `kiro/`, `shared/` steering and `env-file-protection.md`; development, scrum,
-  extra, kiro, shared skills
+- **jira** — `scrum/`, `kiro/`, `shared/` steering and `env-file-protection.md`; scrum, host-local
+  `extra/`, kiro, shared skills
 - **ansible** — `ansible/`, `kiro/`, `shared/` steering and `env-file-protection.md`; ansible, kiro,
   shared skills; multiple knowledge bases (geerlingguy reference repos, research, homelab docs)
 - **datadog** — `datadog/`, `kiro/`, `shared/` steering and `env-file-protection.md`; operations,
