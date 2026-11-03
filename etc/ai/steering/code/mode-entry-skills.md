@@ -24,7 +24,7 @@ numbered loop lives in the skill).
   only; scoped personas surface the decision rather than run the loop.
 - **Writing, closing, or resuming a cross-session handoff** — when an effort will span sessions and
   you are about to write its `handoff/<project>-active` pointer, when a session opens with an
-  `ACTIVE HANDOFF` notice, or when an effort finishes, load the `memory-management` skill. Its
+  `ACTIVE HANDOFF` notice, or when an effort finishes, load the `handoff-management` skill. Its
   marker-line and resume-prompt rules only apply if loaded before the handoff is drafted.
 
 Loading one skill never satisfies another skill's trigger. When a skill says "hand to X" or "see the

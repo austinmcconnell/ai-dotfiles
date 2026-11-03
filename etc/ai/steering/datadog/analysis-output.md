@@ -114,7 +114,7 @@ its query, window, and caveats is durable evidence. Every persisted analysis MUS
 - **`development/release-analysis` skill** — a deliberately *contrasting* pattern. Its output is
   re-derivable from git, so its git-ignore reasoning is "safe to lose." Do not transfer that
   reasoning to Datadog analyses (see "Why This Convention Exists").
-- **`memory-management` skill / engram** — the *convention* lives here in steering (loaded every
+- **`handoff-management` skill / engram** — the *convention* lives here in steering (loaded every
   session). A specific analysis's *findings* may additionally be saved to engram when cross-session
   recall is useful. Steering answers "how do I persist a Datadog analysis"; engram answers "what did
   the last one find."

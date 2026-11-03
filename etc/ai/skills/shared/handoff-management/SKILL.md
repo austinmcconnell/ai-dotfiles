@@ -1,9 +1,9 @@
 ---
-name: memory-management
+name: handoff-management
 description: How to write, close, and resume engram handoffs. Use when writing or closing a cross-session handoff, or resuming an effort from an ACTIVE HANDOFF notice.
 ---
 
-# Memory Management
+# Handoff Management
 
 ## Handoffs
 

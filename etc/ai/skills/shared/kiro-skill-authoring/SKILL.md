@@ -212,7 +212,7 @@ that reflects the skill's narrower mechanics scope, and parallel sibling names w
 - steering `testing-standards` (what/when to test) → skill `pytest-conventions` (fixtures,
   factories, mocking), paralleling the existing `python-project-conventions` naming
 - steering `cross-session-memory` (which channel, when to save, memory types, hygiene) → steering
-  only; skill `memory-management` covers handoffs
+  only; skill `handoff-management` covers handoffs
 
 ## Sizing Guidelines
 

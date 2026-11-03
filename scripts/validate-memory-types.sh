@@ -6,7 +6,7 @@ set -euo pipefail
 #
 # Validation-only guard for the engram memory-type vocabulary (documented in
 # etc/ai/steering/code/cross-session-memory.md) and the handoff convention
-# (documented in etc/ai/skills/shared/memory-management/SKILL.md).
+# (documented in etc/ai/skills/shared/handoff-management/SKILL.md).
 #
 # WHY THIS EXISTS
 # engram's `type` field is free text — the store accepts any value and
@@ -46,7 +46,7 @@ set -euo pipefail
 AI_DOTFILES_DIR="${AI_DOTFILES_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 
 TYPES_DOC="${AI_DOTFILES_DIR}/etc/ai/steering/code/cross-session-memory.md"
-HANDOFF_DOC="${AI_DOTFILES_DIR}/etc/ai/skills/shared/memory-management/SKILL.md"
+HANDOFF_DOC="${AI_DOTFILES_DIR}/etc/ai/skills/shared/handoff-management/SKILL.md"
 
 # Mandatory STRUCTURED marker line the recall hook confirms a handoff by (see
 # recall-memory.sh). The bare token alone false-matches any memory that merely

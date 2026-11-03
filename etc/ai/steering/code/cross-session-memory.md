@@ -129,13 +129,14 @@ what's queued, not that it's refined — if the item is a raw idea, run the idea
 before coding it rather than treating the handoff as approval to implement. A handoff is
 authoritative for the live effort state, but its incidental side-claims about repo structure or
 tooling (e.g. "directory X is unreadable/unused") are fallible — verify those against the repo
-before acting. See the `memory-management` skill's "Handoffs" section for how to write or close one.
+before acting. See the `handoff-management` skill's "Handoffs" section for how to write or close
+one.
 
 When you *write* a handoff for work that will span sessions, end the turn with a suggested **resume
 prompt** in chat — a short, pasteable prompt (a few sentences, not a wall of prose) to reopen the
 effort that ends in an explicit "…or tell me what you'd rather work on instead." Reading a handoff
 is guaranteed by the obligation above; *acting* on it is the user's call, and the resume prompt is
-what hands them that choice. See the `memory-management` skill's "Suggesting a resume prompt"
+what hands them that choice. See the `handoff-management` skill's "Suggesting a resume prompt"
 section for the shape.
 
-For writing or closing a handoff, load the `memory-management` skill.
+For writing or closing a handoff, load the `handoff-management` skill.
