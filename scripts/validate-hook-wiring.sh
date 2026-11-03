@@ -16,15 +16,13 @@ set -euo pipefail
 #
 # Two things are checked:
 #   1. Every script in etc/ai/hooks/ (cross-tool by convention) is wired
-#      into the kiro agents AGENTS.md says it should be, AND is
-#      referenced somewhere on the Claude side (settings.json or a
-#      persona's hooks: frontmatter). A cross-tool script with no
-#      Claude-side reference at all is exactly the "shared script,
-#      tool-specific wiring only" gap this check exists to catch.
+#      into the kiro agents AGENTS.md says it should be, AND is wired in
+#      etc/claude-code/settings.json under the expected Claude event and
+#      matcher. Presence alone is not enough: a script bound to the wrong
+#      event or matcher is silently dead.
 #   2. Every script in etc/kiro-cli/hooks/ (genuinely kiro-only per
-#      AGENTS.md's "What Claude Code Does NOT Have") has NO reference
-#      anywhere on the Claude side — guarding that claim from silently
-#      becoming false.
+#      AGENTS.md's "What Claude Code Does NOT Have") has NO Claude wiring
+#      in settings.json — guarding that claim from silently becoming false.
 #
 # Known, documented, intentional asymmetries are encoded explicitly
 # below (not treated as drift):
@@ -36,12 +34,12 @@ set -euo pipefail
 #     this hook only audits/logs, it doesn't block anything.
 #   - recall-memory.sh / check-engram-hygiene.sh fire on kiro's
 #     `agentSpawn` vs Claude's `SessionStart` — different event names
-#     for the same "session start" moment, by platform design. This
-#     script does not check exact event-name pairing, only presence.
+#     for the same "session start" moment, by platform design. The Claude
+#     side is checked against `SessionStart`.
 #   - block-persona-shell-commands.sh mirrors kiro's inline
 #     `toolsSettings.shell.deniedCommands` (permission config, not a
 #     kiro hook script) — it has no etc/kiro-cli agent hook counterpart
-#     to compare against, so it's checked for Claude-side presence only.
+#     to compare against, so only its Claude wiring is checked.
 #
 # kb-staleness.sh is excluded entirely: it's a git hook for the research
 # repo (wired via `git config` in install/kiro-cli.sh), not a kiro
@@ -60,7 +58,6 @@ AI_HOOKS_DIR="${AI_DOTFILES_DIR}/etc/ai/hooks"
 KIRO_HOOKS_DIR="${AI_DOTFILES_DIR}/etc/kiro-cli/hooks"
 KIRO_AGENTS_DIR="${AI_DOTFILES_DIR}/etc/kiro-cli/cli-agents"
 CLAUDE_SETTINGS="${AI_DOTFILES_DIR}/etc/claude-code/settings.json"
-CLAUDE_AGENTS_DIR="${AI_DOTFILES_DIR}/etc/claude-code/agents"
 
 KIRO_AGENTS=(code docs jira datadog ansible)
 
@@ -113,13 +110,30 @@ kiro_agents_wiring() {
     done
 }
 
-# True if the script basename appears anywhere on the Claude side
-# (global settings.json hooks, or any persona's own hooks: frontmatter).
-claude_side_references() {
+# Which Claude event and matcher SHOULD wire each cross-tool script, one
+# "<Event> <matcher>" per entry. Claude's wiring lives only in settings.json.
+expected_claude_wiring() {
+    case "$1" in
+    recall-memory.sh | check-engram-hygiene.sh) echo "SessionStart startup|resume" ;;
+    suggest-agent-fit.sh) echo "SessionStart startup" ;;
+    block-env-files.sh | block-sops-age-files.sh | block-ssh-private-keys.sh | block-shell-trace-mode.sh) echo "PreToolUse *" ;;
+    block-memory-secrets.sh | warn-memory-exfil.sh) echo "PreToolUse mcp__engram__.*" ;;
+    block-persona-shell-commands.sh) echo "PreToolUse Bash" ;;
+    audit-shell-commands.sh) echo "PostToolUse Bash" ;;
+    correction-capture.sh | suggest-context-checkpoint.sh) echo "UserPromptSubmit <none>" ;;
+    log-compaction-event.sh) printf '%s\n' "PreCompact *" "PostCompact *" ;;
+    esac
+}
+
+# Claude "<Event> <matcher>" pairs whose hook command runs the script. Matches a
+# whole path token, so a comment or an unrelated key cannot count as wiring.
+claude_wiring() {
     local script="$1"
-    grep -qF "/${script}" "$CLAUDE_SETTINGS" 2>/dev/null && return 0
-    grep -qF "/${script}" "$CLAUDE_AGENTS_DIR"/*.md 2>/dev/null && return 0
-    return 1
+    jq -r --arg script "$script" '
+        .hooks | to_entries[] | .key as $event | .value[] | (.matcher // "<none>") as $matcher
+        | .hooks[]
+        | select(.command | split(" ") | any(endswith("/" + $script)))
+        | "\($event) \($matcher)"' "$CLAUDE_SETTINGS" | sort
 }
 
 echo -e "${BOLD}Validating hook wiring parity (kiro agents vs claude)${RESET}"
@@ -157,8 +171,10 @@ for script_path in "$AI_HOOKS_DIR"/*.sh; do
         ;;
     esac
 
-    if ! claude_side_references "$script"; then
-        report_fail "$script" "lives in etc/ai/hooks/ (cross-tool) but has no reference anywhere on the Claude side"
+    expected_claude="$(expected_claude_wiring "$script" | sort)"
+    actual_claude="$(claude_wiring "$script")"
+    if [[ "$actual_claude" != "$expected_claude" ]]; then
+        report_fail "$script" "Claude wiring expected [${expected_claude//$'\n'/, }], found [${actual_claude//$'\n'/, }]"
     fi
 done
 
@@ -167,8 +183,8 @@ for script_path in "$KIRO_HOOKS_DIR"/*.sh; do
     script="$(basename "$script_path")"
     [[ "$script" == "kb-staleness.sh" ]] && continue
 
-    if claude_side_references "$script"; then
-        report_fail "$script" "genuinely-kiro-only script (per AGENTS.md) is now referenced on the Claude side"
+    if [[ -n "$(claude_wiring "$script")" ]]; then
+        report_fail "$script" "genuinely-kiro-only script (per AGENTS.md) is now wired on the Claude side"
     fi
 done
 
