@@ -73,26 +73,30 @@ After writing or refreshing an active handoff, end the turn by presenting a sugg
 prompt** in chat — a short, pasteable prompt (aim for 1–5 sentences; the bar is "not a wall of
 prose," not a literal single line) the user can use to open the next session on this effort. The
 session-start obligation guarantees the handoff is *read*, not that the user *wants to act on it*
-today: a handoff from N days ago is often not what the user came to do this session. The resume
-prompt is what lets the user — and the next agent — decide between continuing and redirecting.
+today: a handoff from N days ago is often not what the user came to do this session. The handoff is
+a snapshot that may be stale, so if the user's message does not match it, follow the user's message
+— a request for unrelated work is the signal that they want something else.
 
 The chat copy is authoritative (the user won't open the engram observation to find it); echo the
 same prompt into the handoff body too so a resuming agent can reconstruct it. A good resume prompt:
 
+- **Is a clean, imperative paste** — no trailing questions or offers to the user. The prompt is an
+  instruction the next agent follows, so a closing question makes it stop and ask before doing
+  anything.
 - **Names the target** — repo/project and working dir, so a cold-start agent lands in the right
   place. Name any must-read file by absolute path rather than making the agent discover it.
 - **States where the work stands briefly**, including its funnel tier when it's funnel work (e.g.
   "refined but not yet approved — run idea-refinement first", not "start coding").
-- **Ends with an explicit redirect escape hatch** — "…or tell me what you'd rather work on instead."
-  This trailing *or* is the point: it hands the continue-vs-redirect choice to the user instead of
-  assuming the handoff is today's task.
+
+The chat message that accompanies the prompt carries the choice instead, in one line, e.g. "Paste
+this to continue; if you'd rather work on something else, just say so."
 
 Example:
 
 > Resume the state-geometry simplification handoff in relocation-map-viz
 > (`~/projects/.../relocation-map-viz`). It's refined-but-not-approved — run idea-refinement on the
 > simplify-tolerance question first (detail in `analysis/state-geometry-simplification.md`), don't
-> jump to a commit plan. Or tell me what you'd rather work on instead.
+> jump to a commit plan.
 
 A resume prompt is only for work that will actually span sessions — skip it for an effort you're
 closing out (see below).

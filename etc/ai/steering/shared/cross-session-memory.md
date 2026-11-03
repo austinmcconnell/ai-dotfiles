@@ -135,9 +135,9 @@ one.
 
 When you *write* a handoff for work that will span sessions, end the turn with a suggested **resume
 prompt** in chat — a short, pasteable prompt (a few sentences, not a wall of prose) to reopen the
-effort that ends in an explicit "…or tell me what you'd rather work on instead." Reading a handoff
-is guaranteed by the obligation above; *acting* on it is the user's call, and the resume prompt is
-what hands them that choice. See the `handoff-management` skill's "Suggesting a resume prompt"
-section for the shape.
+effort. The prompt is a clean paste with no trailing question; the chat message around it offers the
+choice to redirect. Reading a handoff is guaranteed by the obligation above; *acting* on it is the
+user's call — if their message does not match the handoff, follow the message. See the
+`handoff-management` skill's "Suggesting a resume prompt" section for the shape.
 
 For writing or closing a handoff, load the `handoff-management` skill.
