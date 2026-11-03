@@ -14,7 +14,6 @@ Triggers common to every agent, and the rule for applying them, live in
 | Writing implementation guides                                        | `implementation-guide`              |
 | Running pre-commit hooks                                             | `pre-commit-validation`             |
 | Verifying all checks pass                                            | `verification-loop`                 |
-| Creating or editing skills                                           | `kiro-skill-authoring`              |
 | Recommending/comparing tools or libs                                 | `tool-selection`                    |
 | Writing/reviewing pytest tests                                       | `pytest-conventions`                |
 | Running Python tools/commands                                        | `virtual-environment`               |
