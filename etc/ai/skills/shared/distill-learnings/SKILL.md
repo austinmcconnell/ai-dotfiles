@@ -1,6 +1,6 @@
 ---
 name: distill-learnings
-description: Review captured corrections in engram and propose exact, reviewed edits promoting durable ones into the specific steering doc or skill they belong to. Use when promoting corrections to steering, distilling learnings, reviewing captured preferences, or when prompted after a correction is captured or a task list completes.
+description: Review captured corrections in engram and propose exact, reviewed edits promoting durable ones into the specific steering doc or skill they belong to. Use when promoting corrections to steering, distilling learnings, reviewing captured preferences, or when prompted after a correction is captured.
 ---
 
 # Distill Learnings
