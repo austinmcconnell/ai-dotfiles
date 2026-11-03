@@ -1,6 +1,6 @@
 ---
 name: memory-management
-description: How to save, structure, and hand off engram memories — session-start recall, memory types, topic keys, active handoffs, hygiene, conflict-relation cleanup, and presenting knowledge-base results. Use when saving a decision/discovery to memory, writing or resuming a cross-session handoff, or reviewing memory hygiene.
+description: How to save, structure, and hand off engram memories — session-start recall, memory types, topic keys, active handoffs, hygiene, and presenting knowledge-base results. Use when saving a decision/discovery to memory, writing or resuming a cross-session handoff, or reviewing memory hygiene.
 ---
 
 # Memory Management
