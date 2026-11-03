@@ -87,6 +87,10 @@ same prompt into the handoff body too so a resuming agent can reconstruct it. A 
   place. Name any must-read file by absolute path rather than making the agent discover it.
 - **States where the work stands briefly**, including its funnel tier when it's funnel work (e.g.
   "refined but not yet approved — run idea-refinement first", not "start coding").
+- **Names the skill the next step needs**, when that step is a mode-entry skill the agent would
+  otherwise miss (`idea-refinement` for funnel work, `commit-workflow` before committing
+  implementation work, `todo` for open questions). Name only that skill, not the full set — the
+  trigger table covers the rest.
 
 The chat message that accompanies the prompt carries the choice instead, in one line, e.g. "Paste
 this to continue; if you'd rather work on something else, just say so."
