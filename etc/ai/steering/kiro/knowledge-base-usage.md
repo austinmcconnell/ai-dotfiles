@@ -71,4 +71,4 @@ When citing KB results, check `last_verified` in YAML frontmatter:
 ## Updating Research
 
 When new information contradicts or supplements existing research, load the `update-research` skill
-— don't modify research files ad-hoc.
+(available in the code agent, which owns the research corpus) — don't modify research files ad-hoc.
