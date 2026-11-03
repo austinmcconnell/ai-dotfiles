@@ -150,11 +150,11 @@ Hooks use the V3 array format: each hook is an object with `name`, `trigger`, `m
   agent (not just the KB-using three) because conflict debt accrues in the shared local DB
   regardless of which agent created the memories — it tracks the `recall-memory.sh` footprint, not
   the `check-research-kb.sh` one. It is deliberately current-project scoped to stay low-noise; the
-  all-projects view is the on-demand `dotfiles memory-check` command (`bin/engram-hygiene status`).
-  Both are read-only — conflict resolution stays user-approved via `mem_judge`/`mem_compare`, never
-  auto-applied. The `code`, `docs`, and `ansible` agents additionally run `check-research-kb.sh` for
-  KB staleness detection (their agent name must appear in the `kb-staleness.sh` sentinel for the
-  warning to fire). The `code` agent additionally runs `rotate-traces.sh` for trace file cleanup and
+  all-projects view is the on-demand `bin/engram-hygiene status` command. Both are read-only —
+  conflict resolution stays user-approved via `mem_judge`/`mem_compare`, never auto-applied. The
+  `code`, `docs`, and `ansible` agents additionally run `check-research-kb.sh` for KB staleness
+  detection (their agent name must appear in the `kb-staleness.sh` sentinel for the warning to
+  fire). The `code` agent additionally runs `rotate-traces.sh` for trace file cleanup and
   `suggest-agent-fit.sh code`, a one-time nudge when the generalist lands in a repo with a tuned
   specialist agent. Claude Code runs the same `recall-memory.sh`/`check-engram-hygiene.sh` pair via
   `SessionStart` (see `etc/claude-code/README.md`) — that pair has parity across both tools. The

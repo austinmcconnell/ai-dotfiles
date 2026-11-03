@@ -82,11 +82,10 @@ Six global hook events configured in `settings.json` (all commands resolve via `
 `etc/ai/hooks/`, the same shared scripts kiro-cli uses):
 
 - **`SessionStart`** (`matcher: "startup|resume"`) — runs `recall-memory.sh` (surfaces engram
-  memories for the current project, tagged `AI_AGENT_NAME=claude-code`) and
-  `check-engram-hygiene.sh` (time-throttled nudge for pending engram conflict relations). This is
-  the Claude analog of kiro's `agentSpawn` — see `etc/kiro-cli/README.md`'s Hook Patterns section
-  for the shared cadence/scoping logic. A third hook, matcher `"startup"` only (not `"resume"`),
-  runs `suggest-agent-fit.sh`.
+  memories for the current project) and `check-engram-hygiene.sh` (time-throttled nudge for pending
+  engram conflict relations). This is the Claude analog of kiro's `agentSpawn` — see
+  `etc/kiro-cli/README.md`'s Hook Patterns section for the shared cadence/scoping logic. A third
+  hook, matcher `"startup"` only (not `"resume"`), runs `suggest-agent-fit.sh`.
 - **`PreToolUse`** with `matcher: "*"` — runs `block-env-files.sh`, `block-sops-age-files.sh`,
   `block-ssh-private-keys.sh`, and `block-shell-trace-mode.sh` on every tool call, each blocking
   access to its class of sensitive file (or, for the trace-mode hook, shell `set -x` output that

@@ -21,7 +21,8 @@ set -euo pipefail
 # user-approved distill-learnings skill.
 #
 # Safety: grep runs inside `if` (errexit suppressed there); the empty-prompt early
-# exit avoids over-triggering; jq failures degrade to empty via `// empty` + 2>/dev/null.
+# exit avoids over-triggering. Malformed JSON on stdin is not tolerated: jq's failure
+# exits the hook non-zero (5) rather than being treated as an empty payload.
 
 INPUT=$(cat)
 

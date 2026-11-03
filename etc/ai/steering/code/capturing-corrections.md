@@ -47,8 +47,8 @@ Use `mem_save` with this exact shape so corrections are consistently findable:
   - **Learned**: what generalizes beyond this instance, or `none` if it only applies here.
 
 The `correction/` topic_key prefix is the retrieval handle: the `distill-learnings` skill and the
-promotion-prompt hook both find candidates by searching that prefix. Reusing a topic_key updates the
-existing correction rather than duplicating it.
+recall-memory backlog count both find candidates by searching that prefix. Reusing a topic_key
+updates the existing correction rather than duplicating it.
 
 ## What Happens Next
 

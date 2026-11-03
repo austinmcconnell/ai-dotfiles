@@ -10,7 +10,7 @@ set -euo pipefail
 #
 # Modes:
 #   status        All-projects table of unjudged conflict relations (on-demand;
-#                 what `dotfiles memory-check` calls). Orphaned relations are
+#                 run by hand). Orphaned relations are
 #                 omitted — see the note in mode_status. Read-only.
 #   check         Current-project, time-throttled check for the agentSpawn nudge.
 #                 Prints a one-line nudge only when BOTH the cadence interval has
@@ -112,7 +112,7 @@ mode_status() {
     fi
 
     # Gate ANSI colors on an interactive stdout so piped/redirected output stays
-    # clean (e.g. `dotfiles memory-check | grep`). Mirrors scripts/scan-docs.sh.
+    # clean (e.g. `bin/engram-hygiene status | grep`). Mirrors scripts/scan-docs.sh.
     local green yellow dim reset
     if [[ -t 1 ]]; then
         green="\033[32m"
@@ -211,7 +211,7 @@ mode_check() {
     : >"${stamp_file}"
 
     if [[ "${pending}" -gt 0 ]]; then
-        echo "🧹 Engram has ${pending} unjudged conflict relation(s) in '${project}' awaiting your verdict. Run 'dotfiles memory-check' or ask me to judge them with mem_judge."
+        echo "🧹 Engram has ${pending} unjudged conflict relation(s) in '${project}' awaiting your verdict. Run 'bin/engram-hygiene status' to see every project, or ask me to judge them with mem_judge."
     fi
 }
 

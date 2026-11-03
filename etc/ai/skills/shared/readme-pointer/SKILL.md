@@ -12,10 +12,10 @@ themselves. It names the specific detailed doc to read for a given topic and whe
 agent can pull the right document on demand instead of eager-loading a whole `docs/` tree.
 
 This is the navigation half of the auto-loaded-doc-context design: the eager-context layer stays
-thin (a README as signpost), and the detailed docs live in the retrieval channel, fetched with
-`read`/`grep` only when a pointer says they are relevant. Eager-loading whole documentation trees
-measurably degrades answer accuracy (context rot) before the window is even full — the pointer model
-avoids that cost while keeping the agent aware of what exists.
+thin (a README as signpost), and the detailed docs live in the retrieval channel, fetched with file
+reads and searches only when a pointer says they are relevant. Eager-loading whole documentation
+trees measurably degrades answer accuracy (context rot) before the window is even full — the pointer
+model avoids that cost while keeping the agent aware of what exists.
 
 ## How to navigate (reading)
 
@@ -25,12 +25,12 @@ When exploring a project or looking for documentation on a topic:
    subdirectory, read that directory's `README.md` too if one exists. Treat it as an index of what
    documentation exists here, not as the full answer.
 1. **Follow one-hop pointers to the target doc.** A pointer names an actual detailed doc
-   (`docs/<topic>.md`), not another README. Read that target doc directly with `read`.
+   (`docs/<topic>.md`), not another README. Read that target doc directly.
 1. **Do not chain README → README → doc.** Agents reliably follow a single plain-text pointer but
    bail on chained ones. If the root README points at a subdirectory rather than a doc, look for a
    direct pointer to the target; don't hop through a second index expecting it to relay you further.
 1. **Fall back to search when no pointer matches.** If the README's map has no entry for the topic,
-   use `grep`/`glob` to locate docs directly, or the knowledge base if the repo is indexed. A
+   use a file search to locate docs directly, or the knowledge base if the repo is indexed. A
    missing pointer means "not mapped," not "does not exist."
 
 ## How to author (writing a README map)
@@ -61,7 +61,7 @@ is a deliberate, named per-repo exception, never a `file://docs/*.md` glob. When
 ## Tool parity
 
 - **kiro-cli** loads the top-level `README.md` eagerly (via each agent's `file://README.md`
-  resource); nested READMEs and the docs they point to are pulled on demand with `read`/`grep`.
+  resource); nested READMEs and the docs they point to are pulled on demand by reading or searching.
 - **Claude Code** has no per-project relative `resources` mechanism, so nothing auto-loads — this
   skill *is* the parity mechanism. On entering a project, read the nearest `README.md` as a map and
   follow its one-hop pointers, exactly as above. Functional (skill-driven) coverage, not automatic

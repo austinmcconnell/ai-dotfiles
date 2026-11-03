@@ -2,7 +2,8 @@
 set -euo pipefail
 
 # Surface recent memory context at session start
-# Called from agentSpawn hook — output is injected into session context
+# Called from the session-start hook (kiro agentSpawn, Claude SessionStart) — output is
+# injected into session context
 # Relies on the hook config timeout (5 seconds) as safety net if engram hangs
 #
 # Emits one of three things, in priority order:

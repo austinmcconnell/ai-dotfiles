@@ -9,7 +9,9 @@ copied: each tool's config calls the scripts in place as `$AI_DOTFILES_DIR/etc/a
   pre-commit).
 
 Blocking hooks read the tool-call JSON on stdin and exit `2` with a message on stderr to deny the
-call. The other hooks only print to stdout or write a log and always exit `0`.
+call. The other hooks only print to stdout or write a log and never exit `2`, so they never block. A
+few can still exit non-zero on an internal error, such as `correction-capture.sh` on malformed
+input.
 
 ## Blocking hooks
 
@@ -39,7 +41,7 @@ call. The other hooks only print to stdout or write a log and always exit `0`.
 
 | Script                          | What it does                                                                                                                                                                                                        | How it is run                                                                                                  |
 | ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| `recall-memory.sh`              | Prints a recall nudge for the current project's engram memories, or a directive to fetch the active handoff when one exists. Also prints a backlog line when captured corrections are not yet promoted to steering. | Kiro: `agentSpawn`, all 5 agents. Claude: `SessionStart`, `startup\|resume`, with `AI_AGENT_NAME=claude-code`. |
+| `recall-memory.sh`              | Prints a recall nudge for the current project's engram memories, or a directive to fetch the active handoff when one exists. Also prints a backlog line when captured corrections are not yet promoted to steering. | Kiro: `agentSpawn`, all 5 agents. Claude: `SessionStart`, `startup\|resume`.                                   |
 | `check-engram-hygiene.sh`       | Runs `bin/engram-hygiene check`, which prints a nudge when the current project has pending engram conflict relations.                                                                                               | Kiro: `agentSpawn`, all 5 agents, passing `kiro`. Claude: `SessionStart`, `startup\|resume`, passing `claude`. |
 | `suggest-agent-fit.sh`          | Prints a one-time relaunch suggestion when the generalist session starts in a repo with `ansible.cfg` (`ansible`) or `book.toml` (`docs`).                                                                          | Kiro: `agentSpawn`, `code` agent only, passing `code`. Claude: `SessionStart`, `startup`.                      |
 | `correction-capture.sh`         | Nudges the agent to `mem_save` a prompt that looks like a correction, and reminds the user to run `distill-learnings` on the next turn. Keeps a session sentinel under `${TMPDIR:-/tmp}/ai-corrections`.            | Kiro: `userPromptSubmit`, all 5 agents. Claude: `UserPromptSubmit`.                                            |
@@ -51,8 +53,6 @@ call. The other hooks only print to stdout or write a log and always exit `0`.
   and exits `0` silently when it is not executable. It requires the agent name as its argument
   (`claude` or `kiro`) and keeps each agent's cadence stamps under `~/.<agent>/engram-hygiene`. A
   missing, extra, or unknown name exits `1` with a message.
-- The header comment of `recall-memory.sh` says it relies on `timeout_ms (5000ms)`; the agent JSON
-  and `settings.json` set `timeout` (seconds, `5`) instead.
 - Kiro-only hooks (`check-research-kb.sh`, `clear-research-kb-stale.sh`, `kb-staleness.sh`,
   `rotate-traces.sh`, `trace-tool-call.sh`) live in `etc/kiro-cli/hooks/` and are described in
   `etc/kiro-cli/README.md`.

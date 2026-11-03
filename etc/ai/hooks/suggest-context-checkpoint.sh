@@ -19,7 +19,8 @@
 # back below THRESHOLD (e.g. a compaction) and climb past it again, at which
 # point it nudges again. No coordination with the compaction hooks needed.
 #
-# Purely observational: always exits 0, never blocks.
+# Purely observational: never blocks (it never exits 2). A failed usage-database query
+# exits non-zero under `set -e` with no output.
 
 set -euo pipefail
 

@@ -194,10 +194,11 @@ What that server injection does **not** cover — local dotfiles tooling built o
   only: there is no judge path and no supported cleanup command, so do not attempt to delete
   orphaned relations (that would require unsupported direct-SQL edits that bypass sync). They are
   inert and can be left as-is.
-- `dotfiles memory-check` reports the unjudged count per project; the `agentSpawn` hygiene nudge
-  fires only on unjudged relations for the current project. Orphaned relations are intentionally not
-  shown there — engram provides no way to resolve or prune them, so the count only grows and is not
-  actionable debt. The raw orphaned count is available via `engram conflicts stats` if ever needed.
+- `bin/engram-hygiene` in `status` mode reports the unjudged count per project; the session-start
+  hygiene nudge fires only on unjudged relations for the current project. Orphaned relations are
+  intentionally not shown there — engram provides no way to resolve or prune them, so the count only
+  grows and is not actionable debt. The raw orphaned count is available via `engram conflicts stats`
+  if ever needed.
 
 ## Presenting Knowledge Base Results
 

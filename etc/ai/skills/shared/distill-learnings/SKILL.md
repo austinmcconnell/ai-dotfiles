@@ -88,7 +88,7 @@ tight — a sentence or a bullet, not a paragraph. Do not restate what the doc a
 
 For each approved item:
 
-- Make the edit with the `write` tool, matching the target doc's existing style and formatting.
+- Make the edit with a file edit, matching the target doc's existing style and formatting.
 - After editing steering or skills, run `pre-commit run --files <changed-files>` (see the
   `pre-commit-validation` skill). If hooks reformat the file, re-read it before any further edit.
 - Do **not** commit. Staging and commits remain the user's decision per the git conventions.
