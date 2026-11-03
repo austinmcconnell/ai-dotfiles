@@ -17,7 +17,8 @@ set -euo pipefail
 #
 # Only the default generalist nudges. The scoped agents (ansible, docs, ...)
 # are already the right agent by construction and must stay silent — this
-# mirrors the agent-routing.md rule that scoped agents never nudge. The guard
+# mirrors the agent-routing rule (etc/ai/steering/kiro/agent-routing.md) that scoped
+# agents never nudge. The guard
 # below treats two signals as "the generalist": the kiro literal `code` arg,
 # and Claude's absent `agent_type` (a default, non-persona session). Any other
 # value — a kiro miswiring into another agent's config, or a Claude persona
@@ -25,7 +26,7 @@ set -euo pipefail
 #
 # Session start is the ONLY low-cost moment for this: nothing is invested yet,
 # so a relaunch is nearly free. Mid-session routing (a task crossing into a
-# specialist's domain) is a DIFFERENT case owned by agent-routing.md steering,
+# specialist's domain) is a DIFFERENT case owned by the agent-routing steering,
 # not this hook.
 #
 # Detection is precision-over-recall: only a DEFINITIVE root-level marker

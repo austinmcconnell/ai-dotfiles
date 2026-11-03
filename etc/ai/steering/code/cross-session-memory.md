@@ -4,7 +4,7 @@
 
 An agent has three information channels; reach for the right one rather than defaulting to whichever
 is nearest. This boundary is the seam the README-as-pointer scheme routes against (see the
-`readme-pointer` skill and `knowledge-base-usage.md`):
+`readme-pointer` skill and the kiro-only `etc/ai/steering/kiro/knowledge-base-usage.md`):
 
 - **Persistent memory (engram)** — cross-session *narrative*: decisions and their rationale, failed
   approaches, corrections, handoffs, user preferences. Use engram for "why we did it this way" and

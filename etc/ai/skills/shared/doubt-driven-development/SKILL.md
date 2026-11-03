@@ -44,11 +44,11 @@ A decision is **non-trivial** when at least one is true:
 
 Step 3 (DOUBT) spawns a fresh-context reviewer via the `subagent` tool. Per the subagent trust model
 (`etc/kiro-cli/README.md`), only the `code` agent is trusted to spawn subagents that inherit tool
-approval, and the `agent-routing` steering establishes `code` as the generalist orchestrator. The
-four scoped personas (`docs`, `ansible`, `jira`, `datadog`) **must not** run this loop — a persona
-spawning a reviewer subagent is the "personas don't invoke personas" anti-pattern. If a scoped
-persona reaches a non-trivial decision that warrants doubt, surface it to the user and let the main
-`code` session run the loop rather than spawning from inside the persona.
+approval, and the kiro-only `etc/ai/steering/kiro/agent-routing.md` establishes `code` as the
+generalist orchestrator. The four scoped personas (`docs`, `ansible`, `jira`, `datadog`) **must
+not** run this loop — a persona spawning a reviewer subagent is the "personas don't invoke personas"
+anti-pattern. If a scoped persona reaches a non-trivial decision that warrants doubt, surface it to
+the user and let the main `code` session run the loop rather than spawning from inside the persona.
 
 ## The Process
 

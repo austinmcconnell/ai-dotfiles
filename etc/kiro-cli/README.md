@@ -234,8 +234,8 @@ small, stable, high-signal doc that benefits from whole-document reasoning every
 added as an explicit `file://<path>` entry — a named exception within the pointer model, never a
 glob. The pointer scheme is agent-agnostic (all five benefit — e.g. datadog reading a service
 runbook); the KB scoping is unchanged. See the `readme-pointer` skill for the convention and the
-"Which Channel" boundary in `knowledge-base-usage` / `cross-session-memory` steering for how agents
-route between the eager map, the KB, and engram.
+"Which Channel" boundary in `knowledge-base-usage` (`etc/ai/steering/kiro/`) /
+`cross-session-memory` steering for how agents route between the eager map, the KB, and engram.
 
 Resource scoping per agent:
 

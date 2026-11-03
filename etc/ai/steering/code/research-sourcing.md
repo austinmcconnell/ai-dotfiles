@@ -2,8 +2,8 @@
 
 How to acquire information from sources outside the codebase — which form to prefer, and how to
 fetch efficiently. (For *which retrieval channel* to reach for — indexed KB vs engram vs web — see
-`knowledge-base-usage.md` and `cross-session-memory.md`; for reasoning about the claims a source
-makes, see `analytical-discipline.md`.)
+`etc/ai/steering/kiro/knowledge-base-usage.md` and `cross-session-memory.md`; for reasoning about
+the claims a source makes, see `analytical-discipline.md`.)
 
 ## Prefer the machine-readable form for data
 

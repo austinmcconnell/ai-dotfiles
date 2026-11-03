@@ -211,6 +211,7 @@
     "resources": [
         "file://AGENTS.md",
         "file://~/.kiro/steering/code/**/*.md",
+        "file://~/.kiro/steering/kiro/**/*.md",
         "file://~/.kiro/steering/github/**/*.md",
         "file://~/.kiro/steering/security/**/*.md",
         "file://~/.kiro/steering/shared/**/*.md",
