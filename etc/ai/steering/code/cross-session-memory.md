@@ -100,8 +100,10 @@ memories cluster together for retrieval.
 FULL before doing any other work — a truncated preview cannot carry a handoff, so the notice is a
 directive to fetch it, not the handoff itself. A handoff naming an item as "next work" records
 what's queued, not that it's refined — if the item is a raw idea, run the idea-refinement funnel
-before coding it rather than treating the handoff as approval to implement. See the
-`memory-management` skill's "Handoffs" section for how to write or close one.
+before coding it rather than treating the handoff as approval to implement. A handoff is
+authoritative for the live effort state, but its incidental side-claims about repo structure or
+tooling (e.g. "directory X is unreadable/unused") are fallible — verify those against the repo
+before acting. See the `memory-management` skill's "Handoffs" section for how to write or close one.
 
 When you *write* a handoff for work that will span sessions, end the turn with a suggested **resume
 prompt** in chat — a short, pasteable prompt (a few sentences, not a wall of prose) to reopen the

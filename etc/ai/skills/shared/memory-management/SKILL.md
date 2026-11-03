@@ -1,79 +1,9 @@
 ---
 name: memory-management
-description: How to save, structure, and hand off engram memories — session-start recall, memory types, topic keys, active handoffs, hygiene, and presenting knowledge-base results. Use when saving a decision/discovery to memory, writing or resuming a cross-session handoff, or reviewing memory hygiene.
+description: How to write, close, and resume engram handoffs, review memory hygiene and conflict relations, and present knowledge-base results. Use when writing or closing a cross-session handoff, resuming an effort from an ACTIVE HANDOFF notice, reviewing memory hygiene or unjudged conflicts, or presenting KB results.
 ---
 
 # Memory Management
-
-The routing decision — *whether* something belongs in memory versus the knowledge base versus eager
-context — lives in the `cross-session-memory.md` steering doc, which stays resident so it's
-available before you've decided to act. This skill covers the mechanics once you've already decided
-to save, resume, or clean up memory.
-
-## Session Start
-
-**First-response obligation:** if session-start context contains a `⚠️ ACTIVE HANDOFF exists` notice
-(emitted by the `recall-memory.sh` hook), your first response must call `mem_get_observation` on the
-cited id and read it IN FULL before doing any other work. The handoff is the live state of an
-ongoing effort — a truncated preview cannot carry it, so the notice is a directive to fetch it, not
-the handoff itself.
-
-The handoff is authoritative for the live *effort state*, but treat its incidental side-claims about
-repo structure or tooling (e.g. "directory X is unreadable/unused") as fallible — verify those
-against the actual repo before acting on them.
-
-At the beginning of a session, if the user describes a task or project:
-
-1. Use `mem_search` with relevant keywords to find prior context
-1. Use `mem_context` to get recent session history for the project
-1. Mention relevant findings briefly: "From a previous session, I recall..."
-
-Do NOT dump all memories into the response. Surface only what's relevant to the current task.
-
-## During Work
-
-Save memories at natural breakpoints — not after every small action. Good triggers:
-
-- "We decided to use X instead of Y because..."
-- "Approach X failed because of Z — don't retry without fixing Z first"
-- "User prefers [specific workflow/style/tool]"
-
-Use descriptive titles. For corrections, use the What/Why/Where/Learned content structure defined in
-`etc/ai/steering/code/capturing-corrections.md`.
-
-## Memory Types
-
-Engram's `type` field is free text — the store accepts any value and enforces nothing at runtime. So
-drift is prevented by convention, not by engram. Engram itself publishes **two** authoritative type
-lists that do not fully agree: the README Memory Protocol (`bugfix`, `decision`, `architecture`,
-`discovery`, `pattern`, `config`, `preference`) and the `mem_save` tool schema embedded in the
-binary (`decision`, `architecture`, `bugfix`, `pattern`, `config`, `discovery`, `learning`, default
-`manual`). Rather than pick one, we standardize by **function**:
-
-**Agent-chosen types** — the types you deliberately pass to `mem_save`. Use one of these:
-
-- `decision` — architectural or design choices with rationale
-- `architecture` — system structure, module boundaries, data models
-- `bugfix` — bugs found, root causes, and fixes
-- `pattern` — conventions established (naming, structure, idioms)
-- `config` — configuration changes or environment setup
-- `discovery` — non-obvious findings about the codebase or tooling
-- `preference` — explicit user preferences about tools or workflow
-
-**Engram-generated types** — you do not hand-pick these; engram assigns them:
-
-- `learning` — produced by `mem_capture_passive` from a `## Key Learnings:` section
-- `manual` — the default type when a save supplies no `type`
-
-The functional split is what matters: if engram adds a type in a future version, it joins whichever
-category fits (something you'd choose → agent-chosen; something engram assigns → engram-generated).
-Do not describe the set by count — the membership will change, the rule will not.
-`scripts/validate-memory-types.sh` guards the agent-chosen list against drift.
-
-## Topic Keys
-
-Use `mem_suggest_topic_key` to get a consistent topic key before saving. This ensures related
-memories cluster together for retrieval.
 
 ## Handoffs
 
@@ -101,9 +31,9 @@ Save the handoff with `mem_save` using:
   key makes every new handoff **upsert** the prior one (same `project + scope + topic_key` updates
   in place and bumps `revision_count`), so there is never more than one live handoff per project.
   This is the mechanism, not a convention you must police by hand.
-- **type**: an agent-chosen type from the Memory Types list (usually `decision`). `handoff` is
-  **not** a type — it lives only in the topic_key. Adding it as a type would reintroduce the type
-  drift the Memory Types section exists to prevent.
+- **type**: an agent-chosen type from `etc/ai/steering/code/cross-session-memory.md` (usually
+  `decision`). `handoff` is **not** a type — it lives only in the topic_key. Adding it as a type
+  would reintroduce the type drift that the steering vocabulary exists to prevent.
 - **content**: the full handoff body — what is done and committed, unresolved findings, next steps
   in order, and any hard rules (e.g. "user commits himself; never git commit"). For each next step,
   mark its refinement state — a raw/captured idea still needs the idea-refinement funnel
