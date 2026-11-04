@@ -18,6 +18,30 @@ two version tags.
 
 Follow these steps in order. Each step builds on the previous one.
 
+### Step 0: Scope Check
+
+Before drafting, compare production tags against existing reports. Use the project's production tag
+pattern from Step 1 (the grep below assumes bare semver), then list any tag without a
+`releases/version-X-X-X.md` file. Run it from the project root:
+
+```bash
+git --no-pager tag | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' \
+  | grep -vxF -f <(ls releases/ | sed -nE 's/^version-([0-9]+)-([0-9]+)-([0-9]+)\.md$/\1.\2.\3/p') \
+  | sort -V
+```
+
+Gaps older than the project's reports are expected: a project that started writing reports partway
+through its history will list every earlier tag. Treat only the tags newer than the oldest report as
+the gap to resolve.
+
+- If the requested release's **immediate predecessor** has no report, say so in the first reply and
+  ask whether to backfill it first. Do not silently analyze only the requested range: the
+  predecessor's changes are missing from the lineage links this report needs.
+- If the request names no version ("run a release analysis"), it means the latest production tag.
+  List any other unanalyzed production tags in the reply and ask which to cover.
+- A request for a named range (e.g. "0.0.90 through 0.0.91") covers every tag in that range; draft
+  the missing ones in ascending order, then stitch lineage links.
+
 ### Step 1: Identify the Tag Range
 
 ```bash
