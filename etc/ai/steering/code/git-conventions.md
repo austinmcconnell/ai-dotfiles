@@ -22,6 +22,7 @@
 - Commit state can change outside the conversation (for example, the user commits between turns).
   Before reporting a commit as pending or landed, run `git log -1` and compare it with the last
   commit you already know about.
+- For parallel work on several branches, use the worktree layout and rules in `git-worktrees.md`.
 
 ## Reading History
 
