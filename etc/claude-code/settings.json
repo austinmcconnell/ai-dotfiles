@@ -416,16 +416,17 @@
     "cleanupPeriodDays": 90,
     "autoCompactWindow": 350000,
     "env": {
-        "CLAUDE_CODE_SUBAGENT_MODEL": "haiku"
+        "CLAUDE_CODE_SUBAGENT_MODEL": "haiku",
+        "CLAUDE_CODE_SUBAGENT_EFFORT": "low"
     },
     "includeGitInstructions": false,
     "maxEffortLevel": "high",
     "model": "sonnet",
     "modelSettings": {
-        "claude-sonnet-5": {
+        "claude-sonnet-5-5": {
             "effortLevel": "medium"
         },
-        "claude-opus-5": {
+        "claude-opus-5-5": {
             "effortLevel": "medium"
         }
     },
