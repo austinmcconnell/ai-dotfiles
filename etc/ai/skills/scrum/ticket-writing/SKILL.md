@@ -53,6 +53,14 @@ Do not add these sections unless they carry weight the reader actually needs:
 - Priority Justification
 - Essay-style justification of the approach (that belongs in a PR or ADR)
 
+### Source material
+
+When a ticket comes from a longer writeup (an investigation, a Slack thread, an analysis doc), map
+its content onto the ticket's template. Do not carry the source's section structure (for example,
+Problem, Root cause, Evidence, Notes) into the ticket. Decision-support (evidence dumps, "why we
+chose X" reasoning, unverified caveats) belongs in a ticket comment or the analysis file. If a chunk
+of the source has no home in the template, drop it or relocate it rather than adding a section.
+
 ### Out of scope (optional)
 
 A single, tightly-bounded **Out of scope** line is allowed when it genuinely prevents scope creep

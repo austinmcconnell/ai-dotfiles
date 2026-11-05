@@ -40,21 +40,8 @@ Don't include generic sections unless specifically needed:
 
 ### 5. Transform Source Analysis — Don't Mirror It
 
-When the ticket originates from a rich writeup (an investigation, a Slack thread, a detailed
-analysis doc), **map the content onto the template — do not carry the source's structure into the
-ticket.** A well-organized source (Problem / Root cause / Evidence / Reasoning / Notes) is
-seductive: its sections feel legitimate because the user wrote them, so they slip past the "no
-generic boilerplate" check. They are still over-building.
-
-- The ticket has exactly the template's sections (Background Information, Acceptance Criteria, and
-  optionally Technical Implementation). Everything from the source lands in one of those or gets
-  relocated.
-- **Decision-support belongs elsewhere**: full evidence dumps, "why we chose value X" reasoning, and
-  "not-yet-verified" caveats go in a **ticket comment** or the analysis file — not the description.
-  The description says *what* changes and *what "done" looks like*; the forensics are what convinced
-  the author, not what the implementer needs.
-- If a chunk of the source has no home in the template, that is the signal to drop or relocate it —
-  not to add a section for it.
+Follow the "Source material" rule in the `ticket-writing` skill. Only the Story template's sections
+belong in the description; everything else from the source is relocated or dropped.
 
 ### 6. Use Technical Personas
 
