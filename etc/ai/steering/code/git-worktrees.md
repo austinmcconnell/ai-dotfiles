@@ -21,7 +21,10 @@ not need one.
 # Existing branch
 git worktree add ~/projects/<org>/worktrees/<repo>/<branch-dir> <branch>
 
-# New branch from a base such as origin/main
+# Read-only work, no branch created
+git worktree add --detach ~/projects/<org>/worktrees/<repo>/<branch-dir> <branch-or-commit>
+
+# New branch you start yourself, from a base such as origin/main
 git worktree add -b <branch> ~/projects/<org>/worktrees/<repo>/<branch-dir> origin/main
 
 # Remove when finished
@@ -39,6 +42,8 @@ git worktree prune
 ## Agent Rules
 
 - Work only in the worktree path given in your instructions. Use the absolute path.
+- Work on the branch you were assigned, or use `--detach` for read-only work. Do not create
+  branches.
 - Before editing, confirm that `git rev-parse --show-toplevel` and `git branch --show-current` match
   the assignment.
 - Do not edit the main checkout while a worktree is assigned to you.
