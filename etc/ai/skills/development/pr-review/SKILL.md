@@ -7,9 +7,9 @@ description: Review GitHub pull requests with full context, verified findings, a
 
 ## Overview
 
-Conduct thorough PR reviews by checking out the branch for full context, investigating changes
-against the actual codebase, and verifying concerns before raising them. Produces structured
-feedback following the severity tiers in `code-review-conventions` steering.
+Conduct thorough PR reviews by checking out the branch in a temporary worktree for full context,
+investigating changes against the actual codebase, and verifying concerns before raising them.
+Produces structured feedback following the severity tiers in `code-review-conventions` steering.
 
 ## Workflow
 
@@ -20,20 +20,24 @@ feedback following the severity tiers in `code-review-conventions` steering.
 1. Get the full diff: `gh pr diff <number>`
 1. Note the scope — number of files changed, lines added/removed — to calibrate review depth
 
-### Step 2: Check out the PR branch
+### Step 2: Check out the PR in a worktree
 
-1. Verify the working tree is clean: `git status --porcelain`
-1. **If clean:**
-   - Record the current branch: `git rev-parse --abbrev-ref HEAD`
-   - Check out the PR branch: `gh pr checkout <number>`
-1. **If dirty:**
-   - Show the user the dirty files
-   - Inform them that a branch checkout enables a more thorough review and offer two paths: clean up
-     the working tree first (for full-context review) or proceed with diff-only (reduced accuracy)
-   - If user cleans up → re-check `git status --porcelain` and proceed with checkout
-   - If user declines → proceed with diff-only review; add a note at the top of the review output:
-     "Reviewed from diff only — surrounding context reflects the base branch, not the PR branch.
-     Some findings may be less accurate."
+Always review from a temporary worktree, whether or not the main working tree is clean. The worktree
+leaves the user's current branch, uncommitted changes, and untracked files untouched, so the review
+runs in the background without switching anything.
+
+1. Fetch the PR head: `git fetch origin pull/<number>/head` (works for fork PRs too)
+1. Create a detached worktree under the session scratchpad:
+   `git worktree add --detach <scratchpad>/pr-<number> FETCH_HEAD`
+1. Run every read and command against that path (`git -C <worktree-path> ...` or absolute paths); do
+   not rely on the shell's current directory
+1. Note what the worktree does not contain: git-ignored and untracked files from the main checkout
+   (local `todo.md`, `analysis/` if ignored, scratch files). Do not cite them as review evidence.
+1. **If the fetch or worktree creation fails** (for example, no network or no access to the remote),
+   stop and report the exact error to the user. Offer the options: troubleshoot and fix the failure,
+   or proceed with a diff-only review. Diff-only only runs on the user's choice; if chosen, add a
+   note at the top of the review output: "Reviewed from diff only — surrounding context reflects the
+   base branch, not the PR branch. Some findings may be less accurate."
 
 ### Step 3: Check for existing review feedback
 
@@ -145,13 +149,15 @@ or if there are no prior reviews.)
 [merge-ready | needs changes | needs discussion] — [1-2 sentence summary of overall assessment]
 ```
 
-### Step 10: Restore original branch
+### Step 10: Remove the review worktree
 
-If the PR branch was checked out in Step 2:
+If a worktree was created in Step 2:
 
-1. Return to the original branch: `git switch <original-branch>`
-1. If switch fails (e.g., user made changes during review), note: "Could not restore original branch
-   — you are still on `<pr-branch>`. Run `git switch <original-branch>` when ready."
+1. Remove it: `git worktree remove <worktree-path>` (no `--force` — the review does not modify
+   files, so a refusal means something unexpected changed and should be reported, not overwritten)
+1. Run `git worktree prune` only if the directory was deleted outside git
+1. If removal fails, note: "Review worktree left at `<worktree-path>`. Remove it with
+   `git worktree remove <worktree-path>` when ready."
 
 ## Guidance
 
