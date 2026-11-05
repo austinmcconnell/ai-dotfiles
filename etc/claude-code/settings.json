@@ -274,7 +274,8 @@
                     {
                         "type": "command",
                         "command": "$AI_DOTFILES_DIR/etc/ai/hooks/block-env-files.sh",
-                        "timeout": 5
+                        "timeout": 5,
+                        "onFailure": "block"
                     }
                 ]
             },
@@ -284,7 +285,8 @@
                     {
                         "type": "command",
                         "command": "$AI_DOTFILES_DIR/etc/ai/hooks/block-sops-age-files.sh",
-                        "timeout": 5
+                        "timeout": 5,
+                        "onFailure": "block"
                     }
                 ]
             },
@@ -294,7 +296,8 @@
                     {
                         "type": "command",
                         "command": "$AI_DOTFILES_DIR/etc/ai/hooks/block-ssh-private-keys.sh",
-                        "timeout": 5
+                        "timeout": 5,
+                        "onFailure": "block"
                     }
                 ]
             },
@@ -304,7 +307,8 @@
                     {
                         "type": "command",
                         "command": "$AI_DOTFILES_DIR/etc/ai/hooks/block-shell-trace-mode.sh",
-                        "timeout": 5
+                        "timeout": 5,
+                        "onFailure": "block"
                     }
                 ]
             },
@@ -314,7 +318,8 @@
                     {
                         "type": "command",
                         "command": "$AI_DOTFILES_DIR/etc/ai/hooks/block-memory-secrets.sh",
-                        "timeout": 5
+                        "timeout": 5,
+                        "onFailure": "block"
                     }
                 ]
             },
@@ -334,7 +339,8 @@
                     {
                         "type": "command",
                         "command": "$AI_DOTFILES_DIR/etc/ai/hooks/block-persona-shell-commands.sh",
-                        "timeout": 5
+                        "timeout": 5,
+                        "onFailure": "block"
                     }
                 ]
             }
