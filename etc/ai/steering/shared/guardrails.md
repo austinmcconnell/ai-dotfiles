@@ -11,6 +11,9 @@ agent can skip them by loading a different domain.
 - Stage specific files — never `git add .` or `git add -A`
 - Never delete branches, even as an offered option — state that a branch is ready to delete and let
   the user run it themselves.
+- If a worktree is assigned to you, edit only inside it and leave the main checkout alone. Worktrees
+  are optional: create one only when asked or when parallel work requires it. See
+  `code/git-worktrees.md`.
 
 ## Secrets
 
