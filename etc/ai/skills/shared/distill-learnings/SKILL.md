@@ -38,7 +38,8 @@ Pull captured corrections for the current project from engram:
   entries titled "Correction:" with no `correction/` key for manual review; do not promote them.
 - Corrections are saved under `topic_key: correction/<area>-<slug>` (see `capturing-corrections`
   steering). Prefer `mem_context` to see recent session captures if search is too narrow.
-- Skip any correction whose title starts with `Correction [promoted]` (see step 5).
+- Skip any correction whose title starts with `Correction [promoted]` or `Correction [declined]`
+  (see step 5).
 
 If there are no candidates, say so and stop — do not manufacture promotions.
 
@@ -104,6 +105,10 @@ For each promoted correction, mark it so it is not re-proposed next time:
 - If the correction is now fully captured by the durable doc, consider whether it still needs to
   live in engram at all. Prefer annotating over deleting — the engram record is cheap and provides
   provenance.
+
+For each correction the user declines to promote, or one already covered by an existing rule, mark
+it `Correction [declined]:` the same way, and note why it stayed in engram, e.g.
+`Left in engram: project-specific` or `Covered by: etc/ai/steering/code/analytical-discipline.md`.
 
 Report a short summary: what was promoted and where, what was left in engram, and what was skipped.
 

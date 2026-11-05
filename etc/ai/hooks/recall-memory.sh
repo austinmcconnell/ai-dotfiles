@@ -15,7 +15,7 @@ set -euo pipefail
 #      (the convention allows only one active handoff per project).
 #   3. Otherwise, if the project has any memories, a generic recall nudge.
 #   4. In addition to the above, a backlog line when captured corrections are still
-#      unpromoted to steering (distill-learnings marks promoted ones with a title prefix).
+#      unpromoted to steering (distill-learnings marks reviewed ones with a title prefix).
 
 ENGRAM_DB="$HOME/.config/engram/engram.db"
 
@@ -94,9 +94,10 @@ elif [[ -n "${OBS_COUNT}" && "${OBS_COUNT}" -gt 0 ]]; then
 fi
 
 # A correction is an observation whose topic_key starts with correction/ (see the
-# capturing-corrections steering). distill-learnings marks a promoted one by prefixing its
-# title with "Correction [promoted]". The CLI search output has no topic_key, so the count
-# reads `engram export` JSON. An export failure or missing jq counts as zero: the line is advisory.
+# capturing-corrections steering). distill-learnings marks a reviewed one by prefixing its
+# title with "Correction [promoted]" (in steering) or "Correction [declined]" (left in engram).
+# The CLI search output has no topic_key, so the count reads `engram export` JSON.
+# An export failure or missing jq counts as zero: the line is advisory.
 count_unpromoted_corrections() {
     command -v jq &>/dev/null || {
         echo 0
@@ -110,7 +111,7 @@ count_unpromoted_corrections() {
     if engram export "${export_file}" --project "${PROJECT_NAME}" >/dev/null 2>&1; then
         count="$(jq '[.observations[]
             | select((.topic_key // "") | startswith("correction/"))
-            | select((.title // "") | startswith("Correction [promoted]") | not)] | length' \
+            | select((.title // "") | test("^Correction \\[(promoted|declined)\\]") | not)] | length' \
             "${export_file}" 2>/dev/null || echo 0)"
     else
         count=0
