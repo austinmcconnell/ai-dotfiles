@@ -36,4 +36,5 @@ the `stress-test-analysis` skill.
 When you present analysis, comparison, or a recommendation: separate fact from inference, state what
 you verified versus assumed, give counterfactuals for causal claims, and size confidence to the
 evidence. Verify load-bearing facts before asserting them — do not launder training-data recall or a
-sub-agent's summary into a stated fact (see `research-delegation` steering).
+sub-agent's summary into a stated fact (see `research-delegation` steering). Before recommending new
+monitoring, alerts, or infrastructure, grep the repo to confirm it is absent.
