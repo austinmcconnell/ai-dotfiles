@@ -19,6 +19,9 @@
   serves the same logical goal, mention `git commit --amend`/fixup as an option rather than
   defaulting straight to recommending a new commit. Still requires the user's explicit go-ahead,
   like any commit action.
+- Commit state can change outside the conversation (for example, the user commits between turns).
+  Before reporting a commit as pending or landed, run `git log -1` and compare it with the last
+  commit you already know about.
 
 ## Reading History
 
