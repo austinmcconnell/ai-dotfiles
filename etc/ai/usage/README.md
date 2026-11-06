@@ -144,6 +144,10 @@ Prints the estimate, the actual `total_cost_usd`, their ratio, and flags the ses
 falls outside roughly 0.85–1.15 — a sign the pricing table, cache multiplier, or capture assumptions
 are off for that session's model.
 
+Long-context pricing is per request: a model whose `pricing.json` entry has a `long_context` block
+(Haiku 5.5 today) prices each request at the higher rates when its prompt, counting input, cache
+reads, and cache writes, is over the threshold. The estimate can mix tiers within one session.
+
 Cache-read rates are version-aware where a model's entry in `pricing.json` names a repricing
 release: Sonnet 5.5 used 0.1x before Claude Code 2.1.296 and 0.05x from it. Each row uses the
 `version` in its own payload, and a row without one falls back to the current rate. Sonnet 5.5

@@ -68,6 +68,14 @@ RESULT="$(
             else $current
             end;
 
+        # A long_context entry replaces the base rates for one request whose prompt is over
+        # its threshold. The choice is per request, so it is made per row, not per session.
+        def rates($m; $prompt):
+            if $m.long_context != null and $prompt > $m.long_context.prompt_tokens_over
+            then $m.long_context
+            else $m
+            end;
+
         # Prices one snapshot from its raw current_usage fields. Returns
         # null (not 0) when the model has no pricing entry, so callers can
         # tell "priced at zero cost" apart from "could not price".
@@ -79,11 +87,12 @@ RESULT="$(
                 | ($p.context_window.current_usage.output_tokens // 0) as $out
                 | ($p.context_window.current_usage.cache_creation_input_tokens // 0) as $cw
                 | ($p.context_window.current_usage.cache_read_input_tokens // 0) as $cr
+                | rates($m; $in + $cw + $cr) as $r
                 | read_mult($m; $p.version) as $read_mult
                 | (write_mult($p.prompt_cache.ttl // "5m")) as $wmult
                 | (
-                    ($in * $m.input_per_mtok) + ($out * $m.output_per_mtok)
-                    + ($cw * $m.input_per_mtok * $wmult) + ($cr * $m.input_per_mtok * $read_mult)
+                    ($in * $r.input_per_mtok) + ($out * $r.output_per_mtok)
+                    + ($cw * $r.input_per_mtok * $wmult) + ($cr * $r.input_per_mtok * $read_mult)
                 ) / 1000000
                 end;
 

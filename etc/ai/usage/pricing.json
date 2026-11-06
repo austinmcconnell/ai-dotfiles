@@ -1,5 +1,5 @@
 {
-    "_comment": "Model pricing in USD per million tokens. Verified 2026-11-06 against https://platform.claude.com/docs/en/about-claude/pricing. cache_read_multiplier is the default; a model entry may override it. claude-haiku-5-5 is priced at its <=100K prompt tier; the >100K tier ($0.50 input) is not represented. Re-verify before trusting old entries; prices change.",
+    "_comment": "Model pricing in USD per million tokens. Verified 2026-11-06 against https://platform.claude.com/docs/en/about-claude/pricing. cache_read_multiplier is the default; a model entry may override it. claude-haiku-5-5 has a long_context entry for prompts over 100K tokens, priced per request. Re-verify before trusting old entries; prices change.",
     "cache_write_multiplier_5m": 1.25,
     "cache_write_multiplier_1h": 2.0,
     "cache_read_multiplier": 0.1,
@@ -15,7 +15,15 @@
             "cache_read_multiplier": 0.05,
             "cache_read_multiplier_before_version": { "version": "2.1.296", "multiplier": 0.1 }
         },
-        "claude-haiku-5-5": { "input_per_mtok": 0.1, "output_per_mtok": 0.5 },
+        "claude-haiku-5-5": {
+            "input_per_mtok": 0.1,
+            "output_per_mtok": 0.5,
+            "long_context": {
+                "prompt_tokens_over": 100000,
+                "input_per_mtok": 0.5,
+                "output_per_mtok": 2.5
+            }
+        },
         "claude-fable-5-1": {
             "input_per_mtok": 10.0,
             "output_per_mtok": 50.0,
