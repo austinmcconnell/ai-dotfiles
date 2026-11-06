@@ -20,7 +20,8 @@ PAYLOAD=$(cat)
 # Unit separator, not tab: tab is IFS whitespace, so read would collapse empty fields.
 IFS=$'\x1f' read -r SESSION_ID CWD PROJECT_DIR MODEL_ID MODEL_DISPLAY EFFORT \
     COST_USD DURATION_MS API_DURATION_MS INPUT_TOKENS OUTPUT_TOKENS \
-    CACHE_CREATION CACHE_READ CTX_USED_PCT FIVE_HOUR_PCT SEVEN_DAY_PCT <<<"$(
+    CACHE_CREATION CACHE_READ CTX_USED_PCT FIVE_HOUR_PCT SEVEN_DAY_PCT \
+    FIVE_HOUR_RESETS SEVEN_DAY_RESETS <<<"$(
         printf '%s' "$PAYLOAD" | jq -r '[
         .session_id, .workspace.current_dir, .workspace.project_dir,
         .model.id, .model.display_name, .effort.level,
@@ -29,7 +30,8 @@ IFS=$'\x1f' read -r SESSION_ID CWD PROJECT_DIR MODEL_ID MODEL_DISPLAY EFFORT \
         .context_window.current_usage.cache_creation_input_tokens,
         .context_window.current_usage.cache_read_input_tokens,
         .context_window.used_percentage,
-        .rate_limits.five_hour.used_percentage, .rate_limits.seven_day.used_percentage
+        .rate_limits.five_hour.used_percentage, .rate_limits.seven_day.used_percentage,
+        .rate_limits.five_hour.resets_at, .rate_limits.seven_day.resets_at
     ] | join("\u001f")'
     )"
 
@@ -97,13 +99,29 @@ format_pct() {
     fi
 }
 
+# resets_at is Unix epoch seconds; integer arithmetic keeps this free of GNU date.
+format_remaining() {
+    local resets_at="$1" now="$2" remaining
+    [[ -z "$resets_at" || "$resets_at" == "null" ]] && return 0
+    remaining=$((resets_at - now))
+    ((remaining < 0)) && remaining=0
+    if ((remaining >= 86400)); then
+        printf ' (%dd %dh)' $((remaining / 86400)) $((remaining % 86400 / 3600))
+    else
+        printf ' (%dh %dm)' $((remaining / 3600)) $((remaining % 3600 / 60))
+    fi
+}
+
 DISPLAY_MODEL="${MODEL_DISPLAY:-?}"
 DISPLAY_COST="\$0.00"
 [[ -n "$COST_USD" && "$COST_USD" != "null" ]] && DISPLAY_COST="$(printf '$%.4f' "$COST_USD")"
 # rate_limits only exists for claude.ai subscribers; Enterprise and API keep the cost figure.
 DISPLAY_USAGE="$DISPLAY_COST"
 if [[ -n "$FIVE_HOUR_PCT" || -n "$SEVEN_DAY_PCT" ]]; then
-    DISPLAY_USAGE="5h $(format_pct "$FIVE_HOUR_PCT") | 7d $(format_pct "$SEVEN_DAY_PCT")"
+    NOW_EPOCH="$(date +%s)"
+    FIVE_HOUR_DISPLAY="5h $(format_pct "$FIVE_HOUR_PCT")$(format_remaining "$FIVE_HOUR_RESETS" "$NOW_EPOCH")"
+    SEVEN_DAY_DISPLAY="7d $(format_pct "$SEVEN_DAY_PCT")$(format_remaining "$SEVEN_DAY_RESETS" "$NOW_EPOCH")"
+    DISPLAY_USAGE="$FIVE_HOUR_DISPLAY | $SEVEN_DAY_DISPLAY"
 fi
 DISPLAY_CTX="${CTX_USED_PCT:-0}"
 DISPLAY_EFFORT=""
