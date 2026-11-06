@@ -148,7 +148,10 @@ checked.
   per event, or about $0.50 to $8 across 46 events (0.3% to 4.5% of total). Estimate only.
 - `cumulative_dropped_tokens` totals 5.6M. Compaction shrinks later prompts, which lowers later
   cache reads. The saving is not quantified.
-- Open: 54 compact-summary records in transcripts (34 files) do not match the 46 events one-to-one.
+- Summary records and events: 54 compact-summary records (34 transcript files) against 46 events. 45
+  summaries pair with 45 events in time (44 within 60 seconds). The other 9 summaries sit in five
+  sessions with no event, four of which predate the first event row (hook logging started late). One
+  event has no summary record. One post-hook-start event is missing for a single session.
 
 ## Estimator validation
 
@@ -242,15 +245,15 @@ Runbook (run on the machine that has rate-limit data):
 ## Open items
 
 - Rate-limit validation (above). Needs a subscription machine.
-- Compaction-summary reconciliation: match the 54 summary records to the 46 events.
 - Outliers 605bf8c9, 492a3eb3, and f4f9eae5 (above).
 - Usage.db `subagent_tasks` estimate does not reconcile with transcripts.
 - Whether `total_cost_usd` fully includes subagent cost (weak support, not proven).
 - Advisor-model usage: not found in transcripts as separate priced requests. Sessions with advisor
   requests run at the same ratio as sessions without (1.18 vs 1.17), so it is not a large unrecorded
   cost. Not proven either way.
-- Interrupt-marker check on short sessions was run on an empty path list in the first pass and has
-  not been rerun.
+- Interrupt-marker check (rerun): user records containing "Request interrupted" appear 13 times
+  across 10 of 35 short sessions. Of 69 unclosed turns in those sessions, 63 are followed by a new
+  prompt. At most 13 of the 69 are interrupts, so unclosed turns are not treated as interrupted.
 
 ## Decisions
 
