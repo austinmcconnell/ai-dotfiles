@@ -20,7 +20,7 @@ PAYLOAD=$(cat)
 # Unit separator, not tab: tab is IFS whitespace, so read would collapse empty fields.
 IFS=$'\x1f' read -r SESSION_ID CWD PROJECT_DIR MODEL_ID MODEL_DISPLAY EFFORT \
     COST_USD DURATION_MS API_DURATION_MS INPUT_TOKENS OUTPUT_TOKENS \
-    CACHE_CREATION CACHE_READ CTX_USED_PCT <<<"$(
+    CACHE_CREATION CACHE_READ CTX_USED_PCT FIVE_HOUR_PCT SEVEN_DAY_PCT <<<"$(
         printf '%s' "$PAYLOAD" | jq -r '[
         .session_id, .workspace.current_dir, .workspace.project_dir,
         .model.id, .model.display_name, .effort.level,
@@ -28,7 +28,8 @@ IFS=$'\x1f' read -r SESSION_ID CWD PROJECT_DIR MODEL_ID MODEL_DISPLAY EFFORT \
         .context_window.total_input_tokens, .context_window.total_output_tokens,
         .context_window.current_usage.cache_creation_input_tokens,
         .context_window.current_usage.cache_read_input_tokens,
-        .context_window.used_percentage
+        .context_window.used_percentage,
+        .rate_limits.five_hour.used_percentage, .rate_limits.seven_day.used_percentage
     ] | join("\u001f")'
     )"
 
@@ -88,11 +89,24 @@ if [[ -n "$SESSION_ID" ]]; then
     "
 fi
 
+format_pct() {
+    if [[ -z "$1" || "$1" == "null" ]]; then
+        printf '?%%'
+    else
+        printf '%.0f%%' "$1"
+    fi
+}
+
 DISPLAY_MODEL="${MODEL_DISPLAY:-?}"
 DISPLAY_COST="\$0.00"
 [[ -n "$COST_USD" && "$COST_USD" != "null" ]] && DISPLAY_COST="$(printf '$%.4f' "$COST_USD")"
+# rate_limits only exists for claude.ai subscribers; Enterprise and API keep the cost figure.
+DISPLAY_USAGE="$DISPLAY_COST"
+if [[ -n "$FIVE_HOUR_PCT" || -n "$SEVEN_DAY_PCT" ]]; then
+    DISPLAY_USAGE="5h $(format_pct "$FIVE_HOUR_PCT") | 7d $(format_pct "$SEVEN_DAY_PCT")"
+fi
 DISPLAY_CTX="${CTX_USED_PCT:-0}"
 DISPLAY_EFFORT=""
 [[ -n "$EFFORT" && "$EFFORT" != "null" ]] && DISPLAY_EFFORT=" | effort:$EFFORT"
 
-printf '%s | %s | %s%% ctx%s\n' "$DISPLAY_MODEL" "$DISPLAY_COST" "$DISPLAY_CTX" "$DISPLAY_EFFORT"
+printf '%s | %s | %s%% ctx%s\n' "$DISPLAY_MODEL" "$DISPLAY_USAGE" "$DISPLAY_CTX" "$DISPLAY_EFFORT"
