@@ -252,9 +252,10 @@ against $0.20 published here. For Sonnet 5.5 (one session with 33K 1h write toke
 is $4.45, against $4.00 at 2× input. The gap is the same across Claude Code versions 2.1.285,
 2.1.308, and 2.1.311, and is about 2.22× input rather than 2.0×.
 
-Not explained. Either `cost-state` bills 1h writes at a different rate, or another term scales with
-cache writes. Verify against the pricing page before changing `pricing.json`. Estimates above use
-the published rate and are about 10% low on 1h writes.
+The official prompt-caching page (checked 2026-11-06) gives 1h cache writes as 2× base input and 5m
+writes as 1.25×, matching `pricing.json`, so the published rate is not the cause. The remaining gap
+is unexplained: either `cost-state` bills 1h writes differently, or another term scales with cache
+writes. The estimates above use the published rate and are about 10% low on 1h writes.
 
 ### Open outliers
 

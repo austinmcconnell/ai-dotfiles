@@ -24,8 +24,10 @@ Code is wired up today — see "Why Kiro CLI isn't wired up" below.
   transcript by `usage_transcript_cost` in `lib.sh`: one final record per `requestId`, with the
   long-context and cache-read rules from `pricing.json`. It is NULL while the transcript is missing
   or any request is unpriced, and a later firing that cannot read the transcript keeps the last
-  value. Tests: `test/test-subagent-cost.sh`). Verified against the `claude-api` skill's cached
-  pricing table on 2026-09-25 — re-verify before trusting old entries; prices change.
+  value. A subagent's `completed` firing is written after its final transcript record (checked live
+  on one subagent, 2026-11-06). Tests: `test/test-subagent-cost.sh`). Verified against the
+  `claude-api` skill's cached pricing table on 2026-09-25 — re-verify before trusting old entries;
+  prices change.
 
 ## Claude Code integration
 
