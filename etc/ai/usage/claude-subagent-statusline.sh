@@ -19,6 +19,7 @@ source "$SCRIPT_DIR/lib.sh"
 PAYLOAD=$(cat)
 
 PARENT_SESSION_ID=$(printf '%s' "$PAYLOAD" | jq -r '.session_id // empty')
+PARENT_TRANSCRIPT=$(printf '%s' "$PAYLOAD" | jq -r '.transcript_path // empty')
 
 if [[ -z "$PARENT_SESSION_ID" ]]; then
     exit 0
@@ -32,7 +33,8 @@ while IFS=$'\x1f' read -r TASK_ID NAME AGENT_TYPE MODEL_ID EFFORT TOKEN_COUNT \
     CONTEXT_WINDOW_SIZE START_TIME STATUS; do
     [[ -z "$TASK_ID" ]] && continue
 
-    ESTIMATED_COST=$(usage_estimate_cost "$MODEL_ID" "$TOKEN_COUNT")
+    SUBAGENT_TRANSCRIPT=$(usage_subagent_transcript_path "$PARENT_TRANSCRIPT" "$TASK_ID")
+    ESTIMATED_COST=$(usage_transcript_cost "$SUBAGENT_TRANSCRIPT") || ESTIMATED_COST=""
     STARTED_AT="$START_TIME"
     [[ -z "$STARTED_AT" || "$STARTED_AT" == "null" ]] && STARTED_AT="$NOW"
 
@@ -53,7 +55,8 @@ while IFS=$'\x1f' read -r TASK_ID NAME AGENT_TYPE MODEL_ID EFFORT TOKEN_COUNT \
             model = excluded.model,
             effort = excluded.effort,
             token_count = excluded.token_count,
-            estimated_cost_usd = excluded.estimated_cost_usd,
+            estimated_cost_usd = COALESCE(
+                excluded.estimated_cost_usd, subagent_tasks.estimated_cost_usd),
             context_window_size = excluded.context_window_size,
             updated_at = excluded.updated_at,
             status = excluded.status,

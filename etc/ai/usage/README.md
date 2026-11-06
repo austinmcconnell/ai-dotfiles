@@ -20,9 +20,12 @@ Code is wired up today — see "Why Kiro CLI isn't wired up" below.
   preserve.
 - **Pricing**: `pricing.json` — model → $/M-token rates, used only to estimate subagent $ cost
   (Claude Code's main session already reports `cost.total_cost_usd` itself; subagents only report a
-  combined `tokenCount`, so `estimated_cost_usd` is a blended-rate approximation, not an exact
-  figure — see the comment in `lib.sh`'s `usage_estimate_cost`). Verified against the `claude-api`
-  skill's cached pricing table on 2026-09-25 — re-verify before trusting old entries; prices change.
+  combined `tokenCount`, so `subagent_tasks.estimated_cost_usd` is priced from the subagent's own
+  transcript by `usage_transcript_cost` in `lib.sh`: one final record per `requestId`, with the
+  long-context and cache-read rules from `pricing.json`. It is NULL while the transcript is missing
+  or any request is unpriced, and a later firing that cannot read the transcript keeps the last
+  value. Tests: `test/test-subagent-cost.sh`). Verified against the `claude-api` skill's cached
+  pricing table on 2026-09-25 — re-verify before trusting old entries; prices change.
 
 ## Claude Code integration
 
