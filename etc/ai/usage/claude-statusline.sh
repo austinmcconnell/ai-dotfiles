@@ -17,7 +17,8 @@ source "$SCRIPT_DIR/lib.sh"
 
 PAYLOAD=$(cat)
 
-IFS=$'\t' read -r SESSION_ID CWD PROJECT_DIR MODEL_ID MODEL_DISPLAY EFFORT \
+# Unit separator, not tab: tab is IFS whitespace, so read would collapse empty fields.
+IFS=$'\x1f' read -r SESSION_ID CWD PROJECT_DIR MODEL_ID MODEL_DISPLAY EFFORT \
     COST_USD DURATION_MS API_DURATION_MS INPUT_TOKENS OUTPUT_TOKENS \
     CACHE_CREATION CACHE_READ CTX_USED_PCT <<<"$(
         printf '%s' "$PAYLOAD" | jq -r '[
@@ -28,7 +29,7 @@ IFS=$'\t' read -r SESSION_ID CWD PROJECT_DIR MODEL_ID MODEL_DISPLAY EFFORT \
         .context_window.current_usage.cache_creation_input_tokens,
         .context_window.current_usage.cache_read_input_tokens,
         .context_window.used_percentage
-    ] | @tsv'
+    ] | join("\u001f")'
     )"
 
 if [[ -n "$SESSION_ID" ]]; then

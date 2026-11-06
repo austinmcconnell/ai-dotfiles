@@ -28,7 +28,7 @@ usage_db_init
 NOW="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
 
 SQL=""
-while IFS=$'\t' read -r TASK_ID NAME AGENT_TYPE MODEL_ID EFFORT TOKEN_COUNT \
+while IFS=$'\x1f' read -r TASK_ID NAME AGENT_TYPE MODEL_ID EFFORT TOKEN_COUNT \
     CONTEXT_WINDOW_SIZE START_TIME STATUS; do
     [[ -z "$TASK_ID" ]] && continue
 
@@ -60,10 +60,12 @@ while IFS=$'\t' read -r TASK_ID NAME AGENT_TYPE MODEL_ID EFFORT TOKEN_COUNT \
             raw_json = excluded.raw_json;
     "
 done <<<"$(
+    # The payload has no agent_type or effort; null keeps their column slots aligned.
     printf '%s' "$PAYLOAD" | jq -r '.tasks[]? | [
-        .id, .name, .type, .model, .effort, .tokenCount,
-        .contextWindowSize, .startTime, .status
-    ] | @tsv'
+        .id, .label, null, .model, null, .tokenCount,
+        .contextWindowSize, (if .startTime then (.startTime / 1000 | todate) else null end),
+        .status
+    ] | join("\u001f")'
 )"
 
 [[ -n "$SQL" ]] && sqlite3 "$USAGE_DB" "$SQL"
