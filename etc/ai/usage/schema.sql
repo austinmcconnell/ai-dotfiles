@@ -49,7 +49,7 @@ CREATE TABLE IF NOT EXISTS subagent_tasks (
     model                TEXT,               -- resolved model id, not a display name
     effort               TEXT,
     token_count          INTEGER,
-    estimated_cost_usd   REAL,               -- estimated: source data gives one token count, not an input/output split
+    estimated_cost_usd   REAL,               -- estimated from subagent transcript; NULL if unavailable
     context_window_size  INTEGER,
     started_at           TEXT NOT NULL,
     updated_at           TEXT NOT NULL,
