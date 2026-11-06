@@ -41,24 +41,24 @@ are complete.
 
 ### Level 0
 
-1. `project-analysis.txt`
+1. `project-analysis.md`
 
 ### Level 1
 
-1. `architecture-analysis.txt`
-1. `schema-analysis.txt`
-1. `documentation-analysis.txt`
+1. `architecture-analysis.md`
+1. `schema-analysis.md`
+1. `documentation-analysis.md`
 
 ### Level 2
 
-1. `integration-analysis.txt`
-1. `testing-analysis.txt`
-1. `technical-debt-analysis.txt`
+1. `integration-analysis.md`
+1. `testing-analysis.md`
+1. `technical-debt-analysis.md`
 
 ### Level 3
 
-1. `performance-analysis.txt`
-1. `security-analysis.txt`
+1. `performance-analysis.md`
+1. `security-analysis.md`
 
 ## Notes
 
