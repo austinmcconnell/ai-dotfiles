@@ -59,14 +59,7 @@ while IFS=$'\x1f' read -r TASK_ID NAME AGENT_TYPE MODEL_ID EFFORT TOKEN_COUNT \
             status = excluded.status,
             raw_json = excluded.raw_json;
     "
-done <<<"$(
-    # The payload has no agent_type or effort; null keeps their column slots aligned.
-    printf '%s' "$PAYLOAD" | jq -r '.tasks[]? | [
-        .id, .label, null, .model, null, .tokenCount,
-        .contextWindowSize, (if .startTime then (.startTime / 1000 | todate) else null end),
-        .status
-    ] | join("\u001f")'
-)"
+done <<<"$(usage_subagent_task_rows "$PAYLOAD")"
 
 [[ -n "$SQL" ]] && sqlite3 "$USAGE_DB" "$SQL"
 

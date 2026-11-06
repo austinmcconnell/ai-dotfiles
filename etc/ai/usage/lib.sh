@@ -50,6 +50,16 @@ sql_num() {
     fi
 }
 
+# One unit-separator-joined row per subagent task in a subagentStatusLine payload,
+# in the column order the read loop in claude-subagent-statusline.sh expects.
+usage_subagent_task_rows() {
+    jq -r '.tasks[]? | [
+        .id, .label, .agentType, .model, null, .tokenCount,
+        .contextWindowSize, (if .startTime then (.startTime / 1000 | todate) else null end),
+        .status
+    ] | join("\u001f")' <<<"$1"
+}
+
 # Estimate a $ cost for a token count with no input/output split (used for
 # subagent tasks, which report one combined tokenCount). Uses the average of
 # the model's input and output per-token price as a blended rate -- a rough
