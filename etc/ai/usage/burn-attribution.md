@@ -40,6 +40,13 @@ machines never have it, so `rate_limit_snapshots` stays empty there.
   uses the `long_context` rates for the whole request.
 - Include subagent files under `subagents/`.
 
+Why one record per `requestId`: Claude Code's own `cost-state` token totals match this convention.
+Across 161 sessions with `cost-state`, the output total matches within 1% in 60 sessions when
+counted per `requestId`, and in one session when counted per record. In 30 short sessions where all
+four token totals match, per-record cost is exactly twice the per-`requestId` cost (each request has
+two records), and per-`requestId` cost is 0.91 of `cost-state`. Session 492a3eb3 does not fit either
+convention (see Open outliers).
+
 **Turns:** a turn starts at a user record with `turnPosition` and `origin.kind` = human. A turn with
 at least one assistant response counts as a turn. Peer-origin turns are counted and flagged. Turns
 with no response, and turns with no `end_turn`, are reported separately. Records with `isMeta` are
@@ -86,20 +93,23 @@ is not removed from the sample.
 
 ## Model and effort mix (Q4)
 
-Transcript pricing across all 117 transcript sets, distinct requests, main and subagent files: total
-$119.54 across 6,914 request lines.
+Transcript pricing over all main and subagent transcript files, one record per `requestId` (the last
+record, which carries the final usage). Total $259.30.
 
-| Model             | Thread   | Requests | USD   | Share |
-| ----------------- | -------- | -------- | ----- | ----- |
-| claude-haiku-5-5  | main     | 4,832    | 42.33 | 35.4% |
-| claude-sonnet-5   | main     | 687      | 40.20 | 33.6% |
-| claude-sonnet-5-5 | main     | 843      | 32.38 | 27.1% |
-| claude-sonnet-5   | subagent | 34       | 1.80  | 1.5%  |
-| claude-haiku-5-5  | subagent | 389      | 1.44  | 1.2%  |
-| claude-haiku-4-5  | subagent | 120      | 1.03  | 0.9%  |
-| other             |          | 9        | 0.19  | 0.2%  |
+| Model             | Thread   | Requests | USD    | Share |
+| ----------------- | -------- | -------- | ------ | ----- |
+| claude-sonnet-5   | main     | 2,826    | 169.89 | 65.5% |
+| claude-haiku-5-5  | main     | 4,987    | 43.67  | 16.8% |
+| claude-sonnet-5-5 | main     | 843      | 32.38  | 12.5% |
+| claude-sonnet-5   | subagent | 107      | 5.63   | 2.2%  |
+| claude-opus-5     | subagent | 22       | 3.30   | 1.3%  |
+| claude-haiku-4-5  | subagent | 231      | 2.64   | 1.0%  |
+| claude-haiku-5-5  | subagent | 389      | 1.44   | 0.6%  |
+| claude-opus-5-5   | subagent | 1        | 0.19   | 0.1%  |
+| claude-haiku-4-5  | main     | 7        | 0.17   | 0.1%  |
 
-- By effort: medium 70.7% of spend, high 28.3%, unset 1.0%.
+- The effort split and the session-level cross-check below were computed on the earlier 117-set
+  scope and have not been recounted.
 - Model and effort are confounded: every `high` request is `claude-sonnet-5`.
 - Haiku and Sonnet 5.5 requests carry an `advisorModel` field (Opus 5.5). That usage is not
   separately priced here.
@@ -109,12 +119,42 @@ Haiku 5.5 medium 29.0%, Sonnet 5.5 medium 21.7%, Sonnet 5 medium 10.3%.
 
 ## Subagent share (Q5)
 
-- Transcript pricing: subagent requests are $4.6 of $119.54 (3.8%).
+- Transcript pricing per `requestId` over all main and subagent transcript files: subagent requests
+  are $13.19 of $259.30 (5.1%). The earlier 117-set figure was $4.6 of $119.54 (3.8%). The two
+  scopes differ.
+
+- Subagent request counts in the Q4 table come from the same scope (Sonnet 5 107, Opus 5 22, Haiku
+  4.5 231, Haiku 5.5 389, Opus 5.5 1).
+
 - `isSidechain` is true on every assistant record in a 40-file sample of subagent transcripts, and
   false on main-thread records.
-- usage.db `subagent_tasks`: 74 tasks in 24 parent sessions, `estimated_cost_usd` total $13.93 (7.6%
-  of $183.60). Not reconciled with transcript pricing: the Sonnet subagent estimate is $10.71
-  against $1.80 from transcripts. Treat the usage.db figure as an unreconciled estimate.
+
+- usage.db `subagent_tasks`: 74 tasks in 24 parent sessions. Each task was reconciled against its
+  own subagent transcript (per `requestId`): estimate $13.93 against $6.30 transcript-priced
+  (2.21×).
+
+  | Model            | Tasks | Estimate | Transcript | Estimate ÷ transcript |
+  | ---------------- | ----- | -------- | ---------- | --------------------- |
+  | claude-sonnet-5  | 10    | $10.71   | $2.95      | 3.63                  |
+  | claude-haiku-5-5 | 53    | $1.01    | $1.44      | 0.70                  |
+  | claude-haiku-4-5 | 10    | $1.77    | $1.72      | 1.02                  |
+  | claude-opus-5-5  | 1     | $0.45    | $0.19      | 2.42                  |
+
+- The estimate is one blended rate, (input + output) ÷ 2, times `tokenCount`. Sonnet subagent tasks
+  are about 97% cache reads by prompt tokens, which the blend overprices. Haiku 5.5 tasks are
+  output-heavy, and nine cross the 100K tier. The per-task spread is wide, so a constant correction
+  does not fit.
+
+- `tokenCount` has no clean formula. It equals the last request's prompt size in 16 of 74 tasks, and
+  no other tested definition matches more than three.
+
+- Repair: `repair-subagent-tasks.sh` (rows shifted before 078ad84) finds no shifted rows on this
+  machine, so nothing changes here. Existing rows have NULL `agent_type`; the writer now records it
+  from the payload.
+
+- Treat the usage.db subagent figure as an estimate. Its Sonnet and Haiku 5.5 errors run in opposite
+  directions, so it cannot be used as a subagent cost.
+
 - Adding subagent transcripts to the 21 sessions that have them moves the median transcript/actual
   ratio from 0.78 to 0.83, and the count within the band from 2 to 7. The signal is weak (subagents
   are about 5% of a session's cost), but it supports `total_cost_usd` including subagent cost. Not
@@ -205,15 +245,33 @@ Three Sonnet 5 sessions show snapshot ratios far below transcript ratios: one ha
 snapshots over roughly 300K-token contexts (0.26 vs 0.87). The snapshot path misses calls between
 firings; transcript pricing recovers most of the spend.
 
+### Cache-write rate check
+
+Across 30 sessions whose per-`requestId` token totals match `cost-state` in all four components, the
+remaining cost gap is almost entirely 1h cache writes. The 1h write rate that closes the gap is
+0.222 to 0.228 per million tokens in the Haiku 5.5 sessions with more than 10K 1h write tokens,
+against $0.20 published here. For Sonnet 5.5 (one session with 33K 1h write tokens) the implied rate
+is $4.45, against $4.00 at 2× input. The gap is the same across Claude Code versions 2.1.285,
+2.1.308, and 2.1.311, and is about 2.22× input rather than 2.0×.
+
+Not explained. Either `cost-state` bills 1h writes at a different rate, or another term scales with
+cache writes. Verify against the pricing page before changing `pricing.json`. Estimates above use
+the published rate and are about 10% low on 1h writes.
+
 ### Open outliers
 
 - Session 605bf8c9: transcript estimate 2.38× actual under the shipped rule. It fits a marginal tier
   rule (0.99), but that rule fails across the population. Left as a documented outlier.
-- Session 492a3eb3: below 0.35 under every tier variant tested, so the tier is not its cause. Cause
-  unknown.
-- Session f4f9eae5: the transcript's `cost-state` record exceeds the assistant records by about 125K
-  cache-read tokens. Side calls (unrecorded billed requests) do not explain the general gap: 46 of
-  49 sessions without an extra `api-request` still show an output gap. Cause unknown.
+- Session 492a3eb3: per-`requestId` pricing gives 0.31 of `total_cost_usd`; per-record gives 0.76.
+  The tier is not the cause under either. `cost-state` exceeds the per-`requestId` transcript totals
+  by 11K input, 374K cache-write, and 10.9M cache-read tokens. Per-record sums come closer on output
+  (156K against 152K) and cache reads (21.3M against 20.3M), so session 492a3eb3 fits neither
+  convention. Cause unknown.
+- Session f4f9eae5: per-`requestId` pricing gives 0.35 of `total_cost_usd`, and per-record gives
+  0.94. Per `requestId`, `cost-state` exceeds the transcript by 1.9K input, 2.0K output, 125K
+  cache-read, and 31K cache-write tokens, plus two web searches (`cost-state` counts 2; the
+  transcript shows none). That is consistent with one request missing from the transcript plus two
+  web searches at about $0.01 each. Not verified against the request records.
 
 ## Retention
 
@@ -231,9 +289,10 @@ transcript spend? This needs `rate_limit_snapshots` from a subscription machine.
 
 Status as of 2026-11-06 on the personal machine: not validated, because there is not enough data.
 `rate_limit_snapshots` holds 3 rows. The five-hour window moved from 1% to 3% over about 21 minutes;
-the seven-day window stayed at 3%. That leaves one window with a change, and too few points at whole-
-percent resolution for a fit. The retention and `resets_at` checks pass. `cleanupPeriodDays` is 90 in
-user settings, no transcripts are older than 30 days, and both reset epochs decode to plausible times.
+the seven-day window stayed at 3%. That leaves one window with a change, and too few points at
+whole- percent resolution for a fit. The retention and `resets_at` checks pass. `cleanupPeriodDays`
+is 90 in user settings, no transcripts are older than 30 days, and both reset epochs decode to
+plausible times.
 
 Rerun the runbook once both windows have several snapshots over a period with meaningful spend. The
 seven-day window needs to move too.
@@ -254,8 +313,14 @@ Runbook (run on the machine that has rate-limit data):
 ## Open items
 
 - Rate-limit validation (above). Needs more snapshots across both windows.
-- Outliers 605bf8c9, 492a3eb3, and f4f9eae5 (above).
-- Usage.db `subagent_tasks` estimate does not reconcile with transcripts.
+- Outliers 605bf8c9 and 492a3eb3 (above). f4f9eae5 is explained by a likely missing request and web
+  searches, not yet verified.
+- Counting convention: per-`requestId` for estimator comparisons. Session 492a3eb3 is the exception.
+- Cache-write rate: the 1h write rate implied by `cost-state` is about 10% above the published rate
+  (see Cache-write rate check). Verify before changing `pricing.json`.
+- Usage.db `subagent_tasks` estimate: a blended-rate estimate, wrong by model. A correction needs
+  transcript-based subagent cost, which is not implemented. Needs a plan before any change.
+- Effort split and session-level cross-check in Q4 are from the 117-set scope; recount if reused.
 - Whether `total_cost_usd` fully includes subagent cost (weak support, not proven).
 - Advisor-model usage: not found in transcripts as separate priced requests. Sessions with advisor
   requests run at the same ratio as sessions without (1.18 vs 1.17), so it is not a large unrecorded
