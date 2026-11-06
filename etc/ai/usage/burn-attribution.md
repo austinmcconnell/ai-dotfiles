@@ -224,10 +224,19 @@ firings; transcript pricing recovers most of the spend.
 - The Claude Code default is 30 days, by file modification time. Official docs confirm this.
 - Do not set `cleanupPeriodDays` to 0. A reported issue says it stops transcript writes.
 
-## Rate limits (personal machine only; not yet run)
+## Rate limits (personal machine only; not yet validated)
 
 The validation question: does the five-hour or seven-day used percentage move in proportion to
 transcript spend? This needs `rate_limit_snapshots` from a subscription machine.
+
+Status as of 2026-11-06 on the personal machine: not validated, because there is not enough data.
+`rate_limit_snapshots` holds 3 rows. The five-hour window moved from 1% to 3% over about 21 minutes;
+the seven-day window stayed at 3%. That leaves one window with a change, and too few points at whole-
+percent resolution for a fit. The retention and `resets_at` checks pass. `cleanupPeriodDays` is 90 in
+user settings, no transcripts are older than 30 days, and both reset epochs decode to plausible times.
+
+Rerun the runbook once both windows have several snapshots over a period with meaningful spend. The
+seven-day window needs to move too.
 
 Runbook (run on the machine that has rate-limit data):
 
@@ -244,7 +253,7 @@ Runbook (run on the machine that has rate-limit data):
 
 ## Open items
 
-- Rate-limit validation (above). Needs a subscription machine.
+- Rate-limit validation (above). Needs more snapshots across both windows.
 - Outliers 605bf8c9, 492a3eb3, and f4f9eae5 (above).
 - Usage.db `subagent_tasks` estimate does not reconcile with transcripts.
 - Whether `total_cost_usd` fully includes subagent cost (weak support, not proven).
