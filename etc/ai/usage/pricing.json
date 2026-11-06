@@ -29,6 +29,10 @@
         "claude-haiku-4-5": { "input_per_mtok": 1.0, "output_per_mtok": 5.0 },
         "claude-haiku-4-5-20251001": { "input_per_mtok": 1.0, "output_per_mtok": 5.0 },
         "claude-fable-5": { "input_per_mtok": 10.0, "output_per_mtok": 50.0 },
-        "claude-mythos-5-1": { "input_per_mtok": 10.0, "output_per_mtok": 50.0 }
+        "claude-mythos-5-1": {
+            "input_per_mtok": 10.0,
+            "output_per_mtok": 50.0,
+            "cache_read_multiplier": 0.025
+        }
     }
 }
