@@ -102,6 +102,30 @@ already tolerates per-tool nulls. No code changes should be needed beyond a new 
 ingestion script — don't re-run the hook probe or re-derive this from scratch; check this file
 first.
 
+## Session-level cost estimator: `estimate-session-cost.sh`
+
+`estimate-session-cost.sh <session_id-or-prefix>` is a **cross-check only, never authoritative**.
+`sessions.total_cost_usd` stays the source of truth for every aggregate — this script exists to
+sanity-check the pricing table and the capture pipeline against it, not to replace it.
+
+It reprices each `cost_snapshots` row for the session from that row's `raw_json`, using
+`context_window.current_usage.{input_tokens,output_tokens,cache_creation_input_tokens, cache_read_input_tokens}`
+— the last-API-call-only usage — priced with `pricing.json` (the cache write multiplier is chosen
+per row from that row's `prompt_cache.ttl`). It does **not** use the dedicated
+`cost_snapshots.input_tokens`/`output_tokens` columns: those hold
+`context_window.total_input_tokens`/`total_output_tokens`, which is the current context-window size,
+not a per-call or cumulative billing figure — documented at
+[code.claude.com/docs/en/statusline](https://code.claude.com/docs/en/statusline). Summing per-call
+`current_usage` across all of a session's snapshots is valid because that field is never cumulative
+— unlike `total_cost_usd`, it resets to the latest call's usage each time.
+
+Prints the estimate, the actual `total_cost_usd`, their ratio, and flags the session when the ratio
+falls outside roughly 0.85–1.15 — a sign the pricing table, cache multiplier, or capture assumptions
+are off for that session's model. A known gap: Sonnet sessions typically estimate at 0.5–0.7 of
+actual, traced to the cache-read multiplier changing (Claude Code 2.1.296 repriced Sonnet 5.5 cache
+reads from 0.1x to 0.05x) without the multiplier being version-aware here — tracked as a follow-up,
+not yet fixed.
+
 ## Deliberately out of scope (for now)
 
 - **No EAV/fully-generic metric schema.** Considered and rejected in favor of nullable typed columns
