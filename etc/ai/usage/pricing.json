@@ -12,7 +12,8 @@
         "claude-sonnet-5-5": {
             "input_per_mtok": 2.0,
             "output_per_mtok": 10.0,
-            "cache_read_multiplier": 0.05
+            "cache_read_multiplier": 0.05,
+            "cache_read_multiplier_before_version": { "version": "2.1.296", "multiplier": 0.1 }
         },
         "claude-haiku-5-5": { "input_per_mtok": 0.1, "output_per_mtok": 0.5 },
         "claude-fable-5-1": {

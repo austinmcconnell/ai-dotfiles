@@ -56,6 +56,18 @@ RESULT="$(
             elif $ttl == "5m" then $pricing.cache_write_multiplier_5m
             else 1 end;
 
+        def version_parts: split(".") | map(tonumber);
+
+        # A pricing entry can name the Claude Code version that repriced its cache reads.
+        # A missing version keeps the current rate.
+        def read_mult($m; $version):
+            ($m.cache_read_multiplier // $pricing.cache_read_multiplier) as $current
+            | ($m.cache_read_multiplier_before_version) as $old
+            | if $old == null or $version == null then $current
+            elif ($version | version_parts) < ($old.version | version_parts) then $old.multiplier
+            else $current
+            end;
+
         # Prices one snapshot from its raw current_usage fields. Returns
         # null (not 0) when the model has no pricing entry, so callers can
         # tell "priced at zero cost" apart from "could not price".
@@ -67,7 +79,7 @@ RESULT="$(
                 | ($p.context_window.current_usage.output_tokens // 0) as $out
                 | ($p.context_window.current_usage.cache_creation_input_tokens // 0) as $cw
                 | ($p.context_window.current_usage.cache_read_input_tokens // 0) as $cr
-                | ($m.cache_read_multiplier // $pricing.cache_read_multiplier) as $read_mult
+                | read_mult($m; $p.version) as $read_mult
                 | (write_mult($p.prompt_cache.ttl // "5m")) as $wmult
                 | (
                     ($in * $m.input_per_mtok) + ($out * $m.output_per_mtok)

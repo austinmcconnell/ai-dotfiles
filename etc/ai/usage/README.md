@@ -142,10 +142,12 @@ not a per-call or cumulative billing figure — documented at
 
 Prints the estimate, the actual `total_cost_usd`, their ratio, and flags the session when the ratio
 falls outside roughly 0.85–1.15 — a sign the pricing table, cache multiplier, or capture assumptions
-are off for that session's model. A known gap: Sonnet sessions typically estimate at 0.5–0.7 of
-actual, traced to the cache-read multiplier changing (Claude Code 2.1.296 repriced Sonnet 5.5 cache
-reads from 0.1x to 0.05x) without the multiplier being version-aware here — tracked as a follow-up,
-not yet fixed.
+are off for that session's model.
+
+Cache-read rates are version-aware where a model's entry in `pricing.json` names a repricing
+release: Sonnet 5.5 used 0.1x before Claude Code 2.1.296 and 0.05x from it. Each row uses the
+`version` in its own payload, and a row without one falls back to the current rate. Sonnet 5.5
+sessions before 2.1.296 still estimate below actual; the remaining gap is tracked in `todo.md`.
 
 ## Deliberately out of scope (for now)
 
