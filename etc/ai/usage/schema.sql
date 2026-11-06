@@ -105,3 +105,24 @@ CREATE TABLE IF NOT EXISTS cost_snapshots (
     occurred_at            TEXT NOT NULL,   -- ISO8601 UTC
     raw_json                TEXT            -- the statusline's raw stdin payload, as insurance against needing a column for every future field
 );
+
+-- Append-only rate-limit trajectory, one row per statusline firing where
+-- five_hour_used_percentage or seven_day_used_percentage actually changed
+-- since the last recorded row (see claude-statusline.sh). Deliberately no
+-- session_id: unlike cost, rate limits are account-wide, not per-session --
+-- every concurrently open session observes the same percentage, so keying
+-- rows by session would just duplicate one real-world change N times (N =
+-- concurrently open sessions) rather than attributing distinct usage to
+-- each. Concurrent sessions can race on the dedup check and both insert a
+-- near-simultaneous duplicate row; accepted as harmless, same as this
+-- tracker's other best-effort dedup checks.
+CREATE TABLE IF NOT EXISTS rate_limit_snapshots (
+    id                        INTEGER PRIMARY KEY AUTOINCREMENT,
+    tool                      TEXT NOT NULL,   -- 'claude-code', 'kiro-cli' (future), ...
+    five_hour_used_percentage REAL,
+    seven_day_used_percentage REAL,
+    five_hour_resets_at       INTEGER,         -- unix epoch seconds
+    seven_day_resets_at       INTEGER,         -- unix epoch seconds
+    occurred_at               TEXT NOT NULL,   -- ISO8601 UTC
+    raw_json                  TEXT             -- the statusline's raw stdin payload, as insurance against needing a column for every future field
+);

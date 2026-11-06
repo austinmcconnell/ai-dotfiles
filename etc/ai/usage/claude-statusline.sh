@@ -89,6 +89,30 @@ if [[ -n "$SESSION_ID" ]]; then
             ORDER BY id DESC LIMIT 1
         ) IS NOT $(sql_num "$COST_USD");
     "
+
+    # rate_limits only exists for claude.ai subscribers (see DISPLAY_USAGE
+    # below); account-wide, not per-session, so no session_id and no
+    # per-session dedup scoping -- see schema.sql's rate_limit_snapshots
+    # comment.
+    if [[ -n "$FIVE_HOUR_PCT" || -n "$SEVEN_DAY_PCT" ]]; then
+        sqlite3 "$USAGE_DB" "
+            INSERT INTO rate_limit_snapshots (
+                tool, five_hour_used_percentage, seven_day_used_percentage,
+                five_hour_resets_at, seven_day_resets_at, occurred_at, raw_json
+            )
+            SELECT 'claude-code', $(sql_num "$FIVE_HOUR_PCT"), $(sql_num "$SEVEN_DAY_PCT"),
+                $(sql_num "$FIVE_HOUR_RESETS"), $(sql_num "$SEVEN_DAY_RESETS"),
+                $(sql_str "$NOW"), $(sql_str "$PAYLOAD")
+            WHERE (
+                SELECT five_hour_used_percentage FROM rate_limit_snapshots
+                WHERE tool = 'claude-code' ORDER BY id DESC LIMIT 1
+            ) IS NOT $(sql_num "$FIVE_HOUR_PCT")
+            OR (
+                SELECT seven_day_used_percentage FROM rate_limit_snapshots
+                WHERE tool = 'claude-code' ORDER BY id DESC LIMIT 1
+            ) IS NOT $(sql_num "$SEVEN_DAY_PCT");
+        "
+    fi
 fi
 
 format_pct() {

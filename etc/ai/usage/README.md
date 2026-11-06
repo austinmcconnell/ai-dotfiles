@@ -83,6 +83,27 @@ not to attribute cost by tool type — Claude Code's statusline only ever report
 totals, never a per-tool-call breakdown, so that finer-grained attribution isn't derivable from any
 data this repo has access to.
 
+## Rate-limit trajectory: `rate_limit_snapshots`
+
+Same append-only-on-change idea as `cost_snapshots`, but deliberately **no `session_id`**.
+`rate_limits` (`five_hour`/`seven_day` `used_percentage`/`resets_at`) is an account-wide figure, not
+a per-session one — every concurrently open session's statusline reports the identical percentage.
+Keying rows by `session_id` the way `cost_snapshots` does would duplicate one real-world change once
+per concurrently open session rather than attributing distinct usage to each, so the table instead
+has one global timeline: a row is appended only when `five_hour_used_percentage` or
+`seven_day_used_percentage` has changed since the table's last row (the same SQL `IS NOT` dedup
+`cost_snapshots` uses, `OR`-ed across both columns since either can change independently). Only
+fires when `rate_limits` is present in the payload at all (claude.ai Pro/Max/Ultra subscribers — see
+"Display decision" below); absent for Enterprise/API.
+
+Because the dedup check and insert aren't one atomic SQL statement across every writer, two sessions
+racing a near-simultaneous rate-limit change can both pass the check and insert a duplicate row.
+Accepted as harmless — same class of best-effort dedup as `cost_snapshots`, not worth adding
+cross-process locking to close.
+
+This table has no reader in this repo; see `~/.dotfiles/bin/ai-usage --rate-limits` for the canned
+report over it.
+
 ## Why Kiro CLI isn't wired up
 
 Empirically confirmed, not assumed: kiro-cli's own hook system (`agentSpawn`/`preToolUse`/
