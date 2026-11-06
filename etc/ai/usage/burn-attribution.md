@@ -140,17 +140,15 @@ Haiku 5.5 medium 29.0%, Sonnet 5.5 medium 21.7%, Sonnet 5 medium 10.3%.
   | claude-haiku-4-5 | 10    | $1.77    | $1.72      | 1.02                  |
   | claude-opus-5-5  | 1     | $0.45    | $0.19      | 2.42                  |
 
-- The estimate is one blended rate, (input + output) ÷ 2, times `tokenCount`. Sonnet subagent tasks
-  are about 97% cache reads by prompt tokens, which the blend overprices. Haiku 5.5 tasks are
-  output-heavy, and nine cross the 100K tier. The per-task spread is wide, so a constant correction
-  does not fit.
+- The earlier estimate was one blended rate, (input + output) ÷ 2, times `tokenCount`. Sonnet
+  subagent tasks are about 97% cache reads by prompt tokens, which the blend overprices. Haiku 5.5
+  tasks are output-heavy, and nine cross the 100K tier. The per-task spread is wide, so a constant
+  correction does not fit. Subagent cost is now priced from each subagent's transcript.
 
 - `tokenCount` has no clean formula. It equals the last request's prompt size in 16 of 74 tasks, and
   no other tested definition matches more than three.
 
-- Repair: `repair-subagent-tasks.sh` (rows shifted before 078ad84) finds no shifted rows on this
-  machine, so nothing changes here. Existing rows have NULL `agent_type`; the writer now records it
-  from the payload.
+- Existing rows have NULL `agent_type`; the writer now records it from the payload.
 
 - Treat the usage.db subagent figure as an estimate. Its Sonnet and Haiku 5.5 errors run in opposite
   directions, so it cannot be used as a subagent cost.
@@ -318,8 +316,8 @@ Runbook (run on the machine that has rate-limit data):
 - Counting convention: per-`requestId` for estimator comparisons. Session 492a3eb3 is the exception.
 - Cache-write rate: the 1h write rate implied by `cost-state` is about 10% above the published rate
   (see Cache-write rate check). Verify before changing `pricing.json`.
-- Usage.db `subagent_tasks` estimate: a blended-rate estimate, wrong by model. A correction needs
-  transcript-based subagent cost, which is not implemented. Needs a plan before any change.
+- Usage.db `subagent_tasks` estimate: resolved. Rows are priced from subagent transcripts (fa777d4),
+  and the existing rows were backfilled with the same rules (b2f5d67).
 - Effort split and session-level cross-check in Q4 are from the 117-set scope; recount if reused.
 - Whether `total_cost_usd` fully includes subagent cost (weak support, not proven).
 - Advisor-model usage: not found in transcripts as separate priced requests. Sessions with advisor

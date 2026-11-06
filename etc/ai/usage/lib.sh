@@ -131,22 +131,3 @@ usage_transcript_cost() {
     fi
     return 0
 }
-
-# Estimate a $ cost for a token count with no input/output split (used for
-# subagent tasks, which report one combined tokenCount). Uses the average of
-# the model's input and output per-token price as a blended rate -- a rough
-# midpoint, not an exact figure, since the real input/output mix is unknown.
-# Prints an empty string (caller should treat as NULL) when the model has no
-# pricing entry or the token count is missing.
-usage_estimate_cost() {
-    local model="${1:-}" tokens="${2:-}"
-    if [[ -z "$model" || "$model" == "null" || ! "$tokens" =~ ^-?[0-9]+(\.[0-9]+)?$ ]]; then
-        return 0
-    fi
-    jq -r --arg model "$model" --argjson tokens "$tokens" '
-        .models[$model] as $m
-        | if $m == null then ""
-            else (($m.input_per_mtok + $m.output_per_mtok) / 2) * $tokens / 1000000
-            end
-    ' "$USAGE_PRICING"
-}
