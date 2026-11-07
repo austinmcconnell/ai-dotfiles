@@ -4,8 +4,7 @@ Findings from the 2026-11-06 analysis of Claude Code usage data, written so the 
 continued on another machine. Covers what was measured, how, what was decided, and what is still
 open. The estimator itself is described in `README.md` in this directory.
 
-Snapshot as of 2026-11-06 on the work machine (enterprise billing). Counts are for that machine's
-local data only.
+Snapshot as of 2026-11-06 on the work machine. Counts are for that machine's local data only.
 
 ## Data sources and what each one can answer
 
@@ -14,8 +13,9 @@ local data only.
   which is the usage of the last API call only. Calls between firings are not recorded.
 - **`usage.db` `sessions`**: one row per session. `total_cost_usd` is the authoritative session
   total. `raw_json` holds the last payload, including `prompt_cache`.
-- **`usage.db` `subagent_tasks`**: one row per subagent task. `estimated_cost_usd` comes from a
-  single token count (no input/output split), so it is an estimate.
+- **`usage.db` `subagent_tasks`**: one row per subagent task. `estimated_cost_usd` is priced from
+  each subagent's own transcript, one record per `requestId`. It is NULL when the transcript is
+  missing or cannot be fully priced.
 - **`usage.db` `compaction_events`**: PreCompact and PostCompact hook events. Token fields are
   sparse (see Q7).
 - **Transcripts** (`~/.claude/projects/<project>/<session>.jsonl`, plus `subagents/` files): one
@@ -29,13 +29,13 @@ machines never have it, so `rate_limit_snapshots` stays empty there.
 
 ## Method
 
-**Transcript pricing:** group assistant records by `requestId`, keep the first record that has
+**Transcript pricing:** group assistant records by `requestId`, keep the last record that has
 `message.usage`, and price each request with `pricing.json` rules:
 
 - Cache writes split into 5m and 1h using `cache_creation.ephemeral_*` (fall back to
   `cache_creation_input_tokens` as 5m when the breakdown is absent).
-- Cache reads at `cache_read_multiplier`; for Sonnet 5.5 and Sonnet 5, use the pre-version
-  multiplier when the Claude Code version is below 2.1.296.
+- Cache reads at `cache_read_multiplier`; for Sonnet 5.5, use the pre-version multiplier when the
+  Claude Code version is below 2.1.296.
 - Haiku 5.5 tier: a request whose prompt (input + cache writes + cache reads) is over 100K tokens
   uses the `long_context` rates for the whole request.
 - Include subagent files under `subagents/`.
@@ -150,8 +150,9 @@ Haiku 5.5 medium 29.0%, Sonnet 5.5 medium 21.7%, Sonnet 5 medium 10.3%.
 
 - Existing rows have NULL `agent_type`; the writer now records it from the payload.
 
-- Treat the usage.db subagent figure as an estimate. Its Sonnet and Haiku 5.5 errors run in opposite
-  directions, so it cannot be used as a subagent cost.
+- The Estimate column in the table above is the old blended-rate estimator, which was replaced.
+  Its Sonnet and Haiku 5.5 errors ran in opposite directions. The stored `estimated_cost_usd` is
+  now transcript-priced (see Method).
 
 - Adding subagent transcripts to the 21 sessions that have them moves the median transcript/actual
   ratio from 0.78 to 0.83, and the count within the band from 2 to 7. The signal is weak (subagents
@@ -247,7 +248,7 @@ firings; transcript pricing recovers most of the spend.
 
 Across 30 sessions whose per-`requestId` token totals match `cost-state` in all four components, the
 remaining cost gap is almost entirely 1h cache writes. The 1h write rate that closes the gap is
-0.222 to 0.228 per million tokens in the Haiku 5.5 sessions with more than 10K 1h write tokens,
+$0.222 to $0.228 per million tokens in the Haiku 5.5 sessions with more than 10K 1h write tokens,
 against $0.20 published here. For Sonnet 5.5 (one session with 33K 1h write tokens) the implied rate
 is $4.45, against $4.00 at 2× input. The gap is the same across Claude Code versions 2.1.285,
 2.1.308, and 2.1.311, and is about 2.22× input rather than 2.0×.
@@ -317,8 +318,9 @@ Runbook (run on the machine that has rate-limit data):
 - Counting convention: per-`requestId` for estimator comparisons. Session 492a3eb3 is the exception.
 - Cache-write rate: the 1h write rate implied by `cost-state` is about 10% above the published rate
   (see Cache-write rate check). Verify before changing `pricing.json`.
-- Usage.db `subagent_tasks` estimate: resolved. Rows are priced from subagent transcripts (fa777d4),
-  and the existing rows were backfilled with the same rules (b2f5d67).
+- Usage.db `subagent_tasks` estimate: resolved for new rows. Rows are priced from subagent
+  transcripts. Historical rows are repriced by `backfill-subagent-cost.sh`, which is a dry run
+  unless given `--apply`.
 - Effort split and session-level cross-check in Q4 are from the 117-set scope; recount if reused.
 - Whether `total_cost_usd` fully includes subagent cost (weak support, not proven).
 - Advisor-model usage: not found in transcripts as separate priced requests. Sessions with advisor
@@ -332,6 +334,6 @@ Runbook (run on the machine that has rate-limit data):
 
 - Estimator source: usage.db `cost_snapshots`. Transcripts and `cost-state` are cross-checks only
   because of retention.
-- No estimator change from this analysis. Any change needs a plan and review first.
+- The main-session snapshot estimator is unchanged. Any change to it needs a plan and review first.
 - Turn convention: as above (turn start = human-origin `turnPosition`; responded turns counted; peer
   turns flagged).
