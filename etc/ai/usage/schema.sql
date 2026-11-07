@@ -97,8 +97,8 @@ CREATE TABLE IF NOT EXISTS cost_snapshots (
     tool                   TEXT NOT NULL,   -- 'claude-code', 'kiro-cli' (future), ...
     session_id             TEXT NOT NULL,
     total_cost_usd         REAL,
-    input_tokens           INTEGER,         -- cumulative for the session
-    output_tokens          INTEGER,         -- cumulative for the session
+    input_tokens           INTEGER,         -- not a running total: falls within a session, so do not take deltas
+    output_tokens          INTEGER,         -- not a running total: falls within a session, so do not take deltas
     cache_creation_tokens  INTEGER,         -- most recent turn only; not cumulative (source data has no running total)
     cache_read_tokens      INTEGER,         -- most recent turn only; not cumulative (source data has no running total)
     context_used_percentage REAL,           -- relative to the model's native context ceiling, not autoCompactWindow
