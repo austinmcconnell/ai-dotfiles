@@ -13,6 +13,45 @@ call. The other hooks only print to stdout or write a log and never exit `2`, so
 few can still exit non-zero on an internal error, such as `correction-capture.sh` on malformed
 input.
 
+## Wiring a hook
+
+Add the script to `etc/ai/hooks/`, make it executable, then wire it in each tool's config. The
+examples wire a blocking `PreToolUse` hook on every tool.
+
+Claude Code, in the `PreToolUse` array under `hooks` in `etc/claude-code/settings.json`:
+
+```json
+{
+    "matcher": "*",
+    "hooks": [
+        {
+            "type": "command",
+            "command": "$AI_DOTFILES_DIR/etc/ai/hooks/block-env-files.sh",
+            "timeout": 5,
+            "onFailure": "block"
+        }
+    ]
+}
+```
+
+Kiro CLI, as an entry in the `hooks` array of each agent JSON in `etc/kiro-cli/cli-agents/`:
+
+```json
+{
+    "name": "preToolUse-0",
+    "trigger": "preToolUse",
+    "matcher": "*",
+    "action": {
+        "type": "command",
+        "command": "$AI_DOTFILES_DIR/etc/ai/hooks/block-env-files.sh"
+    },
+    "timeout": 5
+}
+```
+
+Kiro agents each carry their own array, so repeat the entry in every agent that should run the hook.
+Run `scripts/validate-hook-wiring.sh` afterwards to check that the two tools agree.
+
 ## Blocking hooks
 
 | Script                            | What it does                                                                                                                                              | How it is run                                                                           |
