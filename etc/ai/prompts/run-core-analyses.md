@@ -21,6 +21,9 @@ Get the current HEAD commit hash. Then check each of these files in `analysis/`:
 For each file that exists, read the `**HEAD Commit:**` line from its metadata header. If the commit
 matches current HEAD, that analysis is current.
 
+If you were given specific files to refresh, skip this comparison and treat only those files as
+needing an update.
+
 Report which analyses are current vs stale/missing, then proceed with only the stale or missing
 ones. Dependency ordering guarantees that prerequisites are current before any dependent analysis
 runs.
