@@ -7,6 +7,9 @@ installs and versions on its own.
 
 ## Install
 
+Requires [Homebrew](https://brew.sh): the installer uses `brew` to install engram and the kiro-cli
+and claude-code casks.
+
 ```shell
 git clone https://github.com/austinmcconnell/ai-dotfiles.git ~/.ai-dotfiles
 cd ~/.ai-dotfiles
@@ -51,7 +54,7 @@ Directories without their own README:
 
 | Directory     | What it holds                                     | How it is used                                                   |
 | ------------- | ------------------------------------------------- | ---------------------------------------------------------------- |
-| `bin/`        | `engram-hygiene`, `is-executable`, `trace-search` | Put on `PATH` by `install.sh`.                                   |
+| `bin/`        | `engram-hygiene`, `is-executable`, `trace-search` | Prepended to `PATH` for the install run only.                    |
 | `etc/codex/`  | `config.toml`                                     | Copied to `~/.codex/` by `install/codex.sh` (codex is disabled). |
 | `etc/dprint/` | `dprint.jsonc`                                    | Passed to `dprint fmt` by the `dprint` pre-commit hook.          |
 | `etc/taplo/`  | `taplo.toml`                                      | Passed to the `taplo-format` and `taplo-lint` pre-commit hooks.  |
