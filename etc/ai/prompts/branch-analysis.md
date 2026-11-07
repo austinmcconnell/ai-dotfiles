@@ -48,7 +48,7 @@ git status
 git rev-parse --abbrev-ref HEAD
 
 # Show commits in this branch
-git log --oneline $MERGE_BASE..HEAD
+git log $MERGE_BASE..HEAD
 
 # Show changes since common ancestor
 git diff --stat $MERGE_BASE HEAD

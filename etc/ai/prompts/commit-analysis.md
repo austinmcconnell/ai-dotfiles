@@ -14,11 +14,11 @@ Run these commands to understand the commit structure:
 ```bash
 # Get all commits on this branch
 
-git log --oneline main..HEAD
+git log main..HEAD
 
 # Show detailed diff for each commit
 
-for commit in $(git log --oneline main..HEAD | awk '{print $1}'); do
+for commit in $(git rev-list main..HEAD); do
 echo "=== $commit ==="
 git show --stat $commit
 echo ""

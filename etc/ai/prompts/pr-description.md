@@ -5,7 +5,7 @@ Generate a comprehensive pull request description based on the current branch ch
 **Analysis Context:**
 
 ```bash
-git log --oneline main..HEAD
+git log main..HEAD
 git diff --stat main HEAD
 git diff main HEAD
 ```
