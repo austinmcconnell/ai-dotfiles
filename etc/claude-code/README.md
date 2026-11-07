@@ -117,7 +117,7 @@ Six global hook events configured in `settings.json` (all commands resolve via `
 
 ### Cost Controls
 
-Spend is bounded by four settings, none of which is a spend cap (Claude Code has no persistent
+Spend is bounded by five settings, none of which is a spend cap (Claude Code has no persistent
 session-total budget; `--max-budget-usd` is a per-invocation CLI flag only):
 
 - **Effort pins** — `modelSettings` sets `effortLevel: "medium"` for `claude-sonnet-5`,
@@ -130,6 +130,8 @@ session-total budget; `--max-budget-usd` is a per-invocation CLI flag only):
 - **Haiku floor for delegation** — `env.CLAUDE_CODE_SUBAGENT_MODEL=haiku` runs anonymous subagents
   (no model pinned) on Haiku. It is third in the documented precedence, below a per-call `model`
   parameter and a persona's `model:` frontmatter.
+- **Subagent effort** — `env.CLAUDE_CODE_SUBAGENT_EFFORT=low` sets the reasoning effort for
+  delegated subagents, independent of the model they run on.
 - **Agent model gate** — `Agent(model:opus)`, `Agent(model:fable)`, and the `claude-opus*` /
   `claude-fable*` full-ID forms are in `permissions.ask`, so a per-call override to an expensive
   model prompts instead of silently outranking the Haiku floor. Rules match the literal value Claude
@@ -214,6 +216,19 @@ session fills that role directly.
   `claude --agent docs` invocation produced a payload with `"agent_type":"docs"`, matching the
   persona's frontmatter `name:`. Main Claude Code sessions have no `agent_type` and the script
   no-ops for them
+
+#### Adding a persona
+
+1. Write `etc/claude-code/agents/<name>.md` with `name:`, `description:`, `tools:` and `model:`
+   frontmatter, matching the existing personas.
+1. Add `<name>` to `PERSONAS` and a `<name>) echo "<steering-domain>" ;;` case to `persona_domain`
+   in `install/persona-domains.sh`. The domain must exist under `etc/ai/steering/` and hold at least
+   one doc.
+1. Add a `<name>)` case with its denied-command patterns to
+   `etc/ai/hooks/block-persona-shell-commands.sh`. A persona with no case is unrestricted, because
+   the script's default branch exits 0.
+1. Re-run `install.sh` to generate the persona into `~/.claude/agents/`.
+1. Run `scripts/validate-persona-steering.sh` to confirm the mapping and the inlined steering.
 
 ## Best Practices Followed
 
