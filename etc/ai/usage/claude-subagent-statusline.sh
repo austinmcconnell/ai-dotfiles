@@ -55,8 +55,12 @@ while IFS=$'\x1f' read -r TASK_ID NAME AGENT_TYPE MODEL_ID EFFORT TOKEN_COUNT \
             model = excluded.model,
             effort = excluded.effort,
             token_count = excluded.token_count,
-            estimated_cost_usd = COALESCE(
-                excluded.estimated_cost_usd, subagent_tasks.estimated_cost_usd),
+            -- A task's cost only grows: per-request usage is fixed once billed and requests
+            -- accumulate, so a firing that reads a shorter transcript must not lower a
+            -- higher stored value. MAX() yields NULL only when both sides are NULL.
+            estimated_cost_usd = MAX(
+                COALESCE(excluded.estimated_cost_usd, subagent_tasks.estimated_cost_usd),
+                COALESCE(subagent_tasks.estimated_cost_usd, excluded.estimated_cost_usd)),
             context_window_size = excluded.context_window_size,
             updated_at = excluded.updated_at,
             status = excluded.status,

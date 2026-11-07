@@ -62,17 +62,20 @@ usage_subagent_task_rows() {
 
 # Prices a subagent transcript request by request, mirroring pricing.json. Inputs: $pricing (the
 # slurped file) and $transcript (raw text). Malformed lines are skipped because the file may be
-# mid-write. Emits nothing when there are no requests, a request lacks requestId, or any model is
-# unpriced: a partial total is never reported as the task's cost.
+# mid-write. Emits nothing when there are no requests, a request lacks requestId, any model is
+# unpriced, or a request bills cache reads at a version-dependent multiplier its version cannot
+# resolve: a partial total is never reported as the task's cost.
 # shellcheck disable=SC2016
 USAGE_TRANSCRIPT_COST_JQ='
 def is_version: (. // "") | test("^[0-9]+(\\.[0-9]+)*$");
 def version_key: split(".") | map(tonumber);
 def read_multiplier($m; $version):
-    if $m.cache_read_multiplier_before_version != null
-        and ($version | is_version)
-        and ($version | version_key)
-            < ($m.cache_read_multiplier_before_version.version | version_key)
+    if $m.cache_read_multiplier_before_version == null
+    then ($m.cache_read_multiplier // $pricing[0].cache_read_multiplier)
+    elif ($version | is_version | not)
+    then error("unusable version for a version-dependent cache-read multiplier")
+    elif ($version | version_key)
+        < ($m.cache_read_multiplier_before_version.version | version_key)
     then $m.cache_read_multiplier_before_version.multiplier
     else ($m.cache_read_multiplier // $pricing[0].cache_read_multiplier)
     end;
@@ -95,11 +98,13 @@ def request_usd($r):
         then [$write, 0]
         else [$split.ephemeral_5m_input_tokens // 0, $split.ephemeral_1h_input_tokens // 0]
         end) as $writes
-    | rates($m; $in + $read + $write) as $rate
+    | rates($m; $in + $read + $writes[0] + $writes[1]) as $rate
     | (($in * $rate[0]) + ($out * $rate[1])
         + ($writes[0] * $rate[0] * $pricing[0].cache_write_multiplier_5m)
         + ($writes[1] * $rate[0] * $pricing[0].cache_write_multiplier_1h)
-        + ($read * $rate[0] * read_multiplier($m; $r.version))) / 1000000;
+        + (if $read == 0 then 0
+            else $read * $rate[0] * read_multiplier($m; $r.version)
+            end)) / 1000000;
 [$transcript | split("\n")[] | fromjson?
     | select(type == "object" and .type == "assistant"
         and ((.message | type) == "object") and ((.message.usage | type) == "object"))]

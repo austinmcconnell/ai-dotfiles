@@ -56,6 +56,14 @@ write_fixtures() {
         >"$dir/sonnet-new-version.jsonl"
     request S3 claude-sonnet-5-5 "" '{"cache_read_input_tokens":100000}' \
         >"$dir/sonnet-no-version.jsonl"
+    request S5 claude-sonnet-5-5 "" '{"input_tokens":1000}' \
+        >"$dir/sonnet-no-version-no-read.jsonl"
+    # Split-only cache writes: cache_creation_input_tokens is absent, so the tier test must
+    # read the 5m/1h breakdown to see the prompt cross 100K.
+    request H4 claude-haiku-5-5 2.1.300 \
+        '{"input_tokens":60000,
+            "cache_creation":{"ephemeral_1h_input_tokens":50000}}' \
+        >"$dir/haiku-tier-split-write.jsonl"
     {
         request U1 claude-sonnet-5 2.1.300 '{"input_tokens":1}'
         request U2 claude-unknown-9 2.1.300 '{"input_tokens":1}'
@@ -89,8 +97,16 @@ test_pricing() {
         "$(usage_transcript_cost "$dir/sonnet-old-version.jsonl")"
     check "sonnet 5.5 post-2.1.296 cache read" 0.0100000000 \
         "$(usage_transcript_cost "$dir/sonnet-new-version.jsonl")"
-    check "sonnet 5.5 missing version uses model override" 0.0100000000 \
+    check "sonnet 5.5 missing version refuses to price cache reads" "" \
         "$(usage_transcript_cost "$dir/sonnet-no-version.jsonl")"
+    # No cache reads, so the unresolvable multiplier is never applied: 1000 * $2.0/Mtok / 1e6
+    check "sonnet 5.5 missing version still prices a read-free request" 0.0020000000 \
+        "$(usage_transcript_cost "$dir/sonnet-no-version-no-read.jsonl")"
+    # Tier test must use the 5m/1h split, not cache_creation_input_tokens, which is absent here.
+    # Prompt = 60000 + 50000 = 110000 > 100000, so long-context $0.5/Mtok applies to the whole
+    # request: (60000 * 0.5) + (50000 * 0.5 * 2.0) / 1e6 = (30000 + 50000) / 1e6 = 0.08
+    check "haiku 5.5 tier counts split cache writes toward the prompt" 0.0800000000 \
+        "$(usage_transcript_cost "$dir/haiku-tier-split-write.jsonl")"
     # 1000 write tokens * $2.0/Mtok * 1.25 (5m) / 1e6 = 2500 / 1e6 = 0.0025
     check "5m cache write, explicit split" 0.0025000000 \
         "$(usage_transcript_cost "$dir/write-5m-split.jsonl")"
@@ -170,6 +186,12 @@ test_writer() {
     printf '%s\n' '{"type":"assistant","requestId":' >>"$subagent"
     run_writer t1
     check "partial last line keeps total" "0.013" "$(stored t1)"
+
+    # A firing that reads a cheaper, fully-priceable transcript for a task already stored
+    # higher must not lower it.
+    cp "$WORK/fixtures/write-5m-split.jsonl" "$subagent"
+    run_writer t1
+    check "cheaper later reading keeps the higher total" "0.013" "$(stored t1)"
 
     cp "$WORK/fixtures/normal.jsonl" "$project/sess/subagents/agent-t3.jsonl"
     cp "$WORK/fixtures/sonnet-new-version.jsonl" "$project/sess/subagents/agent-t4.jsonl"
