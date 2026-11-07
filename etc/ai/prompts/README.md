@@ -118,6 +118,7 @@ Level 0 (No Dependencies - Can run anytime):
 ├── branch-analysis           # Git branch and commit analysis
 ├── branch-inventory          # All-branch inventory and triage
 ├── discover-previous-work    # Understand current implementation state
+├── docs-audit                # Check markdown docs are reachable, complete, accurate, and useful
 ├── ai-tool-best-practices    # Compare one AI tool's config against current best practices
 ├── ai-tool-parity-audit      # Check permission/security parity across AI tools
 ├── git-config-audit          # Audit etc/git/ for newer git features (dotfiles repo)
@@ -177,6 +178,7 @@ These prompts can be run at any time without prerequisites:
 - `commit-analysis` - Analyze commit history patterns and quality
 - `component-compatibility-review` - Review hardware component compatibility
 - `discover-previous-work` - Understand work-in-progress state
+- `docs-audit` - Check markdown docs are reachable, complete, accurate, and useful
 - `docs-review` - Review documentation repository structure and quality
 - `git-config-audit` - Audit `etc/git/` for newer git features (run from the dotfiles repo)
 - `kiro-analysis` - Research Kiro CLI releases and evaluate config updates
@@ -264,8 +266,10 @@ These prompts can be run at any time without prerequisites:
 - `zsh-best-practices` - Research zsh/Zephyr best practices and compare against the local zsh config
   (outputs to `analysis/zsh-best-practices-audit.md`)
 
-### README Audits
+### Documentation Audits
 
+- `docs-audit` - Audit markdown docs at repo and subfolder level for reachability, missing docs,
+  accuracy, and usefulness (outputs to `analysis/docs-audit.md`)
 - `readme-coverage-audit` - Find directories that deserve a README and READMEs that have drifted
   (outputs to `analysis/readme-coverage-audit.md`)
 - `readme-pointer-audit` - Check docs are reachable from README maps (outputs to
