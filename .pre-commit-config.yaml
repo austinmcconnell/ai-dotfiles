@@ -78,6 +78,12 @@ repos:
         entry: scripts/validate-steering-references.sh
         files: ^etc/ai/steering/.*\.md$|^etc/ai/skills/.*/SKILL\.md$|^scripts/validate-steering-references\.sh$
         pass_filenames: false
+      - id: usage-subagent-cost-tests
+        name: Subagent cost pricing tests
+        language: script
+        entry: etc/ai/usage/test/test-subagent-cost.sh
+        files: ^etc/ai/usage/(lib\.sh|pricing\.json|claude-subagent-statusline\.sh|test/test-subagent-cost\.sh)$
+        pass_filenames: false
       - id: shfmt
         name: shfmt
         minimum_pre_commit_version: 2.4.0
