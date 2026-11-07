@@ -10,7 +10,8 @@ repo when a file matching its `files:` pattern changes. Run them all with
 
 ## Validators
 
-Each validator generates and rewrites nothing; it exits non-zero on drift.
+Each validator leaves the repo unchanged and exits non-zero on drift. One generates personas into a
+temporary directory to compare them (see its row).
 
 | Script                            | What it checks                                                                                                                                                                | How it is run                             |
 | --------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------- |

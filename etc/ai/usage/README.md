@@ -2,7 +2,8 @@
 
 Local, durable tracking of token usage and estimated $ cost across AI coding tools, stored outside
 engram in a SQLite database that isn't committed to git. Tool-agnostic by design, but only Claude
-Code is wired up today — see "Why Kiro CLI isn't wired up" below.
+Code is wired up today — see "Why Kiro CLI isn't wired up" below. For the cost-estimate findings,
+method, and open items, read `burn-attribution.md` in this directory.
 
 ## Storage
 
