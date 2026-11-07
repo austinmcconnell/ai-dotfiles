@@ -4,47 +4,59 @@ This directory contains reusable prompts for AI chat sessions. The prompt manage
 shell functions to easily save, organize, and reuse common prompts across any AI service (Amazon Q,
 Claude, ChatGPT, Gemini, etc.).
 
+## Setup
+
+The commands below are subcommands of one `ai-prompt` shell function, defined in
+`scripts/ai-prompt.sh`. Nothing in this repo sources that file (it is not executable and `install.sh`
+does not call it), so add this line to your shell config:
+
+```bash
+source "$AI_DOTFILES_DIR/scripts/ai-prompt.sh"
+```
+
+Prompts are read from and written to `${AI_DOTFILES_DIR:-$HOME/.dotfiles}/etc/ai/prompts`.
+
 ## Available Commands
 
-- `ai-save <name>` - Save a new prompt (will prompt for input)
-- `ai-use <name>` - Copy prompt to clipboard
-- `ai-list` - List all available prompts
-- `ai-show <name>` - Display a prompt
-- `ai-edit <name>` - Edit a prompt in your default editor
-- `ai-delete <name>` - Delete a prompt
-- `ai-help` - Show help message
+- `ai-prompt save <name>` (`s`) - Save a new prompt (will prompt for input)
+- `ai-prompt use <name>` (`u`) - Copy prompt to clipboard
+- `ai-prompt list` (`ls`, `l`) - List all available prompts
+- `ai-prompt show <name>` (`cat`) - Display a prompt
+- `ai-prompt edit <name>` (`e`) - Edit a prompt in your default editor
+- `ai-prompt delete <name>` (`rm`, `d`) - Delete a prompt
+- `ai-prompt help` (`h`) - Show help message
 
 ## Usage Examples
 
 ### Save a new prompt
 
 ```bash
-ai-save debugging-python
+ai-prompt save debugging-python
 # Then paste your prompt and press Ctrl+D
 ```
 
 ### Use an existing prompt
 
 ```bash
-ai-use code-review
+ai-prompt use code-review
 # Prompt is copied to clipboard, ready to paste into any AI chat
 ```
 
 ### List available prompts
 
 ```bash
-ai-list
+ai-prompt list
 ```
 
 ### Edit a prompt
 
 ```bash
-ai-edit code-review
+ai-prompt edit code-review
 ```
 
 ## Organization
 
-Prompts are stored as plain text files in this directory. You can organize them by:
+Prompts are stored as Markdown files (`<name>.md`) in this directory. You can organize them by:
 
 - Creating descriptive names (e.g., `code-review-security`, `documentation-api`)
 - Using prefixes for categories (e.g., `debug-`, `review-`, `doc-`)
@@ -72,7 +84,7 @@ These prompts work with any AI chat service:
    results
 1. **Cross-platform** - Design prompts that work well across different AI services
 1. **Follow dependencies** - Always run prerequisite analyses before dependent ones (see Dependency
-   Hierarchy above)
+   Hierarchy below)
 1. **Use main branch** - Most analysis prompts require running from `main` or `master` branch for
    accurate results
 
@@ -240,6 +252,8 @@ These prompts can be run at any time without prerequisites:
 - `component-compatibility-review` - Review hardware component compatibility and specifications
 - `docs-review` - Review documentation repository using the docs-review skill workflow
 - `kiro-analysis` - Research recent Kiro CLI releases and evaluate configuration updates
+- `shared-placement-audit` - Audit which skills and steering docs belong in `shared/` versus their
+  own domain (read-only; moves nothing)
 - `steering-gap-analysis` - Analyze kiro-cli agent steering docs for missing conventions
 - `steering-vs-skill-review` - Evaluate whether steering docs are correctly placed or should be
   skills
