@@ -156,9 +156,11 @@ Hooks use the V3 array format: each hook is an object with `name`, `trigger`, `m
   conflict resolution stays user-approved via `mem_judge`/`mem_compare`, never auto-applied. The
   `code`, `docs`, and `ansible` agents additionally run `check-research-kb.sh` for KB staleness
   detection (their agent name must appear in the `kb-staleness.sh` sentinel for the warning to
-  fire). The `code` agent additionally runs `rotate-traces.sh` for trace file cleanup and
-  `suggest-agent-fit.sh code`, a one-time nudge when the generalist lands in a repo with a tuned
-  specialist agent. Claude Code runs the same `recall-memory.sh`/`check-engram-hygiene.sh` pair via
+  fire). The `code` agent additionally runs `rotate-traces.sh` for trace file cleanup,
+  `suggest-agent-fit.sh code` (a one-time nudge when the generalist lands in a repo with a tuned
+  specialist agent), and `core-analyses-status.sh`, which reports stale or missing core analyses. It
+  is limited to `code` because that is the only agent that loads the `code/` steering that explains
+  the notice. Claude Code runs the same `recall-memory.sh`/`check-engram-hygiene.sh` pair via
   `SessionStart` (see `etc/claude-code/README.md`) — that pair has parity across both tools. The
   KB-staleness and trace hooks remain kiro-only; see "What Claude Code Does NOT Have" there for why.
 - `preToolUse` — every agent has the `block-env-files.sh`, `block-sops-age-files.sh`,
