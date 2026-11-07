@@ -328,9 +328,10 @@ split at 18:50 Nov 7, the first sample where the 7d percentage reached 13.
   are inside the rounding error (the 5-point change alone is about ±10%), so they do not separate
   the metrics. Six metrics on four intervals is a lead to test on more windows, not a finding.
 
-- **`cost_snapshots` token fields are not running totals.** `input_tokens` and `output_tokens` fall
-  within a session (12 and 595 decreases), so deltas from them are not valid. Use transcripts for
-  token totals.
+- **`cost_snapshots` and `sessions` token fields are not running totals.** `input_tokens` and
+  `output_tokens` hold the most recent API call's values. In `cost_snapshots` they fall within a
+  session (12 and 595 decreases). In `sessions`, input equals the last call's input plus cache reads
+  and writes exactly, checked against one session's transcript. Use transcripts for token totals.
 
 The seven-day window was flat at 3% from before 15:45 Nov 7, so spend before that point does not
 count toward its change.

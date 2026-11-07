@@ -29,8 +29,8 @@ CREATE TABLE IF NOT EXISTS sessions (
     started_at              TEXT NOT NULL,   -- ISO8601 UTC, set once on first upsert
     updated_at              TEXT NOT NULL,   -- ISO8601 UTC, set on every upsert
     total_cost_usd          REAL,            -- nullable: not every tool computes this natively
-    input_tokens            INTEGER,         -- cumulative for the session
-    output_tokens           INTEGER,         -- cumulative for the session
+    input_tokens            INTEGER,         -- most recent API call only; not cumulative (source data has no running total)
+    output_tokens           INTEGER,         -- most recent API call only; not cumulative (source data has no running total)
     last_turn_cache_creation_tokens INTEGER, -- most recent turn only; not cumulative (source data has no running total)
     last_turn_cache_read_tokens     INTEGER, -- most recent turn only; not cumulative (source data has no running total)
     total_duration_ms       INTEGER,
@@ -97,8 +97,8 @@ CREATE TABLE IF NOT EXISTS cost_snapshots (
     tool                   TEXT NOT NULL,   -- 'claude-code', 'kiro-cli' (future), ...
     session_id             TEXT NOT NULL,
     total_cost_usd         REAL,
-    input_tokens           INTEGER,         -- not a running total: falls within a session, so do not take deltas
-    output_tokens          INTEGER,         -- not a running total: falls within a session, so do not take deltas
+    input_tokens           INTEGER,         -- most recent API call only; not cumulative (source data has no running total)
+    output_tokens          INTEGER,         -- most recent API call only; not cumulative (source data has no running total)
     cache_creation_tokens  INTEGER,         -- most recent turn only; not cumulative (source data has no running total)
     cache_read_tokens      INTEGER,         -- most recent turn only; not cumulative (source data has no running total)
     context_used_percentage REAL,           -- relative to the model's native context ceiling, not autoCompactWindow
