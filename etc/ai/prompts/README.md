@@ -123,8 +123,6 @@ Level 0 (No Dependencies - Can run anytime):
 ├── ai-tool-parity-audit      # Check permission/security parity across AI tools
 ├── git-config-audit          # Audit etc/git/ for newer git features (dotfiles repo)
 ├── pr-description           # Generate pull request descriptions
-├── readme-coverage-audit     # Find missing and drifted READMEs
-├── readme-pointer-audit      # Check docs are reachable from README maps
 ├── refactor-plan            # Create refactoring plans
 ├── run-all-analyses         # Orchestrate all 9 analyses in dependency order
 ├── run-core-analyses        # Orchestrate core 4 analyses (P/A/S/I)
@@ -183,9 +181,6 @@ These prompts can be run at any time without prerequisites:
 - `git-config-audit` - Audit `etc/git/` for newer git features (run from the dotfiles repo)
 - `kiro-analysis` - Research Kiro CLI releases and evaluate config updates
 - `pr-description` - Generate pull request descriptions
-- `readme-coverage-audit` - Find directories that need a README and READMEs that have drifted
-- `readme-pointer-audit` - Check docs are reachable from README maps (aborts unless on `main` or
-  `master`)
 - `refactor-plan` - Create refactoring strategies
 - `run-all-analyses` - Run all 9 analysis prompts in dependency order (orchestrator)
 - `run-core-analyses` - Run core 4 analyses: project, architecture, schema, integration
@@ -270,10 +265,6 @@ These prompts can be run at any time without prerequisites:
 
 - `docs-audit` - Audit markdown docs at repo and subfolder level for reachability, missing docs,
   accuracy, and usefulness (outputs to `analysis/docs-audit.md`)
-- `readme-coverage-audit` - Find directories that deserve a README and READMEs that have drifted
-  (outputs to `analysis/readme-coverage-audit.md`)
-- `readme-pointer-audit` - Check docs are reachable from README maps (outputs to
-  `analysis/readme-pointer-audit.md`)
 
 ### Skills Development
 
