@@ -20,13 +20,13 @@ scripts in place through `$AI_DOTFILES_DIR` (see `etc/ai/usage/README.md` for th
 
 `install/ai-tools.sh` reads from these directories and generates tool-specific output:
 
-| Tool                  | Skills                           | Steering                                                                                        |
-| --------------------- | -------------------------------- | ----------------------------------------------------------------------------------------------- |
-| kiro-cli              | Symlinked to `~/.kiro/skills/`   | Symlinked to `~/.kiro/steering/`, loaded via `file://~/.kiro/steering/` resources in agent JSON |
-| Claude Code           | Symlinked to `~/.claude/skills/` | Symlinked per domain into `~/.claude/rules/`, plus a slim pointer `CLAUDE.md`                   |
-| Codex (disabled)      | Symlinked to `~/.codex/skills/`  | Reads AGENTS.md (no adapter needed)                                                             |
-| Cursor (disabled)     | Symlinked to `~/.cursor/skills/` | Generated as `.mdc` files in `~/.cursor/rules/`                                                 |
-| Gemini CLI (disabled) | Symlinked to `~/.gemini/skills/` | Concatenated into `~/.gemini/GEMINI.md`                                                         |
+| Tool                  | Skills                           | Steering                                                                                                            |
+| --------------------- | -------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| kiro-cli              | Symlinked to `~/.kiro/skills/`   | Per-file symlinks under `~/.kiro/steering/<domain>/`, loaded via `file://~/.kiro/steering/` resources in agent JSON |
+| Claude Code           | Symlinked to `~/.claude/skills/` | Symlinked per domain into `~/.claude/rules/`, plus a slim pointer `CLAUDE.md`                                       |
+| Codex (disabled)      | Symlinked to `~/.codex/skills/`  | Reads AGENTS.md (no adapter needed)                                                                                 |
+| Cursor (disabled)     | Symlinked to `~/.cursor/skills/` | Generated as `.mdc` files in `~/.cursor/rules/`                                                                     |
+| Gemini CLI (disabled) | Symlinked to `~/.gemini/skills/` | Concatenated into `~/.gemini/GEMINI.md`                                                                             |
 
 Only `kiro-cli` and `Claude Code` are currently active. The rows above marked `(disabled)` are fully
 wired in the `agent_config` registry (`install/ai-tools.sh`) but commented out of `ENABLED_AGENTS`
@@ -65,10 +65,12 @@ Always-on principles that guide AI behavior. Organized by domain:
 - `scrum/` — JIRA operations, sprint conventions
 - `datadog/` — observability and UST conventions
 - `ansible/` — Proxmox automation conventions
+- `kiro/` — Kiro CLI conventions (loaded by every kiro agent)
 
-These are the *source of truth*. Each tool consumes them differently (kiro-cli reads them through a
-`~/.kiro/steering/` symlink referenced by `file://~/.kiro/steering/` resource globs in each agent
-JSON, Cursor gets `.mdc` files, Claude gets symlinked rule dirs, Gemini gets a concatenated markdown
+These are the *source of truth*. Each tool consumes them differently (kiro-cli reads them through
+`~/.kiro/steering/`, a real directory of per-domain directories holding per-file symlinks (plus any
+host-local overlay docs), referenced by `file://~/.kiro/steering/` resource globs in each agent
+JSON. Cursor gets `.mdc` files, Claude gets symlinked rule dirs, Gemini gets a concatenated markdown
 file).
 
 ### Why Some Steering Is Universal and Some Is Per-Persona
@@ -81,7 +83,7 @@ structural asymmetry between the distributed tools:
 - **kiro-cli** has no "main session" distinct from its agents — every invocation is an agent, and
   each agent JSON declares its own `resources` array. Steering scoping is native and per-invocation
   (`jira.json` only pulls `scrum/`, `datadog.json` only pulls `datadog/`). That's why kiro-cli's
-  entry in `install/ai-tools.sh` is a raw `symlink:` of the whole `etc/ai/steering/` tree: Kiro
+  entry in `install/ai-tools.sh` is a `symlink:` tree build covering every steering domain: Kiro
   never needs a universal/domain-specific split, because each agent already filters at load time.
 - **Claude Code's main session, Cursor, and Gemini CLI** have exactly one always-on global context
   surface with no runtime scoping (`~/.claude/rules/` + `CLAUDE.md`, `.mdc` files with
@@ -98,3 +100,16 @@ that can't scope them away.
 This asymmetry exists because this repo's AI tooling was originally designed around kiro-cli's
 per-agent resource model (see `etc/kiro-cli/README.md`); tools without that concept — added later —
 inherited a distribution script that had to invent a static substitute.
+
+## Adding Things
+
+| To add a...  | Create                                                       | Then re-run                                                                |
+| ------------ | ------------------------------------------------------------ | -------------------------------------------------------------------------- |
+| Skill        | `etc/ai/skills/<category>/<name>/SKILL.md`                   | `install.sh` (re-links skills for each enabled tool)                       |
+| Steering doc | `etc/ai/steering/<domain>/<name>.md`                         | `install.sh`; a new domain also needs wiring (see the note below)          |
+| Hook         | `etc/ai/hooks/<name>.sh`, then wire it in each tool's config | Nothing to install; scripts are called in place (see `hooks/README.md`)    |
+| Persona      | `etc/claude-code/agents/<name>.md` plus registry entries     | `install.sh`, which regenerates personas (see `etc/claude-code/README.md`) |
+
+A new steering domain reaches Claude Code sessions only if it is added to
+`UNIVERSAL_STEERING_DOMAINS` in `install/ai-tools.sh`; otherwise it is available only to Kiro agents
+(whose JSON lists the domain's glob) and to Claude personas that inline it.
