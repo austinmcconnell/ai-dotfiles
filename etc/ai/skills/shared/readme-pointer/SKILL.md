@@ -41,7 +41,8 @@ When writing or updating a README that should point to detailed docs:
   `- For the <topic>, read docs/<topic>.md`.
 - **One-hop rule (hard constraint):** each pointer names the *actual target doc*, never another
   README. If a chain is genuinely unavoidable, use a mechanical include, not a plain-text pointer —
-  only mechanical includes chain reliably.
+  only mechanical includes chain reliably. A README that itself holds the content the reader needs
+  is a target doc; the rule forbids pointing at a README that mainly maps onward to other docs.
 - **Flat, not deep (hard constraint):** one level of indexing. Do not build a tree of nested index
   files that re-creates context pressure — deeper hierarchy hurts navigation, it does not help.
 - Keep the map to high-signal docs. A README that lists everything is as useless as one that lists
