@@ -19,8 +19,8 @@ cd ~/.ai-dotfiles
 `install.sh` is idempotent — safe to run repeatedly. It sets `AI_DOTFILES_DIR` to the repo root,
 installs the CLI tools it manages (engram from its tap, plus the kiro-cli and claude-code casks),
 distributes skills/steering to each agent, and symlinks each tool's config into place. Per-agent
-installs follow `ENABLED_AGENTS` in `install/enabled-agents.sh`; only `claude-code` and `kiro-cli`
-are enabled today (`codex` and `cursor` are commented out and skipped).
+installs follow `ENABLED_AGENTS`; see [install/README.md](./install/README.md) for which agents are
+enabled and how to change that.
 
 ### Standalone vs. colocated with dotfiles
 

@@ -16,8 +16,9 @@ Scripts sourced by `install.sh` at the repo root. None is meant to be run direct
 
 `install_agent <name>` sources `install/<name>.sh` only when `<name>` is in `ENABLED_AGENTS`
 (`enabled-agents.sh`) and otherwise logs "Skipping … (not in ENABLED_AGENTS)". Currently enabled:
-`claude-code` and `kiro-cli`; the other entries in the array are commented out. Disabling an agent
-stops future installs and removes nothing.
+`claude-code` and `kiro-cli`; the other entries in the array are commented out. Re-enable one by
+uncommenting it and re-running `install.sh`; disabling an agent stops future installs and removes
+nothing.
 
 ## Scripts
 

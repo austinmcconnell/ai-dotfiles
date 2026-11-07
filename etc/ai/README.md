@@ -28,11 +28,9 @@ scripts in place through `$AI_DOTFILES_DIR` (see `etc/ai/usage/README.md` for th
 | Cursor (disabled)     | Symlinked to `~/.cursor/skills/` | Generated as `.mdc` files in `~/.cursor/rules/`                                                                     |
 | Gemini CLI (disabled) | Symlinked to `~/.gemini/skills/` | Concatenated into `~/.gemini/GEMINI.md`                                                                             |
 
-Only `kiro-cli` and `Claude Code` are currently active. The rows above marked `(disabled)` are fully
-wired in the `agent_config` registry (`install/ai-tools.sh`) but commented out of `ENABLED_AGENTS`
-in `install/enabled-agents.sh` — re-enable by uncommenting there. That array gates both skill and
-steering distribution and the per-agent install scripts (`install/<agent>.sh`); a disabled agent is
-skipped, never uninstalled. Check that array, not this table, for the authoritative current state.
+Rows marked `(disabled)` are fully wired in the `agent_config` registry (`install/ai-tools.sh`) but
+commented out of `ENABLED_AGENTS`. That array gates both skill and steering distribution here; see
+`install/README.md` for the current set and how to change it.
 
 ## Prompts
 
