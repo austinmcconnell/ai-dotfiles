@@ -54,6 +54,15 @@
             "timeout": 5
         },
         {
+            "name": "agentSpawn-core-analyses",
+            "trigger": "agentSpawn",
+            "action": {
+                "type": "command",
+                "command": "$AI_DOTFILES_DIR/etc/ai/hooks/core-analyses-status.sh"
+            },
+            "timeout": 5
+        },
+        {
             "name": "agentSpawn-hygiene",
             "trigger": "agentSpawn",
             "action": {

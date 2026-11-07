@@ -257,6 +257,16 @@
                 ]
             },
             {
+                "matcher": "startup|resume",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "$AI_DOTFILES_DIR/etc/ai/hooks/core-analyses-status.sh",
+                        "timeout": 5
+                    }
+                ]
+            },
+            {
                 "matcher": "startup",
                 "hooks": [
                     {

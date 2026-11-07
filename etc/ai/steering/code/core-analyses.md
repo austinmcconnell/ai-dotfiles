@@ -6,11 +6,11 @@ needs, and do not preload them.
 
 ## When to Check
 
-If the repo has an `analysis/` directory, check it before answering a question about the repo's
-purpose, architecture, data models, or external integrations. That includes narrow questions about
-one feature or one data shape, because the analysis often records context the code alone does not
-show. Run `ls analysis/` through Bash. Do not rely on Glob or Grep: they can skip git-ignored paths,
-so an empty result does not mean the files are absent.
+When a question is about the repo's purpose, architecture, data models, or external integrations,
+read the matching file below if it exists. Test the exact path (for example `test -f
+analysis/architecture-analysis.md`); do not list the directory or rely on Glob or Grep, since they can
+skip git-ignored paths. Narrow questions about one feature or data shape count too, because the
+analysis often records context the code alone does not show.
 
 | The question is about                                      | Read                                |
 | ---------------------------------------------------------- | ----------------------------------- |
@@ -24,14 +24,16 @@ too.
 
 ## Staleness
 
-Each file records the commit it describes in its `**HEAD Commit:**` line. Before relying on a file,
-compare that hash with `git rev-parse HEAD`. Check every core file that is present, not only the one
-you read. Before relying on any of them, state the count, for example "3 of 4 core files are stale."
+Do not compare hashes yourself. A session-start notice reports staleness for repos under `~/projects`:
 
-- If none are stale or missing, use the files.
-- If exactly one is stale or missing, offer to run its prompt from `~/.ai-dotfiles/etc/ai/prompts/`,
-  for example `architecture-analysis.md`.
-- If two or more are stale or missing, offer to run `run-core-analyses.md` in a background subagent.
+- `🔍 N of 4 core analyses in analysis/ are stale or missing.` means some files are out of date. Mention
+  the count once, in your first reply, and offer to refresh them: run the prompt from
+  `~/.ai-dotfiles/etc/ai/prompts/` for one file, or `run-core-analyses.md` in a background subagent
+  for two or more.
+- `💡 No core analyses in analysis/ yet.` means none exist. Mention it only if the user's question
+  would benefit, and do not generate them unprompted.
+- No notice means either the files are current or the repo is outside `~/projects`, where staleness is
+  not checked. If you rely on an analysis file in that case, say that its currency is unverified.
 
 Do not regenerate an analysis unless the user agrees. The prompts write into `analysis/` and cost a
 full model run.

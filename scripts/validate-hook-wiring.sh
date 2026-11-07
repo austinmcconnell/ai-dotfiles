@@ -90,6 +90,7 @@ expected_kiro_scope() {
     check-engram-hygiene.sh) echo "all5" ;;
     audit-shell-commands.sh) echo "default_only" ;;
     suggest-agent-fit.sh) echo "default_only" ;;
+    core-analyses-status.sh) echo "default_only" ;;
     block-persona-shell-commands.sh) echo "none" ;;
     warn-memory-exfil.sh) echo "none" ;;
     log-compaction-event.sh) echo "none" ;;
@@ -114,7 +115,7 @@ kiro_agents_wiring() {
 # "<Event> <matcher>" per entry. Claude's wiring lives only in settings.json.
 expected_claude_wiring() {
     case "$1" in
-    recall-memory.sh | check-engram-hygiene.sh) echo "SessionStart startup|resume" ;;
+    recall-memory.sh | check-engram-hygiene.sh | core-analyses-status.sh) echo "SessionStart startup|resume" ;;
     suggest-agent-fit.sh) echo "SessionStart startup" ;;
     block-env-files.sh | block-sops-age-files.sh | block-ssh-private-keys.sh | block-shell-trace-mode.sh) echo "PreToolUse *" ;;
     block-memory-secrets.sh | warn-memory-exfil.sh) echo "PreToolUse mcp__engram__.*" ;;
