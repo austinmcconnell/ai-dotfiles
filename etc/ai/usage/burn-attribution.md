@@ -150,9 +150,9 @@ Haiku 5.5 medium 29.0%, Sonnet 5.5 medium 21.7%, Sonnet 5 medium 10.3%.
 
 - Existing rows have NULL `agent_type`; the writer now records it from the payload.
 
-- The Estimate column in the table above is the old blended-rate estimator, which was replaced.
-  Its Sonnet and Haiku 5.5 errors ran in opposite directions. The stored `estimated_cost_usd` is
-  now transcript-priced (see Method).
+- The Estimate column in the table above is the old blended-rate estimator, which was replaced. Its
+  Sonnet and Haiku 5.5 errors ran in opposite directions. The stored `estimated_cost_usd` is now
+  transcript-priced (see Method).
 
 - Adding subagent transcripts to the 21 sessions that have them moves the median transcript/actual
   ratio from 0.78 to 0.83, and the count within the band from 2 to 7. The signal is weak (subagents
@@ -282,29 +282,72 @@ writes. The estimates above use the published rate and are about 10% low on 1h w
 - The Claude Code default is 30 days, by file modification time. Official docs confirm this.
 - Do not set `cleanupPeriodDays` to 0. A reported issue says it stops transcript writes.
 
-## Rate limits (personal machine only; not yet validated)
+## Rate limits (personal machine only; provisional)
 
 The validation question: does the five-hour or seven-day used percentage move in proportion to
 transcript spend? This needs `rate_limit_snapshots` from a subscription machine.
 
-Status as of 2026-11-06 on the personal machine: not validated, because there is not enough data.
-`rate_limit_snapshots` holds 3 rows. The five-hour window moved from 1% to 3% over about 21 minutes;
-the seven-day window stayed at 3%. That leaves one window with a change, and too few points at
-whole- percent resolution for a fit. The retention and `resets_at` checks pass. `cleanupPeriodDays`
-is 90 in user settings, no transcripts are older than 30 days, and both reset epochs decode to
-plausible times.
+Provisional result, as of 2026-11-07, from 205 rows spanning 2026-11-06T19:29Z to 2026-11-07T23:11Z
+on the personal machine. Percentages are whole numbers and are not monotonic within a window: one 5h
+window has 16 decreases across 108 rows, another has 19 across 87, and the 7d window has 4 and 2.
+The figures below use each window's running maximum. Spend is main-session deltas from
+`cost_snapshots` plus `subagent_tasks.estimated_cost_usd` over the same interval. The 7d rows are
+split at 18:50 Nov 7, the first sample where the 7d percentage reached 13.
 
-Rerun the runbook once both windows have several snapshots over a period with meaningful spend. The
-seven-day window needs to move too.
+| Window                | Change  | Spend  | $ per point | Opus share of spend |
+| --------------------- | ------- | ------ | ----------- | ------------------- |
+| 5h, 15:45–19:03 Nov 7 | 0 → 77  | $36.36 | 0.47        | 93%                 |
+| 5h, 22:04–23:15 Nov 7 | 0 → 43  | $14.66 | 0.34        | 43%                 |
+| 7d, 15:45–18:50 Nov 7 | 3 → 13  | $33.07 | 3.31        | 92%                 |
+| 7d, 18:50–22:59 Nov 7 | 13 → 18 | $16.00 | 3.20        | 60%                 |
+
+- **Linearity is not established.** The two 7d sub-intervals agree within 4% in dollars per point,
+  but the two 5h windows differ by 38%. Two windows per type cannot separate a real nonlinearity
+  from whole-percent rounding and noise.
+
+- **Model mix does not explain the 5h gap consistently.** The Opus-heavy 5h window costs more per
+  point, but the 7d sub-intervals move from 92% to 60% Opus with almost no change in dollars per
+  point. A token-weighted limit would predict a shift in both. The result does not support it, and
+  does not rule it out.
+
+- **Excluded:** two 5h windows with 2 points each (1 → 3, 0 → 2). They are too coarse to use.
+
+- **Token kinds (transcripts, one record per `requestId`, all projects and subagents).** Points per
+  unit, compared across the two windows of each type:
+
+  | Metric      | 5h ratio gap | 7d ratio gap |
+  | ----------- | ------------ | ------------ |
+  | Dollars     | 32%          | 3%           |
+  | Output      | 9%           | 0.2%         |
+  | Input       | 43%          | 30%          |
+  | Cache write | 40%          | 45%          |
+  | Cache read  | 29%          | 24%          |
+  | All tokens  | 30%          | 25%          |
+
+  Output tokens agree best in the 5h windows, where the rounding error is about ±1–2%. The 7d gaps
+  are inside the rounding error (the 5-point change alone is about ±10%), so they do not separate
+  the metrics. Six metrics on four intervals is a lead to test on more windows, not a finding.
+
+- **`cost_snapshots` token fields are not running totals.** `input_tokens` and `output_tokens` fall
+  within a session (12 and 595 decreases), so deltas from them are not valid. Use transcripts for
+  token totals.
+
+The seven-day window was flat at 3% from before 15:45 Nov 7, so spend before that point does not
+count toward its change.
 
 Runbook (run on the machine that has rate-limit data):
 
 1. Retention: check `cleanupPeriodDays`, managed settings, and the ages of transcript files.
-1. Snapshot sanity check: `resets_at` values are epoch seconds, and percentages rise monotonically
-   within each window.
-1. Group snapshots by window (`five_hour_resets_at`, `seven_day_resets_at`). Take the change in
-   percentage from the first to the last snapshot of each window.
-1. For the same time interval, sum transcript spend over distinct `requestId`s (method above).
+1. Snapshot sanity check: `resets_at` values are epoch seconds. Percentages are not monotonic in the
+   table, so use each window's running maximum.
+1. Group snapshots by window (`five_hour_resets_at`, `seven_day_resets_at`). Take the change from
+   the first snapshot to the running maximum, and note when the maximum was first reached. Split a
+   window's interval where its other reset changes; the 5h window at 03:00 UTC Nov 8 changed its 7d
+   reset at 23:00 UTC Nov 7.
+1. For the same time interval, sum token totals per kind (input, output, cache write, cache read)
+   from transcripts, one record per `requestId`. Then sum spend: main-session deltas from
+   `cost_snapshots` plus `subagent_tasks.estimated_cost_usd`. Cross-check against transcripts where
+   retention allows (method above).
 1. Compare percentage change with spend change per window. A roughly linear relationship means the
    percentage tracks spend. Report the fit and the windows that do not match.
 1. The snapshot table has no `session_id`. Per-session attribution can only split a window's spend
@@ -312,7 +355,7 @@ Runbook (run on the machine that has rate-limit data):
 
 ## Open items
 
-- Rate-limit validation (above). Needs more snapshots across both windows.
+- Rate-limit validation (above): provisional. Needs a token-weighting test and more windows.
 - Outliers 605bf8c9 and 492a3eb3 (above). f4f9eae5 is explained by a likely missing request and web
   searches, not yet verified.
 - Counting convention: per-`requestId` for estimator comparisons. Session 492a3eb3 is the exception.
