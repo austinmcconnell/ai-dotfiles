@@ -18,16 +18,17 @@ Code is wired up today — see "Why Kiro CLI isn't wired up" below.
   `cost_snapshots` (see "Cost trajectory" below) are the deliberate exceptions — both append-only,
   since `sessions`' upsert-in-place would otherwise overwrite the one history they exist to
   preserve.
-- **Pricing**: `pricing.json` — model → $/M-token rates, used only to estimate subagent $ cost
-  (Claude Code's main session already reports `cost.total_cost_usd` itself; subagents only report a
-  combined `tokenCount`, so `subagent_tasks.estimated_cost_usd` is priced from the subagent's own
-  transcript by `usage_transcript_cost` in `lib.sh`: one final record per `requestId`, with the
-  long-context and cache-read rules from `pricing.json`. It is NULL while the transcript is missing
-  or any request is unpriced, and a later firing that cannot read the transcript keeps the last
-  value. A subagent's `completed` firing is written after its final transcript record (checked live
-  on one subagent, 2026-11-06). Tests: `test/test-subagent-cost.sh`). Verified against the
-  `claude-api` skill's cached pricing table on 2026-09-25 — re-verify before trusting old entries;
-  prices change.
+- **Pricing**: `pricing.json` — model → $/M-token rates, used only to estimate subagent $ cost.
+  Claude Code's main session already reports `cost.total_cost_usd` itself, while a subagent payload
+  carries only a combined `tokenCount` that cannot be split into input and output. So
+  `subagent_tasks.estimated_cost_usd` is priced from the subagent's own transcript by
+  `usage_transcript_cost` in `lib.sh`: one final record per `requestId`, with the long-context and
+  cache-read rules from `pricing.json`. It is NULL while the transcript is missing or any request is
+  unpriced. A stored cost never decreases — a later firing that cannot read the transcript, or that
+  reads fewer records than an earlier one, leaves the higher value in place — so the figure does not
+  depend on which firing happens to land after the subagent's final transcript record. Tests:
+  `test/test-subagent-cost.sh`. Verified against the `claude-api` skill's cached pricing table on
+  2026-09-25 — re-verify before trusting old entries; prices change.
 
 ## Claude Code integration
 
@@ -42,6 +43,33 @@ payload on stdin and write to the DB as a side effect:
   "Cost trajectory" below).
 - `claude-subagent-statusline.sh` — per-subagent rows. Emits no stdout at all, so Claude Code keeps
   its default subagent-row rendering; this script's only job is the `subagent_tasks` upsert.
+
+## Repairing `subagent_tasks` rows
+
+Two maintenance scripts fix historical rows. Both default to a dry run, print before/after per row,
+and need `--apply` to write; `--apply` backs the DB up first and refuses to run if that backup path
+already exists.
+
+Rows written before the column-shift fix have their columns off by one. They are identifiable by a
+non-NULL `effort`, which the current writer never sets. `repair-subagent-tasks.sh` rebuilds those
+columns from the row's stored `raw_json` and clears `estimated_cost_usd`, because cost now comes
+from the transcript rather than from any column it could recompute.
+
+`backfill-subagent-cost.sh` then reprices every row from its own subagent transcript. A row whose
+transcript is missing or not fully priceable is cleared to NULL rather than left holding a figure
+from the superseded blended-rate estimator, so expect rows whose transcripts have aged out of
+retention to lose their value rather than keep a wrong one.
+
+Run them in that order, each as a dry run first:
+
+```bash
+./repair-subagent-tasks.sh            # review
+./repair-subagent-tasks.sh --apply
+./backfill-subagent-cost.sh           # review
+./backfill-subagent-cost.sh --apply
+```
+
+Afterwards no row should have a non-NULL `effort`. Both scripts are idempotent.
 
 ## Compaction tracking: `compaction_events`
 
@@ -155,8 +183,12 @@ reads, and cache writes, is over the threshold. The estimate can mix tiers withi
 
 Cache-read rates are version-aware where a model's entry in `pricing.json` names a repricing
 release: Sonnet 5.5 used 0.1x before Claude Code 2.1.296 and 0.05x from it. Each row uses the
-`version` in its own payload, and a row without one falls back to the current rate. Sonnet 5.5
-sessions before 2.1.296 still estimate below actual; the remaining gap is tracked in `todo.md`.
+`version` in its own payload, and a row without one falls back to the current rate. That differs
+from `usage_transcript_cost` in `lib.sh`, which refuses to price such a request rather than pick a
+side of the boundary; the two implementations of these rules are duplicated, not shared. Sonnet 5.5
+sessions before 2.1.296 still estimate below actual, and the 1h cache-write rate implied by
+`cost-state` runs about 10% above the published rate — see "Cache-write rate check" in
+`burn-attribution.md`.
 
 ## Deliberately out of scope (for now)
 
