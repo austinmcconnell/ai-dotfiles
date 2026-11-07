@@ -52,4 +52,4 @@ breakpoints is preferred because:
 Auto-compaction should rarely trigger if you compact strategically.
 
 Exact compaction values live in each tool's own settings (kiro `cli.json`, Claude `settings.json`
-env block) — check there, not here.
+`autoCompactWindow`) — check there, not here.

@@ -104,8 +104,8 @@ Symlinks from `~/.kiro/skills/` point to the source directories under `etc/ai/sk
 
 ### Categories
 
-Group skills by domain: `development`, `documentation`, `operations`, `research`, `scrum`, `shared`.
-Use `shared` for skills used across multiple agents or domains.
+Group skills by domain: `ansible`, `development`, `documentation`, `kiro`, `operations`, `research`,
+`scrum`, `shared`. Use `shared` for skills used across multiple agents or domains.
 
 ## Reference Files
 
@@ -168,6 +168,10 @@ Custom agents don't auto-discover skills. Register them explicitly via `skill://
     ]
 }
 ```
+
+This repo's agents scope the global glob per category instead (for example `jira.json` lists
+`skill://~/.kiro/skills/scrum/**/SKILL.md`, `.../shared/**`, `.../kiro/**` and `.../extra/**`), so
+each agent loads only the skills relevant to it.
 
 ### Loading behavior
 
