@@ -84,6 +84,12 @@ repos:
         entry: etc/ai/usage/test/test-subagent-cost.sh
         files: ^etc/ai/usage/(lib\.sh|pricing\.json|claude-subagent-statusline\.sh|test/test-subagent-cost\.sh)$
         pass_filenames: false
+      - id: usage-ai-usage-tests
+        name: ai-usage report tests
+        language: script
+        entry: etc/ai/usage/test/test-ai-usage.sh
+        files: ^(bin/ai-usage|etc/ai/usage/(lib\.sh|schema\.sql|test/test-ai-usage\.sh))$
+        pass_filenames: false
       - id: shfmt
         name: shfmt
         minimum_pre_commit_version: 2.4.0
