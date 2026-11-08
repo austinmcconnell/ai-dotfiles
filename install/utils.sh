@@ -3,10 +3,10 @@
 # Common utility functions for ai-dotfiles install scripts.
 #
 # Trimmed from the dotfiles install/utils.sh: this standalone AI repo keeps only
-# the helpers its six install scripts actually use (logging, section headers, and
+# the helpers its seven install scripts actually use (logging, section headers, and
 # the Homebrew install-if-needed path). The work/personal-computer split and the
-# ~/.extra machine-config apparatus are deliberately NOT carried over — they are a
-# dotfiles concept, and no AI install script passes the personal/work argument.
+# loading of ~/.extra machine settings are deliberately NOT carried over — they are
+# a dotfiles concept, and no AI install script passes the personal/work argument.
 
 # --- Logging helpers (LOG_LEVEL: debug, info, error, none) ---
 LOG_LEVEL="${AI_DOTFILES_LOG_LEVEL:-info}"
