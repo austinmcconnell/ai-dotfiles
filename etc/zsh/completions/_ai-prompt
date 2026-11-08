@@ -1,0 +1,64 @@
+#compdef ai-prompt
+
+# AI prompt management completion for zsh
+# This file should be in your fpath for completion to work
+
+_ai-prompt() {
+    local context state state_descr line
+    typeset -A opt_args
+
+    _arguments -C \
+        '1: :_ai_prompt_commands' \
+        '*: :_ai_prompt_args' \
+        && return 0
+}
+
+_ai_prompt_commands() {
+    local commands=(
+        'save:Save a new prompt'
+        'use:Copy prompt to clipboard'
+        'list:List all available prompts'
+        'show:Display a prompt'
+        'edit:Edit a prompt'
+        'delete:Delete a prompt'
+        'help:Show help message'
+        's:Save a new prompt (alias)'
+        'u:Copy prompt to clipboard (alias)'
+        'l:List all available prompts (alias)'
+        'ls:List all available prompts (alias)'
+        'e:Edit a prompt (alias)'
+        'd:Delete a prompt (alias)'
+        'rm:Delete a prompt (alias)'
+        'cat:Display a prompt (alias)'
+    )
+    _describe 'commands' commands
+}
+
+_ai_prompt_args() {
+    case $words[2] in
+        use|show|edit|delete|u|e|d|rm|cat)
+            local prompts
+            prompts=($(_ai_prompt_names))
+            if [[ ${#prompts[@]} -gt 0 ]]; then
+                _describe 'prompts' prompts
+            fi
+            ;;
+        save|s)
+            _message 'prompt name'
+            ;;
+        list|l|ls|help|h)
+            # No arguments needed
+            ;;
+    esac
+}
+
+# Get list of available prompts (without .md extension)
+_ai_prompt_names() {
+    local prompt_dir="${AI_DOTFILES_DIR:-$HOME/.ai-dotfiles}/etc/ai/prompts"
+
+    if [[ -d "$prompt_dir" ]]; then
+        find "$prompt_dir" -name "*.md" -not -name "README.md" -type f 2>/dev/null | sed 's|.*/||; s|\.md$||' | sort
+    fi
+}
+
+_ai-prompt "$@"

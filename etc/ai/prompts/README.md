@@ -7,14 +7,14 @@ Claude, ChatGPT, Gemini, etc.).
 ## Setup
 
 The commands below are subcommands of one `ai-prompt` shell function, defined in
-`scripts/ai-prompt.sh`. Nothing in this repo sources that file (it is not executable and `install.sh`
-does not call it), so add this line to your shell config:
+`scripts/ai-prompt.sh`. `etc/zsh/init.zsh` sources it and adds its tab completion, so add this line
+to your interactive zsh config (the dotfiles repo does this from `conf.d/ai-dotfiles.zsh`):
 
-```bash
-source "$AI_DOTFILES_DIR/scripts/ai-prompt.sh"
+```zsh
+source "${AI_DOTFILES_DIR:-$HOME/.ai-dotfiles}/etc/zsh/init.zsh"
 ```
 
-Prompts are read from and written to `${AI_DOTFILES_DIR:-$HOME/.dotfiles}/etc/ai/prompts`.
+Prompts are read from and written to `${AI_DOTFILES_DIR:-$HOME/.ai-dotfiles}/etc/ai/prompts`.
 
 ## Available Commands
 

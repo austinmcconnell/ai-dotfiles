@@ -54,12 +54,13 @@ The self-update step (`git pull` on launch) only runs for a standalone git clone
 
 Directories without their own README:
 
-| Directory     | What it holds  | How it is used                                                   |
-| ------------- | -------------- | ---------------------------------------------------------------- |
-| `etc/codex/`  | `config.toml`  | Copied to `~/.codex/` by `install/codex.sh` (codex is disabled). |
-| `etc/dprint/` | `dprint.jsonc` | Passed to `dprint fmt` by the `dprint` pre-commit hook.          |
-| `etc/taplo/`  | `taplo.toml`   | Passed to the `taplo-format` and `taplo-lint` pre-commit hooks.  |
-| `etc/yaml/`   | `yamllint`     | Passed to the `yamllint` pre-commit hook.                        |
+| Directory     | What it holds                        | How it is used                                                                                      |
+| ------------- | ------------------------------------ | --------------------------------------------------------------------------------------------------- |
+| `etc/codex/`  | `config.toml`                        | Copied to `~/.codex/` by `install/codex.sh` (codex is disabled).                                    |
+| `etc/dprint/` | `dprint.jsonc`                       | Passed to `dprint fmt` by the `dprint` pre-commit hook.                                             |
+| `etc/taplo/`  | `taplo.toml`                         | Passed to the `taplo-format` and `taplo-lint` pre-commit hooks.                                     |
+| `etc/yaml/`   | `yamllint`                           | Passed to the `yamllint` pre-commit hook.                                                           |
+| `etc/zsh/`    | `init.zsh`, `completions/_ai-prompt` | Sourced from an interactive zsh config; see [etc/ai/prompts/README.md](./etc/ai/prompts/README.md). |
 
 ## Development
 

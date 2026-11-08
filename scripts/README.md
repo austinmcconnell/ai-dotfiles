@@ -27,12 +27,12 @@ temporary directory to compare them (see its row).
 
 ## Other scripts
 
-| Script                         | What it does                                                                                                                              | How it is run                                                                                                                                                    |
-| ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `generate-personas.sh`         | Writes each Claude persona (`etc/claude-code/agents/<name>.md`) with its steering docs inlined, into the directory given as its argument. | `install/claude-code.sh` (`generate-personas.sh "$CLAUDE_DIR/agents"`); also run by `validate-persona-steering.sh`.                                              |
-| `sort-claude-settings-json.sh` | Restores `etc/claude-code/settings.json` to a canonical top-level key order; nested objects are untouched.                                | pre-commit `sort-claude-settings-json`, or `./scripts/sort-claude-settings-json.sh [path]`.                                                                      |
-| `ai-prompt.sh`                 | Defines the `ai-prompt` shell function (`save`, `use`, `list`, `show`, `edit`, `delete`, `help`) over `etc/ai/prompts/`.                  | Not executable. No caller found in `install.sh`, `install/`, `bin/`, `.pre-commit-config.yaml`, or `scripts/`; the function must be sourced from a shell config. |
+| Script                         | What it does                                                                                                                              | How it is run                                                                                                       |
+| ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| `generate-personas.sh`         | Writes each Claude persona (`etc/claude-code/agents/<name>.md`) with its steering docs inlined, into the directory given as its argument. | `install/claude-code.sh` (`generate-personas.sh "$CLAUDE_DIR/agents"`); also run by `validate-persona-steering.sh`. |
+| `sort-claude-settings-json.sh` | Restores `etc/claude-code/settings.json` to a canonical top-level key order; nested objects are untouched.                                | pre-commit `sort-claude-settings-json`, or `./scripts/sort-claude-settings-json.sh [path]`.                         |
+| `ai-prompt.sh`                 | Defines the `ai-prompt` shell function (`save`, `use`, `list`, `show`, `edit`, `delete`, `help`) over `etc/ai/prompts/`.                  | Not executable. Sourced by `etc/zsh/init.zsh`, which also puts its completion on `fpath`.                           |
 
 ## Notes
 
-- `ai-prompt.sh` locates prompts at `${AI_DOTFILES_DIR:-$HOME/.dotfiles}/etc/ai/prompts`.
+- `ai-prompt.sh` locates prompts at `${AI_DOTFILES_DIR:-$HOME/.ai-dotfiles}/etc/ai/prompts`.
