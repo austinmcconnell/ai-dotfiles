@@ -6,9 +6,12 @@
 # at all (see etc/ai/usage/README.md's "Why Kiro CLI isn't wired up"), so
 # wiring this into kiro would be a permanent no-op.
 #
-# THRESHOLD is a fixed absolute token count set ~15K below the auto-compaction
-# trigger, which is autoCompactWindow minus a ~35K reserve (see
-# etc/ai/usage/README.md). Update it whenever autoCompactWindow changes.
+# THRESHOLD is derived from the configured window: auto-compaction fires about
+# COMPACT_RESERVE tokens below it (see etc/ai/usage/README.md), and the nudge
+# fires NUDGE_MARGIN tokens before that. The window comes from
+# CLAUDE_CODE_AUTO_COMPACT_WINDOW, else autoCompactWindow in the user
+# settings.json; with neither readable, FALLBACK_THRESHOLD applies. A per-model
+# modelSettings window is not read.
 #
 # Self-resetting sentinel, not a one-time-ever nudge: below THRESHOLD, any
 # stale sentinel is cleared silently; at/above THRESHOLD, it nudges once per
@@ -25,7 +28,37 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck disable=SC1091
 source "$SCRIPT_DIR/../usage/lib.sh"
 
-THRESHOLD=235000
+COMPACT_RESERVE=35000
+NUDGE_MARGIN=15000
+FALLBACK_THRESHOLD=235000
+
+# Prints a token count for "250k" / "250000" style values; prints nothing otherwise.
+parse_window() {
+    local raw
+    raw=$(printf '%s' "$1" | tr '[:upper:]' '[:lower:]')
+    if [[ "$raw" =~ ^[0-9]+$ ]]; then
+        echo "$raw"
+    elif [[ "$raw" =~ ^[0-9]+k$ ]]; then
+        echo $((${raw%k} * 1000))
+    fi
+    return 0
+}
+
+compute_threshold() {
+    local window settings
+    settings="${CLAUDE_CONFIG_DIR:-$HOME/.claude}/settings.json"
+    window=$(parse_window "${CLAUDE_CODE_AUTO_COMPACT_WINDOW:-}")
+    if [[ -z "$window" && -f "$settings" ]]; then
+        window=$(parse_window "$(jq -r '.autoCompactWindow // empty' "$settings" 2>/dev/null || true)")
+    fi
+    if [[ -n "$window" && "$window" -gt $((COMPACT_RESERVE + NUDGE_MARGIN)) ]]; then
+        echo $((window - COMPACT_RESERVE - NUDGE_MARGIN))
+    else
+        echo "$FALLBACK_THRESHOLD"
+    fi
+}
+
+THRESHOLD=$(compute_threshold)
 
 INPUT=$(cat)
 SESSION_ID=$(printf '%s' "$INPUT" | jq -r '.session_id // empty' 2>/dev/null)
