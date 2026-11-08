@@ -49,6 +49,13 @@ ln -sfv "$AI_DOTFILES_DIR/etc/kiro-cli/settings/mcp.json" "$KIRO_SETTINGS_DIR/mc
 KIRO_AGENTS_DIR="$HOME/.kiro/agents"
 mkdir -p "$KIRO_AGENTS_DIR"
 
+# Remove agent links whose source was renamed, deleted, or moved out of the repo.
+for agent_link in "$KIRO_AGENTS_DIR"/*; do
+    if [[ -L "$agent_link" && ! -e "$agent_link" ]]; then
+        rm -v "$agent_link"
+    fi
+done
+
 if [ -d "$AI_DOTFILES_DIR/etc/kiro-cli/cli-agents" ]; then
     for agent_file in "$AI_DOTFILES_DIR/etc/kiro-cli/cli-agents"/*.{json,md}; do
         if [ -f "$agent_file" ]; then
