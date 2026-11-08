@@ -14,10 +14,11 @@ as-is; a cloner repoints or ignores them.
 ## Relocation Model (`AI_DOTFILES_DIR`)
 
 Every install script, hook command, and `ai-prompt.sh` resolves the repo root from
-`AI_DOTFILES_DIR`, falling back to `$HOME/.dotfiles` when unset (the colocated-with-dotfiles case).
-Installed standalone, `install.sh` sets `AI_DOTFILES_DIR` to this repo's own root. `AI_DOTFILES_DIR`
-must be exported from the shell (`.zshenv`/`.zprofile`), never from a project dotenv — kiro-cli
-2.24+ no longer auto-loads project dotenv files into chat/MCP/tools.
+`AI_DOTFILES_DIR`. When it is unset, install and validation scripts fall back to the repo they live
+in, and hooks and `ai-prompt.sh` fall back to `$HOME/.ai-dotfiles`. `install.sh` sets
+`AI_DOTFILES_DIR` to this repo's own root. `AI_DOTFILES_DIR` must be exported from the shell
+(`.zshenv`/`.zprofile`), never from a project dotenv — kiro-cli 2.24+ no longer auto-loads project
+dotenv files into chat/MCP/tools.
 
 Kiro steering resolves through `~/.kiro/steering`, a real directory of per-domain real directories
 holding per-file symlinks into `$AI_DOTFILES_DIR/etc/ai/steering/<domain>/` plus any host-local

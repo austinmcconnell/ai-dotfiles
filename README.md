@@ -22,12 +22,11 @@ distributes skills/steering to each agent, and symlinks each tool's config into 
 installs follow `ENABLED_AGENTS`; see [install/README.md](./install/README.md) for which agents are
 enabled and how to change that.
 
-### Standalone vs. colocated with dotfiles
+### Repo root (`AI_DOTFILES_DIR`)
 
-The AI tooling resolves its root from `AI_DOTFILES_DIR`, defaulting to `$HOME/.dotfiles` when unset:
-
-- **Standalone** (this repo): `install.sh` sets `AI_DOTFILES_DIR` to `~/.ai-dotfiles`.
-- **Colocated**: the dotfiles `install.sh` sets `AI_DOTFILES_DIR` and sources these scripts.
+The AI tooling resolves its root from `AI_DOTFILES_DIR`. When it is unset, install and validation
+scripts use the repo they live in, and hooks and shell helpers use `$HOME/.ai-dotfiles`. A dotfiles
+`install.sh` may also set `AI_DOTFILES_DIR` and source `install.sh` from this repo.
 
 Export `AI_DOTFILES_DIR` from your shell (`.zshenv`/`.zprofile`) so hooks and MCP servers see it —
 not from a project dotenv (kiro-cli 2.24+ no longer auto-loads project dotenv files).

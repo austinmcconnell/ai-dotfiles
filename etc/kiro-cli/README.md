@@ -47,7 +47,7 @@ Each agent has a co-located prompt file using a relative `file://` URI (e.g.
 `"prompt": "file://./code-prompt.md"`). Cross-tool hooks (security denies, correction-capture,
 audit-shell-commands, `recall-memory.sh`/`check-engram-hygiene.sh`) live in `etc/ai/hooks/` instead
 of here, referenced via the `$AI_DOTFILES_DIR` env var (`$AI_DOTFILES_DIR/etc/ai/hooks/<script>.sh`,
-resolving to `~/.dotfiles` by default) — they moved out of `etc/kiro-cli/hooks/` once Claude Code
+resolving to `~/.ai-dotfiles` by default) — they moved out of `etc/kiro-cli/hooks/` once Claude Code
 started wiring them too. Steering docs (principles) live in `etc/ai/steering/<domain>/**/*.md`;
 skills (workflows, templates) live in `etc/ai/skills/<category>/**/SKILL.md` and are symlinked into
 `~/.kiro/skills/` by `install/ai-tools.sh` — see the `skill-loading-triggers` steering for the

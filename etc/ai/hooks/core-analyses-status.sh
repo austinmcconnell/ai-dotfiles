@@ -75,7 +75,7 @@ main() {
     elif ((${#stale_names[@]} > 0)); then
         local msg stale_list prompts_dir
         stale_list="$(join_names "${stale_names[@]}")"
-        prompts_dir="${AI_DOTFILES_DIR:-${HOME:-}/.dotfiles}/etc/ai/prompts/"
+        prompts_dir="${AI_DOTFILES_DIR:-${HOME:-}/.ai-dotfiles}/etc/ai/prompts/"
         msg="🔍 ${#stale_names[@]} of ${#CORE_ANALYSIS_NAMES[@]} core analyses in ${CORE_ANALYSIS_DIR}/ are stale: ${stale_list}. "
         if ((${#missing_names[@]} > 0)); then
             msg+="Also missing: $(join_names "${missing_names[@]}"). "
