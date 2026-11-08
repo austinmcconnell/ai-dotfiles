@@ -70,7 +70,8 @@ stamp_path() {
 # installed but no DB has been created yet, `engram` subcommands can error, so both
 # modes gate on this to degrade to a clean "nothing to check" instead of a
 # confusing empty/error table.
-readonly ENGRAM_DB="$HOME/.config/engram/engram.db"
+export ENGRAM_DATA_DIR="${ENGRAM_DATA_DIR:-$HOME/.config/engram}"
+readonly ENGRAM_DB="${ENGRAM_DATA_DIR}/engram.db"
 engram_available() {
     command -v engram &>/dev/null && [[ -f "${ENGRAM_DB}" ]]
 }

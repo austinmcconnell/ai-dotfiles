@@ -17,7 +17,10 @@ set -euo pipefail
 #   4. In addition to the above, a backlog line when captured corrections are still
 #      unpromoted to steering (distill-learnings marks reviewed ones with a title prefix).
 
-ENGRAM_DB="$HOME/.config/engram/engram.db"
+# The engram CLI defaults to ~/.engram; match the MCP server configs so a hook
+# launched without a login shell environment queries the same store.
+export ENGRAM_DATA_DIR="${ENGRAM_DATA_DIR:-$HOME/.config/engram}"
+ENGRAM_DB="${ENGRAM_DATA_DIR}/engram.db"
 
 if ! command -v engram &>/dev/null || [[ ! -f "${ENGRAM_DB}" ]]; then
     exit 0
