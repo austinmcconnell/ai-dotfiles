@@ -54,6 +54,23 @@ Spawning uses each platform's own mechanism. On Kiro, that is the `subagent` too
 from a non-`code` agent need per-tool approval (see `etc/kiro-cli/README.md`, Subagent Trust Model).
 On Claude Code, it is the Agent tool, which scoped persona agents do not have.
 
+### The Opus reviewer on Claude Code
+
+On Claude Code, the reviewer is the `doubt-reviewer` persona (`subagent_type: doubt-reviewer`). It
+is pinned to Opus at high effort, and its tool list (Read, Grep, Glob) enforces the read-only rule.
+The Opus pin is Claude-only; on Kiro the reviewer runs on the spawned agent's model.
+
+Every review spends Opus tokens, so **suggest it, don't launch it**:
+
+1. Name the non-trivial criterion the artifact meets (see When to Use) and why a review is worth the
+   spend here.
+1. Let the user approve. `Agent(doubt-reviewer)` is an ask rule, so the permission prompt is the
+   approval point.
+1. If the user declines, say the review was skipped and continue. The skip is fine; the silence is
+   not.
+
+Small or simple artifacts get no suggestion at all, even when this skill is loaded.
+
 ## The Process
 
 Copy this checklist when applying the skill:
@@ -112,6 +129,10 @@ after thorough examination.
 ARTIFACT:
 CONTRACT:
 ```
+
+The `doubt-reviewer` persona body (`etc/claude-code/agents/doubt-reviewer.md`) carries this prompt,
+so on Claude Code pass it only the ARTIFACT and CONTRACT. The two copies mirror each other: change
+one, change both.
 
 **Pass ARTIFACT + CONTRACT only. Do NOT pass the CLAIM.** Handing the reviewer your conclusion
 biases it toward agreement; it must independently determine whether the artifact satisfies the
@@ -173,6 +194,9 @@ A fresh reviewer can be wrong because it lacks context. Don't defer just because
 
 ### Step 5: STOP — bounded loop, not recursion
 
+Default to one cycle. Suggest another only when the first produced actionable findings that changed
+the artifact substantively; the 3-cycle bound is a ceiling, not a target.
+
 Stop when:
 
 - The next iteration returns only trivial or already-considered findings, **or**
@@ -198,6 +222,7 @@ artifact is large, the artifact is too big: return to Step 2 and decompose. Do n
 ## Red Flags
 
 - Spawning a reviewer for a one-line rename or formatting change
+- Launching the Opus reviewer without first suggesting it and naming the criterion that justifies it
 - Treating reviewer output as authoritative without re-reading the artifact text
 - Looping past 3 cycles without escalating
 - Prompting the reviewer with "is this good?" instead of "find issues"
@@ -215,7 +240,8 @@ artifact is large, the artifact is too big: return to Step 2 and decompose. Do n
 ## Verification
 
 - [ ] Every non-trivial decision was named as a CLAIM before standing
-- [ ] At least one fresh-context review per non-trivial artifact
+- [ ] At least one fresh-context review per non-trivial artifact, or a skip the user chose and you
+  announced
 - [ ] The reviewer received ARTIFACT + CONTRACT — NOT the CLAIM, NOT your reasoning
 - [ ] The reviewer's prompt was adversarial ("find issues"), not validating ("is it good")
 - [ ] Findings classified against the artifact text using the precedence order

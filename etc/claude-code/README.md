@@ -203,7 +203,8 @@ via `claude --agent <name>`). Four personas mirror their kiro-cli counterparts: 
 `datadog`, `ansible`. There is no persona equivalent of kiro's `code` agent — the main Claude Code
 session fills that role directly. A fifth, `doubt-reviewer`, has no kiro counterpart: it is the
 read-only (`Read, Grep, Glob`), Opus-pinned reviewer the `doubt-driven-development` skill spawns,
-and it carries no domain steering (see Cost Controls for its Opus exception).
+and it carries no domain steering (see Cost Controls for its Opus exception). Its body mirrors the
+adversarial prompt in that skill's Step 3; change one, change both.
 
 - `tools:` frontmatter is the closest Claude analog to kiro's `allowedTools` — it gates which tools
   are *available* to the persona at all, not just whether they auto-run without a prompt
