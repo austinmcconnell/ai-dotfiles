@@ -19,6 +19,7 @@ method, and open items, read `burn-attribution.md` in this directory.
   `cost_snapshots` (see "Cost trajectory" below) are the deliberate exceptions — both append-only,
   since `sessions`' upsert-in-place would otherwise overwrite the one history they exist to
   preserve.
+- **Migrations**: see "Schema migrations" below.
 - **Pricing**: `pricing.json` — model → $/M-token rates, used only to estimate subagent $ cost.
   Claude Code's main session already reports `cost.total_cost_usd` itself, while a subagent payload
   carries only a combined `tokenCount` that cannot be split into input and output. So
@@ -30,6 +31,42 @@ method, and open items, read `burn-attribution.md` in this directory.
   depend on which firing happens to land after the subagent's final transcript record. Tests:
   `test/test-subagent-cost.sh`. Verified against the `claude-api` skill's cached pricing table on
   2026-09-25 — re-verify before trusting old entries; prices change.
+
+## Schema migrations
+
+`PRAGMA user_version` holds the DB's schema version, and `migrations/NNNN-<slug>.sql` takes a DB
+from version `NNNN - 1` to `NNNN`. `usage_db_init` in `lib.sh` runs on every statusline render. It
+reads the version once and returns at once when the DB is current. Otherwise:
+
+- **A new DB** gets `schema.sql`, which is always the newest schema, and jumps straight to the
+  newest version.
+- **A DB from before versioning** (version 0 with tables) is adopted as version 1 by
+  `migrations/0001-baseline.sql`, plus whichever `compaction_events` columns it lacks. The baseline
+  is frozen: never edit it. Adopting from `schema.sql` instead would give the DB a newer shape that
+  later migrations collide with.
+- **An older DB** runs each later migration in order. Each one and its version bump share one
+  `BEGIN IMMEDIATE` transaction, guarded on the starting version. A failure rolls back and leaves
+  the version unchanged. When several sessions race, exactly one applies the migration and the rest
+  see the new version and succeed.
+- **A DB newer than the checkout's migrations** is left alone.
+
+To change the schema, edit `schema.sql` and add the next-numbered migration that brings an existing
+DB to the same shape, in one commit. `test/test-migrations.sh` (a pre-commit hook) checks that a new
+DB and a migrated one end up with the same columns. Rules for a migration file:
+
+- **No transaction control or dot-commands.** No `BEGIN`, `COMMIT`, `PRAGMA journal_mode`, or
+  `.`-commands. The runner wraps the file in its own transaction, and any of these would break that
+  wrapping.
+- **Keep it fast.** Every render waits on it, and other sessions block for up to the 5 s busy
+  timeout (`USAGE_DB_BUSY_TIMEOUT_MS`) before failing. Run a rebuild of a large table, such as
+  `cost_snapshots`, as an explicit one-off command rather than as a migration.
+- **Rely on named columns.** `ALTER TABLE ... ADD COLUMN` appends, so a migrated DB's column order
+  can differ from a new one's. Every `INSERT` names its columns, and new ones must too.
+
+The live DB follows whatever checkout the statusline runs from. Checking out a branch that adds a
+migration upgrades `usage.db` on the next render, and switching back leaves the DB at the newer
+version, which older code ignores. Since migrations only add, rolling back means undoing the
+migration's change by hand and then setting `PRAGMA user_version` to the earlier number.
 
 ## Claude Code integration
 
@@ -203,7 +240,7 @@ sessions before 2.1.296 still estimate below actual, and the 1h cache-write rate
 
 - **No EAV/fully-generic metric schema.** Considered and rejected in favor of nullable typed columns
   plus a `raw_json` escape hatch — simpler to query at this scale (two known tools), and adding a
-  column later is a one-line migration, not a rewrite.
+  column later is a one-statement migration (see "Schema migrations"), not a rewrite.
 
 ## Reporting
 
