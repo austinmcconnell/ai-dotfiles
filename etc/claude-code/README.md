@@ -134,9 +134,12 @@ session-total budget; `--max-budget-usd` is a per-invocation CLI flag only):
   parameter and a persona's `model:` frontmatter.
 - **Subagent effort** — `env.CLAUDE_CODE_SUBAGENT_EFFORT=low` sets the reasoning effort for
   delegated subagents, independent of the model they run on.
-- **Early auto-compaction** — `env.CLAUDE_AUTOCOMPACT_PCT_OVERRIDE=60` compacts at 60% of the
-  `autoCompactWindow` instead of the default, leaving room for a fuller summary. Set here rather
-  than in the shell so it applies however `claude` is launched.
+- **Early auto-compaction** — top-level `autoCompactWindow: 285000` caps the window that
+  auto-compaction measures against. Compaction fires about 35K tokens below that window, so this
+  value compacts near 250K. The reserve was measured at both 150K and 250K windows (on Haiku) and
+  did not scale with the window. Set the window to the desired trigger plus ~35K. No
+  `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE` is set: it scales the window by a percentage and moves the
+  trigger unpredictably.
 - **Agent model gate** — `Agent(model:opus)`, `Agent(model:fable)`, and the `claude-opus*` /
   `claude-fable*` full-ID forms are in `permissions.ask`, so a per-call override to an expensive
   model prompts instead of silently outranking the Haiku floor. Rules match the literal value Claude
