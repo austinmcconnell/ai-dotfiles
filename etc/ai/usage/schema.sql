@@ -97,8 +97,8 @@ CREATE TABLE IF NOT EXISTS cost_snapshots (
     tool                   TEXT NOT NULL,   -- 'claude-code', 'kiro-cli' (future), ...
     session_id             TEXT NOT NULL,
     total_cost_usd         REAL,
-    input_tokens           INTEGER,         -- most recent API call only; not cumulative (source data has no running total)
-    output_tokens          INTEGER,         -- most recent API call only; not cumulative (source data has no running total)
+    input_tokens           INTEGER,         -- full context (input + cache read + cache write) of the API call in flight or just finished; not cumulative
+    output_tokens          INTEGER,         -- same call's output so far; may be partial when captured mid-stream; not cumulative
     cache_creation_tokens  INTEGER,         -- most recent turn only; not cumulative (source data has no running total)
     cache_read_tokens      INTEGER,         -- most recent turn only; not cumulative (source data has no running total)
     context_used_percentage REAL,           -- relative to the model's native context ceiling, not autoCompactWindow
