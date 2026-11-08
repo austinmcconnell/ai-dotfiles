@@ -6,12 +6,9 @@
 # at all (see etc/ai/usage/README.md's "Why Kiro CLI isn't wired up"), so
 # wiring this into kiro would be a permanent no-op.
 #
-# THRESHOLD is a fixed absolute token count, deliberately NOT derived as a
-# fraction of autoCompactWindow -- the real compaction trigger point is a
-# window-size-dependent ratio that's still only loosely understood (see
-# engram decision/claude-code-auto-compact-window-fix), so deriving this
-# threshold from it would inherit that uncertainty. An absolute number is
-# simpler and correct regardless of what autoCompactWindow is configured to.
+# THRESHOLD is a fixed absolute token count set ~15K below the auto-compaction
+# trigger, which is autoCompactWindow minus a ~35K reserve (see
+# etc/ai/usage/README.md). Update it whenever autoCompactWindow changes.
 #
 # Self-resetting sentinel, not a one-time-ever nudge: below THRESHOLD, any
 # stale sentinel is cleared silently; at/above THRESHOLD, it nudges once per
@@ -28,7 +25,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck disable=SC1091
 source "$SCRIPT_DIR/../usage/lib.sh"
 
-THRESHOLD=135000
+THRESHOLD=235000
 
 INPUT=$(cat)
 SESSION_ID=$(printf '%s' "$INPUT" | jq -r '.session_id // empty' 2>/dev/null)
@@ -47,7 +44,15 @@ if [[ -z "$CURRENT_TOKENS" || "$CURRENT_TOKENS" -lt "$THRESHOLD" ]]; then
 fi
 
 if [[ ! -f "$SENTINEL" ]]; then
-    echo "📊 This session has crossed ${THRESHOLD} tokens (currently ~${CURRENT_TOKENS}). Auto-compaction may trigger somewhat above this point. If you're at a natural stopping point, consider /compact now (on your terms) or /clear if switching to an unrelated task."
+    cat <<EOF
+📊 This session has crossed ${THRESHOLD} tokens (currently ~${CURRENT_TOKENS}); auto-compaction is close.
+Finish the step in progress, then tell the user it is time to compact and give them one
+ready-to-paste line of the form: /compact <instructions>
+Write the instructions from this session's actual work. Cover what to keep (decisions, file paths,
+current state, open questions, user preferences), what is finished and can be dropped, and what
+work remains. Never suggest a bare /compact. If the user is switching to an unrelated task,
+suggest /clear instead.
+EOF
     mkdir -p "$SENTINEL_DIR"
     : >"$SENTINEL"
 fi

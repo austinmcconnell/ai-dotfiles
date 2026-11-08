@@ -105,8 +105,8 @@ at ~215K (three), both measured on Haiku; the reserve is not confirmed for other
   the window (100K to 600K) fit that formula and were an artifact of the override.
 
 `etc/ai/hooks/suggest-context-checkpoint.sh` (a `UserPromptSubmit` hook) reads this table's sibling
-data (`sessions.input_tokens`) and nudges at a fixed absolute threshold, which stays correct
-whatever window is configured.
+data (`sessions.input_tokens`) and nudges at a fixed absolute threshold set just below the trigger,
+so the threshold must be updated whenever `autoCompactWindow` changes.
 
 ## Cost trajectory: `cost_snapshots`
 
