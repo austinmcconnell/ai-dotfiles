@@ -8,10 +8,11 @@
 # one list. Each domain matches the steering the persona's kiro counterpart
 # loads via file://~/.kiro/steering/<domain>/**/*.md. Every persona also gets the
 # shared/ domain and security/env-file-protection.md, appended by the generator.
+# An empty domain means the persona gets only those two.
 # ---------------------------------------------------------------
 
 # shellcheck disable=SC2034 # consumed by the scripts that source this file
-PERSONAS=(docs jira datadog ansible)
+PERSONAS=(docs jira datadog ansible doubt-reviewer)
 
 # Print the steering domain for a persona; return 1 for an unknown persona.
 persona_domain() {
@@ -20,6 +21,7 @@ persona_domain() {
     jira) echo "scrum" ;;
     datadog) echo "datadog" ;;
     ansible) echo "ansible" ;;
+    doubt-reviewer) echo "" ;;
     *) return 1 ;;
     esac
 }

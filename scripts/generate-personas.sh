@@ -11,8 +11,9 @@ set -euo pipefail
 # and rules files), so the steering has to be part of the installed file itself.
 # Each output file is the hand-authored persona body from
 # etc/claude-code/agents/<name>.md followed by every steering doc in the
-# persona's domain (see install/persona-domains.sh) plus
-# security/env-file-protection.md, with YAML frontmatter stripped.
+# persona's domain (see install/persona-domains.sh; an empty domain adds none),
+# the shared/ domain, and security/env-file-protection.md, with YAML
+# frontmatter stripped.
 #
 # After writing, each output is checked to contain every inlined doc. Any
 # failure prints to stderr and exits 1; nothing is skipped silently.
@@ -167,6 +168,27 @@ verify_persona() {
     done
 }
 
+# Print a domain's in-repo and host-local steering docs, one per line. Fails when the
+# domain has none.
+domain_docs() {
+    local domain="$1" doc found=0
+    for doc in "$STEERING_DIR/$domain"/*.md; do
+        [[ -f "$doc" ]] || continue
+        printf '%s\n' "$doc"
+        found=1
+    done
+
+    # Append host-local steering for this domain (see extra_steering_pairs).
+    # Absent sources add nothing; a listed-but-missing path warns (see helper).
+    while IFS= read -r doc; do
+        [[ -n "$doc" ]] || continue
+        printf '%s\n' "$doc"
+        found=1
+    done < <(extra_steering_docs "$domain")
+
+    ((found)) || fail "no steering docs found in $STEERING_DIR/$domain"
+}
+
 prepare_out_dir
 
 # Check every target first so a refusal leaves the directory untouched, not half-updated.
@@ -178,18 +200,14 @@ for persona in "${PERSONAS[@]}"; do
     domain="$(persona_domain "$persona")" || fail "no steering domain mapped for $persona"
     [[ -f "$SOURCE_DIR/$persona.md" ]] || fail "persona source not found: $SOURCE_DIR/$persona.md"
 
+    # An empty domain (see install/persona-domains.sh) adds no domain steering.
     docs=()
-    for doc in "$STEERING_DIR/$domain"/*.md; do
-        [[ -f "$doc" ]] && docs+=("$doc")
-    done
-
-    # Append host-local steering for this domain (see extra_steering_pairs).
-    # Absent sources add nothing; a listed-but-missing path warns (see helper).
-    while IFS= read -r extra_doc; do
-        [[ -n "$extra_doc" ]] && docs+=("$extra_doc")
-    done < <(extra_steering_docs "$domain")
-
-    ((${#docs[@]} > 0)) || fail "no steering docs found in $STEERING_DIR/$domain"
+    if [[ -n "$domain" ]]; then
+        domain_listing="$(domain_docs "$domain")" || exit 1
+        while IFS= read -r doc; do
+            docs+=("$doc")
+        done <<<"$domain_listing"
+    fi
 
     # Every persona also gets the shared domain, the same one every kiro agent
     # globs (file://~/.kiro/steering/shared/**/*.md).

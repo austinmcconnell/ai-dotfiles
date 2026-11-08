@@ -221,6 +221,7 @@
             "WebFetch(domain:pastebin.com)"
         ],
         "ask": [
+            "Agent(doubt-reviewer)",
             "Agent(model:claude-fable*)",
             "Agent(model:claude-opus*)",
             "Agent(model:fable)",

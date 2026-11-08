@@ -29,7 +29,8 @@ etc/claude-code/
     ├── docs.md
     ├── jira.md
     ├── ansible.md
-    └── datadog.md
+    ├── datadog.md
+    └── doubt-reviewer.md
 ```
 
 Additional files managed elsewhere (not stored here):
@@ -133,7 +134,8 @@ session-total budget; `--max-budget-usd` is a per-invocation CLI flag only):
   (no model pinned) on Haiku. It is third in the documented precedence, below a per-call `model`
   parameter and a persona's `model:` frontmatter.
 - **Subagent effort** — `env.CLAUDE_CODE_SUBAGENT_EFFORT=low` sets the reasoning effort for
-  delegated subagents, independent of the model they run on.
+  delegated subagents, independent of the model they run on. Claude Code 2.1.316 or later reads it;
+  the variable is absent from the 2.1.311 binary, where subagents run at `medium`.
 - **Early auto-compaction** — top-level `autoCompactWindow: 285000` caps the window that
   auto-compaction measures against. Compaction fires about 35K tokens below that window, so this
   value compacts near 250K. The reserve was measured at both 150K and 250K windows (on Haiku) and
@@ -145,9 +147,15 @@ session-total budget; `--max-budget-usd` is a per-invocation CLI flag only):
   model prompts instead of silently outranking the Haiku floor. Rules match the literal value Claude
   sends, hence the separate alias and full-ID patterns. `ask` outranks the bare `Agent` allow.
 
-**Caveat:** all four personas (`docs`, `jira`, `datadog`, `ansible`) set `model: inherit`, so they
-run on the main session model and bypass the Haiku floor. Only anonymous delegations (for example
-`Explore` or `general-purpose`) get Haiku.
+**Caveat:** the four domain personas (`docs`, `jira`, `datadog`, `ansible`) set `model: inherit`, so
+they run on the main session model and bypass the Haiku floor. Only anonymous delegations (for
+example `Explore` or `general-purpose`) get Haiku.
+
+**Deliberate Opus exception:** the `doubt-reviewer` persona pins `model: opus` and `effort: high` in
+its frontmatter, so the doubt-driven-development check runs on the strongest model. A model set in
+frontmatter is not part of the Agent call, so the `Agent(model:opus)` gate does not see it;
+`Agent(doubt-reviewer)` in `permissions.ask` is the gate instead, making every review an approved
+spend.
 
 ### Steering Distribution
 
@@ -193,7 +201,9 @@ Claude Code supports custom subagents defined as markdown files with YAML frontm
 `etc/claude-code/agents/` (generated into `~/.claude/agents/` by `install/claude-code.sh`, invoked
 via `claude --agent <name>`). Four personas mirror their kiro-cli counterparts: `docs`, `jira`,
 `datadog`, `ansible`. There is no persona equivalent of kiro's `code` agent — the main Claude Code
-session fills that role directly.
+session fills that role directly. A fifth, `doubt-reviewer`, has no kiro counterpart: it is the
+read-only (`Read, Grep, Glob`), Opus-pinned reviewer the `doubt-driven-development` skill spawns,
+and it carries no domain steering (see Cost Controls for its Opus exception).
 
 - `tools:` frontmatter is the closest Claude analog to kiro's `allowedTools` — it gates which tools
   are *available* to the persona at all, not just whether they auto-run without a prompt
@@ -218,7 +228,7 @@ session fills that role directly.
   repo doesn't use it. `block-persona-shell-commands.sh` (mirroring kiro's per-agent
   `toolsSettings.shell.deniedCommands` for aws/docker/kubectl/ssh/package-manager installs and
   persona-specific destructive commands) is wired ONCE as a global `PreToolUse(Bash)` hook in
-  `settings.json` instead of duplicated into all four persona files. It self-scopes by reading the
+  `settings.json` instead of duplicated into every persona file. It self-scopes by reading the
   `agent_type` field Claude Code includes in the hook payload for any session run with
   `--agent <name>` — confirmed against current `hooks.md`, and empirically verified: a real
   `claude --agent docs` invocation produced a payload with `"agent_type":"docs"`, matching the
@@ -231,10 +241,11 @@ session fills that role directly.
    frontmatter, matching the existing personas.
 1. Add `<name>` to `PERSONAS` and a `<name>) echo "<steering-domain>" ;;` case to `persona_domain`
    in `install/persona-domains.sh`. The domain must exist under `etc/ai/steering/` and hold at least
-   one doc.
+   one doc, or be empty (`echo ""`) for a persona that needs only the `shared/` and security
+   steering every persona gets.
 1. Add a `<name>)` case with its denied-command patterns to
    `etc/ai/hooks/block-persona-shell-commands.sh`. A persona with no case is unrestricted, because
-   the script's default branch exits 0.
+   the script's default branch exits 0. A persona without `Bash` in `tools:` needs no case.
 1. Re-run `install.sh` to generate the persona into `~/.claude/agents/`.
 1. Run `scripts/validate-persona-steering.sh` to confirm the mapping and the inlined steering.
 

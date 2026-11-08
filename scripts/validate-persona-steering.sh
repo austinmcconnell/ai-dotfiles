@@ -11,8 +11,8 @@ set -euo pipefail
 # does not expand `@path` imports there, so install/ai-tools.sh generates the
 # installed personas with the steering inlined (scripts/generate-personas.sh).
 # Checks, per persona in install/persona-domains.sh:
-#   1. The persona source file exists and its steering domain has at least one
-#      doc.
+#   1. The persona source file exists and its steering domain, unless empty,
+#      has at least one doc.
 #   2. The source has no `@`-import lines (they would reach the model as
 #      literal text).
 # The shared/ domain every persona inherits must also hold at least one doc.
@@ -46,10 +46,15 @@ report_fail() {
     ((FAILURES++)) || true
 }
 
+# True when steering/<domain>/ holds at least one doc.
+has_steering_docs() {
+    [[ -n "$(find "${STEERING_DIR}/$1" -maxdepth 1 -name '*.md' -print -quit 2>/dev/null)" ]]
+}
+
 echo -e "${BOLD}Validating persona steering against etc/ai/steering/${RESET}"
 echo "──────────────────────────────────────────────────────────────────────────"
 
-if [[ -z "$(find "${STEERING_DIR}/shared" -maxdepth 1 -name '*.md' -print -quit 2>/dev/null)" ]]; then
+if ! has_steering_docs shared; then
     report_fail "shared" "no steering docs found in steering/shared/"
 fi
 
@@ -66,7 +71,7 @@ for persona in "${PERSONAS[@]}"; do
         continue
     fi
 
-    if [[ -z "$(find "${STEERING_DIR}/${domain}" -maxdepth 1 -name '*.md' -print -quit 2>/dev/null)" ]]; then
+    if [[ -n "$domain" ]] && ! has_steering_docs "$domain"; then
         report_fail "$persona" "no steering docs found in steering/${domain}/"
     fi
 
