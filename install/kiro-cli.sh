@@ -5,7 +5,7 @@
 # This script:
 # 1. Installs Kiro CLI via Homebrew
 # 2. Creates necessary configuration directories
-# 3. Links configuration files from the dotfiles repository
+# 3. Links configuration files from the ai-dotfiles repository
 # ---------------------------------------------------------------
 
 set -euo pipefail

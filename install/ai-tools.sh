@@ -2,7 +2,7 @@
 
 # ---------------------------------------------------------------
 # AI Tools Distribution Script
-# Symlinks skills from the dotfiles repo to each AI agent's
+# Symlinks skills from the ai-dotfiles repo to each AI agent's
 # expected discovery path, enabling multi-agent portability.
 # Also generates steering adapter files for agents that support them.
 #
