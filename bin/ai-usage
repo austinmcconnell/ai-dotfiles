@@ -1,0 +1,190 @@
+#!/bin/bash
+set -euo pipefail
+
+# ---------------------------------------------------------------
+# ai-usage — canned reports over the local AI usage/cost SQLite store
+# (~/.local/share/ai-usage/usage.db), populated by Claude Code's statusLine/
+# subagentStatusLine hooks. Read-only: never writes to the DB.
+#
+# Cost-accounting note (see etc/ai/usage/README.md for the full writeup):
+# Claude Code's own `total_cost_usd` already counts subagent/Task-tool
+# spend alongside the top-level loop (confirmed against Anthropic's Agent
+# SDK cost-tracking docs, 2026-09-25 -- code.claude.com/docs/en/agent-sdk/
+# cost-tracking documents total_cost_usd as "Included. Counts subagent
+# requests alongside the top-level loop", and the Claude Code costs page
+# confirms the statusLine's cost.total_cost_usd is that same figure).
+# `sessions.total_cost_usd` is therefore the authoritative per-session
+# total on its own. `subagent_tasks.estimated_cost_usd` must NEVER be
+# added on top of it -- every report below sums `sessions` alone and
+# shows `subagent_tasks` only as a separate, informational,
+# known-incomplete breakdown (visibility-window gap: fast-finishing
+# subagents can get zero rows).
+# ---------------------------------------------------------------
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck disable=SC1091
+source "$SCRIPT_DIR/../etc/ai/usage/lib.sh"
+
+BIN_NAME="$(basename "$0")"
+
+usage() {
+    cat <<EOF
+Usage: $BIN_NAME [--summary|--by-model|--by-effort|--rate-limits]
+
+Canned reports over the local AI usage/cost store ($USAGE_DB).
+
+Options:
+   --summary      Totals by tool (sessions, cost, tokens)
+   --by-model     Totals grouped by model
+   --by-effort    Totals grouped by model, then effort
+   --rate-limits  Current 5h/7d rate-limit usage (most recent snapshot)
+   --help         This help message
+EOF
+}
+
+# Gate ANSI styling on an interactive stdout, mirroring engram-hygiene.
+if [[ -t 1 ]]; then
+    bold="\033[1m"
+    dim="\033[2m"
+    reset="\033[0m"
+else
+    bold=""
+    dim=""
+    reset=""
+fi
+
+require_db() {
+    if [[ ! -f "$USAGE_DB" ]]; then
+        echo "No usage data yet -- nothing has been recorded to $USAGE_DB" >&2
+        exit 0
+    fi
+}
+
+# Run a report query, printing its own "no rows yet" fallback instead of
+# sqlite3's silent empty output -- in `-header -column` mode, sqlite3 prints
+# no header at all for a zero-row result, which reads as broken rather than
+# "nothing recorded yet".
+run_report() {
+    local query="$1" empty_message="$2" output
+    output="$(sqlite3 -header -column "$USAGE_DB" "$query")"
+    if [[ -z "$output" ]]; then
+        echo "$empty_message"
+    else
+        echo "$output"
+    fi
+}
+
+print_cost_caveat() {
+    echo -e "${dim}Note: totals above already include subagent/Task-tool spend (Claude Code folds it"
+    echo -e "into total_cost_usd). Any subagent_tasks breakdown is informational only and known-"
+    echo -e "partial (fast-finishing subagents can be missed) -- see etc/ai/usage/README.md.${reset}"
+}
+
+mode_summary() {
+    require_db
+    echo -e "${bold}Sessions by tool${reset}"
+    run_report "
+        SELECT
+            tool,
+            COUNT(*) AS sessions,
+            printf('%.2f', SUM(COALESCE(total_cost_usd, 0))) AS total_cost_usd,
+            SUM(COALESCE(input_tokens, 0)) AS input_tokens,
+            SUM(COALESCE(output_tokens, 0)) AS output_tokens
+        FROM sessions
+        GROUP BY tool
+        ORDER BY tool;
+    " "No sessions recorded yet."
+    echo
+    echo -e "${bold}Subagent tasks by tool (informational -- see caveat below)${reset}"
+    run_report "
+        SELECT
+            tool,
+            COUNT(*) AS tasks,
+            printf('%.2f', SUM(COALESCE(estimated_cost_usd, 0))) AS estimated_cost_usd,
+            SUM(COALESCE(token_count, 0)) AS tokens
+        FROM subagent_tasks
+        GROUP BY tool
+        ORDER BY tool;
+    " "No subagent tasks recorded yet (known visibility-window gap -- fast-finishing subagents can be missed; see etc/ai/usage/README.md)."
+    echo
+    print_cost_caveat
+}
+
+mode_by_model() {
+    require_db
+    echo -e "${bold}Sessions by model${reset}"
+    run_report "
+        SELECT
+            COALESCE(model, '(unknown)') AS model,
+            COUNT(*) AS sessions,
+            printf('%.2f', SUM(COALESCE(total_cost_usd, 0))) AS total_cost_usd,
+            SUM(COALESCE(input_tokens, 0)) AS input_tokens,
+            SUM(COALESCE(output_tokens, 0)) AS output_tokens
+        FROM sessions
+        GROUP BY model
+        ORDER BY SUM(COALESCE(total_cost_usd, 0)) DESC;
+    " "No sessions recorded yet."
+    echo
+    print_cost_caveat
+}
+
+mode_by_effort() {
+    require_db
+    echo -e "${bold}Sessions by model, effort${reset}"
+    run_report "
+        SELECT
+            COALESCE(model, '(unknown)') AS model,
+            COALESCE(effort, '(unset)') AS effort,
+            COUNT(*) AS sessions,
+            printf('%.2f', SUM(COALESCE(total_cost_usd, 0))) AS total_cost_usd,
+            SUM(COALESCE(input_tokens, 0)) AS input_tokens,
+            SUM(COALESCE(output_tokens, 0)) AS output_tokens
+        FROM sessions
+        GROUP BY model, effort
+        ORDER BY model, SUM(COALESCE(total_cost_usd, 0)) DESC;
+    " "No sessions recorded yet."
+    echo
+    print_cost_caveat
+}
+
+mode_rate_limits() {
+    require_db
+    echo -e "${bold}Current rate-limit usage${reset}"
+    # Account-wide, not per-session -- the most recent row across every
+    # session is the whole account's current state (see etc/ai/usage/
+    # README.md's rate_limit_snapshots section for why there's no
+    # session_id to group by).
+    run_report "
+        SELECT
+            printf('%.0f%%', five_hour_used_percentage) AS five_hour_used,
+            datetime(five_hour_resets_at, 'unixepoch') AS five_hour_resets_at,
+            printf('%.0f%%', seven_day_used_percentage) AS seven_day_used,
+            datetime(seven_day_resets_at, 'unixepoch') AS seven_day_resets_at,
+            occurred_at AS as_of
+        FROM rate_limit_snapshots
+        ORDER BY id DESC
+        LIMIT 1;
+    " "No rate-limit data recorded yet (only present for claude.ai Pro/Max/Ultra subscribers)."
+}
+
+case "${1:---help}" in
+--summary)
+    mode_summary
+    ;;
+--by-model)
+    mode_by_model
+    ;;
+--by-effort)
+    mode_by_effort
+    ;;
+--rate-limits)
+    mode_rate_limits
+    ;;
+--help | -h)
+    usage
+    ;;
+*)
+    usage >&2
+    exit 1
+    ;;
+esac

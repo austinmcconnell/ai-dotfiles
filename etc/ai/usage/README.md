@@ -135,8 +135,7 @@ racing a near-simultaneous rate-limit change can both pass the check and insert 
 Accepted as harmless — same class of best-effort dedup as `cost_snapshots`, not worth adding
 cross-process locking to close.
 
-This table has no reader in this repo; see `~/.dotfiles/bin/ai-usage --rate-limits` for the canned
-report over it.
+`bin/ai-usage --rate-limits` is the canned report over this table.
 
 ## Why Kiro CLI isn't wired up
 

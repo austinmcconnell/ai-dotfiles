@@ -49,16 +49,17 @@ The self-update step (`git pull` on launch) only runs for a standalone git clone
 - Cursor CLI permissions and MCP: [etc/cursor/README.md](./etc/cursor/README.md)
 - Install scripts and their order: [install/README.md](./install/README.md)
 - Validators, persona generator, and `ai-prompt.sh`: [scripts/README.md](./scripts/README.md)
+- Commands on `PATH` (`ai-usage`, `engram-hygiene`, `trace-search`):
+  [bin/README.md](./bin/README.md)
 
 Directories without their own README:
 
-| Directory     | What it holds                                     | How it is used                                                   |
-| ------------- | ------------------------------------------------- | ---------------------------------------------------------------- |
-| `bin/`        | `engram-hygiene`, `is-executable`, `trace-search` | Prepended to `PATH` for the install run only.                    |
-| `etc/codex/`  | `config.toml`                                     | Copied to `~/.codex/` by `install/codex.sh` (codex is disabled). |
-| `etc/dprint/` | `dprint.jsonc`                                    | Passed to `dprint fmt` by the `dprint` pre-commit hook.          |
-| `etc/taplo/`  | `taplo.toml`                                      | Passed to the `taplo-format` and `taplo-lint` pre-commit hooks.  |
-| `etc/yaml/`   | `yamllint`                                        | Passed to the `yamllint` pre-commit hook.                        |
+| Directory     | What it holds  | How it is used                                                   |
+| ------------- | -------------- | ---------------------------------------------------------------- |
+| `etc/codex/`  | `config.toml`  | Copied to `~/.codex/` by `install/codex.sh` (codex is disabled). |
+| `etc/dprint/` | `dprint.jsonc` | Passed to `dprint fmt` by the `dprint` pre-commit hook.          |
+| `etc/taplo/`  | `taplo.toml`   | Passed to the `taplo-format` and `taplo-lint` pre-commit hooks.  |
+| `etc/yaml/`   | `yamllint`     | Passed to the `yamllint` pre-commit hook.                        |
 
 ## Development
 
