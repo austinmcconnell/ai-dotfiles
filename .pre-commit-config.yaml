@@ -88,7 +88,13 @@ repos:
         name: ai-usage report tests
         language: script
         entry: etc/ai/usage/test/test-ai-usage.sh
-        files: ^(bin/ai-usage|etc/ai/usage/(lib\.sh|schema\.sql|test/test-ai-usage\.sh))$
+        files: ^(bin/ai-usage|etc/ai/usage/(lib\.sh|schema\.sql|migrations/.*\.sql|test/test-ai-usage\.sh))$
+        pass_filenames: false
+      - id: usage-migration-tests
+        name: usage.db migration tests
+        language: script
+        entry: etc/ai/usage/test/test-migrations.sh
+        files: ^etc/ai/usage/(lib\.sh|schema\.sql|migrations/.*\.sql|test/test-migrations\.sh)$
         pass_filenames: false
       - id: shfmt
         name: shfmt

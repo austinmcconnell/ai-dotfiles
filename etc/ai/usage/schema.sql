@@ -17,7 +17,9 @@
 -- `sessions` next overwrites itself — `sessions` only ever holds the latest
 -- snapshot, so history has nowhere else to live.
 --
--- Applied idempotently by usage_db_init() in lib.sh.
+-- Always the newest schema. usage_db_init() in lib.sh applies it as-is to a
+-- new DB; an existing DB reaches the same shape through migrations/, so a
+-- change here ships with the migration that makes it.
 
 CREATE TABLE IF NOT EXISTS sessions (
     tool                    TEXT NOT NULL,   -- 'claude-code', 'kiro-cli' (future), ...

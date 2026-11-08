@@ -10,23 +10,111 @@ USAGE_DB_DIR="${USAGE_DB_DIR:-$HOME/.local/share/ai-usage}"
 USAGE_DB="$USAGE_DB_DIR/usage.db"
 USAGE_SCHEMA="$USAGE_DIR/schema.sql"
 USAGE_PRICING="$USAGE_DIR/pricing.json"
+USAGE_MIGRATIONS="$USAGE_DIR/migrations"
+USAGE_DB_BUSY_TIMEOUT_MS=5000
 
-# Create the DB directory and apply the schema. Safe to call on every
-# invocation: CREATE TABLE IF NOT EXISTS makes this idempotent.
-#
-# CREATE TABLE IF NOT EXISTS never adds columns to a table that already
-# exists on disk, so new nullable columns on an existing table need an
-# explicit ALTER TABLE here. sqlite has no "ADD COLUMN IF NOT EXISTS", so
-# each ALTER is run unconditionally and its "duplicate column" error (on a
-# DB that already has the column) is swallowed — this is the repo's first
-# schema migration; add future ones the same way.
+# Bring the DB to the newest schema version. PRAGMA user_version holds the
+# DB's version, and migrations/NNNN-*.sql takes a DB from version NNNN-1 to
+# NNNN. A DB already at the newest version costs one sqlite3 read, so this is
+# safe to call on every statusline render. A DB newer than this checkout's
+# migrations is left alone, since migrations only add.
 usage_db_init() {
+    local latest current=0
+    usage_latest_version latest
+    if [[ -f "$USAGE_DB" ]]; then
+        current="$(usage_sql 'PRAGMA user_version;')"
+    fi
+    ((current >= latest)) && return 0
     mkdir -p "$USAGE_DB_DIR"
-    sqlite3 "$USAGE_DB" <"$USAGE_SCHEMA"
-    sqlite3 "$USAGE_DB" "ALTER TABLE compaction_events ADD COLUMN real_pre_tokens INTEGER;" 2>/dev/null || true
-    sqlite3 "$USAGE_DB" "ALTER TABLE compaction_events ADD COLUMN real_post_tokens INTEGER;" 2>/dev/null || true
-    sqlite3 "$USAGE_DB" "ALTER TABLE compaction_events ADD COLUMN cumulative_dropped_tokens INTEGER;" 2>/dev/null || true
-    sqlite3 "$USAGE_DB" "ALTER TABLE compaction_events ADD COLUMN duration_ms INTEGER;" 2>/dev/null || true
+    if ((current == 0)); then
+        usage_db_init_unversioned "$latest"
+    fi
+    usage_db_migrate "$latest"
+}
+
+# Wait out another session's write lock rather than fail on it.
+usage_sql() {
+    sqlite3 -bail -cmd ".timeout $USAGE_DB_BUSY_TIMEOUT_MS" "$USAGE_DB" "$@"
+}
+
+# Set the variable named by $1 to the highest migration number, without
+# spawning a process: the glob expands in lexical order, which the 4-digit
+# prefix makes numeric order.
+usage_latest_version() {
+    local files count last
+    files=("$USAGE_MIGRATIONS"/????-*.sql)
+    if [[ ! -f "${files[0]}" ]]; then
+        echo "usage_db_init: no migrations in $USAGE_MIGRATIONS" >&2
+        return 1
+    fi
+    count="${#files[@]}"
+    last="${files[count - 1]##*/}"
+    printf -v "$1" '%d' "$((10#${last%%-*}))"
+}
+
+# Version 0 is either a new DB or one created before user_version was
+# tracked. A new DB gets schema.sql and jumps straight to the newest version.
+# An untracked DB becomes exactly version 1, whatever the old code left: the
+# frozen 0001 baseline creates missing tables, and compaction_events gets
+# whichever of its later columns it lacks. schema.sql can't serve here, since
+# its newer shape would collide with the migrations after 0001.
+usage_db_init_unversioned() {
+    local latest="$1" tables missing column body
+    tables="$(usage_sql "SELECT count(*) FROM sqlite_master WHERE type = 'table';")"
+    if ((tables == 0)); then
+        body="$(cat "$USAGE_SCHEMA")"
+        usage_db_step 0 "$latest" "$body"
+        return
+    fi
+    missing="$(usage_sql "
+        SELECT column1 FROM (VALUES ('real_pre_tokens'), ('real_post_tokens'),
+            ('cumulative_dropped_tokens'), ('duration_ms'))
+        WHERE EXISTS (SELECT 1 FROM sqlite_master WHERE name = 'compaction_events')
+            AND column1 NOT IN (SELECT name FROM pragma_table_info('compaction_events'));")"
+    body="$(cat "$USAGE_MIGRATIONS"/0001-*.sql)"
+    for column in $missing; do
+        body+=$'\n'"ALTER TABLE compaction_events ADD COLUMN $column INTEGER;"
+    done
+    usage_db_step 0 1 "$body"
+}
+
+# Apply each migration after the DB's current version, up to $1.
+usage_db_migrate() {
+    local latest="$1" current next prefix files body
+    current="$(usage_sql 'PRAGMA user_version;')"
+    while ((current < latest)); do
+        next=$((current + 1))
+        printf -v prefix '%04d' "$next"
+        files=("$USAGE_MIGRATIONS/$prefix"-*.sql)
+        if [[ ${#files[@]} -ne 1 || ! -f "${files[0]}" ]]; then
+            echo "usage_db_init: need exactly one $USAGE_MIGRATIONS/$prefix-*.sql" >&2
+            return 1
+        fi
+        body="$(cat "${files[0]}")"
+        usage_db_step "$current" "$next" "$body"
+        current="$(usage_sql 'PRAGMA user_version;')"
+    done
+}
+
+# Run the SQL in $3 and set user_version to $2 in one transaction, which
+# rolls back unless user_version is still $1. A concurrent caller that got
+# there first is not a failure. Callers read SQL files up front, because a
+# file that failed to read mid-pipe would still let COMMIT bump the version.
+usage_db_step() {
+    local from="$1" to="$2" body="$3" err current
+    if err="$({
+        printf 'BEGIN IMMEDIATE;\n'
+        printf 'CREATE TEMP TABLE usage_version_guard (v CHECK (v = %d));\n' "$from"
+        printf 'INSERT INTO usage_version_guard SELECT user_version FROM pragma_user_version;\n'
+        printf '%s\n' "$body"
+        printf 'PRAGMA user_version = %d;\nCOMMIT;\n' "$to"
+    } | usage_sql 2>&1)"; then
+        return 0
+    fi
+    current="$(usage_sql 'PRAGMA user_version;')"
+    ((current >= to)) && return 0
+    echo "usage_db_init: $USAGE_DB version $from -> $to failed: $err" >&2
+    return 1
 }
 
 # Render a value as a single-quoted, escaped SQL string literal.
