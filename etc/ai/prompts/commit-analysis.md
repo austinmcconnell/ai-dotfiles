@@ -59,7 +59,8 @@ Look for (in priority order):
 - **Missing context**: Doesn't explain WHY the change was made
 - **Inaccurate**: Message doesn't match what the diff actually does
 - **Missing details**: For complex changes, should list key changes in bullet points
-- **First line too long**: Exceeds 50 characters
+- **Subject line off-format**: Not `<type>(<scope>): <subject>`, over 72 characters, not
+  imperative, or ends with a period
 
 **D. Consolidation Candidates** (lowest priority - use sparingly):
 
@@ -164,10 +165,14 @@ After each modification:
 
 **Commit Message Best Practices:**
 
-- First line: Imperative mood, \<50 chars, no period (e.g., "Add user authentication")
-- Body: Explain WHY, not just WHAT. Include context, trade-offs, alternatives considered
-- Reference issues/tickets if applicable
-- For complex changes, use bullet points to list key changes
+The `commit-message-writing` skill is the authority on format; follow it when it is available. The
+summary below is the fallback.
+
+- Subject: `<type>(<scope>): <subject>`, imperative mood, lowercase after the colon, no period, at
+  most 72 characters in total (e.g., "feat(auth): add OAuth2 login support")
+- Body: one context paragraph explaining WHY, not just WHAT, wrapped at 72 characters
+- For complex changes, add bullet points listing the key changes
+- Reference issues/tickets in a footer if applicable
 
 **Split Decision Criteria:** A commit should be split if:
 

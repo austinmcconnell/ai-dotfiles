@@ -33,7 +33,9 @@ made.
 
 1. **Recommendations**
 
-   - Suggest improvements to commit messages if needed
+   - Suggest improvements to commit messages if needed, judged against the
+     `commit-message-writing` skill's format (`<type>(<scope>): <subject>`, subject at most 72
+     characters)
    - Identify any missing documentation or tests
    - Recommend if the branch is ready for review/merge
 
