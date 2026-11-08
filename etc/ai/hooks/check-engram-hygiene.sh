@@ -22,7 +22,7 @@ if [[ $# -ne 1 ]]; then
 fi
 
 AGENT="$1"
-HYGIENE="${AI_DOTFILES_DIR:-$HOME/.dotfiles}/bin/engram-hygiene"
+HYGIENE="${AI_DOTFILES_DIR:-$HOME/.ai-dotfiles}/bin/engram-hygiene"
 
 case "${AGENT}" in
 claude | kiro) ;;

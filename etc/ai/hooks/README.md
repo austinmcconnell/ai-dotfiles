@@ -89,10 +89,10 @@ Run `scripts/validate-hook-wiring.sh` afterwards to check that the two tools agr
 
 ## Notes
 
-- `check-engram-hygiene.sh` resolves `bin/engram-hygiene` from `${AI_DOTFILES_DIR:-$HOME/.dotfiles}`
-  and exits `0` silently when it is not executable. It requires the agent name as its argument
-  (`claude` or `kiro`) and keeps each agent's cadence stamps under `~/.<agent>/engram-hygiene`. A
-  missing, extra, or unknown name exits `1` with a message.
+- `check-engram-hygiene.sh` resolves `bin/engram-hygiene` from
+  `${AI_DOTFILES_DIR:-$HOME/.ai-dotfiles}` and exits `0` silently when it is not executable. It
+  requires the agent name as its argument (`claude` or `kiro`) and keeps each agent's cadence stamps
+  under `~/.<agent>/engram-hygiene`. A missing, extra, or unknown name exits `1` with a message.
 - Kiro-only hooks (`check-research-kb.sh`, `clear-research-kb-stale.sh`, `kb-staleness.sh`,
   `rotate-traces.sh`, `trace-tool-call.sh`) live in `etc/kiro-cli/hooks/` and are described in
   `etc/kiro-cli/README.md`.
