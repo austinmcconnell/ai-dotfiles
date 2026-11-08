@@ -1,8 +1,8 @@
 # Vim Practice Session
 
 I want to practice and improve my vim skills through a structured quiz session. Please reference my
-vim configuration and documentation in `~/.dotfiles/obsidian/Knowledge Base/Languages/Vim/` to
-create personalized challenges.
+vim configuration in `~/.dotfiles/etc/vim/.vimrc` and, if present, my vim notes in
+`~/projects/austinmcconnell/knowledge-base/Languages/Vim/` to create personalized challenges.
 
 **Session Tracking System:**
 
@@ -37,8 +37,9 @@ create personalized challenges.
 
    - **FIRST**: Read the practice session history file `~/.dotfiles/etc/vim/practice-sessions.csv`
    - **SECOND**: Read the vim configuration file `~/.dotfiles/etc/vim/.vimrc`
-   - **THIRD**: Use fs_read to list ALL files in
-     `~/.dotfiles/obsidian/Knowledge Base/Languages/Vim/` directory
+   - **THIRD**: Use fs_read to list ALL files in the
+     `~/projects/austinmcconnell/knowledge-base/Languages/Vim/` directory; if it does not exist,
+     skip this step and the next, and base questions on the vim configuration alone
    - **FOURTH**: Read EVERY .md file found in the vim documentation directory, including:
      - All files in the main directory
      - All files in the `Modes/` subdirectory
@@ -89,8 +90,9 @@ create personalized challenges.
 **Personalization Guidelines:**
 
 - Reference my actual vim configuration in `~/.dotfiles/etc/vim/.vimrc`
-- **Read and reference ALL files** in `~/.dotfiles/obsidian/Knowledge Base/Languages/Vim/` directory
-  for comprehensive question coverage
+- **Read and reference ALL files** in the
+  `~/projects/austinmcconnell/knowledge-base/Languages/Vim/` directory, when present, for
+  comprehensive question coverage
 - Use content from all vim documentation files including: Motions.md, Operators.md, Text Objects.md,
   Registers.md, Substitution.md, Buffers Windows And Tabs.md, Searching.md, Plugins.md, and any
   other files in the directory
