@@ -121,10 +121,12 @@ Spend is bounded by five settings, none of which is a spend cap (Claude Code has
 session-total budget; `--max-budget-usd` is a per-invocation CLI flag only):
 
 - **Effort pins** — `modelSettings` sets `effortLevel: "medium"` for `claude-sonnet-5`,
-  `claude-sonnet-5-5`, `claude-opus-5`, and `claude-opus-5-5`. `modelSettings` keys match the exact
-  model ID only — no prefix/family matching — so the bare and `-5-5` forms must both be pinned
-  explicitly. Sonnet 5 and Opus 5 default to `high`, so the pin saves tokens there; on the 5.5
-  models `medium` is already the default, so the pin only guards against a future default increase.
+  `claude-sonnet-5-5`, `claude-opus-5`, and `claude-opus-5-5`. Each key is a canonical model name
+  and also covers that model's alias, date-suffixed, `[1m]`, and provider-specific IDs. There is no
+  prefix/family matching across models, so `claude-sonnet-5` and `claude-sonnet-5-5` are separate
+  models and must both be pinned explicitly. Sonnet 5 and Opus 5 default to `high`, so the pin saves
+  tokens there; on the 5.5 models `medium` is already the default, so the pin only guards against a
+  future default increase.
 - **Effort ceiling** — top-level `maxEffortLevel: "high"` stops a session from escalating to `xhigh`
   or `max`.
 - **Haiku floor for delegation** — `env.CLAUDE_CODE_SUBAGENT_MODEL=haiku` runs anonymous subagents
