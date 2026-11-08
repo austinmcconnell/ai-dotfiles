@@ -432,6 +432,7 @@
     "cleanupPeriodDays": 90,
     "autoCompactWindow": 350000,
     "env": {
+        "CLAUDE_AUTOCOMPACT_PCT_OVERRIDE": "60",
         "CLAUDE_CODE_SUBAGENT_MODEL": "haiku",
         "CLAUDE_CODE_SUBAGENT_EFFORT": "low"
     },
