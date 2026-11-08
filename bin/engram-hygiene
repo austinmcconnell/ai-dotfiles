@@ -113,7 +113,7 @@ mode_status() {
     fi
 
     # Gate ANSI colors on an interactive stdout so piped/redirected output stays
-    # clean (e.g. `bin/engram-hygiene status | grep`). Mirrors scripts/scan-docs.sh.
+    # clean (e.g. `bin/engram-hygiene status | grep`).
     local green yellow dim reset
     if [[ -t 1 ]]; then
         green="\033[32m"

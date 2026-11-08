@@ -2,7 +2,7 @@
 
 # ---------------------------------------------------------------
 # Cursor CLI Configuration
-# Symlinks Cursor config files from dotfiles to ~/.cursor/
+# Symlinks Cursor config files from ai-dotfiles to ~/.cursor/
 # ---------------------------------------------------------------
 
 set -euo pipefail

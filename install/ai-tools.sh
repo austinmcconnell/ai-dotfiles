@@ -32,8 +32,8 @@ STEERING_SOURCE="$AI_DOTFILES_DIR/etc/ai/steering"
 # name from the source folder name lets the agent globs (which reference the
 # stable `extra/` umbrella) stay fixed regardless of where a source lives.
 #
-# Populated from two optional sources, mirroring the ~/.extra convention in
-# etc/zsh/custom/plugins/extra/:
+# Populated from two optional sources, following the ~/.extra convention
+# (templates written by install/extra-sources.sh):
 #   - $EXTRA_SKILL_SOURCES env var — colon-separated name=path pairs (PATH-like)
 #   - ~/.extra/skill-sources file  — one name=path pair per line (# comments ok)
 # Absent sources and missing paths are skipped silently (see the per-entry
@@ -107,7 +107,7 @@ generate_single_steering() {
         cat <<'HEADER'
 # Coding Guidelines
 
-Auto-generated from dotfiles steering docs. Do not edit directly.
+Auto-generated from ai-dotfiles steering docs. Do not edit directly.
 HEADER
         # Single quotes are intentional: the backticks are literal markdown code
         # formatting, and %s pulls in $STEERING_SOURCE as a printf argument.
@@ -205,11 +205,11 @@ generate_rules_steering() {
     cat >"$claude_md" <<'EOF'
 # Coding Guidelines
 
-Steering rules are loaded from ~/.claude/rules/ (symlinked from dotfiles).
+Steering rules are loaded from ~/.claude/rules/ (symlinked from ai-dotfiles).
 EOF
     printf 'See %s/ for source files.\n\n' "$STEERING_SOURCE" >>"$claude_md"
     cat >>"$claude_md" <<'EOF'
-Skills are available in ~/.claude/skills/ (symlinked from dotfiles).
+Skills are available in ~/.claude/skills/ (symlinked from ai-dotfiles).
 EOF
 }
 

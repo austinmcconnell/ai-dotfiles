@@ -41,11 +41,11 @@ touch "$KIRO_LOGS_DIR/aws-audit.jsonl"
 touch "$KIRO_LOGS_DIR/kubectl-audit.jsonl"
 chmod 600 "$KIRO_LOGS_DIR"/*.jsonl
 
-# Link settings from dotfiles
+# Link settings from ai-dotfiles
 ln -sfv "$AI_DOTFILES_DIR/etc/kiro-cli/settings/cli.json" "$KIRO_SETTINGS_DIR/cli.json"
 ln -sfv "$AI_DOTFILES_DIR/etc/kiro-cli/settings/mcp.json" "$KIRO_SETTINGS_DIR/mcp.json"
 
-# Link CLI agents from dotfiles repository
+# Link CLI agents from ai-dotfiles
 KIRO_AGENTS_DIR="$HOME/.kiro/agents"
 mkdir -p "$KIRO_AGENTS_DIR"
 
@@ -58,7 +58,7 @@ if [ -d "$AI_DOTFILES_DIR/etc/kiro-cli/cli-agents" ]; then
         fi
     done
 else
-    echo "No CLI agents directory found in dotfiles"
+    echo "No CLI agents directory found in ai-dotfiles"
 fi
 
 # Default agent is set via "chat.defaultAgent": "code" in the symlinked

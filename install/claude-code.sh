@@ -4,7 +4,7 @@
 # Claude Code Installation Script
 # This script:
 # 1. Installs Claude Code via Homebrew
-# 2. Symlinks settings from dotfiles to ~/.claude/
+# 2. Symlinks settings from ai-dotfiles to ~/.claude/
 # 3. Bootstraps MCP server configuration in ~/.claude.json
 # ---------------------------------------------------------------
 

@@ -211,7 +211,7 @@ Hooks use the V3 array format: each hook is an object with `name`, `trigger`, `m
 Resources use three URI schemes with different loading behavior:
 
 - `file://` — loaded into context at startup. Used for AGENTS.md, README.md, and steering docs.
-  Paths can be relative to cwd (`file://AGENTS.md`) or absolute (`file://~/.dotfiles/etc/...`)
+  Paths can be relative to cwd (`file://AGENTS.md`) or absolute (`file://~/.ai-dotfiles/etc/...`)
 - `skill://` — metadata loaded at startup, full content on demand. Used for SKILL.md files. Agents
   load both project-local (`.kiro/skills/`) and global (`~/.kiro/skills/`) skills.
 - `knowledgeBase` objects — indexed for semantic search. Used for large doc sets and codebases.
