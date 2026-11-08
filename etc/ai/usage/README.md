@@ -91,13 +91,22 @@ around the missing payload data two different ways:
   Verified against the approximation on a real compaction: the approximation was off by up to 5.8x
   in one direction, which is why the real columns exist rather than trusting the snapshot alone.
 
-**Empirical finding worth preserving**: the real compaction trigger point is a fraction of the
-configured `autoCompactWindow`, not a fixed token floor — but that fraction isn't flat either. Four
-real compactions: 100K configured → 48.5% (twice), 200K → 55.1%, 600K → 57.5%. The ratio rises with
-window size; neither a fixed percentage nor a fixed reserved-token buffer fits the data cleanly.
+**Empirical finding worth preserving**: with no `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE` set,
+auto-compaction fires a roughly constant ~35K tokens below the configured `autoCompactWindow`, not
+at a fixed fraction of it. A 150K window compacted at ~115.5K (five compactions) and a 250K window
+at ~215K (three), both measured on Haiku; the reserve is not confirmed for other models.
+
+- **Measuring the trigger**: the check runs on the last API response's usage, so the trigger lies
+  between the last turn that did not compact and the turn that did. Read those per-turn `usage`
+  totals from the transcript. `real_pre_tokens` is not the trigger point: it also counts tool
+  results that arrived after the check and overshot by 2-3K in these runs.
+- **With the override set**: `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE=60` moved the trigger to about 60% of
+  the window minus ~13K. Earlier observations that looked like a ratio rising from 48.5% to 57.5% of
+  the window (100K to 600K) fit that formula and were an artifact of the override.
+
 `etc/ai/hooks/suggest-context-checkpoint.sh` (a `UserPromptSubmit` hook) reads this table's sibling
-data (`sessions.input_tokens`) to nudge at a fixed absolute threshold rather than trying to derive
-one from this still-uncertain ratio.
+data (`sessions.input_tokens`) and nudges at a fixed absolute threshold, which stays correct
+whatever window is configured.
 
 ## Cost trajectory: `cost_snapshots`
 
