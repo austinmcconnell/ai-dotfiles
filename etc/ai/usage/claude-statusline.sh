@@ -136,6 +136,41 @@ format_remaining() {
     fi
 }
 
+SEVEN_DAY_SECONDS=604800
+PACE_YELLOW_POINTS=10
+PACE_RED_POINTS=20
+PACE_ROOM_POINTS=-15
+
+# Points the 7d usage sits above (+) or below (-) an even burn across the
+# window. Points rather than a ratio, so a few percent in the first hours
+# doesn't read as many times over pace. The window is fixed, not rolling:
+# resets_at advances by exactly SEVEN_DAY_SECONDS between windows.
+is_missing() {
+    [[ -z "$1" || "$1" == "null" ]]
+}
+
+pace_delta() {
+    local used_pct="$1" resets_at="$2" now="$3" used elapsed
+    is_missing "$used_pct" && return 0
+    is_missing "$resets_at" && return 0
+    used="$(printf '%.0f' "$used_pct")"
+    elapsed=$((SEVEN_DAY_SECONDS - (resets_at - now)))
+    ((elapsed < 0)) && elapsed=0
+    ((elapsed > SEVEN_DAY_SECONDS)) && elapsed=$SEVEN_DAY_SECONDS
+    printf '%d' $((used - (elapsed * 100 + SEVEN_DAY_SECONDS / 2) / SEVEN_DAY_SECONDS))
+}
+
+pace_color() {
+    local delta="$1"
+    if ((delta >= PACE_RED_POINTS)); then
+        printf '%s' $'\033[31m'
+    elif ((delta >= PACE_YELLOW_POINTS)); then
+        printf '%s' $'\033[33m'
+    elif ((delta <= PACE_ROOM_POINTS)); then
+        printf '%s' $'\033[32m'
+    fi
+}
+
 DISPLAY_MODEL="${MODEL_DISPLAY:-?}"
 DISPLAY_COST="\$0.00"
 [[ -n "$COST_USD" && "$COST_USD" != "null" ]] && DISPLAY_COST="$(printf '$%.4f' "$COST_USD")"
@@ -145,6 +180,12 @@ if [[ -n "$FIVE_HOUR_PCT" || -n "$SEVEN_DAY_PCT" ]]; then
     NOW_EPOCH="$(date +%s)"
     FIVE_HOUR_DISPLAY="5h $(format_pct "$FIVE_HOUR_PCT")$(format_remaining "$FIVE_HOUR_RESETS" "$NOW_EPOCH")"
     SEVEN_DAY_DISPLAY="7d $(format_pct "$SEVEN_DAY_PCT")$(format_remaining "$SEVEN_DAY_RESETS" "$NOW_EPOCH")"
+    PACE_DELTA="$(pace_delta "$SEVEN_DAY_PCT" "$SEVEN_DAY_RESETS" "$NOW_EPOCH")"
+    if [[ -n "$PACE_DELTA" ]]; then
+        SEVEN_DAY_DISPLAY="$SEVEN_DAY_DISPLAY $(printf '%+d' "$PACE_DELTA")"
+        PACE_COLOR="$(pace_color "$PACE_DELTA")"
+        [[ -n "$PACE_COLOR" ]] && SEVEN_DAY_DISPLAY="$PACE_COLOR$SEVEN_DAY_DISPLAY"$'\033[0m'
+    fi
     DISPLAY_USAGE="$FIVE_HOUR_DISPLAY | $SEVEN_DAY_DISPLAY"
 fi
 DISPLAY_CTX="${CTX_USED_PCT:-0}"
