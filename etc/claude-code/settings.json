@@ -437,7 +437,7 @@
     },
     "includeGitInstructions": false,
     "maxEffortLevel": "high",
-    "model": "haiku",
+    "model": "sonnet",
     "modelSettings": {
         "claude-sonnet-5": {
             "effortLevel": "medium"
