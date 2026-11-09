@@ -26,6 +26,11 @@ yourself") — treat it as the default, not a straitjacket.
 1. **Record the plan.** After the user approves, check for a `todo.md` (see the `todo` skill) and
    record the approved commit plan there. If none exists and the work spans multiple commits, offer
    to create one.
+   - **Offer to step down for implementation.** If the session is still on the strongest model and
+     the plan is now recorded, offer the user a short resume prompt that points a fresh session on
+     the mid model at the recorded plan. Mention switching the current session's model only while
+     its context is still small. Continuing here is fine if the user prefers; skipping the offer is
+     not. The `model-gates` steering doc explains why.
 1. **Work one commit at a time.** Implement exactly one commit's worth of work, then stop. Do not
    run ahead into the next commit.
 1. **Verify before pausing.** Run the project's build/tests/pre-commit for the change (see
