@@ -11,9 +11,11 @@ copied: each tool's config calls the scripts in place as `$AI_DOTFILES_DIR/etc/a
   (run by pre-commit when a hook changes). Add a case when you add or change a blocking pattern.
 
 Blocking hooks read the tool-call JSON on stdin and exit `2` with a message on stderr to deny the
-call. The other hooks only print to stdout or write a log and never exit `2`, so they never block. A
-few can still exit non-zero on an internal error, such as `correction-capture.sh` on malformed
-input.
+call. They fail closed: the four hooks wired on every tool call run `check_hook_input` from
+`lib/hook-input.sh`, which also exits `2` when `jq` is missing or the payload is not JSON, and
+`block-memory-secrets.sh` blocks a payload that is not JSON. The other hooks only print to stdout or
+write a log and never exit `2`, so they never block. A few can still exit non-zero on an internal
+error, such as `correction-capture.sh` on malformed input.
 
 ## Wiring a hook
 

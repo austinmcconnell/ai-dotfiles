@@ -12,6 +12,12 @@ TEST_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 HOOKS_DIR="$(dirname "$TEST_DIR")"
 
 FAILURES=0
+# A PATH with the tools the hooks use, minus jq.
+NO_JQ_BIN="$(mktemp -d)"
+trap 'rm -rf "$NO_JQ_BIN"' EXIT
+for tool in cat grep dirname basename; do
+    ln -s "$(type -P "$tool")" "$NO_JQ_BIN/$tool"
+done
 DOT_ENV=".""env"
 SSH_KEY_DIR=".""ssh/id_"
 AWS_KEY="AKIA""IOSFODNN7EXAMPLE"
@@ -19,16 +25,16 @@ GITHUB_TOKEN="ghp_$(printf 'a%.0s' {1..36})"
 PEM_HEADER="-----BEGIN ""RSA PRIVATE KEY-----"
 ZERO_WIDTH_SPACE=$'\xe2\x80\x8b'
 
-# $1 is the hook script, $2 the payload. Prints the hook's exit code.
+# $1 is the hook script, $2 the payload, $3 an optional PATH for the hook. Prints its exit code.
 exit_code() {
     local status=0
-    printf '%s' "$2" | "$HOOKS_DIR/$1" >/dev/null 2>&1 || status=$?
+    printf '%s' "$2" | PATH="${3:-$PATH}" "$HOOKS_DIR/$1" >/dev/null 2>&1 || status=$?
     echo "$status"
 }
 
 check() {
     local name="$1" hook="$2" expected="$3" payload="$4" actual
-    actual="$(exit_code "$hook" "$payload")"
+    actual="$(exit_code "$hook" "$payload" "${5:-}")"
     if [[ "$expected" == "$actual" ]]; then
         echo "ok    $hook: $name"
     else
@@ -104,7 +110,16 @@ check "grep -x" "$hook" 0 "$(bash_call "grep -x pattern file")"
 check "tar -xzf" "$hook" 0 "$(bash_call "tar -xzf archive.tgz")"
 check "a call with no command" "$hook" 0 "$(read_call "/repo/README.md")"
 
+for hook in block-env-files.sh block-sops-age-files.sh block-ssh-private-keys.sh \
+    block-shell-trace-mode.sh; do
+    check "payload that is not JSON" "$hook" 2 '{"tool_input": {"command": "cat'
+    check "empty payload" "$hook" 0 ''
+    check "null payload" "$hook" 0 'null'
+    check "jq missing" "$hook" 2 "$(read_call "/repo/README.md")" "$NO_JQ_BIN"
+done
+
 hook=block-memory-secrets.sh
+check "payload that is not JSON" "$hook" 2 '{"tool_name": "mcp__engram__mem_save"'
 check "AWS key in a Claude save" "$hook" 2 "$(memory_call mcp__engram__mem_save "key $AWS_KEY")"
 check "GitHub token in a kiro save" "$hook" 2 "$(memory_call @engram/mem_save "token $GITHUB_TOKEN")"
 check "private key header in an update" "$hook" 2 "$(memory_call mcp__engram__mem_update "$PEM_HEADER")"

@@ -9,6 +9,8 @@
 set -euo pipefail
 
 TOOL_INPUT=$(cat)
+source "$(dirname "${BASH_SOURCE[0]}")/lib/hook-input.sh"
+check_hook_input "${TOOL_INPUT}"
 
 # Extract only actionable paths/commands — not all string values.
 # For file tools: check path, file_path, image_paths

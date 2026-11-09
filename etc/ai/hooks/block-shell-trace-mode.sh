@@ -21,6 +21,8 @@
 set -euo pipefail
 
 TOOL_INPUT=$(cat)
+source "$(dirname "${BASH_SOURCE[0]}")/lib/hook-input.sh"
+check_hook_input "${TOOL_INPUT}"
 
 # Only the shell command field is actionable for this guard.
 CMD=$(echo "$TOOL_INPUT" | jq -r '.tool_input.command // empty' 2>/dev/null)
