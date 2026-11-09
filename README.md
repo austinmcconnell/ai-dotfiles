@@ -1,9 +1,34 @@
 # ai-dotfiles
 
-Austin's personal, multi-tool AI coding configuration — shared skills, steering, and prompts plus
-per-tool configs for Kiro CLI, Claude Code, Cursor, and Codex, and the engram persistent-memory
-setup. Extracted from [dotfiles](https://github.com/austinmcconnell/dotfiles) so the AI surface
-installs and versions on its own.
+My personal, multi-tool AI coding configuration — shared skills, steering, and prompts plus per-tool
+configs for Kiro CLI, Claude Code, Cursor, and Codex, and the engram persistent-memory setup.
+Extracted from [dotfiles](https://github.com/austinmcconnell/dotfiles) so the AI surface installs
+and versions on its own.
+
+## Using this repo
+
+This is my setup, shared for reading and borrowing, not a configurable framework. Running
+`install.sh` installs tools and symlinks this repo's configs into each tool's home (`~/.claude/`,
+`~/.kiro/`), replacing what is there, so read [install/README.md](./install/README.md) first. Paths
+that point at my knowledge bases and repos ship as-is; repoint or remove them in your copy.
+
+## How the pieces fit
+
+The pieces work together as a lightweight harness around each AI tool. No orchestrator drives the
+work: each layer below shapes one part of how an agent behaves, and the person in the session
+decides when to move from planning to implementation and which model runs each step.
+
+| Layer                          | Role                                                                                     | Where it lives                                                                                                                            |
+| ------------------------------ | ---------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| Steering                       | Always-on policy: conventions, guardrails, which skill to load when                      | `etc/ai/steering/` ([etc/ai/README.md](./etc/ai/README.md))                                                                               |
+| Skills                         | Step-by-step procedures loaded on demand (commit cadence, reviews)                       | `etc/ai/skills/` ([etc/ai/README.md](./etc/ai/README.md))                                                                                 |
+| Personas                       | Scoped agents, including the strongest-model `doubt-reviewer`                            | `etc/claude-code/agents/`, `etc/kiro-cli/cli-agents/`                                                                                     |
+| Hooks, permissions, pre-commit | Enforcement: block secret access, gate costly or outward actions, validate config        | [etc/ai/hooks/README.md](./etc/ai/hooks/README.md), [etc/claude-code/README.md](./etc/claude-code/README.md), [Development](#development) |
+| engram                         | Cross-session memory: decisions, corrections, handoffs                                   | [etc/ai/steering/shared/cross-session-memory.md](./etc/ai/steering/shared/cross-session-memory.md)                                        |
+| Working files                  | Work queue: `ideas.md` → `backlog.md` → `todo.md`, kept out of git by a global gitignore | [etc/ai/skills/shared/idea-refinement/SKILL.md](./etc/ai/skills/shared/idea-refinement/SKILL.md)                                          |
+
+Which model runs each step, and why, is in
+[etc/ai/steering/shared/model-gates.md](./etc/ai/steering/shared/model-gates.md).
 
 ## Install
 
@@ -33,25 +58,6 @@ not from a project dotenv (kiro-cli 2.24+ no longer auto-loads project dotenv fi
 
 The self-update step (`git pull` on launch) only runs for a standalone git clone with a remote; set
 `AI_DOTFILES_SKIP_SELF_UPDATE=1` to skip it.
-
-## How the pieces fit
-
-The repo is a personal config, not a configurable framework, but its pieces work together as a
-lightweight harness around each AI tool. No orchestrator drives the work: each layer below shapes
-one part of how an agent behaves, and the person in the session decides when to move from planning
-to implementation and which model runs each step.
-
-| Layer                          | Role                                                                                     | Where it lives                                                                                                                            |
-| ------------------------------ | ---------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| Steering                       | Always-on policy: conventions, guardrails, which skill to load when                      | `etc/ai/steering/` ([etc/ai/README.md](./etc/ai/README.md))                                                                               |
-| Skills                         | Step-by-step procedures loaded on demand (commit cadence, reviews)                       | `etc/ai/skills/` ([etc/ai/README.md](./etc/ai/README.md))                                                                                 |
-| Personas                       | Scoped agents, including the strongest-model `doubt-reviewer`                            | `etc/claude-code/agents/`, `etc/kiro-cli/cli-agents/`                                                                                     |
-| Hooks, permissions, pre-commit | Enforcement: block secret access, gate costly or outward actions, validate config        | [etc/ai/hooks/README.md](./etc/ai/hooks/README.md), [etc/claude-code/README.md](./etc/claude-code/README.md), [Development](#development) |
-| engram                         | Cross-session memory: decisions, corrections, handoffs                                   | [etc/ai/steering/shared/cross-session-memory.md](./etc/ai/steering/shared/cross-session-memory.md)                                        |
-| Working files                  | Work queue: `ideas.md` → `backlog.md` → `todo.md`, kept out of git by a global gitignore | [etc/ai/skills/shared/idea-refinement/SKILL.md](./etc/ai/skills/shared/idea-refinement/SKILL.md)                                          |
-
-Which model runs each step, and why, is in
-[etc/ai/steering/shared/model-gates.md](./etc/ai/steering/shared/model-gates.md).
 
 ## Directory map
 
