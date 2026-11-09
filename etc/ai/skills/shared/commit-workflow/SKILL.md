@@ -17,6 +17,12 @@ yourself") — treat it as the default, not a straitjacket.
    commits along logical boundaries, in dependency order. One logical change per commit. Present the
    plan and wait for approval before starting. The plan lists each commit's files and one-line
    intent only; draft its message at the pause-for-review step, once the final diff exists.
+   - **Doubt a non-trivial plan before presenting it.** If the plan meets the
+     `doubt-driven-development` skill's non-trivial criteria, suggest a doubt review first and name
+     the criterion it meets. If the user approves in chat, run the review and present the plan with
+     the findings reconciled. If they decline, say the review was skipped and present the plan. A
+     trivial plan gets no suggestion. The `model-gates` steering doc explains why this gate goes to
+     the strongest model.
 1. **Record the plan.** After the user approves, check for a `todo.md` (see the `todo` skill) and
    record the approved commit plan there. If none exists and the work spans multiple commits, offer
    to create one.
@@ -43,10 +49,11 @@ yourself") — treat it as the default, not a straitjacket.
 - **Plan before writing, not after.** Do steps 1–3 (scope → plan + get approval → record in todo.md)
   *before* editing any file. The commit message itself is written after the change (you can only
   describe work that exists) — what must come first is the agreed plan, not the message. Loading
-  this skill is not the same as executing it: once it is loaded, your next output is the plan, with
-  no `Edit`/`Write` until the user approves it. A go-ahead on the work ("make the changes", "do X
-  first") approves the scope, not skipping the plan. Count the repos touched at scoping time; work
-  that spans more than one is multi-commit by definition.
+  this skill is not the same as executing it: once it is loaded, your next output is the plan (or,
+  for a non-trivial plan, the doubt-review suggestion), with no `Edit`/`Write` until the user
+  approves it. A go-ahead on the work ("make the changes", "do X first") approves the scope, not
+  skipping the plan. Count the repos touched at scoping time; work that spans more than one is
+  multi-commit by definition.
 - **The user commits by default.** Do not create commits unless the user explicitly asks you to
   (this reinforces the user-commits rule in `shared/guardrails.md`). The default is: you prepare and
   verify, the user commits.
