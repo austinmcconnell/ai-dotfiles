@@ -64,12 +64,15 @@ Every review spends Opus tokens, so **suggest it, don't launch it**:
 
 1. Name the non-trivial criterion the artifact meets (see When to Use) and why a review is worth the
    spend here.
-1. Let the user approve. `Agent(doubt-reviewer)` is an ask rule, so the permission prompt is the
-   approval point.
+1. Wait for the user to approve in chat, then launch. `Agent(doubt-reviewer)` is an ask rule, but
+   that prompt is a backstop against an unapproved launch, not the approval point.
 1. If the user declines, say the review was skipped and continue. The skip is fine; the silence is
    not.
 
 Small or simple artifacts get no suggestion at all, even when this skill is loaded.
+
+When the user asks for a "doubt review", they mean one `doubt-reviewer` run on the artifact in front
+of you (a plan, diff, or assertion), not the full doubt cycle and not a later artifact.
 
 ## The Process
 
@@ -222,7 +225,8 @@ artifact is large, the artifact is too big: return to Step 2 and decompose. Do n
 ## Red Flags
 
 - Spawning a reviewer for a one-line rename or formatting change
-- Launching the Opus reviewer without first suggesting it and naming the criterion that justifies it
+- Launching the Opus reviewer without suggesting it, naming the criterion that justifies it, and
+  getting the user's approval in chat
 - Treating reviewer output as authoritative without re-reading the artifact text
 - Looping past 3 cycles without escalating
 - Prompting the reviewer with "is this good?" instead of "find issues"
