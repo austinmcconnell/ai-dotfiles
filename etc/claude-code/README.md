@@ -184,6 +184,10 @@ Claude Code:
 - **Doubt checks** — the `doubt-reviewer` persona runs the plan and pre-commit checks on Opus in a
   fresh context, so the main session keeps its model. The user approves each run in chat (see Cost
   Controls for the ask-rule backstop).
+- **Mechanical work** — delegate it to an anonymous subagent (`general-purpose`, `Explore`), which
+  `CLAUDE_CODE_SUBAGENT_MODEL=haiku` runs on Haiku, rather than switching the main session to Haiku.
+  The domain personas set `model: inherit`, so they run on the main model instead (see Cost
+  Controls).
 - **Advisor** — on explicitly (see Cost Controls). Claude Code gives the main model its own guidance
   on when to consult it, so this repo adds no advisor moments of its own.
 
