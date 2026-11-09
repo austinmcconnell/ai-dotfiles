@@ -64,8 +64,8 @@ Every review spends Opus tokens, so **suggest it, don't launch it**:
 
 1. Name the non-trivial criterion the artifact meets (see When to Use) and why a review is worth the
    spend here.
-1. Wait for the user to approve in chat, then launch. `Agent(doubt-reviewer)` is an ask rule, but
-   that prompt is a backstop against an unapproved launch, not the approval point.
+1. Wait for the user to approve in chat, then launch. Chat approval is the only gate: no permission
+   prompt reliably fires for the launch.
 1. If the user declines, say the review was skipped and continue. The skip is fine; the silence is
    not.
 
