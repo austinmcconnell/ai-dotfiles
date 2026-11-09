@@ -169,6 +169,24 @@ it fetches from Anthropic; the setting keeps it on if that flag is withdrawn. It
 - `CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1` or `/advisor off` turns it off. `~/.claude/settings.json` is
   a symlink to this tracked file, so `/advisor` edits the repo.
 
+### Model Gates
+
+`etc/ai/steering/shared/model-gates.md` sets the tool-agnostic convention: the strongest model for
+planning and doubt checks, a mid model for implementation, a small one for mechanical work. On
+Claude Code:
+
+- **`/model`** — each model has its own prompt cache, so the request after a switch re-reads the
+  whole conversation uncached. Switch at session start or while the context is small.
+- **`opusplan`** — resolves to Opus in plan mode and Sonnet outside it, so each plan-mode toggle is
+  a model switch with a fresh cache. Enter plan mode once per effort (plan, approve, exit), not once
+  per commit. Plan mode blocks edits, so `ideas.md`/`backlog.md` promotions and recording the plan
+  in `todo.md` happen after exiting it. It never selects Haiku.
+- **Doubt checks** — the `doubt-reviewer` persona runs the plan and pre-commit checks on Opus in a
+  fresh context, so the main session keeps its model. The user approves each run in chat (see Cost
+  Controls for the ask-rule backstop).
+- **Advisor** — on explicitly (see Cost Controls). Claude Code gives the main model its own guidance
+  on when to consult it, so this repo adds no advisor moments of its own.
+
 ### Steering Distribution
 
 Steering is not configured in this directory. `install/ai-tools.sh` links each distributed domain
