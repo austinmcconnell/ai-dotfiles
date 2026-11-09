@@ -7,6 +7,8 @@ copied: each tool's config calls the scripts in place as `$AI_DOTFILES_DIR/etc/a
 - **Claude Code** wires them in the `hooks` block of `etc/claude-code/settings.json`.
 - `scripts/validate-hook-wiring.sh` checks hook-wiring drift between the two tools (run by
   pre-commit).
+- `test/test-hooks.sh` feeds block and allow payloads to each blocking hook and checks its exit code
+  (run by pre-commit when a hook changes). Add a case when you add or change a blocking pattern.
 
 Blocking hooks read the tool-call JSON on stdin and exit `2` with a message on stderr to deny the
 call. The other hooks only print to stdout or write a log and never exit `2`, so they never block. A
