@@ -85,6 +85,15 @@ payload on stdin and write to the DB as a side effect:
   across the fixed 7-day window, e.g. `7d 12% (6d 5h) +1`. The segment turns yellow at +10, red at
   +20, and green at -15 or lower (room to use more before the reset). `test/test-statusline.sh`
   covers the rendering.
+
+  The Enterprise usage segment reads the `extra_usage` block of the usage cache in `~/.claude.json`
+  (`CLAUDE_CONFIG_DIR` is honoured). That cache refreshes when `/usage` runs, not on every turn, so
+  the figure can lag real spend. The segment is hidden when the cache predates the current month.
+  The reset date is not in the cache, so the window is assumed to be the calendar month in
+  America/Chicago, starting on the 1st. Check that against the reset date in the `/usage` panel.
+  Anthropic doesn't document the cache's fields, so the segment disappears rather than breaking the
+  line if they change.
+
 - `claude-subagent-statusline.sh` — per-subagent rows. Emits no stdout at all, so Claude Code keeps
   its default subagent-row rendering; this script's only job is the `subagent_tasks` upsert.
 
