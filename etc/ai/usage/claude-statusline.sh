@@ -171,13 +171,65 @@ pace_color() {
     fi
 }
 
+CREDITS_CLAUDE_JSON="${USAGE_CLAUDE_JSON:-${CLAUDE_CONFIG_DIR:-$HOME}/.claude.json}"
+
+is_uint() {
+    [[ "$1" =~ ^[0-9]+$ ]]
+}
+
+# Whitelisted fields only: ~/.claude.json also holds account identifiers, which must never print.
+read_credits_fields() {
+    [[ -r "$CREDITS_CLAUDE_JSON" ]] || return 0
+    jq -r '
+        (.cachedUsageUtilization // {}) as $cache
+        | ($cache.utilization.extra_usage // {}) as $extra
+        | [$extra.is_enabled, $extra.used_credits, $extra.monthly_limit, $cache.fetchedAtMs]
+        | map(tostring) | join("\u001f")
+    ' "$CREDITS_CLAUDE_JSON" 2>/dev/null || true
+}
+
+# Calendar month containing $1 in America/Chicago, the zone the /usage panel reports resets in.
+# Prints "start end" as Unix epoch seconds. /bin/date is the BSD binary; a GNU date earlier on
+# PATH (Homebrew coreutils) rejects -j, so the system binary is named explicitly.
+chicago_month_bounds() {
+    local start_text
+    start_text="$(TZ=America/Chicago /bin/date -r "$1" +%Y-%m)-01 00:00:00"
+    printf '%s %s\n' \
+        "$(TZ=America/Chicago /bin/date -j -f '%Y-%m-%d %H:%M:%S' "$start_text" +%s)" \
+        "$(TZ=America/Chicago /bin/date -j -v+1m -f '%Y-%m-%d %H:%M:%S' "$start_text" +%s)"
+}
+
+# Prints the monthly credits segment, or nothing when the cache has no usable figure for this month.
+credits_segment() {
+    local now="$1" enabled used limit fetched_ms
+    local month_start month_end percent delta color segment
+    IFS=$'\x1f' read -r enabled used limit fetched_ms <<<"$(read_credits_fields)" || true
+    [[ "$enabled" == true ]] || return 0
+    is_uint "$used" && is_uint "$limit" && is_uint "$fetched_ms" || return 0
+    ((limit > 0)) || return 0
+    read -r month_start month_end <<<"$(chicago_month_bounds "$now")" || return 0
+    # A cache fetched before this month's start would be paced against the wrong month.
+    ((fetched_ms / 1000 >= month_start)) || return 0
+    percent=$(((used * 100 + limit / 2) / limit))
+    segment="usage ${percent}%$(format_remaining "$month_end" "$now")"
+    delta="$(pace_delta "$percent" "$month_end" "$now" $((month_end - month_start)))"
+    if [[ -n "$delta" ]]; then
+        segment+=" $(printf '%+d' "$delta")"
+        color="$(pace_color "$delta")"
+        [[ -n "$color" ]] && segment="$color$segment"$'\033[0m'
+    fi
+    printf '%s' "$segment"
+}
+
 DISPLAY_MODEL="${MODEL_DISPLAY:-?}"
 DISPLAY_COST="\$0.00"
 [[ -n "$COST_USD" && "$COST_USD" != "null" ]] && DISPLAY_COST="$(printf '$%.4f' "$COST_USD")"
-# rate_limits only exists for claude.ai subscribers; Enterprise and API keep the cost figure.
+NOW_EPOCH="${USAGE_NOW_EPOCH:-$(date +%s)}"
+HAS_RATE_LIMITS="$(printf '%s' "$PAYLOAD" | jq -r '.rate_limits != null')"
+# rate_limits only exists for claude.ai subscribers. Enterprise and API keep the cost figure,
+# plus the monthly credits segment when the cache has one.
 DISPLAY_USAGE="$DISPLAY_COST"
 if [[ -n "$FIVE_HOUR_PCT" || -n "$SEVEN_DAY_PCT" ]]; then
-    NOW_EPOCH="$(date +%s)"
     FIVE_HOUR_DISPLAY="5h $(format_pct "$FIVE_HOUR_PCT")$(format_remaining "$FIVE_HOUR_RESETS" "$NOW_EPOCH")"
     SEVEN_DAY_DISPLAY="7d $(format_pct "$SEVEN_DAY_PCT")$(format_remaining "$SEVEN_DAY_RESETS" "$NOW_EPOCH")"
     PACE_DELTA="$(pace_delta "$SEVEN_DAY_PCT" "$SEVEN_DAY_RESETS" "$NOW_EPOCH")"
@@ -187,6 +239,9 @@ if [[ -n "$FIVE_HOUR_PCT" || -n "$SEVEN_DAY_PCT" ]]; then
         [[ -n "$PACE_COLOR" ]] && SEVEN_DAY_DISPLAY="$PACE_COLOR$SEVEN_DAY_DISPLAY"$'\033[0m'
     fi
     DISPLAY_USAGE="$FIVE_HOUR_DISPLAY | $SEVEN_DAY_DISPLAY"
+elif [[ "$HAS_RATE_LIMITS" != true ]]; then
+    CREDITS_DISPLAY="$(credits_segment "$NOW_EPOCH")"
+    [[ -n "$CREDITS_DISPLAY" ]] && DISPLAY_USAGE="$DISPLAY_COST | $CREDITS_DISPLAY"
 fi
 DISPLAY_CTX="${CTX_USED_PCT:-0}"
 DISPLAY_EFFORT=""

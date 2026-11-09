@@ -1,7 +1,9 @@
 #!/bin/bash
 # Checks the status line text claude-statusline.sh prints, including the 7d
-# pace delta and its colors. Payloads carry no session_id, so nothing is
-# written to a DB; USAGE_DB_DIR points at a temp dir regardless.
+# pace delta, its colors, and the monthly credits segment. Payloads carry no
+# session_id, so nothing is written to a DB; USAGE_DB_DIR points at a temp dir
+# regardless. Credits fixtures are written into that temp dir, never read from
+# the real ~/.claude.json, and CREDITS_NOW pins the clock.
 
 set -euo pipefail
 
@@ -20,6 +22,14 @@ DAY=86400
 # moves a few seconds between building the payload and the script reading it.
 SIX_DAYS_LEFT=$((6 * DAY + 1800))
 THREE_DAYS_LEFT=$((3 * DAY + 1800))
+# Mid-November in Chicago, so the calendar month runs Nov 1 to Dec 1 and 15d 12h remain.
+FIXED_NOW="$(TZ=UTC /bin/date -j -f '%Y-%m-%d %H:%M:%S' '2026-11-15 18:00:00' +%s)"
+ENTERPRISE_EXTRA='{"is_enabled": true, "used_credits": 5446, "monthly_limit": 20000,
+    "decimal_places": 2}'
+DISABLED_EXTRA='{"is_enabled": false, "used_credits": 5446, "monthly_limit": 20000,
+    "decimal_places": 2}'
+NULL_LIMIT_EXTRA='{"is_enabled": true, "used_credits": 5446, "monthly_limit": null,
+    "decimal_places": 2}'
 
 check() {
     local name="$1" expected="$2" actual="$3"
@@ -38,7 +48,21 @@ render() {
         effort: {level: "medium"},
         context_window: {used_percentage: 9}
     } + (if $rate_limits == null then {} else {rate_limits: $rate_limits} end)' |
-        USAGE_DB_DIR="$WORK" /bin/bash "$USAGE_DIR/claude-statusline.sh"
+        USAGE_DB_DIR="$WORK" USAGE_CLAUDE_JSON="${CREDITS_FIXTURE:-$WORK/absent.json}" \
+            USAGE_NOW_EPOCH="${CREDITS_NOW:-}" /bin/bash "$USAGE_DIR/claude-statusline.sh"
+}
+
+# $1 is the extra_usage object, $2 the cache fetchedAtMs.
+credits_fixture() {
+    jq --null-input --argjson extra "$1" --argjson fetched "$2" '{
+        cachedUsageUtilization: {fetchedAtMs: $fetched, utilization: {extra_usage: $extra}}
+    }' >"$WORK/claude.json"
+}
+
+# $1 is the extra_usage object, $2 the cache fetchedAtMs, $3 the payload rate_limits.
+credits_render() {
+    credits_fixture "$1" "$2"
+    CREDITS_FIXTURE="$WORK/claude.json" CREDITS_NOW="$FIXED_NOW" render "$3"
 }
 
 # $1 is the 7d used percentage, $2 the seconds until the 7d window resets.
@@ -69,6 +93,29 @@ check "no resets_at, no delta" \
     "$(line '7d 15%')" "$(render '{"seven_day": {"used_percentage": 15}}')"
 check "no rate_limits falls back to cost" \
     "Opus 5.5 | \$0.00 | 9% ctx | effort:medium" "$(render null)"
+
+COST_ONLY="Opus 5.5 | \$0.00 | 9% ctx | effort:medium"
+CREDITS_SEGMENT="${GREEN}usage 27% (15d 12h) -21${RESET}"
+CREDITS_FRESH=$((FIXED_NOW * 1000))
+check "month segment sits between cost and context" \
+    "Opus 5.5 | \$0.00 | $CREDITS_SEGMENT | 9% ctx | effort:medium" \
+    "$(credits_render "$ENTERPRISE_EXTRA" "$CREDITS_FRESH" null)"
+check "month segment shows for a cache 20 minutes old" \
+    "Opus 5.5 | \$0.00 | $CREDITS_SEGMENT | 9% ctx | effort:medium" \
+    "$(credits_render "$ENTERPRISE_EXTRA" "$(((FIXED_NOW - 1200) * 1000))" null)"
+check "cache from before this month is hidden" \
+    "$COST_ONLY" "$(credits_render "$ENTERPRISE_EXTRA" "$(((FIXED_NOW - 20 * DAY) * 1000))" null)"
+check "disabled credits are hidden" \
+    "$COST_ONLY" "$(credits_render "$DISABLED_EXTRA" "$CREDITS_FRESH" null)"
+check "present rate_limits without percentages hides credits" \
+    "$COST_ONLY" "$(credits_render "$ENTERPRISE_EXTRA" "$CREDITS_FRESH" '{}')"
+check "null monthly_limit hides credits" \
+    "$COST_ONLY" "$(credits_render "$NULL_LIMIT_EXTRA" "$CREDITS_FRESH" null)"
+check "missing config hides credits" \
+    "$COST_ONLY" "$(CREDITS_FIXTURE="$WORK/none.json" CREDITS_NOW="$FIXED_NOW" render null)"
+printf '{not json' >"$WORK/claude.json"
+check "malformed config hides credits" \
+    "$COST_ONLY" "$(CREDITS_FIXTURE="$WORK/claude.json" CREDITS_NOW="$FIXED_NOW" render null)"
 
 if ((FAILURES > 0)); then
     echo "$FAILURES check(s) failed"

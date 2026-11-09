@@ -79,10 +79,12 @@ payload on stdin and write to the DB as a side effect:
 - `claude-statusline.sh` — the main session. Prints the visible status line text
   (model/usage/context%/effort), upserts the `sessions` row, and appends a `cost_snapshots` row (see
   "Cost trajectory" below). Usage is the 5h and 7d rate-limit percentages with time to reset on a
-  claude.ai subscription, and session cost otherwise. The 7d segment ends with a pace delta: the
-  points its usage sits above (`+`) or below (`-`) an even burn across the fixed 7-day window, e.g.
-  `7d 12% (6d 5h) +1`. The segment turns yellow at +10, red at +20, and green at -15 or lower (room
-  to use more before the reset). `test/test-statusline.sh` covers the rendering.
+  claude.ai subscription, and session cost otherwise. On Enterprise, a usage segment
+  (`usage 27% (15d 12h) -21`) follows the cost, from the usage cache in `~/.claude.json`. The 7d
+  segment ends with a pace delta: the points its usage sits above (`+`) or below (`-`) an even burn
+  across the fixed 7-day window, e.g. `7d 12% (6d 5h) +1`. The segment turns yellow at +10, red at
+  +20, and green at -15 or lower (room to use more before the reset). `test/test-statusline.sh`
+  covers the rendering.
 - `claude-subagent-statusline.sh` — per-subagent rows. Emits no stdout at all, so Claude Code keeps
   its default subagent-row rendering; this script's only job is the `subagent_tasks` upsert.
 
