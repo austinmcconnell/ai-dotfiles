@@ -150,14 +150,14 @@ is_missing() {
 }
 
 pace_delta() {
-    local used_pct="$1" resets_at="$2" now="$3" used elapsed
+    local used_pct="$1" resets_at="$2" now="$3" window="${4:-$SEVEN_DAY_SECONDS}" used elapsed
     is_missing "$used_pct" && return 0
     is_missing "$resets_at" && return 0
     used="$(printf '%.0f' "$used_pct")"
-    elapsed=$((SEVEN_DAY_SECONDS - (resets_at - now)))
+    elapsed=$((window - (resets_at - now)))
     ((elapsed < 0)) && elapsed=0
-    ((elapsed > SEVEN_DAY_SECONDS)) && elapsed=$SEVEN_DAY_SECONDS
-    printf '%d' $((used - (elapsed * 100 + SEVEN_DAY_SECONDS / 2) / SEVEN_DAY_SECONDS))
+    ((elapsed > window)) && elapsed=$window
+    printf '%d' $((used - (elapsed * 100 + window / 2) / window))
 }
 
 pace_color() {
