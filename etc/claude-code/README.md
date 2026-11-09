@@ -118,7 +118,7 @@ Six global hook events configured in `settings.json` (all commands resolve via `
 
 ### Cost Controls
 
-Spend is bounded by five settings, none of which is a spend cap (Claude Code has no persistent
+Spend is bounded by the settings below, none of which is a spend cap (Claude Code has no persistent
 session-total budget; `--max-budget-usd` is a per-invocation CLI flag only):
 
 - **Effort pins** — `modelSettings` sets `effortLevel: "medium"` for `claude-sonnet-5`,
@@ -156,6 +156,18 @@ its frontmatter, so the doubt-driven-development check runs on the strongest mod
 frontmatter is not part of the Agent call, so the `Agent(model:opus)` gate does not see it;
 `Agent(doubt-reviewer)` in `permissions.ask` is the gate instead, making every review an approved
 spend.
+
+**Advisor (adds Opus spend):** top-level `advisorModel: "opus"` turns on the advisor tool, which
+lets the main model consult Opus mid-request. Claude Code already enables it through a feature flag
+it fetches from Anthropic; the setting keeps it on if that flag is withdrawn. It is not a bound:
+
+- `opus` is an alias, so the advisor follows whatever model Claude Code resolves it to.
+- Each call is a separate sub-inference that reads the whole conversation uncached, billed at the
+  advisor's rates. Claude Code documents no control for advisor caching.
+- The advisor must rank at or above the main model. An Opus advisor breaks that rule for a Fable
+  main session; how Claude Code handles the mismatch is unverified.
+- `CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1` or `/advisor off` turns it off. `~/.claude/settings.json` is
+  a symlink to this tracked file, so `/advisor` edits the repo.
 
 ### Steering Distribution
 

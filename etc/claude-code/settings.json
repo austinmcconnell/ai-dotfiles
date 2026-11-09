@@ -431,6 +431,7 @@
     "theme": "dark",
     "verbose": true,
     "cleanupPeriodDays": 90,
+    "advisorModel": "opus",
     "autoCompactWindow": 285000,
     "env": {
         "CLAUDE_CODE_SUBAGENT_MODEL": "haiku",
