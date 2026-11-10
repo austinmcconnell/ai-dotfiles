@@ -4,8 +4,6 @@
         "allow": [
             "Read(*)",
             "Read(**)",
-            "Grep(*)",
-            "Glob(*)",
             "Edit(~/projects/**)",
             "Edit(~/repositories/**)",
             "Edit(~/.dotfiles/**)",
