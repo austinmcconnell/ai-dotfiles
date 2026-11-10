@@ -59,6 +59,18 @@ kiro_read_call() {
         '{tool_name: "fs_read", tool_input: {operations: [{mode: "Line", path: $path}]}}'
 }
 
+# $1 is the file path, $2 the content.
+write_call() {
+    jq --null-input --compact-output --arg path "$1" --arg content "$2" \
+        '{tool_name: "Write", tool_input: {file_path: $path, content: $content}}'
+}
+
+# The built-in Grep tool: $1 is the pattern, $2 the search path.
+grep_call() {
+    jq --null-input --compact-output --arg pattern "$1" --arg path "$2" \
+        '{tool_name: "Grep", tool_input: {pattern: $pattern, path: $path}}'
+}
+
 # $1 is the tool name as the tool sends it, $2 the memory content.
 memory_call() {
     jq --null-input --compact-output --arg tool "$1" --arg content "$2" \
@@ -79,6 +91,16 @@ check "kiro reads a dot-env file" "$hook" 2 "$(kiro_read_call "/repo/$DOT_ENV.lo
 check "reads a README" "$hook" 0 "$(read_call "/repo/README.md")"
 check "reads an envrc file" "$hook" 0 "$(read_call "/repo/${DOT_ENV}rc")"
 check "reads a file named environment" "$hook" 0 "$(read_call "/repo/docs/environment.md")"
+check "greps a dot-env file by name" "$hook" 2 "$(bash_call "grep KEY config/$DOT_ENV")"
+check "built-in Grep names a dot-env path" "$hook" 2 "$(grep_call KEY "/repo/$DOT_ENV")"
+check "built-in Grep pattern names a dot-env file" "$hook" 2 "$(grep_call "$DOT_ENV" "/repo/src")"
+
+# Known false positives pin current behavior. When a hook change drops one, flip its expected exit
+# code in the same commit.
+check "ordinary recursive grep passes" "$hook" 0 "$(bash_call "grep -r KEY src/")"
+check "known false positive: template file" "$hook" 2 "$(bash_call "cat config/$DOT_ENV.example")"
+check "known false positive: prose in a markdown write" "$hook" 2 \
+    "$(write_call notes.md "Never read the $DOT_ENV file.")"
 
 hook=block-sops-age-files.sh
 check "reads the age key file" "$hook" 2 "$(read_call "$HOME/.config/sops/age/keys.txt")"
