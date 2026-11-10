@@ -14,7 +14,7 @@ check_hook_input() {
         echo "BLOCKED: jq not found; ${hook} cannot check this call" >&2
         exit 2
     fi
-    if [[ -z "${input//[[:space:]]/}" ]]; then
+    if ! LC_ALL=C grep -q '[^[:space:]]' <<<"${input}"; then
         exit 0
     fi
     if ! jq empty <<<"${input}" >/dev/null 2>&1; then
