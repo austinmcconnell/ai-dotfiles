@@ -60,12 +60,29 @@ Run `scripts/validate-hook-wiring.sh` afterwards to check that the two tools agr
 
 | Script                            | What it does                                                                                                                                              | How it is run                                                                           |
 | --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
-| `block-env-files.sh`              | Denies any tool input that references a `.env` file.                                                                                                      | Kiro: `preToolUse`, `*`, all 5 agents. Claude: `PreToolUse`, `*`.                       |
+| `block-env-files.sh`              | Denies any tool input that references a dot-env file, except Write and Edit on one allowlisted steering doc (see limits below).                           | Kiro: `preToolUse`, `*`, all 5 agents. Claude: `PreToolUse`, `*`.                       |
 | `block-sops-age-files.sh`         | Denies access to age private keys and `sops` decrypt commands.                                                                                            | Kiro: `preToolUse`, `*`, all 5 agents. Claude: `PreToolUse`, `*`.                       |
 | `block-ssh-private-keys.sh`       | Denies access to `.ssh/id_*` files other than `.pub`.                                                                                                     | Kiro: `preToolUse`, `*`, all 5 agents. Claude: `PreToolUse`, `*`.                       |
 | `block-shell-trace-mode.sh`       | Denies shell trace mode (`set -x`, `set -o xtrace`, `bash -x` and similar).                                                                               | Kiro: `preToolUse`, `*`, all 5 agents. Claude: `PreToolUse`, `*`.                       |
 | `block-memory-secrets.sh`         | Denies engram `mem_save`, `mem_update`, `mem_save_prompt`, `mem_session_summary` and `mem_capture_passive` calls whose strings match credential patterns. | Kiro: `preToolUse`, `@engram/*`, all 5 agents. Claude: `PreToolUse`, `mcp__engram__.*`. |
 | `block-persona-shell-commands.sh` | Denies per-persona shell command patterns (`docs`, `jira`, `datadog`, `ansible`), selected by `agent_type` in the payload. Other sessions pass through.   | Claude only: `PreToolUse`, `Bash`.                                                      |
+
+### `block-env-files.sh` limits
+
+The guard is a tripwire for well-behaved agents, not a security boundary. It scans the strings of
+each tool call for the dot-env name. Known limits:
+
+- A broad recursive search that never names the dot-env file is not blocked.
+- A name assembled from quoted pieces, or matched by a glob, is not blocked.
+- A script written to a non-shell file and run later is not blocked.
+- The allowlist covers only the Write and Edit call. An allowed doc can contain a line that reads
+  the dot-env file, and a later command that runs that doc is not blocked.
+- Kiro's write tool and writes through symlinks are not covered by the allowlist, so they stay
+  blocked.
+- A tool call or subagent message that names the dot-env file is blocked, including reviews and
+  handbacks that discuss this guard.
+- The built-in Grep, when enabled, skips dot-files in a recursive search. This is observed, not
+  documented by Claude Code.
 
 ## Warning hooks
 

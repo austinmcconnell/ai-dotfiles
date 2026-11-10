@@ -65,6 +65,12 @@ write_call() {
         '{tool_name: "Write", tool_input: {file_path: $path, content: $content}}'
 }
 
+# $1 is the file path, $2 the new content.
+edit_call() {
+    jq --null-input --compact-output --arg path "$1" --arg content "$2" \
+        '{tool_name: "Edit", tool_input: {file_path: $path, old_string: "old", new_string: $content}}'
+}
+
 # The built-in Grep tool: $1 is the pattern, $2 the search path.
 grep_call() {
     jq --null-input --compact-output --arg pattern "$1" --arg path "$2" \
@@ -101,6 +107,29 @@ check "ordinary recursive grep passes" "$hook" 0 "$(bash_call "grep -r KEY src/"
 check "known false positive: template file" "$hook" 2 "$(bash_call "cat config/$DOT_ENV.example")"
 check "known false positive: prose in a markdown write" "$hook" 2 \
     "$(write_call notes.md "Never read the $DOT_ENV file.")"
+
+REPO_ROOT="$(cd "$HOOKS_DIR/../../.." && pwd)"
+ALLOWED_DOC="$REPO_ROOT/etc/ai/steering/security/env-file-protection.md"
+check "allowlisted doc write may quote the guard" "$hook" 0 \
+    "$(write_call "$ALLOWED_DOC" "Never read the $DOT_ENV file.")"
+check "allowlisted doc edit may quote the guard" "$hook" 0 \
+    "$(edit_call "$ALLOWED_DOC" "Never read the $DOT_ENV file.")"
+check "allowlist ignores a suffixed path" "$hook" 2 \
+    "$(write_call "$ALLOWED_DOC.bak" "Never read the $DOT_ENV file.")"
+check "allowlist ignores a prefixed path" "$hook" 2 \
+    "$(write_call "/other$ALLOWED_DOC" "Never read the $DOT_ENV file.")"
+check "allowlist ignores a dot-dot path" "$hook" 2 \
+    "$(write_call "$REPO_ROOT/etc/ai/steering/../steering/security/env-file-protection.md" "Never read the $DOT_ENV file.")"
+check "allowlist never covers hooks" "$hook" 2 \
+    "$(write_call "$REPO_ROOT/etc/ai/hooks/block-env-files.sh" "Never read the $DOT_ENV file.")"
+check "allowlist never covers settings" "$hook" 2 \
+    "$(write_call "$REPO_ROOT/etc/claude-code/settings.json" "Never read the $DOT_ENV file.")"
+check "other tracked docs stay blocked" "$hook" 2 \
+    "$(write_call "$REPO_ROOT/etc/ai/steering/code/git-conventions.md" "Never read the $DOT_ENV file.")"
+check "write to a dot-env path stays blocked" "$hook" 2 \
+    "$(write_call "$REPO_ROOT/config/$DOT_ENV" "KEY=fake")"
+check "plain write to an unlisted path passes" "$hook" 0 \
+    "$(write_call "$REPO_ROOT/notes.md" "plain text")"
 
 hook=block-sops-age-files.sh
 check "reads the age key file" "$hook" 2 "$(read_call "$HOME/.config/sops/age/keys.txt")"
