@@ -142,10 +142,11 @@ session-total budget; `--max-budget-usd` is a per-invocation CLI flag only):
   did not scale with the window. Set the window to the desired trigger plus ~35K. No
   `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE` is set: it scales the window by a percentage and moves the
   trigger unpredictably.
-- **Agent model gate** — `Agent(model:opus)`, `Agent(model:fable)`, and the `claude-opus*` /
-  `claude-fable*` full-ID forms are in `permissions.ask`, so a per-call override to an expensive
-  model prompts instead of silently outranking the Haiku floor. Rules match the literal value Claude
-  sends, hence the separate alias and full-ID patterns. `ask` outranks the bare `Agent` allow.
+- **Agent model gate** — the `ask-opus-subagents.sh` hook on `Agent` (`PreToolUse`) prompts when a
+  call sets a `model` containing `opus` or `fable`, so a per-call override to an expensive model
+  does not silently outrank the Haiku floor. Its `ask` prompts for background launches and overrides
+  the bare `Agent` allow. `Agent(...)` entries in `permissions.ask` do not prompt for subagent
+  launches (checked on 2.1.311 in default mode), so none are kept.
 
 **Caveat:** the four domain personas (`docs`, `jira`, `datadog`, `ansible`) set `model: inherit`, so
 they run on the main session model and bypass the Haiku floor. Only anonymous delegations (for
@@ -153,11 +154,10 @@ example `Explore` or `general-purpose`) get Haiku.
 
 **Deliberate Opus exception:** the `doubt-reviewer` persona pins `model: opus` and `effort: high` in
 its frontmatter, so the doubt-driven-development check runs on the strongest model. A model set in
-frontmatter is not part of the Agent call, so the `Agent(model:opus)` gate does not see it. The gate
-is chat approval instead: the `commit-workflow` and `doubt-driven-development` skills have the agent
-suggest each review and wait for the user to approve it in chat. `Agent(doubt-reviewer)` stays in
-`permissions.ask` as a backstop, but on Claude Code 2.1.311 it does not prompt, even in manual mode
-with no matching allow rule.
+frontmatter is not part of the Agent call, so the model check does not see it. The same hook
+therefore also asks for the `doubt-reviewer` persona by name. Chat approval stays the first gate:
+the `commit-workflow` and `doubt-driven-development` skills have the agent suggest each review and
+wait for the user to approve it in chat, and the hook prompts if a launch skips that step.
 
 **Advisor (adds Opus spend):** top-level `advisorModel: "opus"` turns on the advisor tool, which
 lets the main model consult Opus mid-request. Claude Code already enables it through a feature flag
@@ -184,8 +184,8 @@ mechanical work. On Claude Code:
   per commit. Plan mode blocks edits, so `ideas.md`/`backlog.md` promotions and recording the plan
   in `todo.md` happen after exiting it. It never selects Haiku.
 - **Doubt checks** — the `doubt-reviewer` persona runs the plan and pre-commit checks on Opus in a
-  fresh context, so the main session keeps its model. The user approves each run in chat, which is
-  the only working gate (see Cost Controls).
+  fresh context, so the main session keeps its model. The user approves each run in chat, and the
+  `ask-opus-subagents.sh` hook prompts if a launch skips that step (see Cost Controls).
 - **Mechanical work** — delegate it to an anonymous subagent (`general-purpose`, `Explore`), which
   `CLAUDE_CODE_SUBAGENT_MODEL=haiku` runs on Haiku, rather than switching the main session to Haiku.
   The domain personas set `model: inherit`, so they run on the main model instead (see Cost

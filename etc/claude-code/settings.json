@@ -219,11 +219,6 @@
             "WebFetch(domain:pastebin.com)"
         ],
         "ask": [
-            "Agent(doubt-reviewer)",
-            "Agent(model:claude-fable*)",
-            "Agent(model:claude-opus*)",
-            "Agent(model:fable)",
-            "Agent(model:opus)",
             "Bash(git merge *)",
             "Bash(git push *)",
             "Bash(git rebase *)",
