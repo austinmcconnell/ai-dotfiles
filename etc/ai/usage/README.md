@@ -2,8 +2,8 @@
 
 Local, durable tracking of token usage and estimated $ cost across AI coding tools, stored outside
 engram in a SQLite database that isn't committed to git. Tool-agnostic by design, but only Claude
-Code is wired up today — see "Why Kiro CLI isn't wired up" below. For the cost-estimate findings,
-method, and open items, read `burn-attribution.md` in this directory.
+Code is wired up today — see "Why Kiro CLI isn't wired up" below. For the cost-estimate method,
+validation, and decisions, read `cost-estimation.md` in this directory.
 
 ## Storage
 
@@ -261,7 +261,7 @@ release: Sonnet 5.5 used 0.1x before Claude Code 2.1.296 and 0.05x from it. Each
 from `usage_transcript_cost` in `lib.sh`, which refuses to price such a request rather than pick a
 side of the boundary; the two implementations of these rules are duplicated, not shared. Sonnet 5.5
 sessions before 2.1.296 still estimate below actual, and Haiku 5.5 estimates run below `cost-state`
-where requests cross the 100K-token tier — see "Cache-write rate check" in `burn-attribution.md`.
+where requests cross the 100K-token tier — see "Cache-write rate check" in `cost-estimation.md`.
 
 ## Deliberately out of scope (for now)
 

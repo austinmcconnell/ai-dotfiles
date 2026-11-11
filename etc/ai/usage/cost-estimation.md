@@ -1,10 +1,8 @@
-# Burn attribution: findings, method, and open items
+# Cost estimation: method and validation
 
-Findings from the 2026-11-06 analysis of Claude Code usage data, written so the analysis can be
-continued on another machine. Covers what was measured, how, what was decided, and what is still
-open. The estimator itself is described in `README.md` in this directory.
-
-Snapshot as of 2026-11-06 on the work machine. Counts are for that machine's local data only.
+How usage cost is estimated and why the estimator is shaped as it is: the data sources, the pricing
+rules, how the estimate was validated, and the standing decisions. The estimator itself is described
+in `README.md` in this directory.
 
 ## Data sources and what each one can answer
 
