@@ -44,16 +44,6 @@ write_fixtures() {
         echo '{"type":"user","message":{"content":"hello"}}'
         boundary 2026-11-09T02:23:00.276Z 252086 39415
     } >"$dir/one.jsonl"
-    {
-        boundary 2026-11-08T18:15:20.622Z 164657 31842
-        echo '{"type":"user","message":{"content":"more"}}'
-        boundary 2026-11-08T18:41:21.008Z 162020 35932
-    } >"$dir/two.jsonl"
-    # A record that only quotes the marker inside a string must not count as a boundary.
-    {
-        echo '{"type":"api-request-blob","message":"saw \"compact_boundary\" in text"}'
-        boundary 2026-11-09T02:23:00.276Z 252086 39415
-    } >"$dir/quoted.jsonl"
 }
 
 # $1 is the event, $2 the session id, $3 the transcript path.
@@ -70,32 +60,48 @@ row() {
 
 test_post_compact() {
     run_hook PostCompact one "$WORK/fixtures/one.jsonl"
-    check "boundary fills real_pre_tokens" "252086" "$(row one real_pre_tokens)"
-    check "boundary fills real_post_tokens" "39415" "$(row one real_post_tokens)"
-    check "diag counts the boundary" "1" "$(row one "json_extract(raw_json, '$._diag.boundary_count')")"
-    check "diag keeps the boundary timestamp" "2026-11-09T02:23:00.276Z" \
-        "$(row one "json_extract(raw_json, '$._diag.last_boundary.timestamp')")"
-    check "diag keeps the boundary preTokens" "252086" \
-        "$(row one "json_extract(raw_json, '$._diag.last_boundary.preTokens')")"
+    check "a boundary already in the transcript is not read" "" "$(row one real_pre_tokens)"
+    check "real_post_tokens stays NULL" "" "$(row one real_post_tokens)"
+    check "cumulative_dropped_tokens stays NULL" "" "$(row one cumulative_dropped_tokens)"
+    check "duration_ms stays NULL" "" "$(row one duration_ms)"
     check "diag stamps the hook start" "1" \
         "$(row one "json_extract(raw_json, '$._diag.hook_started_at') GLOB '20??-??-??T??:??:??*Z'")"
+    check "diag holds only the hook start" "hook_started_at" \
+        "$(row one "(SELECT group_concat(key) FROM json_each(raw_json, '$._diag'))")"
     check "payload fields survive beside the diag" "PostCompact" \
         "$(row one "json_extract(raw_json, '$.hook_event_name')")"
+    check "payload transcript_path survives for the resolver" "$WORK/fixtures/one.jsonl" \
+        "$(row one "json_extract(raw_json, '$.transcript_path')")"
 
-    run_hook PostCompact two "$WORK/fixtures/two.jsonl"
-    check "last boundary wins" "162020" "$(row two real_pre_tokens)"
-    check "diag counts both boundaries" "2" "$(row two "json_extract(raw_json, '$._diag.boundary_count')")"
-
-    run_hook PostCompact quoted "$WORK/fixtures/quoted.jsonl"
-    check "quoted marker is not a boundary" "1" "$(row quoted "json_extract(raw_json, '$._diag.boundary_count')")"
+    run_hook PostCompact none "$WORK/fixtures/none.jsonl"
+    check "a transcript with no boundary also inserts the row" "1" \
+        "$(row none "count(*)")"
 }
 
-test_missing_boundary() {
-    run_hook PostCompact none "$WORK/fixtures/none.jsonl"
-    check "no boundary leaves real_pre_tokens NULL" "" "$(row none real_pre_tokens)"
-    check "diag counts zero boundaries" "0" "$(row none "json_extract(raw_json, '$._diag.boundary_count')")"
-    check "diag has no last boundary" "null" \
-        "$(row none "json_type(raw_json, '$._diag.last_boundary')")"
+# Holds SQLite's exclusive lock so the hook's own reads and writes wait, then fail.
+test_locked_db() {
+    local started status=0
+    # shellcheck disable=SC2153
+    { printf 'BEGIN EXCLUSIVE;\n' && sleep 30; } | sqlite3 "$USAGE_DB" >/dev/null 2>&1 &
+    local lock_pid=$!
+    sleep 1
+    started=$SECONDS
+    run_hook PostCompact locked "$WORK/fixtures/one.jsonl" >/dev/null 2>&1 || status=$?
+    local elapsed=$((SECONDS - started))
+    kill "$lock_pid" 2>/dev/null || true
+    wait "$lock_pid" 2>/dev/null || true
+    check "a locked DB still exits 0" "0" "$status"
+    check "a locked DB returns within the hook's limit" "yes" \
+        "$( ((elapsed < 4)) && echo yes || echo no)"
+    check "a locked DB loses the row" "0" "$(row locked "count(*)")"
+}
+
+test_unwritable_db() {
+    local status=0
+    : >"$WORK/not-a-dir"
+    USAGE_DB_DIR="$WORK/not-a-dir/db" run_hook PostCompact bad "$WORK/fixtures/one.jsonl" \
+        >/dev/null 2>&1 || status=$?
+    check "an unwritable DB location still exits 0" "0" "$status"
 }
 
 test_pre_compact() {
@@ -106,8 +112,9 @@ test_pre_compact() {
 
 write_fixtures
 test_post_compact
-test_missing_boundary
 test_pre_compact
+test_locked_db
+test_unwritable_db
 
 if [[ "$FAILURES" -gt 0 ]]; then
     echo "$FAILURES check(s) failed"

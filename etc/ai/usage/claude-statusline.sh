@@ -257,3 +257,39 @@ DISPLAY_EFFORT=""
 [[ -n "$EFFORT" && "$EFFORT" != "null" ]] && DISPLAY_EFFORT=" | effort:$EFFORT"
 
 printf '%s | %s | %s%% ctx%s\n' "$DISPLAY_MODEL" "$DISPLAY_USAGE" "$DISPLAY_CTX" "$DISPLAY_EFFORT"
+
+# Starts the boundary resolver for this session when a recent PostCompact row still lacks its
+# real_* figures. Runs after the render has printed, so a slow or failing step cannot affect it.
+# Starts at most once per RESOLVE_LOCK_TTL_SECONDS; the lock directory is never removed, it ages out.
+RESOLVE_LOCK_TTL_SECONDS=120
+
+# Succeeds when this call created the lock directory $1 or found it older than the TTL.
+acquire_resolve_lock() {
+    perl -e '
+        my ($dir, $ttl) = @ARGV;
+        exit 0 if mkdir $dir;
+        my $mtime = (stat $dir)[9];
+        exit 1 unless defined $mtime && time - $mtime >= $ttl;
+        utime undef, undef, $dir;
+        exit 0' -- "$1" "$RESOLVE_LOCK_TTL_SECONDS"
+}
+
+spawn_boundary_resolver() {
+    local lock_dir="$USAGE_DB_DIR/resolve-locks"
+    [[ "$SESSION_ID" =~ ^[A-Za-z0-9-]+$ ]] || return 0
+    [[ -n "$(usage_sql "
+        SELECT 1 FROM compaction_events
+        WHERE tool = 'claude-code' AND session_id = $(sql_str "$SESSION_ID")
+            AND hook_event = 'PostCompact' AND real_pre_tokens IS NULL
+            AND occurred_at > strftime('%Y-%m-%dT%H:%M:%SZ', 'now', '-10 minutes')
+        LIMIT 1;")" ]] || return 0
+    mkdir -p "$lock_dir"
+    acquire_resolve_lock "$lock_dir/$SESSION_ID" || return 0
+    perl -MPOSIX -e 'POSIX::setsid(); exec @ARGV' -- \
+        "$SCRIPT_DIR/resolve-compaction-boundaries.sh" --live "$SESSION_ID" \
+        </dev/null >/dev/null 2>&1 &
+}
+
+if [[ -n "$SESSION_ID" ]]; then
+    spawn_boundary_resolver 2>/dev/null || true
+fi

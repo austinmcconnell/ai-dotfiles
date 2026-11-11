@@ -70,10 +70,11 @@ CREATE TABLE IF NOT EXISTS subagent_tasks (
 --
 -- The real_* columns fill that gap on PostCompact only: Claude Code writes a
 -- `compact_boundary` system message with an exact compactMetadata object
--- into the session's transcript once compaction finishes, and the hook
--- payload's transcript_path can be read to extract it. That record does not
--- exist yet at PreCompact time, so these stay NULL on PreCompact rows (and
--- on any PostCompact row where the transcript couldn't be parsed).
+-- into the session's transcript, but only after the PostCompact hook has
+-- run. The hook therefore inserts them NULL, and
+-- usage_resolve_compaction_boundaries (lib.sh) fills them from the
+-- transcript afterwards. They stay NULL on PreCompact rows, and on any
+-- PostCompact row whose boundary could not be paired unambiguously.
 CREATE TABLE IF NOT EXISTS compaction_events (
     id                       INTEGER PRIMARY KEY AUTOINCREMENT,
     tool                     TEXT NOT NULL,   -- 'claude-code', 'kiro-cli' (future), ...
@@ -81,7 +82,7 @@ CREATE TABLE IF NOT EXISTS compaction_events (
     hook_event               TEXT NOT NULL,   -- 'PreCompact' | 'PostCompact'
     trigger                  TEXT,            -- 'manual' | 'auto', from the hook payload
     snapshot_input_tokens    INTEGER,         -- last known sessions.input_tokens at fire time; nullable if no prior row existed
-    real_pre_tokens          INTEGER,         -- exact compactMetadata.preTokens; NULL until PostCompact resolves it
+    real_pre_tokens          INTEGER,         -- exact compactMetadata.preTokens; NULL until the resolver fills it
     real_post_tokens         INTEGER,         -- exact compactMetadata.postTokens; PostCompact only
     cumulative_dropped_tokens INTEGER,        -- exact compactMetadata.cumulativeDroppedTokens; PostCompact only
     duration_ms              INTEGER,         -- exact compactMetadata.durationMs; PostCompact only

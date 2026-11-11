@@ -252,6 +252,13 @@ test_script() {
     check "a second apply writes nothing" "1" "$(grep -c 'nothing to write' "$WORK/err")"
     check "a second apply makes no new backup" "1" \
         "$(find "$WORK/db" -name 'usage.db.bak-resolve-*' | wc -l | tr -d ' ')"
+    usage_sql "UPDATE compaction_events SET real_pre_tokens = NULL;"
+    check "live mode is silent" "" "$(bash "$SCRIPT" --live s1 2>&1)"
+    check "live mode fills the row" "1000" "$(pre_tokens)"
+    usage_sql "UPDATE compaction_events SET real_pre_tokens = 777;"
+    bash "$SCRIPT" --live s1
+    check "live mode keeps a stored value" "777" "$(pre_tokens)"
+    check "live mode needs a session id" "2" "$(bash "$SCRIPT" --live >/dev/null 2>&1 || echo $?)"
     check "an unknown flag is refused" "2" "$(bash "$SCRIPT" --bogus >/dev/null 2>&1 || echo $?)"
 }
 

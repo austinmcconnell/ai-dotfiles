@@ -169,6 +169,74 @@ check "locked subagent render returns within 2 seconds" "yes" \
     "$( ((RUN_SECONDS < 2)) && echo yes || echo no)"
 release_write_lock
 
+RESOLVE_DB_DIR="$WORK/resolve"
+RESOLVE_DB="$RESOLVE_DB_DIR/usage.db"
+RESOLVE_TRANSCRIPT="$WORK/resolve-session.jsonl"
+RESOLVE_PAYLOAD="$(jq -cn --arg path "$RESOLVE_TRANSCRIPT" '{
+    session_id: "resolve-test", model: {display_name: "Opus 5.5"}, effort: {level: "medium"},
+    context_window: {used_percentage: 9}, cost: {total_cost_usd: 1.5},
+    transcript_path: $path, tasks: []}')"
+
+# Reuses run_script, which reads LOCK_DB_DIR. $1 is the offset in minutes of the PostCompact row's occurred_at (negative is the past).
+# Writes a matching boundary half a second after it, and leaves real_pre_tokens NULL.
+seed_post_compact_row() {
+    local stamp
+    stamp="$(/bin/date -u -v"$1"M +%Y-%m-%dT%H:%M:%S)"
+    jq -cn --arg ts "$stamp.500Z" '{type: "system", subtype: "compact_boundary", timestamp: $ts,
+        uuid: "b1", compactMetadata: {preTokens: 4242, postTokens: 1, cumulativeDroppedTokens: 2,
+        durationMs: 3}}' >"$RESOLVE_TRANSCRIPT"
+    sqlite3 "$RESOLVE_DB" "DELETE FROM compaction_events;
+        INSERT INTO compaction_events (tool, session_id, hook_event, occurred_at, raw_json)
+        VALUES ('claude-code', 'resolve-test', 'PostCompact', '${stamp}Z',
+        '{\"transcript_path\": \"$RESOLVE_TRANSCRIPT\"}');"
+}
+
+resolved_pre_tokens() {
+    sqlite3 "$RESOLVE_DB" "SELECT COALESCE(real_pre_tokens, '-') FROM compaction_events;"
+}
+
+# Waits up to 5 seconds for the detached resolver to fill the row.
+wait_for_resolver() {
+    local _
+    for _ in $(seq 1 25); do
+        [[ "$(resolved_pre_tokens)" != "-" ]] && return 0
+        sleep 0.2
+    done
+}
+
+mkdir -p "$RESOLVE_DB_DIR"
+LOCK_DB_DIR="$RESOLVE_DB_DIR"
+run_script claude-statusline.sh "$RESOLVE_PAYLOAD"
+
+seed_post_compact_row -1
+run_script claude-statusline.sh "$RESOLVE_PAYLOAD"
+check "render with a pending row prints the normal line" "yes" \
+    "$([[ "$(cat "$WORK/out")" == "Opus 5.5 | "* ]] && echo yes || echo no)"
+check "render with a pending row returns within 2 seconds" "yes" \
+    "$( ((RUN_SECONDS < 2)) && echo yes || echo no)"
+wait_for_resolver
+check "a recent PostCompact row without real_* gets resolved" "4242" "$(resolved_pre_tokens)"
+check "the resolver leaves a session lock" "yes" \
+    "$([[ -d "$RESOLVE_DB_DIR/resolve-locks/resolve-test" ]] && echo yes || echo no)"
+
+seed_post_compact_row -1
+run_script claude-statusline.sh "$RESOLVE_PAYLOAD"
+sleep 1.5
+check "a live lock stops a second resolver" "-" "$(resolved_pre_tokens)"
+
+touch -t 202001010000 "$RESOLVE_DB_DIR/resolve-locks/resolve-test"
+run_script claude-statusline.sh "$RESOLVE_PAYLOAD"
+wait_for_resolver
+check "an expired lock is taken over" "4242" "$(resolved_pre_tokens)"
+
+rm -rf "$RESOLVE_DB_DIR/resolve-locks"
+seed_post_compact_row -30
+run_script claude-statusline.sh "$RESOLVE_PAYLOAD"
+sleep 1.5
+check "a row older than 10 minutes is not resolved from the statusline" "-" "$(resolved_pre_tokens)"
+check "an old row creates no lock" "no" \
+    "$([[ -d "$RESOLVE_DB_DIR/resolve-locks/resolve-test" ]] && echo yes || echo no)"
+
 if ((FAILURES > 0)); then
     echo "$FAILURES check(s) failed"
     exit 1

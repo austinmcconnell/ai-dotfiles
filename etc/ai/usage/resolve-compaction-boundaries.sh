@@ -13,6 +13,8 @@
 # Usage:
 #   resolve-compaction-boundaries.sh [session-id]           dry run: report per row, write nothing
 #   resolve-compaction-boundaries.sh --apply [session-id]   back up the DB, then write
+#   resolve-compaction-boundaries.sh --live <session-id>    quiet; fill NULL rows only (the
+#                                                           statusline starts this one)
 
 set -euo pipefail
 
@@ -21,12 +23,14 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/lib.sh"
 
 APPLY=false
+LIVE=false
 SESSION_FILTER=""
 for arg in "$@"; do
     case "$arg" in
     --apply) APPLY=true ;;
+    --live) LIVE=true ;;
     -*)
-        echo "usage: $0 [--apply] [session-id]" >&2
+        echo "usage: $0 [--apply | --live] [session-id]" >&2
         exit 2
         ;;
     *) SESSION_FILTER="$arg" ;;
@@ -36,6 +40,15 @@ done
 if [[ ! -f "$USAGE_DB" ]]; then
     echo "no DB at $USAGE_DB" >&2
     exit 1
+fi
+
+if [[ "$LIVE" == true ]]; then
+    if [[ "$APPLY" == true || -z "$SESSION_FILTER" ]]; then
+        echo "usage: $0 --live <session-id>" >&2
+        exit 2
+    fi
+    usage_resolve_compaction_boundaries "$SESSION_FILTER" live >/dev/null 2>&1 || true
+    exit 0
 fi
 
 if [[ -n "$SESSION_FILTER" ]]; then

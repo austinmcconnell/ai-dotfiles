@@ -145,17 +145,19 @@ around the missing payload data two different ways:
   `sessions.input_tokens` at the moment the hook fires, not an exact figure from the compaction
   itself.
 - **`real_pre_tokens`/`real_post_tokens`/`cumulative_dropped_tokens`/`duration_ms`** (`PostCompact`
-  only): exact figures. Claude Code writes a `compact_boundary` system message with a
-  `compactMetadata` object into the session's transcript once compaction finishes, and the hook
-  payload's `transcript_path` (which every hook payload *does* carry) can be read to extract it.
-  That record doesn't exist yet at `PreCompact` time, so these stay `NULL` on `PreCompact` rows.
-  Verified against the approximation on a real compaction: the approximation was off by up to 5.8x
-  in one direction, which is why the real columns exist rather than trusting the snapshot alone.
-- **`raw_json._diag`** (`PostCompact` only): the payload plus what the transcript held when the hook
-  fired — `hook_started_at` (millisecond ISO), `boundary_count`, and `last_boundary` (its
-  `timestamp`, `preTokens`, `postTokens`, `durationMs`, `precomputed`). Comparing `hook_started_at`
-  with the boundary's `timestamp` shows whether a row with empty or stale `real_*` columns lost a
-  race with the transcript write.
+  only): exact figures, but not from the hook. Claude Code writes a `compact_boundary` system
+  message with a `compactMetadata` object into the session's transcript once compaction finishes,
+  and that is after the `PostCompact` hook has returned, so the hook inserts these `NULL` and the
+  resolver below fills them. They stay `NULL` on `PreCompact` rows. Verified against the
+  approximation on a real compaction: the approximation was off by up to 5.8x in one direction,
+  which is why the real columns exist rather than trusting the snapshot alone.
+- **`raw_json._diag.hook_started_at`** (`PostCompact` only): the payload plus the millisecond ISO
+  timestamp of the hook firing, the only sub-second time recorded for the event. Compare it with a
+  boundary's `timestamp` to see how long after the hook the transcript write landed.
+
+The hook always exits 0, including when the DB is locked or unwritable, and its SQLite waits are
+short (300 ms for the version check, 400 ms each for the snapshot read and the insert) so they fit
+inside the hook's 5 s limit.
 
 **Resolving the real columns**: Claude Code writes the `compact_boundary` record after the
 `PostCompact` hook runs, so a row's own boundary is never on disk when the hook fires.
@@ -166,6 +168,16 @@ time: a row and a boundary pair only when each is the other's single candidate w
 Rows with two candidates are ambiguous and stay untouched. A session whose transcripts cannot all be
 read, or whose last line is a half-written boundary, is skipped whole. The pairing and the write
 happen in one `BEGIN IMMEDIATE` transaction, after the files are read.
+
+The statusline runs it for you: after printing, `claude-statusline.sh` checks for a `PostCompact`
+row of the current session from the last 10 minutes with `real_pre_tokens` still `NULL`, and if one
+exists starts `resolve-compaction-boundaries.sh --live <session-id>` detached (`perl`'s
+`POSIX::setsid`, since macOS has no `setsid` binary). That mode only fills `NULL` rows and never
+overwrites or clears. A per-session lock directory under `$USAGE_DB_DIR/resolve-locks/` limits it to
+one start per 2 minutes; the lock is never removed, it just ages out, so a row that never pairs
+costs about five scans in its 10-minute window. A session that never renders a statusline (headless
+`claude -p`, the SDK, a session closed right after compacting) keeps `NULL` until the script is run
+by hand.
 
 `resolve-compaction-boundaries.sh [--apply] [session-id]` runs it by hand. The default is a dry run
 that prints `class|row|before|after` for every row (`fill`, `correct`, `same`, `ambiguous`,

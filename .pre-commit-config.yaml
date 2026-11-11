@@ -112,7 +112,7 @@ repos:
         name: Statusline rendering tests
         language: script
         entry: etc/ai/usage/test/test-statusline.sh
-        files: ^etc/ai/usage/(lib\.sh|claude-statusline\.sh|test/test-statusline\.sh)$
+        files: ^etc/ai/usage/(lib\.sh|claude-statusline\.sh|resolve-compaction-boundaries\.sh|test/test-statusline\.sh)$
         pass_filenames: false
       - id: usage-migration-tests
         name: usage.db migration tests
