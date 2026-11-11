@@ -66,6 +66,10 @@ check whether the gates and skills fired when they should have. For example:
 
 Note every advisory rule that was skipped and every enforced one that did not fire.
 
+Transcripts are local to each machine. A commit that arrived by a fast-forward pull (`git reflog`
+shows it as a merge from a remote) has no session to sample here, so list it as unobserved rather
+than judging whether its gates fired.
+
 ## Gaps
 
 Rank the gaps by impact. For each, propose the smallest fix that uses the repo's existing building
