@@ -116,7 +116,10 @@
             "Bash(wc *)",
             "Bash(which *)",
             "Bash(whoami)",
-            "Bash(xargs *)"
+            "Bash(xargs cat *)",
+            "Bash(xargs grep *)",
+            "Bash(xargs ls *)",
+            "Bash(xargs wc *)"
         ],
         "deny": [
             "Read(./.env*)",
