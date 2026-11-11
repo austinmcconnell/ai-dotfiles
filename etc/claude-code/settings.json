@@ -352,6 +352,17 @@
                         "onFailure": "block"
                     }
                 ]
+            },
+            {
+                "matcher": "Agent",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "$AI_DOTFILES_DIR/etc/ai/hooks/ask-opus-subagents.sh",
+                        "timeout": 5,
+                        "onFailure": "block"
+                    }
+                ]
             }
         ],
         "PostToolUse": [

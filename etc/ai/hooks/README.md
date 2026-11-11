@@ -90,6 +90,16 @@ each tool call for the dot-env name. Known limits:
 | ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
 | `warn-memory-exfil.sh` | Warns, without blocking, when an engram save contains a download piped into a shell, a reverse-shell construct, a credential-named variable in an outbound request, or an SSH `authorized_keys` or backdoor config directive. Always exits `0`. | Claude only: `PreToolUse`, `mcp__engram__.*`. Emits `hookSpecificOutput.additionalContext` to Claude. |
 
+## Approval hooks
+
+| Script                  | What it does                                                                                                                                                                                                                                   | How it is run                       |
+| ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------- |
+| `ask-opus-subagents.sh` | Asks the user before an `Agent` launch that names the `doubt-reviewer` persona or sets a `model` containing `opus` or `fable`. Other launches pass through. Exits `2` like the blocking hooks when `jq` is missing or the payload is not JSON. | Claude only: `PreToolUse`, `Agent`. |
+
+`permissions.ask` entries for `Agent(...)` do not prompt on Claude Code, even in default mode. A
+hook's `ask` does, including for background launches, so this hook is the working gate beside chat
+approval.
+
 ## Audit and logging hooks
 
 | Script                    | What it does                                                                                                              | How it is run                                                                                        |

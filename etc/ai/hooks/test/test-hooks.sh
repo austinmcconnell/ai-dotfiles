@@ -190,6 +190,50 @@ check "docs runs git" "$hook" 0 "$(persona_call docs "git status")"
 check "ansible checks its version" "$hook" 0 "$(persona_call ansible "ansible --version")"
 check "datadog lists monitors" "$hook" 0 "$(persona_call datadog "pup monitors list")"
 
+# $1 is the hook script, $2 the payload. Prints the permissionDecision the hook asks for, or "none".
+ask_decision() {
+    local out
+    out="$(printf '%s' "$2" | "$HOOKS_DIR/$1" 2>/dev/null |
+        jq -r '.hookSpecificOutput.permissionDecision // empty')" || true
+    echo "${out:-none}"
+}
+
+check_ask() {
+    local name="$1" hook="$2" expected="$3" payload="$4" actual
+    actual="$(ask_decision "$hook" "$payload")"
+    if [[ "$expected" == "$actual" ]]; then
+        echo "ok    $hook: $name"
+    else
+        echo "FAIL  $hook: $name: expected [$expected], got [$actual]"
+        FAILURES=$((FAILURES + 1))
+    fi
+}
+
+# $1 is the subagent_type, $2 an optional model.
+agent_call() {
+    jq --null-input --compact-output --arg type "$1" --arg model "${2:-}" \
+        '{tool_name: "Agent", tool_input: ({subagent_type: $type}
+            + (if $model == "" then {} else {model: $model} end))}'
+}
+
+hook=ask-opus-subagents.sh
+check_ask "doubt-reviewer persona" "$hook" ask "$(agent_call doubt-reviewer)"
+check_ask "opus alias" "$hook" ask "$(agent_call general-purpose opus)"
+check_ask "full opus model id" "$hook" ask "$(agent_call Explore claude-opus-5-5)"
+check_ask "fable alias" "$hook" ask "$(agent_call general-purpose fable)"
+check_ask "full fable model id" "$hook" ask "$(agent_call general-purpose claude-fable-5-1)"
+check_ask "upper-case model name" "$hook" ask "$(agent_call general-purpose OPUS)"
+check_ask "doubt-reviewer on a cheap model" "$hook" ask "$(agent_call doubt-reviewer haiku)"
+check_ask "sonnet model" "$hook" none "$(agent_call general-purpose sonnet)"
+check_ask "haiku model" "$hook" none "$(agent_call Explore haiku)"
+check_ask "no model set" "$hook" none "$(agent_call general-purpose)"
+check_ask "another persona" "$hook" none "$(agent_call docs)"
+check_ask "a call that is not an Agent launch" "$hook" none "$(read_call "/repo/README.md")"
+check "payload that is not JSON" "$hook" 2 '{"tool_input": {"model": "opus"'
+check "empty payload" "$hook" 0 ''
+check "null payload" "$hook" 0 'null'
+check "jq missing" "$hook" 2 "$(agent_call doubt-reviewer)" "$NO_JQ_BIN"
+
 if ((FAILURES > 0)); then
     echo "$FAILURES check(s) failed"
     exit 1

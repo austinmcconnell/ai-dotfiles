@@ -93,6 +93,7 @@ expected_kiro_scope() {
     core-analyses-status.sh) echo "default_only" ;;
     block-persona-shell-commands.sh) echo "none" ;;
     warn-memory-exfil.sh) echo "none" ;;
+    ask-opus-subagents.sh) echo "none" ;;
     log-compaction-event.sh) echo "none" ;;
     suggest-context-checkpoint.sh) echo "none" ;;
     *) echo "unknown" ;;
@@ -120,6 +121,7 @@ expected_claude_wiring() {
     block-env-files.sh | block-sops-age-files.sh | block-ssh-private-keys.sh | block-shell-trace-mode.sh) echo "PreToolUse *" ;;
     block-memory-secrets.sh | warn-memory-exfil.sh) echo "PreToolUse mcp__engram__.*" ;;
     block-persona-shell-commands.sh) echo "PreToolUse Bash" ;;
+    ask-opus-subagents.sh) echo "PreToolUse Agent" ;;
     audit-shell-commands.sh) echo "PostToolUse Bash" ;;
     correction-capture.sh | suggest-context-checkpoint.sh) echo "UserPromptSubmit <none>" ;;
     log-compaction-event.sh) printf '%s\n' "PreCompact *" "PostCompact *" ;;
