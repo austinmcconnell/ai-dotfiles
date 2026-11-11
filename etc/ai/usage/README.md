@@ -142,6 +142,11 @@ around the missing payload data two different ways:
   That record doesn't exist yet at `PreCompact` time, so these stay `NULL` on `PreCompact` rows.
   Verified against the approximation on a real compaction: the approximation was off by up to 5.8x
   in one direction, which is why the real columns exist rather than trusting the snapshot alone.
+- **`raw_json._diag`** (`PostCompact` only): the payload plus what the transcript held when the hook
+  fired — `hook_started_at` (millisecond ISO), `boundary_count`, and `last_boundary` (its
+  `timestamp`, `preTokens`, `postTokens`, `durationMs`, `precomputed`). Comparing `hook_started_at`
+  with the boundary's `timestamp` shows whether a row with empty or stale `real_*` columns lost a
+  race with the transcript write.
 
 **Empirical finding worth preserving**: with no `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE` set,
 auto-compaction fires a roughly constant ~35K tokens below the configured `autoCompactWindow`, not

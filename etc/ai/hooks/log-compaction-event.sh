@@ -30,6 +30,12 @@ source "$SCRIPT_DIR/../usage/lib.sh"
 
 PAYLOAD=$(cat)
 
+# Millisecond ISO-8601 so it compares directly with a boundary record's timestamp.
+HOOK_STARTED="$(perl -MTime::HiRes=gettimeofday -MPOSIX=strftime -e '
+    my ($s, $u) = gettimeofday;
+    printf "%s.%03dZ", strftime("%Y-%m-%dT%H:%M:%S", gmtime $s), $u / 1000' 2>/dev/null ||
+    date -u +"%Y-%m-%dT%H:%M:%SZ")"
+
 IFS=$'\t' read -r HOOK_EVENT SESSION_ID TRIGGER TRANSCRIPT_PATH <<<"$(
     printf '%s' "$PAYLOAD" | jq -r '[.hook_event_name, .session_id, .trigger, .transcript_path] | map(. // "") | @tsv'
 )"
@@ -38,13 +44,24 @@ REAL_PRE=""
 REAL_POST=""
 REAL_DROPPED=""
 REAL_DURATION=""
+RAW_JSON="$PAYLOAD"
 if [[ "$HOOK_EVENT" == "PostCompact" && -n "$TRANSCRIPT_PATH" && -f "$TRANSCRIPT_PATH" ]]; then
+    BOUNDARY_COUNT="$(grep -cF '"compact_boundary"' "$TRANSCRIPT_PATH" 2>/dev/null || true)"
     LAST_BOUNDARY="$(grep -F '"compact_boundary"' "$TRANSCRIPT_PATH" 2>/dev/null | tail -1 || true)"
+    LAST_META="null"
     if [[ -n "$LAST_BOUNDARY" ]]; then
         IFS=$'\t' read -r REAL_PRE REAL_POST REAL_DROPPED REAL_DURATION <<<"$(
             printf '%s' "$LAST_BOUNDARY" | jq -r '[.compactMetadata.preTokens, .compactMetadata.postTokens, .compactMetadata.cumulativeDroppedTokens, .compactMetadata.durationMs] | map(. // "") | @tsv'
         )"
+        LAST_META="$(printf '%s' "$LAST_BOUNDARY" | jq -c '{timestamp, preTokens: .compactMetadata.preTokens, postTokens: .compactMetadata.postTokens, durationMs: .compactMetadata.durationMs, precomputed: .compactMetadata.precomputed}' || echo null)"
     fi
+    # What the transcript held when the hook fired, kept beside the payload to diagnose
+    # PostCompact rows whose real_* columns come back empty or stale.
+    RAW_JSON="$(printf '%s' "$PAYLOAD" | jq -c \
+        --arg started "$HOOK_STARTED" --argjson count "${BOUNDARY_COUNT:-0}" \
+        --argjson last "$LAST_META" \
+        '. + {_diag: {hook_started_at: $started, boundary_count: $count, last_boundary: $last}}' ||
+        printf '%s' "$PAYLOAD")"
 fi
 
 if [[ -n "$SESSION_ID" ]]; then
@@ -61,7 +78,7 @@ if [[ -n "$SESSION_ID" ]]; then
             'claude-code', $(sql_str "$SESSION_ID"), $(sql_str "$HOOK_EVENT"),
             $(sql_str "$TRIGGER"), $(sql_num "$SNAPSHOT_TOKENS"),
             $(sql_num "$REAL_PRE"), $(sql_num "$REAL_POST"), $(sql_num "$REAL_DROPPED"), $(sql_num "$REAL_DURATION"),
-            $(sql_str "$NOW"), $(sql_str "$PAYLOAD")
+            $(sql_str "$NOW"), $(sql_str "$RAW_JSON")
         );
     "
 fi

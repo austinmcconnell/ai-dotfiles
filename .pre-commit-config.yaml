@@ -96,6 +96,12 @@ repos:
         entry: etc/ai/usage/test/test-ai-usage.sh
         files: ^(bin/ai-usage|etc/ai/usage/(lib\.sh|schema\.sql|migrations/.*\.sql|test/test-ai-usage\.sh))$
         pass_filenames: false
+      - id: usage-compaction-hook-tests
+        name: Compaction hook logging tests
+        language: script
+        entry: etc/ai/usage/test/test-compaction-hook.sh
+        files: ^etc/ai/(hooks/log-compaction-event\.sh|usage/(lib\.sh|schema\.sql|migrations/.*\.sql|test/test-compaction-hook\.sh))$
+        pass_filenames: false
       - id: usage-statusline-tests
         name: Statusline rendering tests
         language: script
