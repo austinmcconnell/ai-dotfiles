@@ -29,7 +29,7 @@ BIN_NAME="$(basename "$0")"
 
 usage() {
     cat <<EOF
-Usage: $BIN_NAME [--summary|--by-model|--by-effort|--rate-limits]
+Usage: $BIN_NAME [--summary|--by-model|--by-effort|--subagents|--rate-limits]
 
 Canned reports over the local AI usage/cost store ($USAGE_DB).
 
@@ -37,6 +37,7 @@ Options:
    --summary      Totals by tool (sessions, cost, tokens)
    --by-model     Totals grouped by model
    --by-effort    Totals grouped by model, then effort
+   --subagents    Subagent launches by agent type, and the most expensive launches
    --rate-limits  Current 5h/7d rate-limit usage (most recent snapshot)
    --help         This help message
 EOF
@@ -74,6 +75,8 @@ run_report() {
     fi
 }
 
+NO_SUBAGENT_TASKS="No subagent tasks recorded yet (known visibility-window gap -- fast-finishing subagents can be missed; see etc/ai/usage/README.md)."
+
 print_cost_caveat() {
     echo -e "${dim}Note: totals above already include subagent/Task-tool spend (Claude Code folds it"
     echo -e "into total_cost_usd). Any subagent_tasks breakdown is informational only and known-"
@@ -105,7 +108,39 @@ mode_summary() {
         FROM subagent_tasks
         GROUP BY tool
         ORDER BY tool;
-    " "No subagent tasks recorded yet (known visibility-window gap -- fast-finishing subagents can be missed; see etc/ai/usage/README.md)."
+    " "$NO_SUBAGENT_TASKS"
+    echo
+    print_cost_caveat
+}
+
+mode_subagents() {
+    require_db
+    echo -e "${bold}Subagent launches by agent type (informational -- see caveat below)${reset}"
+    run_report "
+        SELECT
+            COALESCE(agent_type, '(unknown)') AS agent_type,
+            COUNT(*) AS launches,
+            COUNT(estimated_cost_usd) AS priced,
+            printf('%.2f', SUM(COALESCE(estimated_cost_usd, 0))) AS estimated_cost_usd
+        FROM subagent_tasks
+        GROUP BY agent_type
+        ORDER BY SUM(COALESCE(estimated_cost_usd, 0)) DESC;
+    " "$NO_SUBAGENT_TASKS"
+    echo
+    echo -e "${bold}Most expensive launches (top 20; unpriced launches sort last)${reset}"
+    # printf('%.2f', NULL) renders 0.00, so an unpriced launch needs its own branch.
+    run_report "
+        SELECT
+            substr(started_at, 1, 10) AS started,
+            COALESCE(agent_type, '(unknown)') AS agent_type,
+            COALESCE(model, '(unknown)') AS model,
+            CASE WHEN estimated_cost_usd IS NULL THEN '(unpriced)'
+                ELSE printf('%.2f', estimated_cost_usd) END AS cost_usd,
+            substr(COALESCE(name, '(no name)'), 1, 50) AS launch
+        FROM subagent_tasks
+        ORDER BY estimated_cost_usd DESC, started_at DESC
+        LIMIT 20;
+    " "$NO_SUBAGENT_TASKS"
     echo
     print_cost_caveat
 }
@@ -176,6 +211,9 @@ case "${1:---help}" in
     ;;
 --by-effort)
     mode_by_effort
+    ;;
+--subagents)
+    mode_subagents
     ;;
 --rate-limits)
     mode_rate_limits

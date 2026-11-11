@@ -272,10 +272,13 @@ sessions before 2.1.296 still estimate below actual, and the 1h cache-write rate
 
 ## Reporting
 
-No reporting CLI is tracked in this repo; query the DB directly (e.g. with `sqlite3`). Any aggregate
-should sum `sessions.total_cost_usd` alone — never add `subagent_tasks.estimated_cost_usd` on top of
-it. See "Does session cost already include subagent spend?" below for why; `subagent_tasks` is
-useful only as a separate, informational breakdown.
+`bin/ai-usage` holds the canned reports (`--summary`, `--by-model`, `--by-effort`, `--subagents`,
+`--rate-limits`); query the DB directly (e.g. with `sqlite3`) for anything else. `--subagents` shows
+subagent launches by agent type, then the 20 most expensive launches by name, with unpriced launches
+sorted last and counted separately. Any aggregate should sum `sessions.total_cost_usd` alone — never
+add `subagent_tasks.estimated_cost_usd` on top of it. See "Does session cost already include
+subagent spend?" below for why; `subagent_tasks` is useful only as a separate, informational
+breakdown.
 
 ### Does session cost already include subagent spend?
 
