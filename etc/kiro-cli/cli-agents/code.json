@@ -388,7 +388,8 @@
                 "wc .*",
                 "which .*",
                 "whoami",
-                "xargs .*"
+                "xargs ls .*",
+                "xargs wc .*"
             ],
             "deniedCommands": [
                 "awk .*\\.env.*",
@@ -668,7 +669,8 @@
                     "wc *",
                     "which *",
                     "whoami",
-                    "xargs *"
+                    "xargs ls *",
+                    "xargs wc *"
                 ],
                 "effect": "allow"
             },

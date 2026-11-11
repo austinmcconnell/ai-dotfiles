@@ -195,7 +195,8 @@
                 "wc .*",
                 "which .*",
                 "whoami",
-                "xargs .*"
+                "xargs ls .*",
+                "xargs wc .*"
             ],
             "deniedCommands": [
                 "pup .* (create|update|delete|edit|mute|unmute).*",
@@ -443,7 +444,8 @@
                     "wc *",
                     "which *",
                     "whoami",
-                    "xargs *"
+                    "xargs ls *",
+                    "xargs wc *"
                 ],
                 "effect": "allow"
             },

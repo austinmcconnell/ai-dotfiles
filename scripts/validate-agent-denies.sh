@@ -151,7 +151,8 @@ V2_SHARED_ALLOWS=(
     'wc .*'
     'which .*'
     'whoami'
-    'xargs .*'
+    'xargs ls .*'
+    'xargs wc .*'
 )
 
 # Shared read-only ALLOW core, V3 glob spellings
@@ -208,7 +209,8 @@ V3_SHARED_ALLOWS=(
     'wc *'
     'which *'
     'whoami'
-    'xargs *'
+    'xargs ls *'
+    'xargs wc *'
 )
 
 report_fail() {

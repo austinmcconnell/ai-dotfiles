@@ -356,7 +356,8 @@
                 "wc .*",
                 "which .*",
                 "whoami",
-                "xargs .*",
+                "xargs ls .*",
+                "xargs wc .*",
                 "yamllint .*"
             ],
             "deniedCommands": [
@@ -626,7 +627,8 @@
                     "wc *",
                     "which *",
                     "whoami",
-                    "xargs *",
+                    "xargs ls *",
+                    "xargs wc *",
                     "yamllint *"
                 ],
                 "effect": "allow"
