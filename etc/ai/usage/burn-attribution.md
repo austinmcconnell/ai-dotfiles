@@ -94,24 +94,28 @@ residual is general under-capture, not version- or tier-specific. No change.
 
 ### Cache-write rate check
 
-Across 30 sessions whose per-`requestId` token totals match `cost-state` in all four components, the
-remaining cost gap is almost entirely 1h cache writes. The 1h write rate that closes the gap is
-$0.222 to $0.228 per million tokens in the Haiku 5.5 sessions with more than 10K 1h write tokens,
-against $0.20 published here. For Sonnet 5.5 (one session with 33K 1h write tokens) the implied rate
-is $4.45, against $4.00 at 2× input. The gap is the same across Claude Code versions 2.1.285,
-2.1.308, and 2.1.311, and is about 2.22× input rather than 2.0×.
+An earlier comparison of transcript token totals against `cost-state` implied a 1h cache-write rate
+about 2.22× input rather than the published 2.0×, mostly in Haiku 5.5 sessions. Repricing the last
+`cost-state` record per session from its own token counts with `pricing.json` (2.0× for 1h writes,
+1.25× for 5m) removes that gap for every model except Haiku 5.5: Opus 5.5, Sonnet 5.5, Sonnet 5 and
+Opus 5 match `costUSD` within 0.5% in 35 of 36 session-model rows (the other is 1.7% off). The
+published rates and `pricing.json` are right, so no rate change is warranted.
+
+Haiku 5.5 does not reprice from model-level totals, because its 100K-token tier applies per request.
+Pricing each request from the transcripts with the tier closes most of it: in 18 sessions the
+flat-rate estimate is 1.1× to 5.3× below `cost-state`, and the tiered estimate is within 1.3× in 11
+of them, including the five sessions with the most spend. Transcript token totals do not match
+`cost-state` exactly in any of those sessions, so the remaining 2% to 30% gap is not isolated. Four
+small sessions (under $0.10) stay 2× to 3.6× off with or without the tier, and are unexplained.
 
 The official prompt-caching page (checked 2026-11-06) gives 1h cache writes as 2× base input and 5m
-writes as 1.25×, matching `pricing.json`, so the published rate is not the cause. The remaining gap
-is unexplained: either `cost-state` bills 1h writes differently, or another term scales with cache
-writes. The estimates above use the published rate and are about 10% low on 1h writes.
+writes as 1.25×, matching `pricing.json`.
 
 ## Retention
 
 - `cleanupPeriodDays: 90` is set in the user settings on the work machine. No managed-settings file
   was found at the standard macOS path; other managed sources were not checked.
-- 105 transcripts are older than 30 days; none is older than 90 days yet; the oldest is 74 days old
-  (2026-11-06).
+- Check transcript file ages before relying on a cross-check; files past the window are deleted.
 - The Claude Code default is 30 days, by file modification time. Official docs confirm this.
 - Do not set `cleanupPeriodDays` to 0. A reported issue says it stops transcript writes.
 
@@ -122,10 +126,11 @@ transcript spend? This needs `rate_limit_snapshots` from a subscription machine.
 
 Provisional result, as of 2026-11-07, from 205 rows spanning 2026-11-06T19:29Z to 2026-11-07T23:11Z
 on the personal machine. Percentages are whole numbers and are not monotonic within a window: one 5h
-window has 16 decreases across 108 rows, another has 19 across 87, and the 7d window has 4 and 2.
-The figures below use each window's running maximum. Spend is main-session deltas from
-`cost_snapshots` plus `subagent_tasks.estimated_cost_usd` over the same interval. The 7d rows are
-split at 18:50 Nov 7, the first sample where the 7d percentage reached 13.
+window has 16 decreases across 108 rows, another has 19 across 87, and the 7d window has 4 and 2. By
+2026-11-11 the table held 492 rows across 12 five-hour and 2 seven-day windows, which this analysis
+has not covered. The figures below use each window's running maximum. Spend is main-session deltas
+from `cost_snapshots` plus `subagent_tasks.estimated_cost_usd` over the same interval. The 7d rows
+are split at 18:50 Nov 7, the first sample where the 7d percentage reached 13.
 
 | Window                | Change  | Spend  | $ per point | Opus share of spend |
 | --------------------- | ------- | ------ | ----------- | ------------------- |
@@ -187,28 +192,16 @@ Runbook (run on the machine that has rate-limit data):
 1. The snapshot table has no `session_id`. Per-session attribution can only split a window's spend
    by session. It cannot read sessions out of the percentage.
 
-## Open items
-
-- Rate-limit validation (above): provisional. Needs a token-weighting test and more windows.
-- Outliers 605bf8c9 and 492a3eb3 (above). f4f9eae5 is explained by a likely missing request and web
-  searches, not yet verified.
-- Counting convention: per-`requestId` for estimator comparisons. Session 492a3eb3 is the exception.
-- Cache-write rate: the 1h write rate implied by `cost-state` is about 10% above the published rate
-  (see Cache-write rate check). Verify before changing `pricing.json`.
-- Usage.db `subagent_tasks` estimate: resolved for new rows. Rows are priced from subagent
-  transcripts. Historical rows are repriced by `backfill-subagent-cost.sh`, which is a dry run
-  unless given `--apply`.
-- Effort split and session-level cross-check in Q4 are from the 117-set scope; recount if reused.
-- Whether `total_cost_usd` fully includes subagent cost (weak support, not proven).
-- Advisor-model usage: not found in transcripts as separate priced requests. Sessions with advisor
-  requests run at the same ratio as sessions without (1.18 vs 1.17), so it is not a large unrecorded
-  cost. Not proven either way.
-- Interrupt-marker check (rerun): user records containing "Request interrupted" appear 13 times
-  across 10 of 35 short sessions. Of 69 unclosed turns in those sessions, 63 are followed by a new
-  prompt. At most 13 of the 69 are interrupts, so unclosed turns are not treated as interrupted.
-
 ## Decisions
 
 - Estimator source: usage.db `cost_snapshots`. Transcripts and `cost-state` are cross-checks only
   because of retention.
 - The main-session snapshot estimator is unchanged. Any change to it needs a plan and review first.
+- Subagent cost is priced from each subagent's own transcript. A blended input/output rate times
+  `tokenCount` misprices both ways (cache-read-heavy Sonnet 3.6× high, output-heavy Haiku 5.5 0.7×),
+  so no constant correction fits.
+- `total_cost_usd` is the authoritative session total. Whether it fully includes subagent cost is
+  not proven: adding subagent transcripts moved the median transcript-to-actual ratio from 0.78 to
+  0.83 across 21 sessions, which is weak support.
+- Advisor calls appear as `advisor_message` entries in `usage.iterations[]` of main-session
+  transcripts, and top-level usage excludes their tokens. Estimates do not price them.

@@ -260,9 +260,8 @@ release: Sonnet 5.5 used 0.1x before Claude Code 2.1.296 and 0.05x from it. Each
 `version` in its own payload, and a row without one falls back to the current rate. That differs
 from `usage_transcript_cost` in `lib.sh`, which refuses to price such a request rather than pick a
 side of the boundary; the two implementations of these rules are duplicated, not shared. Sonnet 5.5
-sessions before 2.1.296 still estimate below actual, and the 1h cache-write rate implied by
-`cost-state` runs about 10% above the published rate — see "Cache-write rate check" in
-`burn-attribution.md`.
+sessions before 2.1.296 still estimate below actual, and Haiku 5.5 estimates run below `cost-state`
+where requests cross the 100K-token tier — see "Cache-write rate check" in `burn-attribution.md`.
 
 ## Deliberately out of scope (for now)
 
