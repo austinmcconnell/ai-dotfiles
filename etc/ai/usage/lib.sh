@@ -157,6 +157,13 @@ usage_subagent_task_rows() {
 # mid-write. Emits nothing when there are no requests, a request lacks requestId, any model is
 # unpriced, or a request bills cache reads at a version-dependent multiplier its version cannot
 # resolve: a partial total is never reported as the task's cost.
+#
+# A request whose usage carries a non-empty iterations array is priced entry by entry: top-level
+# usage sums only the message passes, omits advisor passes, and its cache_creation split covers
+# only the first pass. A message entry is priced at the request's model, an advisor_message entry
+# at its own model, and an unknown entry type leaves the transcript unpriced. Each entry gets its
+# own long-context check; that per-pass tiering is inferred from the pricing file's "priced per
+# request" wording, not verified on a multi-pass record for a model that has a tier.
 # shellcheck disable=SC2016
 USAGE_TRANSCRIPT_COST_JQ='
 def is_version: (. // "") | test("^[0-9]+(\\.[0-9]+)*$");
@@ -176,11 +183,9 @@ def rates($m; $prompt):
     then [$m.long_context.input_per_mtok, $m.long_context.output_per_mtok]
     else [$m.input_per_mtok, $m.output_per_mtok]
     end;
-def request_usd($r):
-    ($r.message.model // $r.requestedModel) as $name
-    | $pricing[0].models[$name] as $m
+def usage_usd($u; $name; $version):
+    (if $name == null then error("missing model") else $pricing[0].models[$name] end) as $m
     | if $m == null then error("unpriced model") else . end
-    | $r.message.usage as $u
     | ($u.input_tokens // 0) as $in
     | ($u.output_tokens // 0) as $out
     | ($u.cache_read_input_tokens // 0) as $read
@@ -195,8 +200,20 @@ def request_usd($r):
         + ($writes[0] * $rate[0] * $pricing[0].cache_write_multiplier_5m)
         + ($writes[1] * $rate[0] * $pricing[0].cache_write_multiplier_1h)
         + (if $read == 0 then 0
-            else $read * $rate[0] * read_multiplier($m; $r.version)
+            else $read * $rate[0] * read_multiplier($m; $version)
             end)) / 1000000;
+def request_usd($r):
+    ($r.message.model // $r.requestedModel) as $name
+    | $r.message.usage as $u
+    | if ($u.iterations | type) == "array" and ($u.iterations | length) > 0
+        then [$u.iterations[]
+            | if .type == "message" then usage_usd(.; (.model // $name); $r.version)
+                elif .type == "advisor_message" then usage_usd(.; .model; $r.version)
+                else error("unknown iteration type")
+                end]
+            | add
+        else usage_usd($u; $name; $r.version)
+        end;
 [$transcript | split("\n")[] | fromjson?
     | select(type == "object" and .type == "assistant"
         and ((.message | type) == "object") and ((.message.usage | type) == "object"))]

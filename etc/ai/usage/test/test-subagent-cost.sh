@@ -34,6 +34,53 @@ request() {
     }'
 }
 
+# One assistant record whose usage carries an iterations array: requestId, model, version, the
+# top-level usage object, the iterations JSON.
+iter_request() {
+    jq -cn --arg id "$1" --arg model "$2" --arg version "$3" --argjson usage "$4" \
+        --argjson iterations "$5" '{
+        type: "assistant", requestId: $id, version: $version,
+        message: {model: $model, usage: ($usage + {iterations: $iterations})}
+    }'
+}
+
+write_iteration_fixtures() {
+    local dir="$WORK/fixtures"
+    # Executor pass at the request model plus an advisor pass at its own, different model.
+    iter_request I1 claude-sonnet-5-5 2.1.300 '{"input_tokens":1000,"output_tokens":500}' \
+        '[{"type":"message","input_tokens":1000,"output_tokens":500},
+            {"type":"advisor_message","model":"claude-opus-5-5",
+                "input_tokens":100000,"output_tokens":1000}]' >"$dir/iter-advisor.jsonl"
+    # Two Haiku passes of 60000 each: the top-level sum (120000) would cross the 100000 tier.
+    iter_request I2 claude-haiku-5-5 2.1.300 '{"input_tokens":120000}' \
+        '[{"type":"message","input_tokens":60000},{"type":"message","input_tokens":60000}]' \
+        >"$dir/iter-per-pass-tier.jsonl"
+    iter_request I3 claude-sonnet-5 2.1.300 '{"input_tokens":1}' \
+        '[{"type":"message","input_tokens":1},{"type":"compaction","input_tokens":1}]' \
+        >"$dir/iter-unknown-type.jsonl"
+    iter_request I4 claude-sonnet-5 2.1.300 '{"input_tokens":1}' \
+        '[{"type":"message","input_tokens":1},
+            {"type":"advisor_message","model":"claude-unknown-9","input_tokens":1}]' \
+        >"$dir/iter-advisor-unpriced.jsonl"
+    iter_request I5 claude-sonnet-5 2.1.300 '{"input_tokens":1}' \
+        '[{"type":"message","input_tokens":1},{"type":"advisor_message","input_tokens":1}]' \
+        >"$dir/iter-advisor-no-model.jsonl"
+    # The top-level split covers only the first pass while the top-level total sums both.
+    iter_request I6 claude-sonnet-5 2.1.300 \
+        '{"cache_creation_input_tokens":5894,"cache_creation":{"ephemeral_5m_input_tokens":836}}' \
+        '[{"type":"message","cache_creation_input_tokens":836,
+                "cache_creation":{"ephemeral_5m_input_tokens":836}},
+            {"type":"message","cache_creation_input_tokens":5058,
+                "cache_creation":{"ephemeral_5m_input_tokens":5058}}]' \
+        >"$dir/iter-split-first-pass.jsonl"
+    iter_request I7 claude-sonnet-5 2.1.300 '{"input_tokens":1000,"output_tokens":500}' '[]' \
+        >"$dir/iter-empty-array.jsonl"
+    jq -cn '{type: "assistant", requestId: "I8", version: "2.1.300",
+        message: {model: "claude-sonnet-5",
+            usage: {input_tokens: 1000, output_tokens: 500, iterations: {}}}}' \
+        >"$dir/iter-object.jsonl"
+}
+
 write_fixtures() {
     local dir="$WORK/fixtures"
     mkdir -p "$dir"
@@ -134,6 +181,32 @@ test_pricing() {
         "$(usage_subagent_transcript_path /x/proj/sess.jsonl t1)"
     check "subagent path without parent prints nothing" "" \
         "$(usage_subagent_transcript_path "" t1)"
+}
+
+test_iterations() {
+    local dir="$WORK/fixtures"
+    # Message pass at sonnet-5-5: (1000 * 2.0 + 500 * 10.0) / 1e6 = 0.007
+    # Advisor pass at opus-5-5: (100000 * 4.0 + 1000 * 20.0) / 1e6 = 0.42
+    check "advisor pass priced at its own model on top of the message pass" 0.4270000000 \
+        "$(usage_transcript_cost "$dir/iter-advisor.jsonl")"
+    # Each pass is 60000 <= 100000 so base rate 0.1: 2 * 60000 * 0.1 / 1e6 = 0.012
+    check "long-context tier is checked per pass, not on the summed passes" 0.0120000000 \
+        "$(usage_transcript_cost "$dir/iter-per-pass-tier.jsonl")"
+    check "unknown iteration type leaves the transcript unpriced" "" \
+        "$(usage_transcript_cost "$dir/iter-unknown-type.jsonl")"
+    check "advisor pass with an unpriced model leaves the transcript unpriced" "" \
+        "$(usage_transcript_cost "$dir/iter-advisor-unpriced.jsonl")"
+    check "advisor pass without a model leaves the transcript unpriced" "" \
+        "$(usage_transcript_cost "$dir/iter-advisor-no-model.jsonl")"
+    # Both passes' 5m writes count: (836 + 5058) * 2.0 * 1.25 / 1e6 = 0.014735
+    check "each pass's own cache-write split is priced" 0.0147350000 \
+        "$(usage_transcript_cost "$dir/iter-split-first-pass.jsonl")"
+    # An empty or non-array iterations field must not price the request at zero:
+    # (1000 * 2.0 + 500 * 10.0) / 1e6 = 0.007 from top-level usage
+    check "empty iterations array falls back to top-level usage" 0.0070000000 \
+        "$(usage_transcript_cost "$dir/iter-empty-array.jsonl")"
+    check "non-array iterations field falls back to top-level usage" 0.0070000000 \
+        "$(usage_transcript_cost "$dir/iter-object.jsonl")"
 }
 
 payload() {
@@ -247,7 +320,9 @@ test_writer_name() {
 }
 
 write_fixtures
+write_iteration_fixtures
 test_pricing
+test_iterations
 test_writer
 test_writer_name
 

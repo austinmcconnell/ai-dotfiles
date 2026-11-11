@@ -25,12 +25,16 @@ validation, and decisions, read `cost-estimation.md` in this directory.
   carries only a combined `tokenCount` that cannot be split into input and output. So
   `subagent_tasks.estimated_cost_usd` is priced from the subagent's own transcript by
   `usage_transcript_cost` in `lib.sh`: one final record per `requestId`, with the long-context and
-  cache-read rules from `pricing.json`. It is NULL while the transcript is missing or any request is
-  unpriced. A stored cost never decreases — a later firing that cannot read the transcript, or that
-  reads fewer records than an earlier one, leaves the higher value in place — so the figure does not
-  depend on which firing happens to land after the subagent's final transcript record. Tests:
-  `test/test-subagent-cost.sh`. Verified against the `claude-api` skill's cached pricing table on
-  2026-09-25 — re-verify before trusting old entries; prices change.
+  cache-read rules from `pricing.json`. A request whose usage has a non-empty `iterations` array is
+  priced pass by pass, each at its own model, so a subagent's advisor calls are included and each
+  pass's own cache-write split is used (the top-level split covers only the first pass). Tiering per
+  pass is inferred, not verified on a multi-pass record. It is NULL while the transcript is missing,
+  any request is unpriced, or an iteration has an unknown type. A stored cost never decreases — a
+  later firing that cannot read the transcript, or that reads fewer records than an earlier one,
+  leaves the higher value in place — so the figure does not depend on which firing happens to land
+  after the subagent's final transcript record. Tests: `test/test-subagent-cost.sh`. Verified
+  against the `claude-api` skill's cached pricing table on 2026-09-25 — re-verify before trusting
+  old entries; prices change.
 
 ## Schema migrations
 
@@ -284,7 +288,9 @@ are off for that session's model.
 
 Long-context pricing is per request: a model whose `pricing.json` entry has a `long_context` block
 (Haiku 5.5 today) prices each request at the higher rates when its prompt, counting input, cache
-reads, and cache writes, is over the threshold. The estimate can mix tiers within one session.
+reads, and cache writes, is over the threshold. The estimate can mix tiers within one session. This
+estimator prices the last call's usage only, so unlike `usage_transcript_cost` it does not price
+advisor passes or split a multi-pass request.
 
 Cache-read rates are version-aware where a model's entry in `pricing.json` names a repricing
 release: Sonnet 5.5 used 0.1x before Claude Code 2.1.296 and 0.05x from it. Each row uses the

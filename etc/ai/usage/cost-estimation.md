@@ -36,6 +36,13 @@ machines never have it, so `rate_limit_snapshots` stays empty there.
   Claude Code version is below 2.1.296.
 - Haiku 5.5 tier: a request whose prompt (input + cache writes + cache reads) is over 100K tokens
   uses the `long_context` rates for the whole request.
+- A request whose usage has a non-empty `usage.iterations[]` is priced pass by pass instead:
+  `message` entries at the request's model, `advisor_message` entries at their own `model`, each
+  with its own cache-write split and tier check. Top-level usage sums only the `message` passes, and
+  its `cache_creation` split covers only the first pass, so pricing from it undercounts cache writes
+  on every multi-pass request. Tiering each pass on its own is inferred from the pricing file's
+  "priced per request" wording. An unknown entry type or an unpriced model leaves the transcript
+  unpriced.
 - Include subagent files under `subagents/`.
 
 Why one record per `requestId`: Claude Code's own `cost-state` token totals match this convention.
@@ -198,9 +205,10 @@ Runbook (run on the machine that has rate-limit data):
    window's interval where its other reset changes; the 5h window at 03:00 UTC Nov 8 changed its 7d
    reset at 23:00 UTC Nov 7.
 1. For the same time interval, sum token totals per kind (input, output, cache write, cache read)
-   and priced spend from transcripts, one record per `requestId`, over all projects and subagents.
-   Where transcripts have aged out, fall back to main-session deltas from `cost_snapshots` plus
-   `subagent_tasks.estimated_cost_usd`, which run low (see Coverage).
+   and priced spend from transcripts, one record per `requestId` (per usage iteration where
+   present), over all projects and subagents. Where transcripts have aged out, fall back to
+   main-session deltas from `cost_snapshots` plus `subagent_tasks.estimated_cost_usd`, which run low
+   (see Coverage).
 1. Compare percentage change with spend change per window. A roughly linear relationship means the
    percentage tracks spend. Report the fit and the windows that do not match.
 1. The snapshot table has no `session_id`. Per-session attribution can only split a window's spend
@@ -217,5 +225,6 @@ Runbook (run on the machine that has rate-limit data):
 - `total_cost_usd` is the authoritative session total. Whether it fully includes subagent cost is
   not proven: adding subagent transcripts moved the median transcript-to-actual ratio from 0.78 to
   0.83 across 21 sessions, which is weak support.
-- Advisor calls appear as `advisor_message` entries in `usage.iterations[]` of main-session
-  transcripts, and top-level usage excludes their tokens. Estimates do not price them.
+- Advisor calls appear as `advisor_message` entries in `usage.iterations[]`, and top-level usage
+  excludes their tokens. Subagent transcript pricing includes them; the main-session snapshot
+  estimator does not price them.
