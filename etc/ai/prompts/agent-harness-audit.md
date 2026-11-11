@@ -70,6 +70,20 @@ Transcripts are local to each machine. A commit that arrived by a fast-forward p
 shows it as a merge from a remote) has no session to sample here, so list it as unobserved rather
 than judging whether its gates fired.
 
+## Prior Audit
+
+Do this after the inventory and behavior check, so the earlier audit does not anchor them. Earlier
+audits are `analysis/agent-harness-audit-<YYYY-MM-DD>.md`; read only the latest by date. If none
+exists, say so and skip this section.
+
+- Treat its claims as leads, not evidence: re-verify each one against the repo, a transcript, or
+  the DB, and mark it again as verified, inferred, or assumed. Its tags describe what held then.
+- Give each prior gap a status: still open, fixed (cite the commit), or no longer valid (say why).
+- Keep gap IDs so pointers in `todo.md` and `ideas.md` stay valid. Number new gaps after the highest
+  existing ID.
+- Transcripts age out, so keep prior behavior evidence that no longer exists locally, labelled as
+  carried forward.
+
 ## Gaps
 
 Rank the gaps by impact. For each, propose the smallest fix that uses the repo's existing building
@@ -84,7 +98,9 @@ if no existing building block can close the gap, and say why.
 
 ## Output Format
 
-Write the findings to `analysis/agent-harness-audit.md` with:
+Write the findings to `analysis/agent-harness-audit-<YYYY-MM-DD>.md`, using the audit date. Never
+overwrite an earlier audit. Then point `analysis/agent-harness-audit.md` at the new file with a
+symlink (`ln -sf`), so that name always resolves to the latest audit. The file has:
 
 1. **Summary**: a short verdict on how well the soft harness holds up
 1. **Inventory table**: one row per layer:
@@ -93,6 +109,8 @@ Write the findings to `analysis/agent-harness-audit.md` with:
 | ----- | --------- | -------- | -------- | -------- |
 
 1. **Ranked gaps**: each with its impact, its evidence, and the smallest fix
+1. **Resolved**: gaps from earlier audits that are fixed or no longer valid, one line each with the
+   commit or reason, so this file stands alone without the older ones
 1. **Open questions**: what you could not settle from the repo or the transcripts
 
 Mark every claim as verified, inferred, or assumed. Finish by offering to capture the gaps in
