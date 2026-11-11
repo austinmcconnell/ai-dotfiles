@@ -174,8 +174,8 @@ it fetches from Anthropic; the setting keeps it on if that flag is withdrawn. It
 ### Model Gates
 
 `etc/ai/steering/shared/model-gates.md` sets the tool-agnostic convention: the strongest model for
-planning and doubt checks, a mid model for implementation, a small one for mechanical work. On
-Claude Code:
+doubt checks and deep refinement; a mid model for planning and implementation; a small one for
+mechanical work. On Claude Code:
 
 - **`/model`** — each model has its own prompt cache, so the request after a switch re-reads the
   whole conversation uncached. Switch at session start or while the context is small.
