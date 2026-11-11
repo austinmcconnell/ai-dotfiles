@@ -81,6 +81,8 @@ if [[ ! -f "$SENTINEL" ]]; then
 📊 This session has crossed ${THRESHOLD} tokens (currently ~${CURRENT_TOKENS}); auto-compaction is close.
 Finish the step in progress, then tell the user it is time to compact and give them one
 ready-to-paste line of the form: /compact <instructions>
+Tell them to send that line as its own message with nothing before it: a slash command only runs
+when it opens the message, so pasting it after other answers sends it as plain text.
 Write the instructions from this session's actual work. Cover what to keep (decisions, file paths,
 current state, open questions, user preferences), what is finished and can be dropped, and what
 work remains. Never suggest a bare /compact. If the user is switching to an unrelated task,
