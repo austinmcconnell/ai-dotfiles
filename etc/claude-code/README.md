@@ -149,8 +149,12 @@ session-total budget; `--max-budget-usd` is a per-invocation CLI flag only):
   launches (checked on 2.1.311 in default mode), so none are kept.
 
 **Caveat:** the four domain personas (`docs`, `jira`, `datadog`, `ansible`) set `model: inherit`, so
-they run on the main session model and bypass the Haiku floor. Only anonymous delegations (for
-example `Explore` or `general-purpose`) get Haiku.
+they run on the main session model and bypass the Haiku floor. The built-in `Explore` and `Plan`
+agents do the same: their definitions set `model: inherit` (main model, capped at Opus, since
+2.1.198), and since 2.1.251 a definition's `model:` outranks the env var. Only a built-in with no
+`model:` of its own, such as `general-purpose`, gets Haiku. `CLAUDE_CODE_SUBAGENT_MODEL_FORCE` would
+force the floor everywhere, but it also overrides `doubt-reviewer`'s `model: opus`, so it is not
+set.
 
 **Deliberate Opus exception:** the `doubt-reviewer` persona pins `model: opus` and `effort: high` in
 its frontmatter, so the doubt-driven-development check runs on the strongest model. A model set in
@@ -186,10 +190,10 @@ mechanical work. On Claude Code:
 - **Doubt checks** — the `doubt-reviewer` persona runs the plan and pre-commit checks on Opus in a
   fresh context, so the main session keeps its model. The user approves each run in chat, and the
   `ask-opus-subagents.sh` hook prompts if a launch skips that step (see Cost Controls).
-- **Mechanical work** — delegate it to an anonymous subagent (`general-purpose`, `Explore`), which
-  `CLAUDE_CODE_SUBAGENT_MODEL=haiku` runs on Haiku, rather than switching the main session to Haiku.
-  The domain personas set `model: inherit`, so they run on the main model instead (see Cost
-  Controls).
+- **Mechanical work** — delegate it to `general-purpose`, which `CLAUDE_CODE_SUBAGENT_MODEL=haiku`
+  runs on Haiku, or pass `model: "haiku"` when launching `Explore`, rather than switching the main
+  session to Haiku. A default `Explore` and the domain personas inherit the main model instead (see
+  Cost Controls).
 - **Advisor** — on explicitly (see Cost Controls). Claude Code gives the main model its own guidance
   on when to consult it, so this repo adds no advisor moments of its own.
 
