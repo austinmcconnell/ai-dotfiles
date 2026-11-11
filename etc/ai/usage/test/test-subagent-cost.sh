@@ -201,9 +201,55 @@ test_writer() {
     check "two-task payload stores second task" "0.01" "$(stored t4)"
 }
 
+# Payload for one task whose description is the JSON text in $2, or left out when $2 is "absent".
+# The label differs from the description, as it does while a subagent is working.
+payload_description() {
+    jq -cn --arg parent "$PARENT" --arg id "$1" --arg desc "$2" '{
+        session_id: "sess", transcript_path: $parent,
+        tasks: [{id: $id, label: "activity", agentType: "a", model: "claude-sonnet-5",
+            tokenCount: 1234, contextWindowSize: 200000, startTime: 1700000000000,
+            status: "completed"}
+            + (if $desc == "absent" then {} else {description: ($desc | fromjson)} end)]
+    }'
+}
+
+stored_name() {
+    sqlite3 "$USAGE_DB_DIR/usage.db" \
+        "SELECT quote(name) FROM subagent_tasks WHERE task_id = '$1'"
+}
+
+test_writer_name() {
+    PARENT="$WORK/proj/sess.jsonl"
+    local rows_before rows_after
+
+    payload_description n1 '"Launch description"' | bash "$USAGE_DIR/claude-subagent-statusline.sh"
+    check "name is the launch description, not the label" "'Launch description'" \
+        "$(stored_name n1)"
+
+    payload_description n1 absent | bash "$USAGE_DIR/claude-subagent-statusline.sh"
+    check "a firing without a description keeps the stored name" "'Launch description'" \
+        "$(stored_name n1)"
+
+    payload_description n1 '""' | bash "$USAGE_DIR/claude-subagent-statusline.sh"
+    check "a firing with an empty description keeps the stored name" "'Launch description'" \
+        "$(stored_name n1)"
+
+    payload_description n2 absent | bash "$USAGE_DIR/claude-subagent-statusline.sh"
+    check "a new task without a description has no name" "NULL" "$(stored_name n2)"
+
+    rows_before="$(sqlite3 "$USAGE_DB_DIR/usage.db" 'SELECT count(*) FROM subagent_tasks')"
+    payload_description n3 '"one\ntwo\u001fthree\r"' |
+        bash "$USAGE_DIR/claude-subagent-statusline.sh"
+    rows_after="$(sqlite3 "$USAGE_DB_DIR/usage.db" 'SELECT count(*) FROM subagent_tasks')"
+    check "a description with line breaks adds one row" "$((rows_before + 1))" "$rows_after"
+    check "line breaks and unit separators in a description become spaces" "'one two three '" \
+        "$(stored_name n3)"
+}
+
 write_fixtures
 test_pricing
 test_writer
+test_writer_name
 
 if [[ "$FAILURES" -gt 0 ]]; then
     echo "$FAILURES check(s) failed"

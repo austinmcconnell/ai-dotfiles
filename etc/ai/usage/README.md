@@ -68,6 +68,12 @@ migration upgrades `usage.db` on the next render, and switching back leaves the 
 version, which older code ignores. Since migrations only add, rolling back means undoing the
 migration's change by hand and then setting `PRAGMA user_version` to the earlier number.
 
+`0002-subagent-name-from-description.sql` is the exception: it rewrites `subagent_tasks.name` in
+place, so there is nothing to drop. The old activity label survives in each row's `raw_json`
+(`tasks[].label`). A row whose `raw_json` holds no text description keeps its old name, so `name`
+can still hold an activity label on rows written before the writer changed. An older checkout's
+writer puts labels back into `name` on every firing, and nothing re-runs the backfill.
+
 ## Claude Code integration
 
 Wired in `etc/claude-code/settings.json` via the `statusLine`/`subagentStatusLine` settings (see
@@ -95,7 +101,9 @@ payload on stdin and write to the DB as a side effect:
   line if they change.
 
 - `claude-subagent-statusline.sh` — per-subagent rows. Emits no stdout at all, so Claude Code keeps
-  its default subagent-row rendering; this script's only job is the `subagent_tasks` upsert.
+  its default subagent-row rendering; this script's only job is the `subagent_tasks` upsert. `name`
+  holds the launch description from the payload's `description` field, not `label`, which tracks the
+  subagent's live activity. A firing without a description leaves the stored name alone.
 
 ## Repairing `subagent_tasks` rows
 

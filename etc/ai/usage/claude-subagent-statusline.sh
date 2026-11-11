@@ -50,7 +50,7 @@ while IFS=$'\x1f' read -r TASK_ID NAME AGENT_TYPE MODEL_ID EFFORT TOKEN_COUNT \
             $(sql_str "$STARTED_AT"), $(sql_str "$NOW"), $(sql_str "$STATUS"), $(sql_str "$PAYLOAD")
         )
         ON CONFLICT(tool, parent_session_id, task_id) DO UPDATE SET
-            name = excluded.name,
+            name = COALESCE(excluded.name, subagent_tasks.name),
             agent_type = excluded.agent_type,
             model = excluded.model,
             effort = excluded.effort,

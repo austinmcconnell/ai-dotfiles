@@ -118,6 +118,35 @@ untracked_db missing-tables "DROP TABLE rate_limit_snapshots; DROP TABLE compact
 run_init missing-tables
 check "untracked DB gets tables it lacks" "$(shape new)" "$(shape missing-tables)"
 
+# The subagent name backfill: a description replaces the stored name, and every row it cannot
+# read keeps its name without failing the migration.
+subagent_row() {
+    printf "INSERT INTO subagent_tasks (tool, parent_session_id, task_id, name, started_at,
+        updated_at, raw_json) VALUES ('claude-code', 's', '%s', 'keep', '2026-11-01T00:00:00Z',
+        '2026-11-01T00:00:00Z', %s);\n" "$1" "$2"
+}
+untracked_db names "
+    $(subagent_row m1 "'{\"tasks\":[{\"id\":\"m1\",\"label\":\"activity\",\"description\":\"Launch\"}]}'")
+    $(subagent_row m2 "'{\"tasks\":[{\"id\":\"m2\",\"label\":\"activity\"}]}'")
+    $(subagent_row m3 'NULL')
+    $(subagent_row m4 "'not json'")
+    $(subagent_row m5 "'{\"tasks\":5}'")
+    $(subagent_row m6 "'{\"tasks\":[\"x\",1,null]}'")
+    $(subagent_row m7 "'{\"tasks\":[{\"id\":\"other\",\"description\":\"Other\"}]}'")
+    $(subagent_row m8 "'{\"tasks\":[{\"id\":\"m8\",\"description\":\"\"}]}'")
+    $(subagent_row m9 "'{\"tasks\":[{\"id\":\"m9\",\"description\":5}]}'")
+    $(subagent_row m10 "'{\"tasks\":[{\"id\":\"m10\",\"description\":\"First\"},
+        {\"id\":\"m10\",\"description\":\"Second\"}]}'")
+    $(subagent_row m11 "'{\"tasks\":[{\"id\":\"x\"},{\"id\":\"m11\",\"description\":\"Second task\"}]}'")"
+rc=0
+run_init names 2>"$WORK/names.err" || rc=$?
+check "name backfill migration succeeds on malformed rows" "0 $latest" "$rc $(version names)"
+check "name backfill sets a description and keeps every unreadable row's name" \
+    "m1=Launch m10=First m11=Second task m2=keep m3=keep m4=keep m5=keep m6=keep m7=keep m8=keep m9=keep" \
+    "$(db names "SELECT group_concat(task_id || '=' || name, ' ') FROM
+        (SELECT task_id, name FROM subagent_tasks ORDER BY task_id);")"
+check "name backfill migration leaves the same shape as a new DB" "$(shape new)" "$(shape names)"
+
 # A later migration must apply on top of an adopted DB that lacked the table
 # it changes, which it could not if adoption used the newest schema.sql.
 usage_dir_with_next_migration later-dir 'ALTER TABLE rate_limit_snapshots ADD COLUMN later INTEGER;'

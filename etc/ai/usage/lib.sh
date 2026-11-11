@@ -139,10 +139,14 @@ sql_num() {
 }
 
 # One unit-separator-joined row per subagent task in a subagentStatusLine payload,
-# in the column order the read loop in claude-subagent-statusline.sh expects.
+# in the column order the read loop in claude-subagent-statusline.sh expects. The name is the
+# launch description, which is fixed, not `.label`, which tracks the live activity. Newlines and
+# unit separators in it would split the row, so they become spaces.
 usage_subagent_task_rows() {
     jq -r '.tasks[]? | [
-        .id, .label, .agentType, .model, null, .tokenCount,
+        .id,
+        ((.description // null) | if type == "string" then gsub("[\n\r\u001f]"; " ") else . end),
+        .agentType, .model, null, .tokenCount,
         .contextWindowSize, (if .startTime then (.startTime / 1000 | todate) else null end),
         .status
     ] | join("\u001f")' <<<"$1"

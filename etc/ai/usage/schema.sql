@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS subagent_tasks (
     tool                 TEXT NOT NULL,
     parent_session_id    TEXT NOT NULL,
     task_id              TEXT NOT NULL,
-    name                 TEXT,
+    name                 TEXT,               -- launch description; kept when a firing carries none
     agent_type           TEXT,
     model                TEXT,               -- resolved model id, not a display name
     effort               TEXT,
