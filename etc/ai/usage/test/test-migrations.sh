@@ -60,12 +60,13 @@ untracked_db() {
     } | sqlite3 "$WORK/$1/usage.db"
 }
 
-# A copy of the usage dir in $1 whose migrations add the SQL in $2 as 0002.
-usage_dir_with_0002() {
+# A copy of the usage dir in $1 whose migrations add the SQL in $2 as the migration after the
+# newest real one.
+usage_dir_with_next_migration() {
     mkdir -p "$WORK/$1/migrations"
     cp "$USAGE_DIR"/lib.sh "$USAGE_DIR"/schema.sql "$WORK/$1/"
     cp "$USAGE_DIR"/migrations/*.sql "$WORK/$1/migrations/"
-    printf '%s\n' "$2" >"$WORK/$1/migrations/0002-test.sql"
+    printf '%s\n' "$2" >"$WORK/$1/migrations/${next_prefix}-test.sql"
 }
 
 DROP_0001_COLUMNS="
@@ -76,6 +77,9 @@ DROP_0001_COLUMNS="
 
 latest="$(find "$USAGE_DIR/migrations" -name '[0-9][0-9][0-9][0-9]-*.sql' | sort | tail -n 1)"
 latest="$((10#$(basename "$latest" | cut -c 1-4)))"
+next="$((latest + 1))"
+printf -v next_prefix '%04d' "$next"
+printf -v after_next_prefix '%04d' "$((next + 1))"
 
 run_init new
 check "new DB is at the newest version" "$latest" "$(version new)"
@@ -116,29 +120,31 @@ check "untracked DB gets tables it lacks" "$(shape new)" "$(shape missing-tables
 
 # A later migration must apply on top of an adopted DB that lacked the table
 # it changes, which it could not if adoption used the newest schema.sql.
-usage_dir_with_0002 later-dir 'ALTER TABLE rate_limit_snapshots ADD COLUMN later INTEGER;'
+usage_dir_with_next_migration later-dir 'ALTER TABLE rate_limit_snapshots ADD COLUMN later INTEGER;'
 untracked_db later "DROP TABLE rate_limit_snapshots;"
 run_init later "$WORK/later-dir"
-check "a later migration applies to an adopted DB that lacked its table" 2 "$(version later)"
+check "a later migration applies to an adopted DB that lacked its table" "$next" "$(version later)"
 
 run_init failing
-usage_dir_with_0002 failing-dir 'CREATE TABLE half_done (a); SELECT * FROM missing_table;'
+usage_dir_with_next_migration failing-dir \
+    'CREATE TABLE half_done (a); SELECT * FROM missing_table;'
 rc=0
 run_init failing "$WORK/failing-dir" 2>"$WORK/failing.err" || rc=$?
 check "failed migration returns non-zero" 1 "$rc"
-check "failed migration leaves the version alone" 1 "$(version failing)"
+check "failed migration leaves the version alone" "$latest" "$(version failing)"
 check "failed migration leaves no partial schema" 0 \
     "$(db failing "SELECT count(*) FROM sqlite_master WHERE name = 'half_done';")"
 check "failed migration reports the SQL error" 1 \
     "$(grep -c 'no such table: missing_table' "$WORK/failing.err")"
 
 run_init gap
-usage_dir_with_0002 gap-dir 'SELECT 1;'
-mv "$WORK/gap-dir/migrations/0002-test.sql" "$WORK/gap-dir/migrations/0003-test.sql"
+usage_dir_with_next_migration gap-dir 'SELECT 1;'
+mv "$WORK/gap-dir/migrations/${next_prefix}-test.sql" \
+    "$WORK/gap-dir/migrations/${after_next_prefix}-test.sql"
 rc=0
 run_init gap "$WORK/gap-dir" 2>/dev/null || rc=$?
 check "a missing migration number fails" 1 "$rc"
-check "a missing migration number leaves the version alone" 1 "$(version gap)"
+check "a missing migration number leaves the version alone" "$latest" "$(version gap)"
 
 run_init newer
 db newer 'PRAGMA user_version = 99;'
@@ -164,9 +170,9 @@ check "concurrent callers on a new DB all succeed quietly" "0 0" "$(race race-ne
 check "concurrent callers on a new DB reach the newest version" "$latest" "$(version race-new)"
 
 run_init race-migrate
-usage_dir_with_0002 race-dir 'ALTER TABLE sessions ADD COLUMN race_column INTEGER;'
+usage_dir_with_next_migration race-dir 'ALTER TABLE sessions ADD COLUMN race_column INTEGER;'
 check "concurrent migrators all succeed quietly" "0 0" "$(race race-migrate "$WORK/race-dir")"
-check "concurrent migrators reach the new version" 2 "$(version race-migrate)"
+check "concurrent migrators reach the new version" "$next" "$(version race-migrate)"
 check "concurrent migrators add the column once" 1 "$(db race-migrate "
     SELECT count(*) FROM pragma_table_info('sessions') WHERE name = 'race_column';")"
 
