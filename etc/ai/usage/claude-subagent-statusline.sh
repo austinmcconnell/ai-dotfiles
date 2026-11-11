@@ -16,6 +16,10 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck disable=SC1091
 source "$SCRIPT_DIR/lib.sh"
 
+# A render must stay fast: a held write lock costs this much, then the write is skipped.
+# shellcheck disable=SC2034
+USAGE_DB_BUSY_TIMEOUT_MS=200
+
 PAYLOAD=$(cat)
 
 PARENT_SESSION_ID=$(printf '%s' "$PAYLOAD" | jq -r '.session_id // empty')
@@ -25,7 +29,7 @@ if [[ -z "$PARENT_SESSION_ID" ]]; then
     exit 0
 fi
 
-usage_db_init
+usage_db_init 2>/dev/null || exit 0
 NOW="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
 
 SQL=""
@@ -68,6 +72,8 @@ while IFS=$'\x1f' read -r TASK_ID NAME AGENT_TYPE MODEL_ID EFFORT TOKEN_COUNT \
     "
 done <<<"$(usage_subagent_task_rows "$PAYLOAD")"
 
-[[ -n "$SQL" ]] && sqlite3 "$USAGE_DB" "$SQL"
+if [[ -n "$SQL" ]]; then
+    usage_sql "$SQL" 2>/dev/null || true
+fi
 
 exit 0

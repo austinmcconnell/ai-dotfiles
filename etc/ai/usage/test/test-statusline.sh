@@ -117,6 +117,58 @@ printf '{not json' >"$WORK/claude.json"
 check "malformed config hides credits" \
     "$COST_ONLY" "$(CREDITS_FIXTURE="$WORK/claude.json" CREDITS_NOW="$FIXED_NOW" render null)"
 
+LOCK_DB_DIR="$WORK/locked"
+LOCK_DB="$LOCK_DB_DIR/usage.db"
+# Pins the pace delta to nothing so the line depends only on the payload's own fields.
+SESSION_PAYLOAD='{"session_id": "lock-test", "model": {"display_name": "Opus 5.5"},
+    "effort": {"level": "medium"}, "context_window": {"used_percentage": 9},
+    "cost": {"total_cost_usd": 1.5}, "transcript_path": "/nonexistent.jsonl", "tasks": []}'
+
+# $1 is the script, $2 the payload. Leaves stdout in $WORK/out and stderr in $WORK/err, and sets
+# RUN_STATUS and RUN_SECONDS.
+run_script() {
+    local started=$SECONDS
+    RUN_STATUS=0
+    USAGE_DB_DIR="$LOCK_DB_DIR" /bin/bash "$USAGE_DIR/$1" <<<"$2" >"$WORK/out" 2>"$WORK/err" ||
+        RUN_STATUS=$?
+    RUN_SECONDS=$((SECONDS - started))
+}
+
+# Holds SQLite's exclusive lock until release_write_lock, so readers wait too.
+hold_write_lock() {
+    { printf 'BEGIN EXCLUSIVE;\n' && sleep 30; } | sqlite3 "$LOCK_DB" >/dev/null 2>&1 &
+    LOCK_PID=$!
+    sleep 1
+}
+
+release_write_lock() {
+    kill "$LOCK_PID" 2>/dev/null || true
+    wait "$LOCK_PID" 2>/dev/null || true
+}
+
+mkdir -p "$LOCK_DB_DIR"
+run_script claude-statusline.sh "$SESSION_PAYLOAD"
+UNLOCKED_LINE="$(cat "$WORK/out")"
+check "unlocked render exits 0" "0" "$RUN_STATUS"
+check "unlocked render writes the session row" "1" \
+    "$(sqlite3 "$LOCK_DB" "SELECT count(*) FROM sessions WHERE session_id = 'lock-test';")"
+check "unlocked render writes the cost snapshot" "1" \
+    "$(sqlite3 "$LOCK_DB" "SELECT count(*) FROM cost_snapshots WHERE session_id = 'lock-test';")"
+
+hold_write_lock
+run_script claude-statusline.sh "$SESSION_PAYLOAD"
+check "locked render exits 0" "0" "$RUN_STATUS"
+check "locked render prints the same line" "$UNLOCKED_LINE" "$(cat "$WORK/out")"
+check "locked render writes nothing to stderr" "" "$(cat "$WORK/err")"
+check "locked render returns within 2 seconds" "yes" "$( ((RUN_SECONDS < 2)) && echo yes || echo no)"
+run_script claude-subagent-statusline.sh "$SESSION_PAYLOAD"
+check "locked subagent render exits 0" "0" "$RUN_STATUS"
+check "locked subagent render prints nothing" "" "$(cat "$WORK/out")"
+check "locked subagent render writes nothing to stderr" "" "$(cat "$WORK/err")"
+check "locked subagent render returns within 2 seconds" "yes" \
+    "$( ((RUN_SECONDS < 2)) && echo yes || echo no)"
+release_write_lock
+
 if ((FAILURES > 0)); then
     echo "$FAILURES check(s) failed"
     exit 1

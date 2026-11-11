@@ -15,6 +15,10 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck disable=SC1091
 source "$SCRIPT_DIR/lib.sh"
 
+# A render must stay fast: a held write lock costs this much, then the write is skipped.
+# shellcheck disable=SC2034
+USAGE_DB_BUSY_TIMEOUT_MS=200
+
 PAYLOAD=$(cat)
 
 # Unit separator, not tab: tab is IFS whitespace, so read would collapse empty fields.
@@ -35,10 +39,11 @@ IFS=$'\x1f' read -r SESSION_ID CWD PROJECT_DIR MODEL_ID MODEL_DISPLAY EFFORT \
     ] | join("\u001f")'
     )"
 
-if [[ -n "$SESSION_ID" ]]; then
-    usage_db_init
+# Best-effort capture: the first failed statement (a locked DB) abandons the rest.
+record_usage() {
+    usage_db_init || return 0
     NOW="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
-    sqlite3 "$USAGE_DB" "
+    usage_sql "
         INSERT INTO sessions (
             tool, session_id, cwd, project_dir, model, effort,
             started_at, updated_at, total_cost_usd, input_tokens, output_tokens,
@@ -67,13 +72,13 @@ if [[ -n "$SESSION_ID" ]]; then
             total_duration_ms = excluded.total_duration_ms,
             total_api_duration_ms = excluded.total_api_duration_ms,
             raw_json = excluded.raw_json;
-    "
+    " || return 0
 
     # Comparing costs in SQL (not bash) so REAL equality is exact -- SQLite's
     # text rendering of a REAL (e.g. "1.0") won't always string-match jq's
     # rendering of the same number (e.g. "1.00"), so a bash string compare
     # would false-negative and insert a duplicate row on every firing.
-    sqlite3 "$USAGE_DB" "
+    usage_sql "
         INSERT INTO cost_snapshots (
             tool, session_id, total_cost_usd, input_tokens, output_tokens,
             cache_creation_tokens, cache_read_tokens, context_used_percentage,
@@ -88,14 +93,14 @@ if [[ -n "$SESSION_ID" ]]; then
             WHERE tool = 'claude-code' AND session_id = $(sql_str "$SESSION_ID")
             ORDER BY id DESC LIMIT 1
         ) IS NOT $(sql_num "$COST_USD");
-    "
+    " || return 0
 
     # rate_limits only exists for claude.ai subscribers (see DISPLAY_USAGE
     # below); account-wide, not per-session, so no session_id and no
     # per-session dedup scoping -- see schema.sql's rate_limit_snapshots
     # comment.
     if [[ -n "$FIVE_HOUR_PCT" || -n "$SEVEN_DAY_PCT" ]]; then
-        sqlite3 "$USAGE_DB" "
+        usage_sql "
             INSERT INTO rate_limit_snapshots (
                 tool, five_hour_used_percentage, seven_day_used_percentage,
                 five_hour_resets_at, seven_day_resets_at, occurred_at, raw_json
@@ -111,8 +116,12 @@ if [[ -n "$SESSION_ID" ]]; then
                 SELECT seven_day_used_percentage FROM rate_limit_snapshots
                 WHERE tool = 'claude-code' ORDER BY id DESC LIMIT 1
             ) IS NOT $(sql_num "$SEVEN_DAY_PCT");
-        "
+        " || return 0
     fi
+}
+
+if [[ -n "$SESSION_ID" ]]; then
+    record_usage 2>/dev/null || true
 fi
 
 format_pct() {

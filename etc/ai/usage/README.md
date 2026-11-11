@@ -57,9 +57,10 @@ DB and a migrated one end up with the same columns. Rules for a migration file:
 - **No transaction control or dot-commands.** No `BEGIN`, `COMMIT`, `PRAGMA journal_mode`, or
   `.`-commands. The runner wraps the file in its own transaction, and any of these would break that
   wrapping.
-- **Keep it fast.** Every render waits on it, and other sessions block for up to the 5 s busy
-  timeout (`USAGE_DB_BUSY_TIMEOUT_MS`) before failing. Run a rebuild of a large table, such as
-  `cost_snapshots`, as an explicit one-off command rather than as a migration.
+- **Keep it fast.** Other writers block for up to the 5 s busy timeout (`USAGE_DB_BUSY_TIMEOUT_MS`)
+  before failing. The statusline scripts wait only 200 ms, then skip that firing's capture so a
+  render never stalls, so a slow migration also loses snapshots. Run a rebuild of a large table,
+  such as `cost_snapshots`, as an explicit one-off command rather than as a migration.
 - **Rely on named columns.** `ALTER TABLE ... ADD COLUMN` appends, so a migrated DB's column order
   can differ from a new one's. Every `INSERT` names its columns, and new ones must too.
 

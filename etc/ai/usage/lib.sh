@@ -22,7 +22,7 @@ usage_db_init() {
     local latest current=0
     usage_latest_version latest
     if [[ -f "$USAGE_DB" ]]; then
-        current="$(usage_sql 'PRAGMA user_version;')"
+        current="$(usage_sql 'PRAGMA user_version;')" || return 1
     fi
     ((current >= latest)) && return 0
     mkdir -p "$USAGE_DB_DIR"
@@ -81,7 +81,7 @@ usage_db_init_unversioned() {
 # Apply each migration after the DB's current version, up to $1.
 usage_db_migrate() {
     local latest="$1" current next prefix files body
-    current="$(usage_sql 'PRAGMA user_version;')"
+    current="$(usage_sql 'PRAGMA user_version;')" || return 1
     while ((current < latest)); do
         next=$((current + 1))
         printf -v prefix '%04d' "$next"
@@ -91,8 +91,8 @@ usage_db_migrate() {
             return 1
         fi
         body="$(cat "${files[0]}")"
-        usage_db_step "$current" "$next" "$body"
-        current="$(usage_sql 'PRAGMA user_version;')"
+        usage_db_step "$current" "$next" "$body" || return 1
+        current="$(usage_sql 'PRAGMA user_version;')" || return 1
     done
 }
 
@@ -111,7 +111,7 @@ usage_db_step() {
     } | usage_sql 2>&1)"; then
         return 0
     fi
-    current="$(usage_sql 'PRAGMA user_version;')"
+    current="$(usage_sql 'PRAGMA user_version;')" || return 1
     ((current >= to)) && return 0
     echo "usage_db_init: $USAGE_DB version $from -> $to failed: $err" >&2
     return 1
