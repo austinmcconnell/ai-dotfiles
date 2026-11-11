@@ -157,6 +157,24 @@ around the missing payload data two different ways:
   with the boundary's `timestamp` shows whether a row with empty or stale `real_*` columns lost a
   race with the transcript write.
 
+**Resolving the real columns**: Claude Code writes the `compact_boundary` record after the
+`PostCompact` hook runs, so a row's own boundary is never on disk when the hook fires.
+`usage_resolve_compaction_boundaries <session-id>` in `lib.sh` reads the boundaries from the
+session's main transcript and its `subagents/*.jsonl` (a subagent's compaction fires the hook with
+the main session's id and transcript path) and pairs them with the session's `PostCompact` rows by
+time: a row and a boundary pair only when each is the other's single candidate within 5 seconds.
+Rows with two candidates are ambiguous and stay untouched. A session whose transcripts cannot all be
+read, or whose last line is a half-written boundary, is skipped whole. The pairing and the write
+happen in one `BEGIN IMMEDIATE` transaction, after the files are read.
+
+`resolve-compaction-boundaries.sh [--apply] [session-id]` runs it by hand. The default is a dry run
+that prints `class|row|before|after` for every row (`fill`, `correct`, `same`, `ambiguous`,
+`neighbour`, `unmatched`) and a `summary|rows|boundaries|paired` line per session; `--apply` backs
+the DB up first, and only when something would change. Besides filling empty rows it replaces a
+wrong value, and it clears a row only when that row has no candidate boundary and holds another
+boundary's `preTokens`, which marks it as a neighbour's value. Any other stored value is kept and
+listed as `unmatched`.
+
 **Empirical finding worth preserving**: with no `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE` set,
 auto-compaction fires a roughly constant ~35K tokens below the configured `autoCompactWindow`, not
 at a fixed fraction of it. A 150K window compacted at ~115.5K (five compactions) and a 250K window

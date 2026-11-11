@@ -102,6 +102,12 @@ repos:
         entry: etc/ai/usage/test/test-compaction-hook.sh
         files: ^etc/ai/(hooks/log-compaction-event\.sh|usage/(lib\.sh|schema\.sql|migrations/.*\.sql|test/test-compaction-hook\.sh))$
         pass_filenames: false
+      - id: usage-resolve-compaction-tests
+        name: Compaction boundary resolver tests
+        language: script
+        entry: etc/ai/usage/test/test-resolve-compaction.sh
+        files: ^etc/ai/usage/(lib\.sh|schema\.sql|migrations/.*\.sql|resolve-compaction-boundaries\.sh|test/test-resolve-compaction\.sh)$
+        pass_filenames: false
       - id: usage-statusline-tests
         name: Statusline rendering tests
         language: script

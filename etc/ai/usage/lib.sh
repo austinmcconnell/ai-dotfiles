@@ -228,3 +228,177 @@ usage_transcript_cost() {
     fi
     return 0
 }
+
+# SQL INSERTs for the compact_boundary records among the grep-filtered lines on stdin. A boundary
+# without a numeric preTokens is not a candidate; the other metadata fields may be NULL. The
+# uuid and timestamp are pattern-checked because they are interpolated into SQL. $q is a single
+# quote, passed in because the program itself sits inside shell single quotes.
+# shellcheck disable=SC2016
+USAGE_BOUNDARY_INSERT_JQ='
+def num: if type == "number" then floor | tostring else "NULL" end;
+fromjson? | select(type == "object" and .type == "system" and .subtype == "compact_boundary")
+| (.uuid // .timestamp) as $key
+| select(($key | type) == "string" and ($key | test("^[A-Za-z0-9._:-]+$"))
+    and (.timestamp | type) == "string" and (.timestamp | test("^[0-9T:.Z+-]+$"))
+    and (.compactMetadata.preTokens | type) == "number")
+| .compactMetadata as $m
+| "INSERT OR IGNORE INTO b VALUES (\($q)\($key)\($q), \($q)\(.timestamp)\($q), "
+    + "\($m.preTokens | num), \($m.postTokens | num), \($m.cumulativeDroppedTokens | num), "
+    + "\($m.durationMs | num));"
+'
+
+# Prints the transcript paths that can hold a session's compact_boundary records: the main
+# transcript, then the subagent transcripts beside it. Fails when the main one is unreadable.
+usage_compaction_transcripts() {
+    local main="$1" subagents="${1%.jsonl}/subagents"
+    [[ -r "$main" ]] || return 1
+    printf '%s\n' "$main"
+    if [[ -d "$subagents" ]]; then
+        find "$subagents" -maxdepth 1 -type f -name 'agent-*.jsonl' || return 1
+    fi
+}
+
+# Prints the boundary INSERTs for one transcript. Fails, so the caller leaves the session alone,
+# when grep errors (anything but a clean match or no match), jq errors, or the last line holds a
+# boundary that does not parse yet, which means Claude Code is still writing it.
+usage_compaction_boundary_inserts() {
+    local file="$1" matches last status=0
+    matches="$(grep --fixed-strings '"compact_boundary"' "$file")" || status=$?
+    if ((status > 1)); then
+        return 1
+    fi
+    last="$(tail -n 1 "$file")" || return 1
+    if [[ "$last" == *'"compact_boundary"'* ]]; then
+        jq --exit-status . <<<"$last" >/dev/null 2>&1 || return 1
+    fi
+    [[ -n "$matches" ]] || return 0
+    jq --raw-input --raw-output --arg q "'" "$USAGE_BOUNDARY_INSERT_JQ" <<<"$matches"
+}
+
+# The SQL that pairs one session's PostCompact rows with its boundaries and, depending on $2,
+# reports and writes. $3 holds the boundary INSERTs. A row and a boundary pair only when each is
+# the other's single candidate within 5 seconds; anything with two candidates is ambiguous and is
+# left alone. Modes:
+#   live    fill rows whose real_pre_tokens is NULL; never overwrite or clear
+#   report  write nothing; print one "class|row id|before|after" line per row
+#   apply   report, then fill and correct paired rows, and NULL a row only when it has no
+#           candidate and holds another boundary's preTokens (a neighbour's value)
+usage_compaction_resolve_sql() {
+    local session mode="$2" inserts="$3"
+    session="$(sql_str "$1")"
+    printf '%s\n%s\n' "CREATE TEMP TABLE b (uuid TEXT PRIMARY KEY, ts TEXT, pre INTEGER,
+        post INTEGER, dropped INTEGER, dur INTEGER);" "$inserts"
+    [[ "$mode" == report ]] || printf 'BEGIN IMMEDIATE;\n'
+    cat <<SQL
+CREATE TEMP TABLE r AS
+    SELECT id, occurred_at, real_pre_tokens AS pre, real_post_tokens AS post,
+        cumulative_dropped_tokens AS dropped, duration_ms AS dur
+    FROM compaction_events
+    WHERE tool = 'claude-code' AND session_id = $session AND hook_event = 'PostCompact';
+CREATE TEMP TABLE cand AS
+    SELECT r.id AS row_id, b.uuid AS uuid FROM r JOIN b
+        ON abs(julianday(b.ts) - julianday(r.occurred_at)) * 86400 <= 5;
+CREATE TEMP TABLE pairs AS
+    SELECT r.id AS row_id, b.pre AS n_pre, COALESCE(b.post, r.post) AS n_post,
+        COALESCE(b.dropped, r.dropped) AS n_dropped, COALESCE(b.dur, r.dur) AS n_dur,
+        r.pre AS o_pre, r.post AS o_post, r.dropped AS o_dropped, r.dur AS o_dur
+    FROM cand JOIN r ON r.id = cand.row_id JOIN b ON b.uuid = cand.uuid
+    WHERE cand.row_id IN (SELECT row_id FROM cand GROUP BY row_id HAVING count(*) = 1)
+        AND cand.uuid IN (SELECT uuid FROM cand GROUP BY uuid HAVING count(*) = 1);
+CREATE TEMP TABLE neighbours AS
+    SELECT id FROM r
+    WHERE pre IS NOT NULL AND id NOT IN (SELECT row_id FROM cand) AND pre IN (SELECT pre FROM b);
+SQL
+    if [[ "$mode" != live ]]; then
+        usage_compaction_report_sql
+    fi
+    case "$mode" in
+    live) usage_compaction_write_sql 'AND real_pre_tokens IS NULL' ;;
+    apply)
+        usage_compaction_write_sql ''
+        printf 'UPDATE compaction_events SET real_pre_tokens = NULL, real_post_tokens = NULL,
+            cumulative_dropped_tokens = NULL, duration_ms = NULL
+            WHERE id IN (SELECT id FROM neighbours);\n'
+        ;;
+    esac
+    [[ "$mode" == report ]] || printf 'COMMIT;\n'
+}
+
+# One line per PostCompact row of the session, then a count summary.
+usage_compaction_report_sql() {
+    cat <<'SQL'
+SELECT * FROM (
+    SELECT 'fill' AS class, row_id, o_pre, n_pre FROM pairs WHERE o_pre IS NULL
+    UNION ALL
+    SELECT 'correct', row_id, o_pre, n_pre FROM pairs
+        WHERE o_pre IS NOT NULL AND NOT (o_pre IS n_pre AND o_post IS n_post
+            AND o_dropped IS n_dropped AND o_dur IS n_dur)
+    UNION ALL
+    SELECT 'same', row_id, o_pre, n_pre FROM pairs
+        WHERE o_pre IS NOT NULL AND o_pre IS n_pre AND o_post IS n_post
+            AND o_dropped IS n_dropped AND o_dur IS n_dur
+    UNION ALL
+    SELECT 'ambiguous', id, pre, NULL FROM r
+        WHERE id IN (SELECT row_id FROM cand) AND id NOT IN (SELECT row_id FROM pairs)
+    UNION ALL
+    SELECT 'neighbour', id, pre, NULL FROM r WHERE id IN (SELECT id FROM neighbours)
+    UNION ALL
+    SELECT 'unmatched', id, pre, NULL FROM r
+        WHERE id NOT IN (SELECT row_id FROM cand) AND id NOT IN (SELECT id FROM neighbours)
+) ORDER BY 2;
+SELECT 'summary', (SELECT count(*) FROM r), (SELECT count(*) FROM b), (SELECT count(*) FROM pairs);
+SQL
+}
+
+# Copies each paired row's boundary into its four real_* columns. $1 adds a condition on the row.
+usage_compaction_write_sql() {
+    local column from
+    printf 'UPDATE compaction_events SET\n'
+    for column in real_pre_tokens:n_pre real_post_tokens:n_post \
+        cumulative_dropped_tokens:n_dropped duration_ms:n_dur; do
+        from="${column#*:}"
+        printf '    %s = (SELECT %s FROM pairs WHERE row_id = compaction_events.id)' \
+            "${column%:*}" "$from"
+        [[ "$column" == duration_ms:* ]] && printf '\n' || printf ',\n'
+    done
+    printf 'WHERE id IN (SELECT row_id FROM pairs) %s;\n' "$1"
+}
+
+# Fills compaction_events.real_* for one session's PostCompact rows from the compact_boundary
+# records in its transcripts. Claude Code writes a boundary after the PostCompact hook runs, so the
+# hook cannot read its own. $2 is the mode (see usage_compaction_resolve_sql; default live).
+# Reads and parses the transcripts before the one write transaction. Returns 3, writing nothing,
+# when the session's files cannot all be read cleanly; any other failure returns 1.
+usage_resolve_compaction_boundaries() {
+    local session="$1" mode="${2:-live}" quoted transcript files file part inserts="" sql
+    quoted="$(sql_str "$session")"
+    transcript="$(usage_sql "
+        WITH paths AS (
+            SELECT 1 AS rank, id, CASE WHEN json_valid(raw_json)
+                THEN json_extract(raw_json, '\$.transcript_path') END AS path
+            FROM compaction_events
+            WHERE tool = 'claude-code' AND session_id = $quoted AND hook_event = 'PostCompact'
+            UNION ALL
+            SELECT 2, 0, CASE WHEN json_valid(raw_json)
+                THEN json_extract(raw_json, '\$.transcript_path') END
+            FROM sessions WHERE tool = 'claude-code' AND session_id = $quoted)
+        SELECT path FROM paths WHERE path IS NOT NULL ORDER BY rank, id DESC LIMIT 1;")" ||
+        return 1
+    if [[ -z "$transcript" ]]; then
+        echo "no transcript path recorded for session $session" >&2
+        return 3
+    fi
+    files="$(usage_compaction_transcripts "$transcript")" || {
+        echo "transcript unreadable for session $session: $transcript" >&2
+        return 3
+    }
+    while IFS= read -r file; do
+        part="$(usage_compaction_boundary_inserts "$file")" || {
+            echo "transcript unreadable or mid-write for session $session: $file" >&2
+            return 3
+        }
+        inserts+="$part"$'\n'
+    done <<<"$files"
+    sql="$(usage_compaction_resolve_sql "$session" "$mode" "$inserts")" || return 1
+    usage_sql <<<"$sql"
+}
