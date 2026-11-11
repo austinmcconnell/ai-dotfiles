@@ -20,9 +20,10 @@ yourself") — treat it as the default, not a straitjacket.
    - **Doubt a non-trivial plan before presenting it.** If the plan meets the
      `doubt-driven-development` skill's non-trivial criteria, suggest a doubt review first and name
      the criterion it meets. If the user approves in chat, run the review and present the plan with
-     the findings reconciled. If they decline, say the review was skipped and present the plan. A
-     trivial plan gets no suggestion. The `model-gates` steering doc explains why this gate goes to
-     the strongest model.
+     the findings reconciled. If they decline, say the review was skipped and present the plan. If
+     they approve the plan without answering the suggestion, that is not a decline: ask once more,
+     or say the review was skipped, before the first edit. A trivial plan gets no suggestion. The
+     `model-gates` steering doc explains why this gate goes to the strongest model.
 1. **Record the plan.** After the user approves, check for a `todo.md` (see the `todo` skill) and
    record the approved commit plan there. If none exists and the work spans multiple commits, offer
    to create one.
@@ -33,6 +34,10 @@ yourself") — treat it as the default, not a straitjacket.
      its context is still small. Continuing here is fine if the user prefers; skipping the offer
      when on the strongest model is not. If the session is already on a mid or small model, skip the
      offer: there is nothing to step down from. The `model-gates` steering doc explains why.
+   - **Check before the first edit.** These steps are easiest to drop right after the user approves,
+     so confirm all three before any `Edit`/`Write`: the doubt-review suggestion was answered or its
+     skip was said, the plan is recorded, and on the strongest model the step-down was offered in
+     the message that confirms the plan is recorded.
 1. **Work one commit at a time.** Implement exactly one commit's worth of work, then stop. Do not
    run ahead into the next commit.
 1. **Verify before pausing.** Run the project's build/tests/pre-commit for the change (see
