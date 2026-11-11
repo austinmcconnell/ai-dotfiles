@@ -122,55 +122,71 @@ writes as 1.25×, matching `pricing.json`.
 The validation question: does the five-hour or seven-day used percentage move in proportion to
 transcript spend? This needs `rate_limit_snapshots` from a subscription machine.
 
-Provisional result, as of 2026-11-07, from 205 rows spanning 2026-11-06T19:29Z to 2026-11-07T23:11Z
-on the personal machine. Percentages are whole numbers and are not monotonic within a window: one 5h
-window has 16 decreases across 108 rows, another has 19 across 87, and the 7d window has 4 and 2. By
-2026-11-11 the table held 492 rows across 12 five-hour and 2 seven-day windows, which this analysis
-has not covered. The figures below use each window's running maximum. Spend is main-session deltas
-from `cost_snapshots` plus `subagent_tasks.estimated_cost_usd` over the same interval. The 7d rows
-are split at 18:50 Nov 7, the first sample where the 7d percentage reached 13.
+Result, as of 2026-11-11, from `rate_limit_snapshots` rows spanning 2026-11-06T19:29Z to
+2026-11-11T14:50Z on the personal machine. Percentages are whole numbers and are not monotonic
+within a window, so the figures use each window's running maximum. Spend is priced from transcripts,
+one record per `requestId` over all projects and subagents, with the rules in Method. Each 5h window
+runs from its first snapshot (at 0%) to the first sample where its maximum was reached. Times are
+UTC.
 
-| Window                | Change  | Spend  | $ per point | Opus share of spend |
-| --------------------- | ------- | ------ | ----------- | ------------------- |
-| 5h, 15:45–19:03 Nov 7 | 0 → 77  | $36.36 | 0.47        | 93%                 |
-| 5h, 22:04–23:15 Nov 7 | 0 → 43  | $14.66 | 0.34        | 43%                 |
-| 7d, 15:45–18:50 Nov 7 | 3 → 13  | $33.07 | 3.31        | 92%                 |
-| 7d, 18:50–22:59 Nov 7 | 13 → 18 | $16.00 | 3.20        | 60%                 |
+| 5h window               | Change | Spend  | $ per point | Opus share of spend |
+| ----------------------- | ------ | ------ | ----------- | ------------------- |
+| Nov 7 15:45–19:03       | 0 → 77 | $33.71 | 0.44        | 92%                 |
+| Nov 7 22:04–Nov 8 02:00 | 0 → 99 | $32.58 | 0.33        | 66%                 |
+| Nov 8 13:08–17:59       | 0 → 32 | $7.09  | 0.22        | 15%                 |
+| Nov 8 18:00–22:58       | 0 → 33 | $11.37 | 0.34        | 94%                 |
+| Nov 8 23:07–Nov 9 02:31 | 0 → 64 | $22.43 | 0.35        | 99%                 |
+| Nov 9 14:06–14:23       | 0 → 13 | $3.08  | 0.24        | 80%                 |
+| Nov 11 01:57–04:16      | 0 → 27 | $8.52  | 0.32        | 52%                 |
+| Nov 11 13:47–14:50      | 0 → 22 | $5.47  | 0.25        | 15%                 |
 
-- **Linearity is not established.** The two 7d sub-intervals agree within 4% in dollars per point,
-  but the two 5h windows differ by 38%. Two windows per type cannot separate a real nonlinearity
-  from whole-percent rounding and noise.
+The last window was still open when this was measured, so its figures are a lower bound.
 
-- **Model mix does not explain the 5h gap consistently.** The Opus-heavy 5h window costs more per
-  point, but the 7d sub-intervals move from 92% to 60% Opus with almost no change in dollars per
-  point. A token-weighted limit would predict a shift in both. The result does not support it, and
-  does not rule it out.
+- **Within a window the percentage is linear in spend.** The running-maximum percentage against
+  cumulative dollars has R² of 0.985 or better in 7 of 8 windows. The 17-minute Nov 9 window is the
+  exception at 0.854.
 
-- **Excluded:** two 5h windows with 2 points each (1 → 3, 0 → 2). They are too coarse to use.
+- **Across 5h windows the ratio is not stable.** Dollars per point ranges from 0.22 to 0.44
+  (coefficient of variation 23%), against whole-percent rounding of under about 4% at these changes.
+  A fixed offset (percentage = 8.6 + 2.40 × dollars) raises R² only from 0.910 to 0.943, with
+  residuals from −12.5 to +12.2 points. The through-origin slope implies about $36 of
+  transcript-priced spend per 5h limit. That is a fit, not a measured limit.
 
-- **Token kinds (transcripts, one record per `requestId`, all projects and subagents).** Points per
-  unit, compared across the two windows of each type:
+- **The 7d percentage is linear in cumulative spend.** From 0 at 23:00 Nov 7 to 33, over 312
+  snapshots, R² against cumulative dollars is 0.999 and spend is $83.01 (about 2.5 dollars per
+  point). Each successive 5-point step cost $11.69 to $13.90, or 2.34 to 2.78 dollars per point.
+  That implies about $250 per 7d limit, from one window. The window resets at 23:00 Nov 14.
 
-  | Metric      | 5h ratio gap | 7d ratio gap |
-  | ----------- | ------------ | ------------ |
-  | Dollars     | 32%          | 3%           |
-  | Output      | 9%           | 0.2%         |
-  | Input       | 43%          | 30%          |
-  | Cache write | 40%          | 45%          |
-  | Cache read  | 29%          | 24%          |
-  | All tokens  | 30%          | 25%          |
+- **Model mix does not explain the 5h spread consistently.** Opus share runs from 15% to 99%. The
+  two windows at 15% Opus cost 0.22 and 0.25 per point and the windows at 66% to 99% cost 0.33 to
+  0.44, but the 80% Opus window costs 0.24. A token-weighted limit would predict a clean shift. The
+  result neither supports it nor rules it out.
 
-  Output tokens agree best in the 5h windows, where the rounding error is about ±1–2%. The 7d gaps
-  are inside the rounding error (the 5-point change alone is about ±10%), so they do not separate
-  the metrics. Six metrics on four intervals is a lead to test on more windows, not a finding.
+- **Excluded:** four 5h windows whose change was 3 points or less (1 → 3, 0 → 2, 0 → 1, 0 → 1). They
+  are too coarse to use.
+
+- **Which metric the percentage follows is unresolved.** Across the eight 5h windows:
+
+  | Metric      | Spread of points per unit | Through-origin R² (5h) | R² against cumulative (7d) |
+  | ----------- | ------------------------- | ---------------------- | -------------------------- |
+  | Dollars     | 23%                       | 0.910                  | 0.999                      |
+  | Output      | 43%                       | 0.974                  | 0.981                      |
+  | Input       | 35%                       | 0.453                  | 0.959                      |
+  | Cache write | 30%                       | 0.724                  | 0.981                      |
+  | Cache read  | 39%                       | 0.389                  | 0.962                      |
+
+  Dollars has the most stable ratio and the best 7d fit. Output tokens has the best 5h
+  through-origin fit, but two large windows dominate it. The 7d column is weak evidence for any
+  metric, because every cumulative series rises over time. Eight windows cannot separate them.
+
+- **Not checked:** usage on other devices or on claude.ai counts toward the same limits and is not
+  in this machine's transcripts. It could account for the 5h spread. Testing that needs the other
+  device's usage for the same windows.
 
 - **`cost_snapshots` and `sessions` token fields are not running totals.** `input_tokens` and
   `output_tokens` hold the most recent API call's values. In `cost_snapshots` they fall within a
   session (12 and 595 decreases). In `sessions`, input equals the last call's input plus cache reads
   and writes exactly, checked against one session's transcript. Use transcripts for token totals.
-
-The seven-day window was flat at 3% from before 15:45 Nov 7, so spend before that point does not
-count toward its change.
 
 Runbook (run on the machine that has rate-limit data):
 
@@ -182,9 +198,9 @@ Runbook (run on the machine that has rate-limit data):
    window's interval where its other reset changes; the 5h window at 03:00 UTC Nov 8 changed its 7d
    reset at 23:00 UTC Nov 7.
 1. For the same time interval, sum token totals per kind (input, output, cache write, cache read)
-   from transcripts, one record per `requestId`. Then sum spend: main-session deltas from
-   `cost_snapshots` plus `subagent_tasks.estimated_cost_usd`. Cross-check against transcripts where
-   retention allows (method above).
+   and priced spend from transcripts, one record per `requestId`, over all projects and subagents.
+   Where transcripts have aged out, fall back to main-session deltas from `cost_snapshots` plus
+   `subagent_tasks.estimated_cost_usd`, which run low (see Coverage).
 1. Compare percentage change with spend change per window. A roughly linear relationship means the
    percentage tracks spend. Report the fit and the windows that do not match.
 1. The snapshot table has no `session_id`. Per-session attribution can only split a window's spend
