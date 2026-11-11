@@ -172,6 +172,9 @@ it fetches from Anthropic; the setting keeps it on if that flag is withdrawn. It
   advisor's rates. Claude Code documents no control for advisor caching.
 - The advisor must rank at or above the main model. An Opus advisor breaks that rule for a Fable
   main session; how Claude Code handles the mismatch is unverified.
+- Subagents can call it too, including `doubt-reviewer`, whose `tools:` list does not exclude it
+  (see Personas). That is accepted: a call is occasional and adds an Opus second opinion to an Opus
+  review. The subagent cost in `bin/ai-usage` does not price advisor tokens yet.
 - `CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1` or `/advisor off` turns it off. `~/.claude/settings.json` is
   a symlink to this tracked file, so `/advisor` edits the repo.
 
@@ -247,7 +250,8 @@ and it carries no domain steering (see Cost Controls for its Opus exception). It
 adversarial prompt in that skill's Step 3; change one, change both.
 
 - `tools:` frontmatter is the closest Claude analog to kiro's `allowedTools` — it gates which tools
-  are *available* to the persona at all, not just whether they auto-run without a prompt
+  are *available* to the persona at all, not just whether they auto-run without a prompt. The
+  advisor is the exception: when it is on, a persona can call it whatever `tools:` lists
 - `disallowedTools:` blocks specific tools within an otherwise-available category (e.g. jira's
   `mcp__jira__jira_delete`), mirroring kiro's MCP `disabledTools`
 - `mcpServers:` scopes which MCP servers a persona can see (jira restricts to `jira`)
