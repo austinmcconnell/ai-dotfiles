@@ -61,7 +61,7 @@ repair_statement_for_row() {
 
 describe_row() {
     local parent_id="$1" task_id="$2"
-    sqlite3 -separator " | " "$USAGE_DB" "
+    sqlite3 -separator " | " -cmd ".timeout $USAGE_DB_BUSY_TIMEOUT_MS" "$USAGE_DB" "
         SELECT task_id, agent_type, model, effort, token_count, estimated_cost_usd,
             context_window_size, started_at
         FROM subagent_tasks
@@ -76,7 +76,7 @@ if [[ ! -f "$USAGE_DB" ]]; then
     exit 1
 fi
 
-CANDIDATES="$(sqlite3 -separator "$FIELD_SEP" "$USAGE_DB" "
+CANDIDATES="$(sqlite3 -separator "$FIELD_SEP" -cmd ".timeout $USAGE_DB_BUSY_TIMEOUT_MS" "$USAGE_DB" "
     SELECT parent_session_id, task_id, raw_json FROM subagent_tasks
     WHERE tool = 'claude-code' AND effort IS NOT NULL;
 ")"
@@ -114,9 +114,13 @@ if [[ -e "$BACKUP" ]]; then
     echo "backup already exists, refusing to overwrite: $BACKUP" >&2
     exit 1
 fi
-sqlite3 "$USAGE_DB" ".backup '$BACKUP'"
+usage_sql ".backup '$BACKUP'"
 echo "backup written: $BACKUP"
 
-sqlite3 -bail "$USAGE_DB" "BEGIN; $STATEMENTS COMMIT;"
+# IMMEDIATE takes the write lock up front. `.bail on` in a stdin script stops at the first error,
+# which `-bail` does not do inside one multi-statement argument: a BEGIN that timed out would
+# otherwise let the UPDATEs run outside a transaction. Either the whole transaction runs, or
+# this fails after the busy timeout with nothing written.
+printf '.bail on\nBEGIN IMMEDIATE;\n%s\nCOMMIT;\n' "$STATEMENTS" | usage_sql
 echo "repaired $UPDATES of $COUNT rows"
 echo "run backfill-subagent-cost.sh --apply to price the repaired rows"

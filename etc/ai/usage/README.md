@@ -135,7 +135,9 @@ Run them in that order, each as a dry run first:
 ./backfill-subagent-cost.sh --apply
 ```
 
-Afterwards no row should have a non-NULL `effort`. Both scripts are idempotent.
+Afterwards no row should have a non-NULL `effort`. Both scripts are idempotent. Each waits up to 5
+seconds for a lock held by a statusline write. If the lock outlasts that, `--apply` fails with
+nothing written, and a re-run is safe.
 
 ## Compaction tracking: `compaction_events`
 

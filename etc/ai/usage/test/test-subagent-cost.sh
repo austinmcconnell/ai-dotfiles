@@ -319,12 +319,75 @@ test_writer_name() {
         "$(stored_name n3)"
 }
 
+# A DB with one task whose stored cost is wrong (99) and whose effort marks it as shifted, in
+# $1, holding the transcript that the backfill reprices to 0.013.
+seed_maintenance_db() {
+    local dir="$1" project="$WORK/maint-proj"
+    mkdir -p "$project/sess/subagents" "$dir"
+    cp "$WORK/fixtures/normal.jsonl" "$project/sess/subagents/agent-t1.jsonl"
+    PARENT="$project/sess.jsonl"
+    payload t1 | USAGE_DB_DIR="$dir" bash "$USAGE_DIR/claude-subagent-statusline.sh"
+    sqlite3 "$dir/usage.db" \
+        "UPDATE subagent_tasks SET estimated_cost_usd = 99, effort = 'high' WHERE task_id = 't1'"
+}
+
+# Holds SQLite's write lock on $1 for $2 seconds; readers are not blocked.
+hold_maintenance_lock() {
+    { printf 'BEGIN IMMEDIATE;\n' && sleep "$2"; } 2>/dev/null | sqlite3 "$1/usage.db" >/dev/null 2>&1 &
+    MAINT_LOCK_PID=$!
+    sleep 0.5
+}
+
+maint_cost() {
+    sqlite3 "$1/usage.db" "SELECT quote(estimated_cost_usd) FROM subagent_tasks WHERE task_id = 't1'"
+}
+
+test_maintenance_scripts_wait_for_lock() {
+    local dir started rc
+
+    dir="$WORK/maint-wait"
+    seed_maintenance_db "$dir"
+    hold_maintenance_lock "$dir" 2
+    started=$SECONDS
+    rc=0
+    USAGE_DB_DIR="$dir" bash "$USAGE_DIR/backfill-subagent-cost.sh" --apply >/dev/null 2>&1 || rc=$?
+    check "backfill --apply waits out a short write lock" "0" "$rc"
+    check "backfill --apply wrote after the lock cleared" "0.013" "$(maint_cost "$dir")"
+    check "backfill --apply actually waited" "yes" "$( ((SECONDS - started >= 1)) && echo yes || echo no)"
+    wait "$MAINT_LOCK_PID" 2>/dev/null || true
+
+    dir="$WORK/maint-repair"
+    seed_maintenance_db "$dir"
+    hold_maintenance_lock "$dir" 2
+    rc=0
+    USAGE_DB_DIR="$dir" bash "$USAGE_DIR/repair-subagent-tasks.sh" --apply >/dev/null 2>&1 || rc=$?
+    check "repair --apply waits out a short write lock" "0" "$rc"
+    check "repair --apply wrote after the lock cleared" "NULL" "$(maint_cost "$dir")"
+    wait "$MAINT_LOCK_PID" 2>/dev/null || true
+
+    dir="$WORK/maint-timeout"
+    seed_maintenance_db "$dir"
+    hold_maintenance_lock "$dir" 6
+    started=$SECONDS
+    rc=0
+    USAGE_DB_DIR="$dir" bash "$USAGE_DIR/backfill-subagent-cost.sh" --apply >/dev/null 2>&1 || rc=$?
+    local waited=$((SECONDS - started))
+    kill "$MAINT_LOCK_PID" 2>/dev/null || true
+    wait "$MAINT_LOCK_PID" 2>/dev/null || true
+    check "backfill --apply fails when the lock outlasts the timeout" "yes" \
+        "$( ((rc != 0)) && echo yes || echo no)"
+    check "backfill --apply waited for the timeout before failing" "yes" \
+        "$( ((waited >= 4)) && echo yes || echo no)"
+    check "a failed backfill --apply leaves the stored cost alone" "99.0" "$(maint_cost "$dir")"
+}
+
 write_fixtures
 write_iteration_fixtures
 test_pricing
 test_iterations
 test_writer
 test_writer_name
+test_maintenance_scripts_wait_for_lock
 
 if [[ "$FAILURES" -gt 0 ]]; then
     echo "$FAILURES check(s) failed"
