@@ -88,7 +88,7 @@ repos:
         name: Subagent cost pricing tests
         language: script
         entry: etc/ai/usage/test/test-subagent-cost.sh
-        files: ^etc/ai/usage/(lib\.sh|pricing\.json|claude-subagent-statusline\.sh|backfill-subagent-cost\.sh|repair-subagent-tasks\.sh|test/test-subagent-cost\.sh)$
+        files: ^etc/ai/usage/(lib\.sh|pricing\.json|claude-subagent-statusline\.sh|backfill-subagent-cost\.sh|test/test-subagent-cost\.sh)$
         pass_filenames: false
       - id: usage-estimate-session-cost-tests
         name: Session cost estimator tests

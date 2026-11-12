@@ -111,35 +111,22 @@ payload on stdin and write to the DB as a side effect:
   holds the launch description from the payload's `description` field, not `label`, which tracks the
   subagent's live activity. A firing without a description leaves the stored name alone.
 
-## Repairing `subagent_tasks` rows
+## Repricing `subagent_tasks` rows
 
-Two maintenance scripts fix historical rows. Both default to a dry run, print before/after per row,
-and need `--apply` to write; `--apply` backs the DB up first and refuses to run if that backup path
-already exists.
-
-Rows written before the column-shift fix have their columns off by one. They are identifiable by a
-non-NULL `effort`, which the current writer never sets. `repair-subagent-tasks.sh` rebuilds those
-columns from the row's stored `raw_json` and clears `estimated_cost_usd`, because cost now comes
-from the transcript rather than from any column it could recompute.
-
-`backfill-subagent-cost.sh` then reprices every row from its own subagent transcript. A row whose
-transcript is missing or not fully priceable keeps its stored value, because transcripts expire
-after `cleanupPeriodDays` and an expired one says nothing about whether the figure is right. Pass
-`--clear-unpriceable` to set those rows to NULL instead, for a DB that may still hold figures from
-the superseded blended-rate estimator.
-
-Run them in that order, each as a dry run first:
+`backfill-subagent-cost.sh` reprices every row from its own subagent transcript. It defaults to a
+dry run that prints before/after per row, and `--apply` backs the DB up first and refuses to run if
+that backup path already exists. A row whose transcript is missing or not fully priceable keeps its
+stored value, because transcripts expire after `cleanupPeriodDays` and an expired one says nothing
+about whether the figure is right. Pass `--clear-unpriceable` to set those rows to NULL instead, for
+a DB that may still hold figures from the superseded blended-rate estimator.
 
 ```bash
-./repair-subagent-tasks.sh            # review
-./repair-subagent-tasks.sh --apply
 ./backfill-subagent-cost.sh           # review
 ./backfill-subagent-cost.sh --apply
 ```
 
-Afterwards no row should have a non-NULL `effort`. Both scripts are idempotent. Each waits up to 5
-seconds for a lock held by a statusline write. If the lock outlasts that, `--apply` fails with
-nothing written, and a re-run is safe.
+The script is idempotent. It waits up to 5 seconds for a lock held by a statusline write. If the
+lock outlasts that, `--apply` fails with nothing written, and a re-run is safe.
 
 ## Compaction tracking: `compaction_events`
 

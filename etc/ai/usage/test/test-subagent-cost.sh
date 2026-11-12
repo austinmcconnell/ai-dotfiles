@@ -319,8 +319,8 @@ test_writer_name() {
         "$(stored_name n3)"
 }
 
-# A DB with one task whose stored cost is wrong (99) and whose effort marks it as shifted, in
-# $1, holding the transcript that the backfill reprices to 0.013.
+# A DB with one task whose stored cost is wrong (99), in $1, holding the transcript that the
+# backfill reprices to 0.013.
 seed_maintenance_db() {
     local dir="$1" project="$WORK/maint-proj"
     mkdir -p "$project/sess/subagents" "$dir"
@@ -328,7 +328,7 @@ seed_maintenance_db() {
     PARENT="$project/sess.jsonl"
     payload t1 | USAGE_DB_DIR="$dir" bash "$USAGE_DIR/claude-subagent-statusline.sh"
     sqlite3 "$dir/usage.db" \
-        "UPDATE subagent_tasks SET estimated_cost_usd = 99, effort = 'high' WHERE task_id = 't1'"
+        "UPDATE subagent_tasks SET estimated_cost_usd = 99 WHERE task_id = 't1'"
 }
 
 # Holds SQLite's write lock on $1 for $2 seconds; readers are not blocked.
@@ -354,15 +354,6 @@ test_maintenance_scripts_wait_for_lock() {
     check "backfill --apply waits out a short write lock" "0" "$rc"
     check "backfill --apply wrote after the lock cleared" "0.013" "$(maint_cost "$dir")"
     check "backfill --apply actually waited" "yes" "$( ((SECONDS - started >= 1)) && echo yes || echo no)"
-    wait "$MAINT_LOCK_PID" 2>/dev/null || true
-
-    dir="$WORK/maint-repair"
-    seed_maintenance_db "$dir"
-    hold_maintenance_lock "$dir" 2
-    rc=0
-    USAGE_DB_DIR="$dir" bash "$USAGE_DIR/repair-subagent-tasks.sh" --apply >/dev/null 2>&1 || rc=$?
-    check "repair --apply waits out a short write lock" "0" "$rc"
-    check "repair --apply wrote after the lock cleared" "NULL" "$(maint_cost "$dir")"
     wait "$MAINT_LOCK_PID" 2>/dev/null || true
 
     dir="$WORK/maint-timeout"

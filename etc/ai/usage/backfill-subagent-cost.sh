@@ -101,9 +101,9 @@ if [[ "$APPLY" != true ]]; then
     exit 0
 fi
 
-# Named per script so the repair-then-backfill sequence cannot collide. Timestamps are
-# second-granular, so two runs of this script in one second would otherwise overwrite the
-# first backup with a copy of the already-updated DB, losing the only pre-change snapshot.
+# Timestamps are second-granular, so two runs of this script in one second would otherwise
+# overwrite the first backup with a copy of the already-updated DB, losing the only pre-change
+# snapshot.
 BACKUP="$USAGE_DB.bak-backfill-$(date -u +%Y%m%dT%H%M%SZ)"
 if [[ -e "$BACKUP" ]]; then
     echo "backup already exists, refusing to overwrite: $BACKUP" >&2
