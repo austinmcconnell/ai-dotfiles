@@ -80,8 +80,10 @@ The deny list mirrors protections from kiro-cli and Cursor:
 
 ### Hooks
 
-Six global hook events configured in `settings.json` (all commands resolve via `$AI_DOTFILES_DIR` to
-`etc/ai/hooks/`, the same shared scripts kiro-cli uses):
+Six global hook events configured in `settings.json` (all commands resolve via
+`${AI_DOTFILES_DIR:-$HOME/.ai-dotfiles}` to `etc/ai/hooks/`, the same shared scripts kiro-cli uses).
+The default matters for the Claude desktop app: GUI apps launched from Finder or the Dock do not
+read `.zshenv`, so a bare `$AI_DOTFILES_DIR` expands to nothing there and every hook fails:
 
 - **`SessionStart`** (`matcher: "startup|resume"`) — runs `recall-memory.sh` (surfaces engram
   memories for the current project), `check-engram-hygiene.sh` (time-throttled nudge for pending

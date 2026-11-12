@@ -238,7 +238,7 @@
                 "hooks": [
                     {
                         "type": "command",
-                        "command": "$AI_DOTFILES_DIR/etc/ai/hooks/recall-memory.sh",
+                        "command": "${AI_DOTFILES_DIR:-$HOME/.ai-dotfiles}/etc/ai/hooks/recall-memory.sh",
                         "timeout": 5
                     }
                 ]
@@ -248,7 +248,7 @@
                 "hooks": [
                     {
                         "type": "command",
-                        "command": "$AI_DOTFILES_DIR/etc/ai/hooks/check-engram-hygiene.sh claude",
+                        "command": "${AI_DOTFILES_DIR:-$HOME/.ai-dotfiles}/etc/ai/hooks/check-engram-hygiene.sh claude",
                         "timeout": 5
                     }
                 ]
@@ -258,7 +258,7 @@
                 "hooks": [
                     {
                         "type": "command",
-                        "command": "$AI_DOTFILES_DIR/etc/ai/hooks/core-analyses-status.sh",
+                        "command": "${AI_DOTFILES_DIR:-$HOME/.ai-dotfiles}/etc/ai/hooks/core-analyses-status.sh",
                         "timeout": 5
                     }
                 ]
@@ -268,7 +268,7 @@
                 "hooks": [
                     {
                         "type": "command",
-                        "command": "$AI_DOTFILES_DIR/etc/ai/hooks/suggest-agent-fit.sh",
+                        "command": "${AI_DOTFILES_DIR:-$HOME/.ai-dotfiles}/etc/ai/hooks/suggest-agent-fit.sh",
                         "timeout": 5
                     }
                 ]
@@ -280,7 +280,7 @@
                 "hooks": [
                     {
                         "type": "command",
-                        "command": "$AI_DOTFILES_DIR/etc/ai/hooks/block-env-files.sh",
+                        "command": "${AI_DOTFILES_DIR:-$HOME/.ai-dotfiles}/etc/ai/hooks/block-env-files.sh",
                         "timeout": 5,
                         "onFailure": "block"
                     }
@@ -291,7 +291,7 @@
                 "hooks": [
                     {
                         "type": "command",
-                        "command": "$AI_DOTFILES_DIR/etc/ai/hooks/block-sops-age-files.sh",
+                        "command": "${AI_DOTFILES_DIR:-$HOME/.ai-dotfiles}/etc/ai/hooks/block-sops-age-files.sh",
                         "timeout": 5,
                         "onFailure": "block"
                     }
@@ -302,7 +302,7 @@
                 "hooks": [
                     {
                         "type": "command",
-                        "command": "$AI_DOTFILES_DIR/etc/ai/hooks/block-ssh-private-keys.sh",
+                        "command": "${AI_DOTFILES_DIR:-$HOME/.ai-dotfiles}/etc/ai/hooks/block-ssh-private-keys.sh",
                         "timeout": 5,
                         "onFailure": "block"
                     }
@@ -313,7 +313,7 @@
                 "hooks": [
                     {
                         "type": "command",
-                        "command": "$AI_DOTFILES_DIR/etc/ai/hooks/block-shell-trace-mode.sh",
+                        "command": "${AI_DOTFILES_DIR:-$HOME/.ai-dotfiles}/etc/ai/hooks/block-shell-trace-mode.sh",
                         "timeout": 5,
                         "onFailure": "block"
                     }
@@ -324,7 +324,7 @@
                 "hooks": [
                     {
                         "type": "command",
-                        "command": "$AI_DOTFILES_DIR/etc/ai/hooks/block-memory-secrets.sh",
+                        "command": "${AI_DOTFILES_DIR:-$HOME/.ai-dotfiles}/etc/ai/hooks/block-memory-secrets.sh",
                         "timeout": 5,
                         "onFailure": "block"
                     }
@@ -335,7 +335,7 @@
                 "hooks": [
                     {
                         "type": "command",
-                        "command": "$AI_DOTFILES_DIR/etc/ai/hooks/warn-memory-exfil.sh",
+                        "command": "${AI_DOTFILES_DIR:-$HOME/.ai-dotfiles}/etc/ai/hooks/warn-memory-exfil.sh",
                         "timeout": 5
                     }
                 ]
@@ -345,7 +345,7 @@
                 "hooks": [
                     {
                         "type": "command",
-                        "command": "$AI_DOTFILES_DIR/etc/ai/hooks/block-persona-shell-commands.sh",
+                        "command": "${AI_DOTFILES_DIR:-$HOME/.ai-dotfiles}/etc/ai/hooks/block-persona-shell-commands.sh",
                         "timeout": 5,
                         "onFailure": "block"
                     }
@@ -356,7 +356,7 @@
                 "hooks": [
                     {
                         "type": "command",
-                        "command": "$AI_DOTFILES_DIR/etc/ai/hooks/ask-opus-subagents.sh",
+                        "command": "${AI_DOTFILES_DIR:-$HOME/.ai-dotfiles}/etc/ai/hooks/ask-opus-subagents.sh",
                         "timeout": 5,
                         "onFailure": "block"
                     }
@@ -369,7 +369,7 @@
                 "hooks": [
                     {
                         "type": "command",
-                        "command": "AI_AGENT_NAME=claude-code $AI_DOTFILES_DIR/etc/ai/hooks/audit-shell-commands.sh",
+                        "command": "AI_AGENT_NAME=claude-code ${AI_DOTFILES_DIR:-$HOME/.ai-dotfiles}/etc/ai/hooks/audit-shell-commands.sh",
                         "timeout": 10,
                         "async": true
                     }
@@ -381,7 +381,7 @@
                 "hooks": [
                     {
                         "type": "command",
-                        "command": "$AI_DOTFILES_DIR/etc/ai/hooks/correction-capture.sh",
+                        "command": "${AI_DOTFILES_DIR:-$HOME/.ai-dotfiles}/etc/ai/hooks/correction-capture.sh",
                         "timeout": 5
                     }
                 ]
@@ -390,7 +390,7 @@
                 "hooks": [
                     {
                         "type": "command",
-                        "command": "$AI_DOTFILES_DIR/etc/ai/hooks/suggest-context-checkpoint.sh",
+                        "command": "${AI_DOTFILES_DIR:-$HOME/.ai-dotfiles}/etc/ai/hooks/suggest-context-checkpoint.sh",
                         "timeout": 5
                     }
                 ]
@@ -402,7 +402,7 @@
                 "hooks": [
                     {
                         "type": "command",
-                        "command": "$AI_DOTFILES_DIR/etc/ai/hooks/log-compaction-event.sh",
+                        "command": "${AI_DOTFILES_DIR:-$HOME/.ai-dotfiles}/etc/ai/hooks/log-compaction-event.sh",
                         "timeout": 5
                     }
                 ]
@@ -414,7 +414,7 @@
                 "hooks": [
                     {
                         "type": "command",
-                        "command": "$AI_DOTFILES_DIR/etc/ai/hooks/log-compaction-event.sh",
+                        "command": "${AI_DOTFILES_DIR:-$HOME/.ai-dotfiles}/etc/ai/hooks/log-compaction-event.sh",
                         "timeout": 5
                     }
                 ]
@@ -463,10 +463,10 @@
     },
     "statusLine": {
         "type": "command",
-        "command": "$AI_DOTFILES_DIR/etc/ai/usage/claude-statusline.sh"
+        "command": "${AI_DOTFILES_DIR:-$HOME/.ai-dotfiles}/etc/ai/usage/claude-statusline.sh"
     },
     "subagentStatusLine": {
         "type": "command",
-        "command": "$AI_DOTFILES_DIR/etc/ai/usage/claude-subagent-statusline.sh"
+        "command": "${AI_DOTFILES_DIR:-$HOME/.ai-dotfiles}/etc/ai/usage/claude-subagent-statusline.sh"
     }
 }
