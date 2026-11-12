@@ -20,9 +20,10 @@ validation, and decisions, read `cost-estimation.md` in this directory.
   since `sessions`' upsert-in-place would otherwise overwrite the one history they exist to
   preserve.
 - **Migrations**: see "Schema migrations" below.
-- **Pricing**: `pricing.json` — model → $/M-token rates, used only to estimate subagent $ cost.
-  Claude Code's main session already reports `cost.total_cost_usd` itself, while a subagent payload
-  carries only a combined `tokenCount` that cannot be split into input and output. So
+- **Pricing**: `pricing.json` — model → $/M-token rates, used to estimate subagent $ cost and by the
+  session estimator's cross-check (see "Session-level cost estimator" below). Claude Code's main
+  session already reports `cost.total_cost_usd` itself, while a subagent payload carries only a
+  combined `tokenCount` that cannot be split into input and output. So
   `subagent_tasks.estimated_cost_usd` is priced from the subagent's own transcript by
   `usage_transcript_cost` in `lib.sh`: one final record per `requestId`, with the long-context and
   cache-read rules from `pricing.json`. A request whose usage has a non-empty `iterations` array is
