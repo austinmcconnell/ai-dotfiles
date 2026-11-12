@@ -290,9 +290,23 @@ are off for that session's model.
 
 Long-context pricing is per request: a model whose `pricing.json` entry has a `long_context` block
 (Haiku 5.5 today) prices each request at the higher rates when its prompt, counting input, cache
-reads, and cache writes, is over the threshold. The estimate can mix tiers within one session. This
-estimator prices the last call's usage only, so unlike `usage_transcript_cost` it does not price
-advisor passes or split a multi-pass request.
+reads, and cache writes, is over the threshold. The estimate can mix tiers within one session. Each
+snapshot holds the usage of one API pass, so the executor passes of a multi-pass request are priced
+as separate rows, whenever a statusline firing lands on them.
+
+Advisor passes never appear in a snapshot, so the estimate leaves them out, and the ratio and flag
+are computed without them. The script prints an `advisor:` line beside them instead. It prices the
+`advisor_message` entries of `usage.iterations[]` in the session's main transcript
+(`transcript_path` in `sessions.raw_json`), using `usage_transcript_advisor_cost` in `lib.sh`: one
+record per `requestId`, each pass at its own model with the `pricing.json` rules. Sidechain records
+are skipped, since a subagent's advisor passes are in `subagent_tasks.estimated_cost_usd`. The line
+reads `unavailable` when the session has no transcript path or the file is gone (transcripts age out
+under `cleanupPeriodDays`), and `incomplete` when a pass cannot be priced: a missing or unpriced
+model, a pass in a record with no `requestId`, or a version-dependent cache-read rate with no
+version. An incomplete sum is shown with its count of unpriced passes and never as a clean figure.
+It is deliberately not added to the estimate. The snapshot estimate samples calls and the advisor
+sum counts every pass, so nobody has validated the 0.85–1.15 band for the combination; see "Advisor
+passes" in `cost-estimation.md`. Tests: `test/test-estimate-session-cost.sh`.
 
 Cache-read rates are version-aware where a model's entry in `pricing.json` names a repricing
 release: Sonnet 5.5 used 0.1x before Claude Code 2.1.296 and 0.05x from it. Each row uses the

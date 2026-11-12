@@ -95,7 +95,60 @@ the estimator. The snapshot estimator stays primary.
 ### Sonnet 5.5 residual
 
 Post-2.1.296 Sonnet 5.5 sessions sit at 0.78 to 0.86 under both snapshot and transcript pricing. The
-residual is general under-capture, not version- or tier-specific. No change.
+residual is general under-capture, not version- or tier-specific. No change. Sessions that used the
+advisor are partly explained by spend the snapshots never carry; see "Advisor passes".
+
+### Advisor passes
+
+Snapshots cannot show advisor passes. `current_usage` has only the four token fields and holds the
+usage of one API pass: for a two-pass request the snapshots hold each `message` pass separately and
+never the top-level sum. Top-level transcript usage excludes `advisor_message` tokens, so the
+estimate cannot see advisor spend. The estimator reports it on an `advisor:` line priced from the
+main transcript, one record per `requestId` (raw records repeat a request's iterations: one session
+has 15 raw advisor entries for 2 requests). The line is informational and is not added to the
+estimate, ratio, or flag.
+
+Whether `total_cost_usd` includes advisor spend was checked on one session with a Sonnet main model,
+an Opus advisor, and Opus subagents. `cost-state` records 155,018 Opus output tokens. Transcripts
+(main file plus 10 subagent files, one record per `requestId`) give 102,742 for Opus requests and
+51,484 for advisor passes, 154,226 together (0.5% below `cost-state`). Without the advisor passes
+the sum is 34% below. Opus input is 13% below and cache reads 24% below even with them, the same
+under-capture as "Coverage". `cost-state` totals $22.458 against `total_cost_usd` of $22.431. One
+session supports inclusion without proving it.
+
+Six sessions with `cost_snapshots` had advisor passes in their transcripts, out of 65 sessions with
+snapshots (measured 2026-11-11 on the personal machine; transcripts past retention were not
+available). Ratios are estimate ÷ `total_cost_usd`:
+
+| Session  | Advisor requests | Advisor cost | Share of actual | Ratio | Ratio with advisor added |
+| -------- | ---------------- | ------------ | --------------- | ----- | ------------------------ |
+| 3a4272c1 | 1                | $0.93        | 4%              | 0.52  | 0.56                     |
+| 5ba3885c | 2                | $2.09        | 19%             | 0.79  | 0.98                     |
+| a2e23647 | 1                | $0.93        | 17%             | 0.85  | 1.01                     |
+| ee2bb286 | 1                | $0.95        | 7%              | 0.81  | 0.89                     |
+| 00342bfa | 2                | $1.79        | 7%              | 0.35  | 0.42                     |
+| c1704287 | 2                | $1.34        | 22%             | 0.79  | 1.01                     |
+
+None of the six was inside the 0.85 to 1.15 band without the advisor, and four are inside it with
+it. That is a reason not to add the advisor sum to the estimate: the snapshot estimate samples calls
+(about 79% of output tokens) while the advisor sum counts every pass, so the sum can offset missed
+executor calls and hide the capture problem the flag exists to show. The ratio also still leaves out
+subagent spend that `total_cost_usd` includes, and nobody has validated the band for a combined
+figure. Six confounded sessions cannot settle it.
+
+Re-run when advisor use grows or the combined ratio is wanted, while the transcripts still exist
+(they age out; see "Retention"):
+
+1. List main transcripts that contain `advisor_message`:
+   `grep -l '"advisor_message"' ~/.claude/projects/*/*.jsonl`. A file name is the session id.
+1. Run `estimate-session-cost.sh <session>` for each. The ratio and the `advisor:` line give the
+   numbers; skip sessions whose line is `unavailable` or `incomplete`.
+1. Add the advisor cost to the estimate offline, and count the sessions that move into or out of the
+   band.
+1. For a session whose main model differs from the advisor's, compare `cost-state` per-model output
+   tokens with transcript totals including and excluding advisor passes, as above.
+1. Record the result here. Consider changing the estimate or flag only on a larger population, and
+   only with a calibration like the ones above.
 
 ### Cache-write rate check
 
@@ -217,8 +270,12 @@ Runbook (run on the machine that has rate-limit data):
 ## Decisions
 
 - Estimator source: usage.db `cost_snapshots`. Transcripts and `cost-state` are cross-checks only
-  because of retention.
-- The main-session snapshot estimator is unchanged. Any change to it needs a plan and review first.
+  because of retention. The estimate, ratio, and flag use snapshots alone. The one
+  transcript-derived output is the `advisor:` line, which is informational and reads `unavailable`
+  once the transcript ages out.
+- The main-session estimate, ratio, and flag are computed from snapshots alone. Any change to how
+  they are computed needs a plan and review first. Advisor passes are reported on a separate
+  informational line and are not added to them (see "Advisor passes").
 - Subagent cost is priced from each subagent's own transcript. A blended input/output rate times
   `tokenCount` misprices both ways (cache-read-heavy Sonnet 3.6× high, output-heavy Haiku 5.5 0.7×),
   so no constant correction fits.
@@ -226,5 +283,6 @@ Runbook (run on the machine that has rate-limit data):
   not proven: adding subagent transcripts moved the median transcript-to-actual ratio from 0.78 to
   0.83 across 21 sessions, which is weak support.
 - Advisor calls appear as `advisor_message` entries in `usage.iterations[]`, and top-level usage
-  excludes their tokens. Subagent transcript pricing includes them; the main-session snapshot
-  estimator does not price them.
+  excludes their tokens. Subagent transcript pricing includes them. The main-session estimator
+  prices them from the main transcript on a separate `advisor:` line, because snapshots cannot show
+  them; that sum is not part of the estimate, ratio, or flag.

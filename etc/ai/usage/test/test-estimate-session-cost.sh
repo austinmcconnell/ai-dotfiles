@@ -16,6 +16,7 @@ source "$USAGE_DIR/lib.sh"
 
 FAILURES=0
 OUT=""
+BASE=""
 RC=0
 FLAG_LINE="flag:     ratio outside 0.85-1.15 -- estimate and actual disagree, "
 FLAG_LINE+="see etc/ai/usage/README.md"
@@ -37,10 +38,16 @@ report() {
     printf "session:  %s\nestimate: \$%s\nactual:   \$%s\nratio:    %s" "$@"
 }
 
-# Runs the estimator; sets OUT (stdout and stderr) and RC.
+# Runs the estimator; sets OUT (stdout and stderr), BASE (OUT without the advisor line, which
+# is what the estimator printed before that line existed) and RC.
 run_estimator() {
     RC=0
     OUT="$(bash "$USAGE_DIR/estimate-session-cost.sh" "$@" 2>&1)" || RC=$?
+    BASE="$(grep -v '^advisor:' <<<"$OUT" || true)"
+}
+
+advisor_line() {
+    grep '^advisor:' <<<"$OUT" || true
 }
 
 # A statusline payload: session, model, Claude Code version, cache TTL, then the four
@@ -65,6 +72,70 @@ add_session() {
 add_snapshot() {
     usage_sql "INSERT INTO cost_snapshots (tool, session_id, occurred_at, raw_json)
         VALUES ('claude-code', $(sql_str "$1"), '2026-11-01T00:00:00Z', $(sql_str "$2"));"
+}
+
+set_transcript_path() {
+    usage_sql "UPDATE sessions SET raw_json = $(sql_str "$(jq -cn --arg p "$2" \
+        '{transcript_path: $p}')") WHERE session_id = $(sql_str "$1");"
+}
+
+# One advisor_message iteration. An empty model leaves the field out.
+advisor_entry() {
+    jq -cn --arg model "$1" --argjson usage "$2" '
+        {type: "advisor_message"} + (if $model == "" then {} else {model: $model} end) + $usage'
+}
+
+# One assistant transcript record: requestId, Claude Code version, isSidechain, iterations.
+# An empty requestId or version leaves that field out.
+record() {
+    jq -cn --arg id "$1" --arg version "$2" --argjson side "$3" --argjson iterations "$4" '{
+        type: "assistant", isSidechain: $side,
+        message: {model: "claude-sonnet-5-5",
+            usage: {input_tokens: 1, output_tokens: 1, iterations: $iterations}}}
+        + (if $id == "" then {} else {requestId: $id} end)
+        + (if $version == "" then {} else {version: $version} end)'
+}
+
+# Opus 5.5 advisor passes: (100000 * 4.0 + 1000 * 20.0) / 1e6 = 0.42, and a 1h cache write of
+# 1000 tokens, 1000 * 4.0 * 2.0 / 1e6 = 0.008. A Sonnet 5.5 pass reading 100000 cached tokens at
+# the current 0.05x: 100000 * 2.0 * 0.05 / 1e6 = 0.01.
+write_transcripts() {
+    local dir="$WORK/transcripts" opus="claude-opus-5-5" sonnet="claude-sonnet-5-5"
+    local big_pass pass_042 pass_1h pass_cached
+    mkdir -p "$dir"
+    big_pass='{"type":"message","input_tokens":5000000,"output_tokens":5000000}'
+    pass_042="$(advisor_entry "$opus" '{"input_tokens":100000,"output_tokens":1000}')"
+    pass_1h="$(advisor_entry "$opus" '{"cache_creation_input_tokens":1000,
+        "cache_creation":{"ephemeral_5m_input_tokens":0,"ephemeral_1h_input_tokens":1000}}')"
+    pass_cached="$(advisor_entry "$sonnet" '{"cache_read_input_tokens":100000}')"
+
+    # Priced: a duplicated record, a 1h split, a versioned Sonnet pass, and a malformed last
+    # line. Ignored: a message pass, an unknown entry type, a sidechain record, and a request
+    # with no iterations.
+    {
+        record r1 2.1.311 false "[$big_pass,$pass_042,{\"type\":\"future\",\"input_tokens\":9}]"
+        record r1 2.1.311 false "[$big_pass,$pass_042,{\"type\":\"future\",\"input_tokens\":9}]"
+        record r2 2.1.311 false "[$pass_1h]"
+        record r3 2.1.311 false "[$pass_cached]"
+        record r4 2.1.311 true "[$pass_042]"
+        record r5 2.1.311 false "[]"
+        echo '{"type":"assistant","requestId":"r6","message":{"usa'
+    } >"$dir/priced.jsonl"
+
+    record r1 2.1.311 false "[]" >"$dir/none.jsonl"
+
+    # Unpriceable: an unknown model, a missing model, and a record with no requestId. A message
+    # pass at an unknown model beside a priced advisor pass must not hide the priced one.
+    {
+        record p1 2.1.311 false \
+            "[{\"type\":\"message\",\"model\":\"claude-unknown-9\",\"input_tokens\":1},$pass_042]"
+        record p2 2.1.311 false "[$(advisor_entry claude-unknown-9 '{"input_tokens":1}')]"
+        record p3 2.1.311 false "[$(advisor_entry '' '{"input_tokens":1}')]"
+        record '' 2.1.311 false "[$pass_042]"
+    } >"$dir/partial.jsonl"
+
+    # A Sonnet 5.5 cache read needs a version to pick its rate, and this record has none.
+    record n1 '' false "[$pass_cached]" >"$dir/no-version.jsonl"
 }
 
 write_fixtures() {
@@ -105,34 +176,100 @@ write_fixtures() {
 
     add_session amb-one 1.0
     add_session amb-two 1.0
+
+    write_advisor_sessions
+}
+
+# Sessions with a 0.002 snapshot (1000 * 2.0 / 1e6) and a transcript path, or without one.
+add_advisor_session() {
+    add_session "$1" "$2"
+    add_snapshot "$1" "$(payload claude-sonnet-5-5 2.1.311 5m 1000 0 0 0)"
+    if [[ -n "${3:-}" ]]; then
+        set_transcript_path "$1" "$3"
+    fi
+}
+
+write_advisor_sessions() {
+    local dir="$WORK/transcripts"
+    write_transcripts
+    add_advisor_session est-adv-ok 0.002 "$dir/priced.jsonl"
+    add_advisor_session est-adv-none 0.002 "$dir/none.jsonl"
+    add_advisor_session est-adv-partial 0.002 "$dir/partial.jsonl"
+    add_advisor_session est-adv-noversion 0.002 "$dir/no-version.jsonl"
+    add_advisor_session est-adv-missing 0.002 "$dir/absent.jsonl"
+    add_advisor_session est-adv-zero-actual 0 "$dir/priced.jsonl"
+    add_advisor_session est-adv-nopath 0.002
+    usage_sql "UPDATE sessions SET raw_json = '{}' WHERE session_id = 'est-adv-nopath';"
+    add_advisor_session est-adv-badjson 0.002
+    usage_sql "UPDATE sessions SET raw_json = 'not json' WHERE session_id = 'est-adv-badjson';"
 }
 
 test_priced_sessions() {
     run_estimator est-sonnet
-    check "within band: report" "$(report est-sonnet 0.0260 0.0260 1.00)" "$OUT"
+    check "within band: report" "$(report est-sonnet 0.0260 0.0260 1.00)" "$BASE"
     check "within band: exits 0" 0 "$RC"
 
     run_estimator est-flagged
     check "outside band: ratio and flag" \
         "$(report est-flagged 0.0220 0.1000 0.22)
-$FLAG_LINE" "$OUT"
+$FLAG_LINE" "$BASE"
 
     run_estimator est-version
     check "cache-read rate follows the payload version" \
-        "$(report est-version 0.0300 0.0300 1.00)" "$OUT"
+        "$(report est-version 0.0300 0.0300 1.00)" "$BASE"
 
     run_estimator est-haiku
     check "haiku long-context tier is chosen per row" \
-        "$(report est-haiku 0.0625 0.0625 1.00)" "$OUT"
+        "$(report est-haiku 0.0625 0.0625 1.00)" "$BASE"
 
     run_estimator est-unpriced
     check "unpriced model is counted and warned about" \
         "$(report est-unpriced 0.0220 0.0220 1.00)
-$UNPRICED_LINE" "$OUT"
+$UNPRICED_LINE" "$BASE"
 
     run_estimator est-zero
     check "zero actual cost reports the ratio as n/a" \
-        "$(report est-zero 0.0020 0.0000 "n/a (actual cost is \$0)")" "$OUT"
+        "$(report est-zero 0.0020 0.0000 "n/a (actual cost is \$0)")" "$BASE"
+}
+
+test_advisor_line() {
+    run_estimator est-adv-ok
+    check "advisor: priced passes, duplicates and ignored entries" \
+        "advisor:  \$0.4380 (3 passes)" "$(advisor_line)"
+    check "advisor: cost is not added to the estimate" \
+        "$(report est-adv-ok 0.0020 0.0020 1.00)" "$BASE"
+
+    run_estimator est-adv-none
+    check "advisor: readable transcript with no passes" \
+        "advisor:  \$0.0000 (0 passes)" "$(advisor_line)"
+
+    run_estimator est-adv-partial
+    check "advisor: unpriceable passes are reported, not dropped" \
+        "advisor:  incomplete -- \$0.4200 for 1 pass; 3 passes could not be priced" \
+        "$(advisor_line)"
+    check "advisor: a partial sum never reaches the report" \
+        "$(report est-adv-partial 0.0020 0.0020 1.00)" "$BASE"
+
+    run_estimator est-adv-noversion
+    check "advisor: version-dependent rate without a version is unpriced" \
+        "advisor:  incomplete -- \$0.0000 for 0 passes; 1 pass could not be priced" \
+        "$(advisor_line)"
+
+    run_estimator est-adv-missing
+    check "advisor: missing transcript" \
+        "advisor:  unavailable (transcript not readable: $WORK/transcripts/absent.jsonl)" \
+        "$(advisor_line)"
+
+    for session in est-sonnet est-adv-nopath est-adv-badjson; do
+        run_estimator "$session"
+        check "advisor: no transcript path ($session)" \
+            "advisor:  unavailable (session has no transcript path)" "$(advisor_line)"
+    done
+
+    run_estimator est-adv-zero-actual
+    check "advisor: zero actual cost still reports the advisor line" \
+        "$(report est-adv-zero-actual 0.0020 0.0000 "n/a (actual cost is \$0)")
+advisor:  \$0.4380 (3 passes)" "$OUT"
 }
 
 test_prefix_matching() {
@@ -163,6 +300,7 @@ test_refusals() {
 
 write_fixtures
 test_priced_sessions
+test_advisor_line
 test_prefix_matching
 test_refusals
 

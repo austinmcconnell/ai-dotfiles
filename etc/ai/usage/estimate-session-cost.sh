@@ -11,6 +11,10 @@
 # analysis/claude-usage-tracker-fixes.md's "Status-line payload semantics").
 # So this reads raw_json per row instead of the dedicated columns.
 #
+# Snapshots never carry advisor passes, so the estimate leaves them out. An "advisor:" line
+# prices them separately from the session's transcript when that file is still on disk. It is
+# not added to the estimate and does not affect the ratio or the flag.
+#
 # Usage: estimate-session-cost.sh <session_id-or-prefix>
 
 set -euo pipefail
@@ -112,6 +116,43 @@ RESULT="$(
 
 IFS=$'\x1f' read -r ESTIMATE RATIO FLAGGED UNPRICED <<<"$RESULT"
 
+TRANSCRIPT_PATH="$(sqlite3 "$USAGE_DB" "SELECT CASE WHEN json_valid(raw_json)
+    THEN json_extract(raw_json, '\$.transcript_path') END
+    FROM sessions WHERE tool = 'claude-code' AND session_id = $(sql_str "$SESSION_ID");")"
+
+pass_count() {
+    if [[ "$1" -eq 1 ]]; then
+        printf '1 pass'
+    else
+        printf '%s passes' "$1"
+    fi
+}
+
+# The advisor line's text for a session's transcript path (empty when the session has none).
+advisor_summary() {
+    local path="$1" row passes usd unpriced
+    if [[ -z "$path" ]]; then
+        printf 'unavailable (session has no transcript path)'
+        return
+    fi
+    if [[ ! -r "$path" ]]; then
+        printf 'unavailable (transcript not readable: %s)' "$path"
+        return
+    fi
+    row="$(usage_transcript_advisor_cost "$path")"
+    if [[ -z "$row" ]]; then
+        printf 'unavailable (transcript could not be parsed)'
+        return
+    fi
+    IFS=$'\t' read -r passes usd unpriced <<<"$row"
+    if [[ "$unpriced" -gt 0 ]]; then
+        printf "incomplete -- \$%.4f for %s; %s could not be priced" \
+            "$usd" "$(pass_count $((passes - unpriced)))" "$(pass_count "$unpriced")"
+    else
+        printf "\$%.4f (%s)" "$usd" "$(pass_count "$passes")"
+    fi
+}
+
 printf 'session:  %s\n' "$SESSION_ID"
 printf 'estimate: $%.4f\n' "$ESTIMATE"
 printf 'actual:   $%.4f\n' "$ACTUAL_COST"
@@ -124,6 +165,7 @@ fi
 if [[ "$FLAGGED" == "1" ]]; then
     printf 'flag:     ratio outside 0.85-1.15 -- estimate and actual disagree, see etc/ai/usage/README.md\n'
 fi
+printf 'advisor:  %s\n' "$(advisor_summary "$TRANSCRIPT_PATH")"
 if [[ "$UNPRICED" -gt 0 ]]; then
     printf 'warning:  %s of %s snapshots used a model with no pricing.json entry; estimate is incomplete\n' \
         "$UNPRICED" "$SNAPSHOT_COUNT"

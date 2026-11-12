@@ -152,20 +152,10 @@ usage_subagent_task_rows() {
     ] | join("\u001f")' <<<"$1"
 }
 
-# Prices a subagent transcript request by request, mirroring pricing.json. Inputs: $pricing (the
-# slurped file) and $transcript (raw text). Malformed lines are skipped because the file may be
-# mid-write. Emits nothing when there are no requests, a request lacks requestId, any model is
-# unpriced, or a request bills cache reads at a version-dependent multiplier its version cannot
-# resolve: a partial total is never reported as the task's cost.
-#
-# A request whose usage carries a non-empty iterations array is priced entry by entry: top-level
-# usage sums only the message passes, omits advisor passes, and its cache_creation split covers
-# only the first pass. A message entry is priced at the request's model, an advisor_message entry
-# at its own model, and an unknown entry type leaves the transcript unpriced. Each entry gets its
-# own long-context check; that per-pass tiering is inferred from the pricing file's "priced per
-# request" wording, not verified on a multi-pass record for a model that has a tier.
+# jq definitions that price transcript usage mirroring pricing.json, shared by the transcript
+# programs below. They need $pricing (the slurped file) and raise errors on anything unpriceable.
 # shellcheck disable=SC2016
-USAGE_TRANSCRIPT_COST_JQ='
+USAGE_PRICING_DEFS_JQ='
 def is_version: (. // "") | test("^[0-9]+(\\.[0-9]+)*$");
 def version_key: split(".") | map(tonumber);
 def read_multiplier($m; $version):
@@ -214,6 +204,22 @@ def request_usd($r):
             | add
         else usage_usd($u; $name; $r.version)
         end;
+'
+
+# Prices a subagent transcript request by request, mirroring pricing.json. Inputs: $pricing (the
+# slurped file) and $transcript (raw text). Malformed lines are skipped because the file may be
+# mid-write. Emits nothing when there are no requests, a request lacks requestId, any model is
+# unpriced, or a request bills cache reads at a version-dependent multiplier its version cannot
+# resolve: a partial total is never reported as the task's cost.
+#
+# A request whose usage carries a non-empty iterations array is priced entry by entry: top-level
+# usage sums only the message passes, omits advisor passes, and its cache_creation split covers
+# only the first pass. A message entry is priced at the request's model, an advisor_message entry
+# at its own model, and an unknown entry type leaves the transcript unpriced. Each entry gets its
+# own long-context check; that per-pass tiering is inferred from the pricing file's "priced per
+# request" wording, not verified on a multi-pass record for a model that has a tier.
+# shellcheck disable=SC2016
+USAGE_TRANSCRIPT_COST_JQ="$USAGE_PRICING_DEFS_JQ"'
 [$transcript | split("\n")[] | fromjson?
     | select(type == "object" and .type == "assistant"
         and ((.message | type) == "object") and ((.message.usage | type) == "object"))]
@@ -224,6 +230,33 @@ def request_usd($r):
         | map(try request_usd(.) catch null)
         | if any(. == null) then empty else add end
     end
+'
+
+# Prices only the advisor_message entries of a main-session transcript, for the estimator's
+# advisor line. Inputs: $pricing and $transcript, as above. Prints a tab-separated row of the
+# advisor pass count, the dollar cost of the priced passes, and the count of passes that could not
+# be priced (missing or unpriced model, or a version-dependent cache-read rate with no usable
+# version). Only advisor entries can make this fail: executor passes are not priced, so an
+# unpriced one cannot hide the advisor figure. One record per requestId; a record without a
+# requestId cannot be deduplicated, so its advisor entries count as unpriced. Sidechain records
+# are skipped: subagent advisor passes are priced with the subagent's own transcript.
+# shellcheck disable=SC2016
+USAGE_ADVISOR_COST_JQ="$USAGE_PRICING_DEFS_JQ"'
+def advisor_entries($r):
+    [($r.message.usage.iterations | if type == "array" then .[] else empty end)
+        | select(type == "object" and .type == "advisor_message")];
+[$transcript | split("\n")[] | fromjson?
+    | select(type == "object" and .type == "assistant" and .isSidechain != true
+        and ((.message | type) == "object") and ((.message.usage | type) == "object"))]
+    as $records
+| [$records[] | select((.requestId // "") != "")] | group_by(.requestId) | map(last) as $requests
+| [$records[] | select((.requestId // "") == "") | advisor_entries(.)[]] | length as $orphans
+| [$requests[] | . as $r | advisor_entries($r)[]
+    | try usage_usd(.; .model; $r.version) catch null] as $prices
+| [($prices | length) + $orphans,
+    ([$prices[] | select(. != null)] | add // 0),
+    ([$prices[] | select(. == null)] | length) + $orphans]
+| @tsv
 '
 
 # Path of a subagent's own transcript, from the parent session's transcript_path.
@@ -244,6 +277,16 @@ usage_transcript_cost() {
         printf '%.10f' "$usd"
     fi
     return 0
+}
+
+# Advisor pass count, priced cost, and unpriced count of one main-session transcript, as a
+# tab-separated row (see USAGE_ADVISOR_COST_JQ). Prints nothing when the file is unreadable or
+# cannot be parsed.
+usage_transcript_advisor_cost() {
+    local path="${1:-}"
+    [[ -r "$path" ]] || return 0
+    jq -nr --slurpfile pricing "$USAGE_PRICING" --rawfile transcript "$path" \
+        "$USAGE_ADVISOR_COST_JQ" 2>/dev/null || return 0
 }
 
 # SQL INSERTs for the compact_boundary records among the grep-filtered lines on stdin. A boundary

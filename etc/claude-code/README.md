@@ -174,8 +174,9 @@ it fetches from Anthropic; the setting keeps it on if that flag is withdrawn. It
   main session; how Claude Code handles the mismatch is unverified.
 - Subagents can call it too, including `doubt-reviewer`, whose `tools:` list does not exclude it
   (see Personas). That is accepted: a call is occasional and adds an Opus second opinion to an Opus
-  review. Subagent transcript cost prices advisor passes at the advisor's own model; the
-  main-session snapshot estimator does not price them.
+  review. Subagent transcript cost prices advisor passes at the advisor's own model. The
+  main-session estimator leaves them out of its estimate and reports them on a separate `advisor:`
+  line, priced from the session's transcript (see `etc/ai/usage/README.md`).
 - `CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1` or `/advisor off` turns it off. `~/.claude/settings.json` is
   a symlink to this tracked file, so `/advisor` edits the repo.
 
