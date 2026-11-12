@@ -381,6 +381,45 @@ test_maintenance_scripts_wait_for_lock() {
     check "a failed backfill --apply leaves the stored cost alone" "99.0" "$(maint_cost "$dir")"
 }
 
+# Points task t1 in $1 at a transcript that does not exist, so the backfill cannot price it.
+orphan_maintenance_task() {
+    sqlite3 "$1/usage.db" \
+        "UPDATE subagent_tasks SET raw_json = json_set(raw_json, '\$.transcript_path', '/nonexistent/x.jsonl') WHERE task_id = 't1'"
+}
+
+test_backfill_unpriceable_rows() {
+    local dir out
+
+    dir="$WORK/maint-keep"
+    seed_maintenance_db "$dir"
+    orphan_maintenance_task "$dir"
+    out="$(USAGE_DB_DIR="$dir" bash "$USAGE_DIR/backfill-subagent-cost.sh" 2>&1)"
+    check "backfill dry run reports an unpriceable row as kept" "yes" \
+        "$([[ "$out" == *"(kept, no transcript price)"* ]] && echo yes || echo no)"
+    USAGE_DB_DIR="$dir" bash "$USAGE_DIR/backfill-subagent-cost.sh" --apply >/dev/null 2>&1
+    check "backfill --apply keeps the stored cost of an unpriceable row" "99.0" "$(maint_cost "$dir")"
+
+    dir="$WORK/maint-clear"
+    seed_maintenance_db "$dir"
+    orphan_maintenance_task "$dir"
+    USAGE_DB_DIR="$dir" bash "$USAGE_DIR/backfill-subagent-cost.sh" --clear-unpriceable --apply \
+        >/dev/null 2>&1
+    check "--clear-unpriceable sets an unpriceable row to NULL" "NULL" "$(maint_cost "$dir")"
+
+    dir="$WORK/maint-null"
+    seed_maintenance_db "$dir"
+    orphan_maintenance_task "$dir"
+    sqlite3 "$dir/usage.db" "UPDATE subagent_tasks SET estimated_cost_usd = NULL"
+    USAGE_DB_DIR="$dir" bash "$USAGE_DIR/backfill-subagent-cost.sh" --apply >/dev/null 2>&1
+    check "an unpriceable row that is already NULL stays NULL" "NULL" "$(maint_cost "$dir")"
+
+    check "an unknown option exits 2" "2" \
+        "$(
+            USAGE_DB_DIR="$dir" bash "$USAGE_DIR/backfill-subagent-cost.sh" --bogus >/dev/null 2>&1
+            echo $?
+        )"
+}
+
 write_fixtures
 write_iteration_fixtures
 test_pricing
@@ -388,6 +427,7 @@ test_iterations
 test_writer
 test_writer_name
 test_maintenance_scripts_wait_for_lock
+test_backfill_unpriceable_rows
 
 if [[ "$FAILURES" -gt 0 ]]; then
     echo "$FAILURES check(s) failed"

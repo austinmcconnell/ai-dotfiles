@@ -123,9 +123,10 @@ columns from the row's stored `raw_json` and clears `estimated_cost_usd`, becaus
 from the transcript rather than from any column it could recompute.
 
 `backfill-subagent-cost.sh` then reprices every row from its own subagent transcript. A row whose
-transcript is missing or not fully priceable is cleared to NULL rather than left holding a figure
-from the superseded blended-rate estimator, so expect rows whose transcripts have aged out of
-retention to lose their value rather than keep a wrong one.
+transcript is missing or not fully priceable keeps its stored value, because transcripts expire
+after `cleanupPeriodDays` and an expired one says nothing about whether the figure is right. Pass
+`--clear-unpriceable` to set those rows to NULL instead, for a DB that may still hold figures from
+the superseded blended-rate estimator.
 
 Run them in that order, each as a dry run first:
 

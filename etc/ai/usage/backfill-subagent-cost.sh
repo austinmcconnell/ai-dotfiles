@@ -1,12 +1,18 @@
 #!/bin/bash
 # Recomputes subagent_tasks.estimated_cost_usd for every claude-code row from that task's own
 # transcript (usage_transcript_cost in lib.sh). Only that column is written. A row whose transcript
-# is missing or cannot be fully priced is cleared to NULL rather than left holding a figure this
-# script cannot reproduce, so no row keeps a value from a superseded estimator. Safe to re-run.
+# is missing or cannot be fully priced keeps its stored value, since transcripts expire after
+# cleanupPeriodDays and an expired one says nothing about whether the stored figure is right. Safe
+# to re-run.
 #
 # Usage:
-#   backfill-subagent-cost.sh           dry run: print before/after per row, write nothing
-#   backfill-subagent-cost.sh --apply   back up the DB, then update in one transaction
+#   backfill-subagent-cost.sh [--clear-unpriceable]           dry run: print before/after per row,
+#                                                             write nothing
+#   backfill-subagent-cost.sh [--clear-unpriceable] --apply   back up the DB, then update in one
+#                                                             transaction
+#
+# --clear-unpriceable sets such a row to NULL instead, for a DB that may still hold figures from a
+# superseded estimator.
 
 set -euo pipefail
 
@@ -15,14 +21,17 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/lib.sh"
 
 APPLY=false
-case "${1:-}" in
-"") ;;
---apply) APPLY=true ;;
-*)
-    echo "usage: $0 [--apply]" >&2
-    exit 2
-    ;;
-esac
+CLEAR_UNPRICEABLE=false
+for arg in "$@"; do
+    case "$arg" in
+    --apply) APPLY=true ;;
+    --clear-unpriceable) CLEAR_UNPRICEABLE=true ;;
+    *)
+        echo "usage: $0 [--clear-unpriceable] [--apply]" >&2
+        exit 2
+        ;;
+    esac
+done
 
 FIELD_SEP=$'\x1f'
 
@@ -31,8 +40,9 @@ if [[ ! -f "$USAGE_DB" ]]; then
     exit 1
 fi
 
-# Prints the UPDATE for one row and a before/after line for the report. An unpriceable row is
-# cleared to NULL, except when it is already NULL and so needs no statement.
+# Prints the UPDATE for one row and a before/after line for the report. An unpriceable row keeps
+# its value, or is cleared to NULL under --clear-unpriceable; either way a row that is already NULL
+# needs no statement.
 backfill_row() {
     local parent_id="$1" task_id="$2" model="$3" before="$4" payload="$5"
     local transcript subagent_transcript after value
@@ -44,6 +54,11 @@ backfill_row() {
     if [[ -z "$after" ]]; then
         if [[ -z "$before" ]]; then
             printf '%s %s NULL NULL (already clear)\n' "${task_id:0:8}" "$model" >&2
+            return 0
+        fi
+        if [[ "$CLEAR_UNPRICEABLE" != true ]]; then
+            printf '%s %s %s %s (kept, no transcript price)\n' \
+                "${task_id:0:8}" "$model" "$before" "$before" >&2
             return 0
         fi
         value="NULL"
