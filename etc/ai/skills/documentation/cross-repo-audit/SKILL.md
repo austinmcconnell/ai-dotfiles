@@ -51,6 +51,18 @@ addresses.
 | Switch ports       | `configuration/network.md` | Switch port assignments table |
 | Proxmox node specs | `components/m920x.md`      | Node specifications           |
 
+### tiny-lab-ansible (Main-VLAN co-claimant)
+
+Implements tiny-lab. Claims Main-VLAN addresses for the guests it deploys and generates DNS records
+from its inventory and from a vendored copy of home-infrastructure's DNS export. Owns none of the
+shared facts; every address it deploys must also appear in the home-infrastructure registry.
+
+| Resource            | File                                             | Table/section to check          |
+| ------------------- | ------------------------------------------------ | ------------------------------- |
+| Guest addresses     | `inventory/production/hosts.yml`                 | `ansible_host` per host         |
+| Guest VMIDs and DNS | `inventory/production/group_vars/all/guests.yml` | VMIDs, extra DNS records        |
+| Vendored DNS export | `files/home-infra-dns-records.yml`               | Whole file (copy of the export) |
+
 ### truenas-server (NAS owner)
 
 Owns: TrueNAS device specs, storage configuration. References: home-infrastructure for
@@ -168,14 +180,35 @@ Verify:
 - [ ] IP assignments fall within their designated range per the home-infrastructure range ownership
   table; no other repo restates the sub-ranges
 
+**Registry vs inventory:** read the registry only through its rendered `ip-registry.md` and the
+committed `dns-records.yml`. Never decrypt `ip-reservations.sops.yaml`.
+
+- [ ] Every `ansible_host` in tiny-lab-ansible `inventory/production/hosts.yml` has a registry row
+  with the same address and hostname. Check unmerged branches too (`git branch`, then
+  `git show <branch>:inventory/production/hosts.yml`), since a guest can be deployed from a branch
+  before it merges
+- [ ] Every registry row marked ansible-managed still has a host in the inventory
+- [ ] tiny-lab-ansible `files/home-infra-dns-records.yml` is identical to home-infrastructure
+  `configuration/dns-records.yml`; if not, it needs `make sync-dns`
+
 ### Step 7: Check cross-references between repos
 
-Verify that links between repos are valid and consistent:
+Each docs repo's markdown-link-check config ignores `https://github.com/austinmcconnell`, because
+the repos are private and the checker cannot fetch them. Cross-repo links are therefore never
+checked automatically; resolve them against the local checkouts instead.
 
-- [ ] tiny-lab links to truenas-server GitHub URL are correct
-- [ ] tiny-lab links to ubiquiti-network-stack GitHub URL are correct (if any)
-- [ ] truenas-server links to tiny-lab GitHub URL are correct
-- [ ] ubiquiti-network-stack links to tiny-lab GitHub URL are correct
+For every link of the form `https://github.com/austinmcconnell/<repo>/blob/main/<path>[#anchor]`
+(`git grep -n 'github.com/austinmcconnell/'` in each repo):
+
+- [ ] `<path>` exists in the local checkout (`~/projects/austinmcconnell/<repo>` or
+  `~/projects/austinmcconnell/_documentation_/<repo>`) on `main`
+- [ ] `<path>` is tracked: `git ls-files --error-unmatch <path>` succeeds (a git-ignored target
+  exists locally but not on GitHub)
+- [ ] `#anchor`, if present, matches a heading in the target file after GitHub slugging (lowercase,
+  spaces to `-`, punctuation dropped)
+- [ ] The link is to a file and anchor, not a bare repo root
+- [ ] No repo links another repo by relative path (`../../_documentation_/…`); cross-repo links use
+  the absolute GitHub URL
 - [ ] No repo duplicates specifications owned by another repo (reference only)
 
 ### Step 8: Generate audit report
@@ -211,7 +244,8 @@ Report findings in this format:
 - [ ] PDU port assignments consistent
 - [ ] Switch port assignments consistent
 - [ ] IP address assignments consistent
-- [ ] Cross-references valid
+- [ ] Registry matches tiny-lab-ansible inventory and vendored export
+- [ ] Cross-repo links resolve locally (file, tracked, anchor)
 ```
 
 ### Step 9: Verify skill accuracy
