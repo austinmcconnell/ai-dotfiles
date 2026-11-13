@@ -7,26 +7,27 @@ before finalizing changes.
 
 ## Shared Resources and Owners
 
-| Resource                                | Authoritative Repo     |
-| --------------------------------------- | ---------------------- |
-| IP addresses (Main VLAN, multi-claimed) | home-infrastructure    |
-| Management/IoT IP reservations          | ubiquiti-network-stack |
-| DNS-of-record (resolver, suffix)        | home-infrastructure    |
-| Rack unit positions (all racks)         | home-infrastructure    |
-| PDU port assignments                    | home-infrastructure    |
-| Power budget                            | home-infrastructure    |
-| VLAN definitions                        | ubiquiti-network-stack |
-| Main switch ports, gateway ports        | ubiquiti-network-stack |
-| Compute switch ports                    | tiny-lab               |
-| Storage pools/datasets                  | truenas-server         |
+| Resource                                 | Authoritative Repo     |
+| ---------------------------------------- | ---------------------- |
+| IP addresses (Main + IoT, multi-claimed) | home-infrastructure    |
+| DNS records export                       | home-infrastructure    |
+| Management IP reservations               | ubiquiti-network-stack |
+| DNS-of-record (resolver, suffix)         | home-infrastructure    |
+| Rack unit positions (all racks)          | home-infrastructure    |
+| PDU port assignments                     | home-infrastructure    |
+| Power budget                             | home-infrastructure    |
+| VLAN definitions                         | ubiquiti-network-stack |
+| Main switch ports, gateway ports         | ubiquiti-network-stack |
+| Compute switch ports                     | tiny-lab               |
+| Storage pools/datasets                   | truenas-server         |
 
 The split rule: **home-infrastructure owns IP facts that more than one system claims;
-single-claimant facts stay with their sole owner.** The Main VLAN (`10.10.10.0/24`) reservations
-were co-claimed by the UniFi controller and `tiny-lab-ansible`, so they moved to
-home-infrastructure. Management (`10.10.1.x`) and IoT (`10.10.30.x`) reservations are
-single-claimant UniFi-native facts and stay with ubiquiti-network-stack. VLAN definitions
-(ID/name/subnet) stay with ubiquiti-network-stack; home-infrastructure is only a cross-repo pointer
-for them.
+single-claimant facts stay with their sole owner.** The Main (`10.10.10.0/24`) and IoT
+(`10.10.30.0/24`) reservations are co-claimed by the UniFi controller and `tiny-lab-ansible`, which
+generates their DNS records (IoT names live in `iot.home.arpa`), so they live in
+home-infrastructure. Management (`10.10.1.x`) reservations are single-claimant UniFi-native facts
+and stay with ubiquiti-network-stack. VLAN definitions (ID/name/subnet) stay with
+ubiquiti-network-stack; home-infrastructure is only a cross-repo pointer for them.
 
 ## When to Check
 

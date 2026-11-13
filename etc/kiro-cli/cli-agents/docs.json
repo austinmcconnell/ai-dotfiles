@@ -140,7 +140,7 @@
             "type": "knowledgeBase",
             "source": "file://~/projects/austinmcconnell/_documentation_/home-infrastructure",
             "name": "home-infrastructure-docs",
-            "description": "Authoritative cross-cutting homelab infrastructure documentation. Authoritative source for the Main-VLAN IP registry (10.10.10.0/24, the multi-claimed block), DNS-of-record (Technitium 10.10.10.30, home.arpa), rack unit assignments across all racks, PDU port assignments, and power budget. Referenced by ubiquiti-network-stack, tiny-lab, truenas-server, home-assistant-server, and future consumers (ARM, family-dashboard). Single-claimant Management/IoT IP reservations and VLAN definitions remain with ubiquiti-network-stack",
+            "description": "Authoritative cross-cutting homelab infrastructure documentation. Authoritative source for the IP registry (Main 10.10.10.0/24 and IoT 10.10.30.0/24, the multi-claimed blocks) and the DNS records export generated from it, DNS-of-record (Technitium 10.10.10.30, home.arpa), rack unit assignments across all racks, PDU port assignments, and power budget. Referenced by ubiquiti-network-stack, tiny-lab, truenas-server, home-assistant-server, and future consumers (ARM, family-dashboard). Single-claimant Management IP reservations and VLAN definitions remain with ubiquiti-network-stack",
             "indexType": "best",
             "include": [
                 "**/*.md"
@@ -191,7 +191,7 @@
             "type": "knowledgeBase",
             "source": "file://~/projects/austinmcconnell/_documentation_/ubiquiti-network-stack",
             "name": "ubiquiti-network-docs",
-            "description": "Ubiquiti UniFi home network documentation covering gateway, switches, access points, VLANs, firewall rules, VPN, and WiFi. Authoritative source for VLAN definitions, main switch port assignments, gateway port assignments, and the single-claimant Management (10.10.1.x) and IoT (10.10.30.x) IP reservations. References home-infrastructure for the Main-VLAN IP registry and DNS-of-record",
+            "description": "Ubiquiti UniFi home network documentation covering gateway, switches, access points, VLANs, firewall rules, VPN, and WiFi. Authoritative source for VLAN definitions, main switch port assignments, gateway port assignments, and the single-claimant Management (10.10.1.x) IP reservations. References home-infrastructure for the Main and IoT IP registry and DNS-of-record",
             "indexType": "best",
             "include": [
                 "**/*.md"
