@@ -20,6 +20,10 @@ print_section_header "Configuring Engram"
 # engram lives in a third-party tap, not homebrew-core — tap before installing.
 if command -v brew >/dev/null 2>&1; then
     tap_if_needed "gentleman-programming/tap"
+    # Homebrew ignores formulae from third-party taps until trusted
+    if brew trust --help >/dev/null 2>&1; then
+        brew trust --formula "gentleman-programming/tap/engram"
+    fi
     install_if_needed "engram" "formula"
 else
     log_warning "brew not found — cannot install engram"
