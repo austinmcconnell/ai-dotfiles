@@ -15,3 +15,4 @@ rows specific to that domain.
 | Navigating project docs / find a doc / explain how a subsystem works | `readme-pointer`           |
 | Writing, closing, or resuming an engram handoff                      | `handoff-management`       |
 | Doubting a non-trivial decision before it stands                     | `doubt-driven-development` |
+| Writing or editing doc prose or style                                | `writing-style`            |

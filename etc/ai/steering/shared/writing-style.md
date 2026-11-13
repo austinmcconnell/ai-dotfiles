@@ -1,3 +1,8 @@
+---
+paths:
+  - '**/*.md'
+---
+
 # Writing Style Guide
 
 **Purpose**: Standards for voice, tone, and technical writing in documentation to ensure consistency
