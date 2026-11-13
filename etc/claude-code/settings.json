@@ -425,7 +425,8 @@
         "desktop-commander@synced": false,
         "zoom-plugin@synced": false,
         "enterprise-search@synced": false,
-        "pyright-lsp@claude-plugins-official": true
+        "pyright-lsp@claude-plugins-official": true,
+        "ruby-lsp@claude-plugins-official": true
     },
     "attribution": {
         "commit": "",
