@@ -41,8 +41,8 @@ check "unknown flag exits 1" 1 "Usage:" -- --bogus
 
 usage_db_init
 check "empty summary" 0 "No sessions recorded yet." -- --summary
-check "empty by-model" 0 "No sessions recorded yet." -- --by-model
-check "empty by-effort" 0 "No sessions recorded yet." -- --by-effort
+check "empty by-model" 0 "No cost snapshots recorded yet." -- --by-model
+check "empty by-effort" 0 "No cost snapshots recorded yet." -- --by-effort
 check "empty rate-limits" 0 "No rate-limit data recorded yet" -- --rate-limits
 check "empty subagents" 0 "No subagent tasks recorded yet" -- --subagents
 
@@ -57,8 +57,40 @@ sqlite3 "$USAGE_DB" "
     VALUES ('claude-code', 42, 7, '2026-01-01T00:00:00Z');
 "
 check "seeded summary" 0 "1.25" -- --summary
-check "seeded by-model" 0 "claude-sonnet-5-5" -- --by-model
-check "seeded by-effort" 0 "medium" -- --by-effort
+
+# Session s1 switches from Sonnet at medium effort to Opus at high, so its 1.25 splits 0.50 and
+# 0.75; s2 stays on Sonnet. Each report row is model, [effort,] sessions, cost.
+snapshot() {
+    printf "INSERT INTO cost_snapshots (tool, session_id, total_cost_usd, occurred_at, raw_json)
+        VALUES ('claude-code', '%s', %s, '2026-01-01T00:00:00Z',
+        '{\"model\":{\"id\":\"%s\"},\"effort\":{\"level\":\"%s\"}}');\n" "$@"
+}
+sqlite3 "$USAGE_DB" "
+    $(snapshot s1 0.50 claude-sonnet-5-5 medium)
+    $(snapshot s1 1.25 claude-opus-5-5 high)
+    $(snapshot s2 2.00 claude-sonnet-5-5 medium)
+    $(snapshot s2 2.00 claude-sonnet-5-5 medium)
+"
+check_row() {
+    local name="$1" pattern="$2" output
+    shift 2
+    output="$("$AI_USAGE" "$@")"
+    if grep -Eq "$pattern" <<<"$output"; then
+        echo "ok    $name"
+    else
+        printf 'FAIL  %s: no row matches [%s]\n%s\n' "$name" "$pattern" "$output"
+        FAILURES=$((FAILURES + 1))
+    fi
+}
+check_row "by-model books a session's cost to each model it used" \
+    '^claude-opus-5-5 +1 +0\.75 *$' --by-model
+check_row "by-model counts distinct sessions and sums their deltas" \
+    '^claude-sonnet-5-5 +2 +2\.50 *$' --by-model
+check_row "by-effort splits a model switch by effort" \
+    '^claude-opus-5-5 +high +1 +0\.75 *$' --by-effort
+check_row "by-effort sums a model's cost at one effort" \
+    '^claude-sonnet-5-5 +medium +2 +2\.50 *$' --by-effort
+check "by-model notes how cost is booked" 0 "main session's model" -- --by-model
 check "seeded rate-limits" 0 "42%" -- --rate-limits
 
 # Costs 9.00 and 10.00 sort wrongly if compared as text; the third launch is unpriced with no

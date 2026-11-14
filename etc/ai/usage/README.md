@@ -217,6 +217,18 @@ not to attribute cost by tool type — Claude Code's statusline only ever report
 totals, never a per-tool-call breakdown, so that finer-grained attribution isn't derivable from any
 data this repo has access to.
 
+The `v_cost_deltas` view turns the cumulative rows into steps. Each row's `cost_delta_usd` is its
+`total_cost_usd` minus the session's previous snapshot, and its `model` and `effort` come from that
+snapshot's `raw_json` (`model.id`, `effort.level`). The deltas sum to `sessions.total_cost_usd`.
+Their attribution has limits:
+
+- **Booked by main-session model.** `total_cost_usd` includes subagent and advisor spend, so a Haiku
+  subagent or an Opus advisor call launched from a Sonnet session counts as Sonnet.
+- **A step that spans a model switch** goes to the later model: the cost between the last snapshot
+  before the switch and the first one after it is booked to the new model.
+- **Malformed `raw_json`** gives a NULL model and effort, which the reports show as `(unknown)` and
+  `(unset)`.
+
 ## Rate-limit trajectory: `rate_limit_snapshots`
 
 Same append-only-on-change idea as `cost_snapshots`, but deliberately **no `session_id`**.
@@ -320,6 +332,13 @@ sorted last and counted separately. Any aggregate should sum `sessions.total_cos
 add `subagent_tasks.estimated_cost_usd` on top of it. See "Does session cost already include
 subagent spend?" below for why; `subagent_tasks` is useful only as a separate, informational
 breakdown.
+
+`--by-model` and `--by-effort` read `v_cost_deltas` rather than `sessions`, because `sessions.model`
+and `sessions.effort` hold only the last value a session showed. The view (see "Cost trajectory"
+above) splits each session's cost into the steps between its `cost_snapshots` rows, so a session
+that switched model splits its cost between the models it used, and the `sessions` column counts it
+once under each. These reports have no token columns: `sessions.input_tokens` and `output_tokens`
+hold only the latest API call, so summing them measures nothing.
 
 ### Does session cost already include subagent spend?
 

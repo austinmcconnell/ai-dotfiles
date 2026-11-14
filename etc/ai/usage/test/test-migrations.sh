@@ -44,6 +44,10 @@ schema_text() {
     db "$1" 'SELECT name, sql FROM sqlite_master ORDER BY name;'
 }
 
+table_text() {
+    db "$1" "SELECT name, sql FROM sqlite_master WHERE type = 'table' ORDER BY name;"
+}
+
 # Column order differs between CREATE TABLE and ALTER TABLE ADD COLUMN, and
 # every writer names its columns, so compare columns as a sorted set.
 shape() {
@@ -104,10 +108,12 @@ check "migration keeps existing rows" 1 "$(db legacy 'SELECT count(*) FROM compa
 untracked_db current "
     INSERT INTO sessions (tool, session_id, started_at, updated_at)
         VALUES ('claude-code', 's1', '2026-11-01T00:00:00Z', '2026-11-01T00:00:00Z');"
-before="$(schema_text current)"
+before="$(table_text current)"
 run_init current
-check "untracked DB with the compaction columns keeps its schema" "$before" \
-    "$(schema_text current)"
+check "untracked DB with the compaction columns keeps its tables" "$before" \
+    "$(table_text current)"
+check "untracked DB with the compaction columns gets the newest shape" "$(shape new)" \
+    "$(shape current)"
 check "stamped DB is at the newest version" "$latest" "$(version current)"
 check "stamping keeps existing rows" 1 "$(db current 'SELECT count(*) FROM sessions;')"
 

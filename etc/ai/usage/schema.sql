@@ -109,6 +109,24 @@ CREATE TABLE IF NOT EXISTS cost_snapshots (
     raw_json                TEXT            -- the statusline's raw stdin payload, as insurance against needing a column for every future field
 );
 
+-- One row per cost_snapshots row: the cost added since the session's
+-- previous snapshot, booked to the model and effort the main session
+-- reported at that snapshot. total_cost_usd includes subagent and advisor
+-- spend, so that spend lands on the main session's model, and a delta that
+-- spans a model switch lands on the later model. Malformed raw_json gives a
+-- NULL model and effort rather than failing the query.
+CREATE VIEW IF NOT EXISTS v_cost_deltas AS
+SELECT
+    id,
+    tool,
+    session_id,
+    occurred_at,
+    json_extract(CASE WHEN json_valid(raw_json) THEN raw_json END, '$.model.id') AS model,
+    json_extract(CASE WHEN json_valid(raw_json) THEN raw_json END, '$.effort.level') AS effort,
+    total_cost_usd - lag(total_cost_usd, 1, 0)
+        OVER (PARTITION BY tool, session_id ORDER BY id) AS cost_delta_usd
+FROM cost_snapshots;
+
 -- Append-only rate-limit trajectory, one row per statusline firing where
 -- five_hour_used_percentage or seven_day_used_percentage actually changed
 -- since the last recorded row (see claude-statusline.sh). Deliberately no

@@ -35,8 +35,8 @@ Canned reports over the local AI usage/cost store ($USAGE_DB).
 
 Options:
    --summary      Totals by tool (sessions, cost, tokens)
-   --by-model     Totals grouped by model
-   --by-effort    Totals grouped by model, then effort
+   --by-model     Cost and sessions by main-session model
+   --by-effort    Cost and sessions by main-session model, then effort
    --subagents    Subagent launches by agent type, and the most expensive launches
    --rate-limits  Current 5h/7d rate-limit usage (most recent snapshot)
    --help         This help message
@@ -76,6 +76,14 @@ run_report() {
 }
 
 NO_SUBAGENT_TASKS="No subagent tasks recorded yet (known visibility-window gap -- fast-finishing subagents can be missed; see etc/ai/usage/README.md)."
+
+NO_COST_SNAPSHOTS="No cost snapshots recorded yet."
+
+print_attribution_caveat() {
+    echo -e "${dim}Note: each cost change is booked to the model and effort the main session showed"
+    echo -e "at that moment, so subagent and advisor spend lands on the main session's model, and"
+    echo -e "a session that switched model counts once under each.${reset}"
+}
 
 print_cost_caveat() {
     echo -e "${dim}Note: totals above already include subagent/Task-tool spend (Claude Code folds it"
@@ -147,38 +155,36 @@ mode_subagents() {
 
 mode_by_model() {
     require_db
-    echo -e "${bold}Sessions by model${reset}"
+    echo -e "${bold}Cost by main-session model${reset}"
     run_report "
         SELECT
             COALESCE(model, '(unknown)') AS model,
-            COUNT(*) AS sessions,
-            printf('%.2f', SUM(COALESCE(total_cost_usd, 0))) AS total_cost_usd,
-            SUM(COALESCE(input_tokens, 0)) AS input_tokens,
-            SUM(COALESCE(output_tokens, 0)) AS output_tokens
-        FROM sessions
+            COUNT(DISTINCT session_id) AS sessions,
+            printf('%.2f', SUM(COALESCE(cost_delta_usd, 0))) AS total_cost_usd
+        FROM v_cost_deltas
         GROUP BY model
-        ORDER BY SUM(COALESCE(total_cost_usd, 0)) DESC;
-    " "No sessions recorded yet."
+        ORDER BY SUM(COALESCE(cost_delta_usd, 0)) DESC;
+    " "$NO_COST_SNAPSHOTS"
     echo
+    print_attribution_caveat
     print_cost_caveat
 }
 
 mode_by_effort() {
     require_db
-    echo -e "${bold}Sessions by model, effort${reset}"
+    echo -e "${bold}Cost by main-session model, effort${reset}"
     run_report "
         SELECT
             COALESCE(model, '(unknown)') AS model,
             COALESCE(effort, '(unset)') AS effort,
-            COUNT(*) AS sessions,
-            printf('%.2f', SUM(COALESCE(total_cost_usd, 0))) AS total_cost_usd,
-            SUM(COALESCE(input_tokens, 0)) AS input_tokens,
-            SUM(COALESCE(output_tokens, 0)) AS output_tokens
-        FROM sessions
+            COUNT(DISTINCT session_id) AS sessions,
+            printf('%.2f', SUM(COALESCE(cost_delta_usd, 0))) AS total_cost_usd
+        FROM v_cost_deltas
         GROUP BY model, effort
-        ORDER BY model, SUM(COALESCE(total_cost_usd, 0)) DESC;
-    " "No sessions recorded yet."
+        ORDER BY model, SUM(COALESCE(cost_delta_usd, 0)) DESC;
+    " "$NO_COST_SNAPSHOTS"
     echo
+    print_attribution_caveat
     print_cost_caveat
 }
 
