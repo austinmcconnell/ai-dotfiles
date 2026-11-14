@@ -34,7 +34,7 @@ Usage: $BIN_NAME [--summary|--by-model|--by-effort|--subagents|--rate-limits]
 Canned reports over the local AI usage/cost store ($USAGE_DB).
 
 Options:
-   --summary      Totals by tool (sessions, cost, tokens)
+   --summary      Totals by tool (sessions, cost)
    --by-model     Cost and sessions by main-session model
    --by-effort    Cost and sessions by main-session model, then effort
    --subagents    Subagent launches by agent type, and the most expensive launches
@@ -100,9 +100,7 @@ mode_summary() {
         SELECT
             tool,
             COUNT(*) AS sessions,
-            printf('%.2f', SUM(COALESCE(total_cost_usd, 0))) AS total_cost_usd,
-            SUM(COALESCE(input_tokens, 0)) AS input_tokens,
-            SUM(COALESCE(output_tokens, 0)) AS output_tokens
+            printf('%.2f', SUM(COALESCE(total_cost_usd, 0))) AS total_cost_usd
         FROM sessions
         GROUP BY tool
         ORDER BY tool;

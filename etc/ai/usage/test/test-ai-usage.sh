@@ -57,6 +57,14 @@ sqlite3 "$USAGE_DB" "
     VALUES ('claude-code', 42, 7, '2026-01-01T00:00:00Z');
 "
 check "seeded summary" 0 "1.25" -- --summary
+# sessions.input_tokens/output_tokens hold the latest call only, so a sum measures nothing.
+summary_output="$("$AI_USAGE" --summary 2>&1)"
+if [[ "$summary_output" == *input_tokens* ]]; then
+    echo "FAIL  summary sums non-cumulative session token columns"
+    FAILURES=$((FAILURES + 1))
+else
+    echo "ok    summary has no session token sums"
+fi
 
 # Session s1 switches from Sonnet at medium effort to Opus at high, so its 1.25 splits 0.50 and
 # 0.75; s2 stays on Sonnet. Each report row is model, [effort,] sessions, cost.
