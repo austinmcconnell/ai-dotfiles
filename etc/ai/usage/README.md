@@ -19,6 +19,10 @@ validation, and decisions, read `cost-estimation.md` in this directory.
   `cost_snapshots` (see "Cost trajectory" below) are the deliberate exceptions — both append-only,
   since `sessions`' upsert-in-place would otherwise overwrite the one history they exist to
   preserve.
+- **Cost units**: `total_cost_usd` is Claude Code's figure at API rates. On a claude.ai subscription
+  machine it is an API-equivalent estimate, not money spent: the subscription bills a flat fee, and
+  the plan's real limit shows as the 5h and 7d percentages in `rate_limit_snapshots`. Read dollar
+  totals from such a machine as relative weight, not as a bill.
 - **Migrations**: see "Schema migrations" below.
 - **Pricing**: `pricing.json` — model → $/M-token rates, used to estimate subagent $ cost and by the
   session estimator's cross-check (see "Session-level cost estimator" below). Claude Code's main

@@ -111,6 +111,7 @@ check "seeded subagents shows an unpriced launch" 0 "(unpriced)" -- --subagents
 check "seeded subagents shows a launch name" 0 "Review ten" -- --subagents
 check "seeded subagents shows an unnamed launch" 0 "(no name)" -- --subagents
 check "seeded subagents keeps the cost caveat" 0 "informational only" -- --subagents
+check "summary labels dollars as API-equivalent" 0 "API-equivalent" -- --summary
 
 launch_order="$("$AI_USAGE" --subagents | grep -E 'Review (nine|ten)' | sed -E 's/.*(Review [a-z]+).*/\1/')"
 if [[ "$launch_order" == $'Review ten\nReview nine' ]]; then

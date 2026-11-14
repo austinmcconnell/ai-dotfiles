@@ -88,7 +88,9 @@ print_attribution_caveat() {
 print_cost_caveat() {
     echo -e "${dim}Note: totals above already include subagent/Task-tool spend (Claude Code folds it"
     echo -e "into total_cost_usd). Any subagent_tasks breakdown is informational only and known-"
-    echo -e "partial (fast-finishing subagents can be missed) -- see etc/ai/usage/README.md.${reset}"
+    echo -e "partial (fast-finishing subagents can be missed) -- see etc/ai/usage/README.md."
+    echo -e "Dollars are at API rates; on a claude.ai subscription they are an API-equivalent"
+    echo -e "estimate, not money spent.${reset}"
 }
 
 mode_summary() {
