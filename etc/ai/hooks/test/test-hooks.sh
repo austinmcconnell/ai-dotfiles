@@ -16,7 +16,10 @@ FAILURES=0
 # A PATH with the tools the hooks use, minus jq.
 NO_JQ_BIN="$(mktemp -d)"
 RECALL_TMP="$(mktemp -d)"
-trap 'rm -rf "$NO_JQ_BIN" "$RECALL_TMP"' EXIT
+# /bin/bash 3.2 exits 0 when set -u aborts a script that has an EXIT trap, so the trap
+# fails any run that stopped before the summary.
+SUMMARY_REACHED=false
+trap 'rm -rf "$NO_JQ_BIN" "$RECALL_TMP"; [[ "$SUMMARY_REACHED" == true ]] || exit 1' EXIT
 for tool in cat grep dirname basename; do
     ln -s "$(type -P "$tool")" "$NO_JQ_BIN/$tool"
 done
@@ -448,6 +451,7 @@ fi
 wait "$hook_pid" || true
 check_recall_scratch_empty "export file removed when the hook is terminated mid-export"
 
+SUMMARY_REACHED=true
 if ((FAILURES > 0)); then
     echo "$FAILURES check(s) failed"
     exit 1

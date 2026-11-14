@@ -10,7 +10,10 @@ set -euo pipefail
 TEST_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 USAGE_DIR="$(dirname "$TEST_DIR")"
 WORK="$(mktemp -d)"
-trap 'rm -rf "$WORK"' EXIT
+# /bin/bash 3.2 exits 0 when set -u aborts a script that has an EXIT trap, so the trap
+# fails any run that stopped before the summary.
+SUMMARY_REACHED=false
+trap 'rm -rf "$WORK"; [[ "$SUMMARY_REACHED" == true ]] || exit 1' EXIT
 
 FAILURES=0
 YELLOW=$'\033[33m'
@@ -237,6 +240,7 @@ check "a row older than 10 minutes is not resolved from the statusline" "-" "$(r
 check "an old row creates no lock" "no" \
     "$([[ -d "$RESOLVE_DB_DIR/resolve-locks/resolve-test" ]] && echo yes || echo no)"
 
+SUMMARY_REACHED=true
 if ((FAILURES > 0)); then
     echo "$FAILURES check(s) failed"
     exit 1

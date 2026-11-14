@@ -9,7 +9,10 @@ TEST_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 USAGE_DIR="$(dirname "$TEST_DIR")"
 HOOK="$(dirname "$USAGE_DIR")/hooks/log-compaction-event.sh"
 WORK="$(mktemp -d)"
-trap 'rm -rf "$WORK"' EXIT
+# /bin/bash 3.2 exits 0 when set -u aborts a script that has an EXIT trap, so the trap
+# fails any run that stopped before the summary.
+SUMMARY_REACHED=false
+trap 'rm -rf "$WORK"; [[ "$SUMMARY_REACHED" == true ]] || exit 1' EXIT
 export USAGE_DB_DIR="$WORK/db"
 
 # shellcheck disable=SC1091
@@ -116,6 +119,7 @@ test_pre_compact
 test_locked_db
 test_unwritable_db
 
+SUMMARY_REACHED=true
 if [[ "$FAILURES" -gt 0 ]]; then
     echo "$FAILURES check(s) failed"
     exit 1

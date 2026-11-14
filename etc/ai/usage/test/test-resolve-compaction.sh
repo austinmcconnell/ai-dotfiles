@@ -9,7 +9,10 @@ TEST_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 USAGE_DIR="$(dirname "$TEST_DIR")"
 SCRIPT="$USAGE_DIR/resolve-compaction-boundaries.sh"
 WORK="$(mktemp -d)"
-trap 'chmod -R u+rwx "$WORK" 2>/dev/null || true; rm -rf "$WORK"' EXIT
+# /bin/bash 3.2 exits 0 when set -u aborts a script that has an EXIT trap, so the trap
+# fails any run that stopped before the summary.
+SUMMARY_REACHED=false
+trap 'chmod -R u+rwx "$WORK" 2>/dev/null || true; rm -rf "$WORK"; [[ "$SUMMARY_REACHED" == true ]] || exit 1' EXIT
 export USAGE_DB_DIR="$WORK/db"
 
 # shellcheck disable=SC1091
@@ -276,6 +279,7 @@ test_other_rows_untouched
 test_concurrent_resolvers
 test_script
 
+SUMMARY_REACHED=true
 if ((FAILURES > 0)); then
     echo "$FAILURES check(s) failed"
     exit 1
