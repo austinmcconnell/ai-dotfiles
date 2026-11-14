@@ -145,29 +145,9 @@ format_remaining() {
     fi
 }
 
-SEVEN_DAY_SECONDS=604800
 PACE_YELLOW_POINTS=10
 PACE_RED_POINTS=20
 PACE_ROOM_POINTS=-15
-
-# Points the 7d usage sits above (+) or below (-) an even burn across the
-# window. Points rather than a ratio, so a few percent in the first hours
-# doesn't read as many times over pace. The window is fixed, not rolling:
-# resets_at advances by exactly SEVEN_DAY_SECONDS between windows.
-is_missing() {
-    [[ -z "$1" || "$1" == "null" ]]
-}
-
-pace_delta() {
-    local used_pct="$1" resets_at="$2" now="$3" window="${4:-$SEVEN_DAY_SECONDS}" used elapsed
-    is_missing "$used_pct" && return 0
-    is_missing "$resets_at" && return 0
-    used="$(printf '%.0f' "$used_pct")"
-    elapsed=$((window - (resets_at - now)))
-    ((elapsed < 0)) && elapsed=0
-    ((elapsed > window)) && elapsed=$window
-    printf '%d' $((used - (elapsed * 100 + window / 2) / window))
-}
 
 pace_color() {
     local delta="$1"

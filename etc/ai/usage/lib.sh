@@ -462,3 +462,24 @@ usage_resolve_compaction_boundaries() {
     sql="$(usage_compaction_resolve_sql "$session" "$mode" "$inserts")" || return 1
     usage_sql <<<"$sql"
 }
+
+SEVEN_DAY_SECONDS=604800
+
+is_missing() {
+    [[ -z "$1" || "$1" == "null" ]]
+}
+
+# Points the 7d usage sits above (+) or below (-) an even burn across the
+# window. Points rather than a ratio, so a few percent in the first hours
+# doesn't read as many times over pace. The window is fixed, not rolling:
+# resets_at advances by exactly SEVEN_DAY_SECONDS between windows.
+pace_delta() {
+    local used_pct="$1" resets_at="$2" now="$3" window="${4:-$SEVEN_DAY_SECONDS}" used elapsed
+    is_missing "$used_pct" && return 0
+    is_missing "$resets_at" && return 0
+    used="$(printf '%.0f' "$used_pct")"
+    elapsed=$((window - (resets_at - now)))
+    ((elapsed < 0)) && elapsed=0
+    ((elapsed > window)) && elapsed=$window
+    printf '%d' $((used - (elapsed * 100 + window / 2) / window))
+}
