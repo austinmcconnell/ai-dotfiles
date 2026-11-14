@@ -475,6 +475,8 @@ is_missing() {
 # resets_at advances by exactly SEVEN_DAY_SECONDS between windows.
 pace_delta() {
     local used_pct="$1" resets_at="$2" now="$3" window="${4:-$SEVEN_DAY_SECONDS}" used elapsed
+    # A prefix assignment (LC_NUMERIC=C printf) is ignored by /bin/bash 3.2; a local is not.
+    local LC_ALL=C
     is_missing "$used_pct" && return 0
     is_missing "$resets_at" && return 0
     used="$(printf '%.0f' "$used_pct")"
@@ -482,4 +484,20 @@ pace_delta() {
     ((elapsed < 0)) && elapsed=0
     ((elapsed > window)) && elapsed=$window
     printf '%d' $((used - (elapsed * 100 + window / 2) / window))
+}
+
+PACE_YELLOW_POINTS=10
+PACE_RED_POINTS=20
+PACE_ROOM_POINTS=-15
+
+# Names how a pace_delta reads: red, yellow, green (room to ramp), or nothing when on pace.
+pace_level() {
+    local delta="$1"
+    if ((delta >= PACE_RED_POINTS)); then
+        printf 'red'
+    elif ((delta >= PACE_YELLOW_POINTS)); then
+        printf 'yellow'
+    elif ((delta <= PACE_ROOM_POINTS)); then
+        printf 'green'
+    fi
 }

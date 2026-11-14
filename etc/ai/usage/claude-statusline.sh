@@ -145,19 +145,12 @@ format_remaining() {
     fi
 }
 
-PACE_YELLOW_POINTS=10
-PACE_RED_POINTS=20
-PACE_ROOM_POINTS=-15
-
 pace_color() {
-    local delta="$1"
-    if ((delta >= PACE_RED_POINTS)); then
-        printf '%s' $'\033[31m'
-    elif ((delta >= PACE_YELLOW_POINTS)); then
-        printf '%s' $'\033[33m'
-    elif ((delta <= PACE_ROOM_POINTS)); then
-        printf '%s' $'\033[32m'
-    fi
+    case "$(pace_level "$1")" in
+    red) printf '%s' $'\033[31m' ;;
+    yellow) printf '%s' $'\033[33m' ;;
+    green) printf '%s' $'\033[32m' ;;
+    esac
 }
 
 CREDITS_CLAUDE_JSON="${USAGE_CLAUDE_JSON:-${CLAUDE_CONFIG_DIR:-$HOME}/.claude.json}"

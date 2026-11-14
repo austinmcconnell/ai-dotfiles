@@ -92,6 +92,20 @@ check "just short of green is uncolored" \
     "$(line '7d 43% (3d 0h) -14')" "$(render "$(seven_day 43 "$THREE_DAYS_LEFT")")"
 check "fractional usage rounds" \
     "$(line '7d 15% (6d 0h) +1')" "$(render "$(seven_day 14.6 "$SIX_DAYS_LEFT")")"
+# bash printf rounds an exact half to even; jq and SQLite round it up, so pace stays in bash.
+check "an exact half rounds to even" \
+    "$(line '7d 12% (6d 0h) -2')" "$(render "$(seven_day 12.5 "$SIX_DAYS_LEFT")")"
+LOCALES="$(locale -a 2>/dev/null || true)"
+if [[ $'\n'"$LOCALES"$'\n' == *$'\nde_DE.UTF-8\n'* ]]; then
+    check "pace ignores a decimal-comma locale" 1 "$(
+        source "$USAGE_DIR/lib.sh"
+        export LC_ALL=de_DE.UTF-8
+        now="$(date +%s)"
+        pace_delta 14.6 $((now + SIX_DAYS_LEFT)) "$now" 2>&1
+    )"
+else
+    echo "skip  pace ignores a decimal-comma locale: de_DE.UTF-8 not installed"
+fi
 check "no resets_at, no delta" \
     "$(line '7d 15%')" "$(render '{"seven_day": {"used_percentage": 15}}')"
 check "no rate_limits falls back to cost" \
