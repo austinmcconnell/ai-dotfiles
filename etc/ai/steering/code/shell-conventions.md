@@ -7,11 +7,6 @@ paths:
 
 # Shell Conventions
 
-## Agent Shell Tool Usage
-
-- Use the `working_dir` parameter instead of prefixing commands with `cd`. Write
-  `cat file.md > out.md` with `working_dir` set, not `cd /path && cat file.md > out.md`.
-
 ## Formatting (enforced by pre-commit)
 
 - 4-space indentation (shfmt)

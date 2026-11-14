@@ -15,7 +15,8 @@ that distribution rather than the prose.
 
 ## Fetch narrowly
 
-When pulling documentation, don't `web_fetch` a full page from a large doc site (e.g. MapLibre /
-Mapbox API references) — the response carries tens of thousands of tokens of navigation chrome for a
-few sentences of signal. Use selective mode with tight `search_terms`, deep-link to the relevant
-anchor, or skip the fetch if a search snippet already answers the question.
+When pulling documentation, don't fetch a full page from a large doc site (e.g. MapLibre / Mapbox
+API references) — the response carries tens of thousands of tokens of navigation chrome for a few
+sentences of signal. Narrow the fetch to what you need with the fetch tool's own option for it,
+deep-link to the relevant anchor, or skip the fetch if a search snippet already answers the
+question.
