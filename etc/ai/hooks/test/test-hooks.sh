@@ -16,10 +16,15 @@ FAILURES=0
 # A PATH with the tools the hooks use, minus jq.
 NO_JQ_BIN="$(mktemp -d)"
 RECALL_TMP="$(mktemp -d)"
+# Hooks that read usage.db get a scratch one, so no case touches the real store. The fixed clock
+# makes the pace figures in the quota cases exact.
+USAGE_DB_DIR="$(mktemp -d)"
+USAGE_NOW_EPOCH=1800000000
+export USAGE_DB_DIR USAGE_NOW_EPOCH
 # /bin/bash 3.2 exits 0 when set -u aborts a script that has an EXIT trap, so the trap
 # fails any run that stopped before the summary.
 SUMMARY_REACHED=false
-trap 'rm -rf "$NO_JQ_BIN" "$RECALL_TMP"; [[ "$SUMMARY_REACHED" == true ]] || exit 1' EXIT
+trap 'rm -rf "$NO_JQ_BIN" "$RECALL_TMP" "$USAGE_DB_DIR"; [[ "$SUMMARY_REACHED" == true ]] || exit 1' EXIT
 for tool in cat grep dirname basename; do
     ln -s "$(type -P "$tool")" "$NO_JQ_BIN/$tool"
 done
@@ -214,11 +219,15 @@ check_ask() {
     fi
 }
 
-# $1 is the subagent_type, $2 an optional model.
+# $1 is the subagent_type, $2 an optional model, $3 an optional session_id, $4 an optional
+# agent_type for a launch made from inside a subagent, which also sets agent_id.
 agent_call() {
     jq --null-input --compact-output --arg type "$1" --arg model "${2:-}" \
+        --arg session "${3:-}" --arg caller "${4:-}" \
         '{tool_name: "Agent", tool_input: ({subagent_type: $type}
-            + (if $model == "" then {} else {model: $model} end))}'
+            + (if $model == "" then {} else {model: $model} end))}
+            + (if $session == "" then {} else {session_id: $session} end)
+            + (if $caller == "" then {} else {agent_type: $caller, agent_id: "a1"} end)'
 }
 
 hook=ask-opus-subagents.sh
@@ -238,6 +247,160 @@ check "payload that is not JSON" "$hook" 2 '{"tool_input": {"model": "opus"'
 check "empty payload" "$hook" 0 ''
 check "null payload" "$hook" 0 'null'
 check "jq missing" "$hook" 2 "$(agent_call doubt-reviewer)" "$NO_JQ_BIN"
+
+# A model-less launch of an inheriting type from an Opus session asks when 7d quota is tight. The
+# reset sits half a window ahead of the fixed clock, so an even burn is 50%.
+USAGE_DB="$USAGE_DB_DIR/usage.db"
+RESET_MID_WINDOW=$((USAGE_NOW_EPOCH + 302400))
+
+fresh_usage_db() {
+    rm -rf "$USAGE_DB"
+    sqlite3 "$USAGE_DB" <"$HOOKS_DIR/../usage/schema.sql"
+}
+
+# $1 is the session_id, $2 the model.
+add_session() {
+    sqlite3 "$USAGE_DB" "INSERT INTO sessions (tool, session_id, model, started_at, updated_at)
+        VALUES ('claude-code', '$1', '$2', '2026-01-01T00:00:00Z', '2026-01-01T00:00:00Z');"
+}
+
+# $1 is the 7d used percentage and $2 its reset epoch, either may be NULL.
+add_rate_row() {
+    sqlite3 "$USAGE_DB" "INSERT INTO rate_limit_snapshots
+        (tool, seven_day_used_percentage, seven_day_resets_at, occurred_at)
+        VALUES ('claude-code', $1, $2, '2026-01-01T00:00:00Z');"
+}
+
+# $1 is the hook script, $2 the payload. Prints the permissionDecisionReason, or nothing.
+ask_reason() {
+    printf '%s' "$2" | "$HOOKS_DIR/$1" 2>/dev/null |
+        jq -r '.hookSpecificOutput.permissionDecisionReason // empty' || true
+}
+
+check_reason() {
+    local name="$1" hook="$2" expected="$3" payload="$4" actual
+    actual="$(ask_reason "$hook" "$payload")"
+    if [[ "$expected" == "$actual" ]]; then
+        echo "ok    $hook: $name"
+    else
+        echo "FAIL  $hook: $name: expected [$expected], got [$actual]"
+        FAILURES=$((FAILURES + 1))
+    fi
+}
+
+SESSION_OPUS="opus-session"
+SESSION_SONNET="sonnet-session"
+EXPLORE_OPUS="$(agent_call Explore "" "$SESSION_OPUS")"
+TIGHT_REASON='Inherits Opus from this session, and 7d usage is +20 points over an even pace'
+TIGHT_REASON+=' (ask threshold +10). Pass model "sonnet" or "haiku" to avoid.'
+NO_ROW_REASON='Inherits Opus from this session, and no 7d rate-limit data is recorded here,'
+NO_ROW_REASON+=' so quota cannot be checked. Pass model "sonnet" or "haiku" to avoid.'
+
+fresh_usage_db
+add_session "$SESSION_OPUS" claude-opus-5-5
+add_session "$SESSION_SONNET" claude-sonnet-5-5
+check_ask "inheriting type, Opus session, no rate-limit rows" "$hook" ask "$EXPLORE_OPUS"
+check_reason "no rate-limit rows reason" "$hook" "$NO_ROW_REASON" "$EXPLORE_OPUS"
+
+add_rate_row 70 "$RESET_MID_WINDOW"
+check_ask "tight quota" "$hook" ask "$EXPLORE_OPUS"
+check_reason "tight quota reason" "$hook" "$TIGHT_REASON" "$EXPLORE_OPUS"
+for type in Explore Plan docs jira ansible datadog; do
+    check_ask "$type inherits under tight quota" "$hook" ask "$(agent_call "$type" "" "$SESSION_OPUS")"
+done
+check_ask "general-purpose is on the Haiku floor" "$hook" none \
+    "$(agent_call general-purpose "" "$SESSION_OPUS")"
+check_ask "no subagent_type" "$hook" none "$(agent_call "" "" "$SESSION_OPUS")"
+check_ask "explicit sonnet under tight quota" "$hook" none \
+    "$(agent_call Explore sonnet "$SESSION_OPUS")"
+check_ask "Sonnet session under tight quota" "$hook" none \
+    "$(agent_call Explore "" "$SESSION_SONNET")"
+check_ask "launch made from inside a subagent" "$hook" none \
+    "$(agent_call Explore "" "$SESSION_OPUS" docs)"
+check_ask "session with no row" "$hook" none "$(agent_call Explore "" unknown-session)"
+check_ask "payload without a session_id" "$hook" none "$(agent_call Explore)"
+check "session with no row exits 0" "$hook" 0 "$(agent_call Explore "" unknown-session)"
+check_ask "main session started with --agent" "$hook" ask \
+    "$(agent_call Explore "" "$SESSION_OPUS" | jq --compact-output '. + {agent_type: "docs"}')"
+
+add_session fable-session claude-fable-5-1
+FABLE_REASON='Inherits Fable from this session, and 7d usage is +20 points over an even pace'
+FABLE_REASON+=' (ask threshold +10). Pass model "sonnet" or "haiku" to avoid.'
+check_reason "Fable session names Fable" "$hook" "$FABLE_REASON" \
+    "$(agent_call Explore "" fable-session)"
+
+# A lib.sh that fails to load must not block any launch: launches that never read usage.db
+# still get their decision, and an inheriting launch passes through.
+BROKEN_HOOKS="$(mktemp -d)"
+mkdir -p "$BROKEN_HOOKS/hooks/lib" "$BROKEN_HOOKS/usage"
+cp "$HOOKS_DIR/$hook" "$BROKEN_HOOKS/hooks/"
+cp "$HOOKS_DIR/lib/hook-input.sh" "$BROKEN_HOOKS/hooks/lib/"
+echo 'return 1' >"$BROKEN_HOOKS/usage/lib.sh"
+for case in "doubt-reviewer:ask:$(agent_call doubt-reviewer)" \
+    "inheriting launch:none:$EXPLORE_OPUS"; do
+    IFS=: read -r name expected payload <<<"$case"
+    rc=0
+    output="$(printf '%s' "$payload" | "$BROKEN_HOOKS/hooks/$hook" 2>/dev/null)" || rc=$?
+    actual=none
+    [[ -z "$output" ]] || actual="$(jq -r '.hookSpecificOutput.permissionDecision' <<<"$output")"
+    if [[ "$rc $actual" == "0 $expected" ]]; then
+        echo "ok    $hook: broken lib.sh, $name"
+    else
+        echo "FAIL  $hook: broken lib.sh, $name: expected [0 $expected], got [$rc $actual]"
+        FAILURES=$((FAILURES + 1))
+    fi
+done
+rm -rf "$BROKEN_HOOKS"
+
+add_rate_row 55 "$RESET_MID_WINDOW"
+check_ask "quota on pace" "$hook" none "$EXPLORE_OPUS"
+add_rate_row 40 "$RESET_MID_WINDOW"
+check_ask "quota with room" "$hook" none "$EXPLORE_OPUS"
+add_rate_row 59 "$RESET_MID_WINDOW"
+check_ask "one point under the threshold" "$hook" none "$EXPLORE_OPUS"
+add_rate_row 60 "$RESET_MID_WINDOW"
+check_ask "at the threshold" "$hook" ask "$EXPLORE_OPUS"
+
+add_rate_row 95 $((USAGE_NOW_EPOCH - 1000))
+check_ask "stale row from a finished window" "$hook" none "$EXPLORE_OPUS"
+add_rate_row NULL NULL
+check_ask "newest row without 7d data reads the one before" "$hook" none "$EXPLORE_OPUS"
+
+fresh_usage_db
+add_session "$SESSION_OPUS" claude-opus-5-5
+add_rate_row NULL NULL
+check_ask "rows exist but none has 7d data" "$hook" none "$EXPLORE_OPUS"
+check "rows without 7d data exit 0" "$hook" 0 "$EXPLORE_OPUS"
+
+rm -rf "$USAGE_DB"
+check_ask "no usage.db" "$hook" none "$EXPLORE_OPUS"
+check "no usage.db exits 0" "$hook" 0 "$EXPLORE_OPUS"
+echo "not a database" >"$USAGE_DB"
+check_ask "usage.db is not a database" "$hook" none "$EXPLORE_OPUS"
+check "unreadable usage.db exits 0" "$hook" 0 "$EXPLORE_OPUS"
+
+# A held write lock must cost one short timeout, not block the launch.
+fresh_usage_db
+add_session "$SESSION_OPUS" claude-opus-5-5
+add_rate_row 70 "$RESET_MID_WINDOW"
+{
+    echo "BEGIN EXCLUSIVE;"
+    sleep 4
+} | sqlite3 "$USAGE_DB" >/dev/null 2>&1 &
+LOCK_HOLDER=$!
+sleep 1
+LOCK_START="$(date +%s)"
+check_ask "locked usage.db" "$hook" none "$EXPLORE_OPUS"
+check "locked usage.db exits 0" "$hook" 0 "$EXPLORE_OPUS"
+if (($(date +%s) - LOCK_START < 3)); then
+    echo "ok    $hook: locked usage.db returns within the lock hold"
+else
+    echo "FAIL  $hook: locked usage.db blocked past the busy timeout"
+    FAILURES=$((FAILURES + 1))
+fi
+kill "$LOCK_HOLDER" 2>/dev/null || true
+wait "$LOCK_HOLDER" 2>/dev/null || true
+rm -rf "$USAGE_DB"
 
 # recall-memory.sh runs from a directory named "proj" with a stub git that finds no remote, so
 # the project name is "proj", against an empty store file and a stub engram. STUB_EXPORT names

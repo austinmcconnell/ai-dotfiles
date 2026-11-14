@@ -92,13 +92,28 @@ each tool call for the dot-env name. Known limits:
 
 ## Approval hooks
 
-| Script                  | What it does                                                                                                                                                                                                                                   | How it is run                       |
-| ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------- |
-| `ask-opus-subagents.sh` | Asks the user before an `Agent` launch that names the `doubt-reviewer` persona or sets a `model` containing `opus` or `fable`. Other launches pass through. Exits `2` like the blocking hooks when `jq` is missing or the payload is not JSON. | Claude only: `PreToolUse`, `Agent`. |
+| Script                  | What it does                                                                                                                                                                                                                                                                                                                        | How it is run                       |
+| ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------- |
+| `ask-opus-subagents.sh` | Asks the user before an `Agent` launch that names the `doubt-reviewer` persona or sets a `model` containing `opus` or `fable`, or that inherits an Opus or Fable session model while 7d quota is tight (see below). Other launches pass through. Exits `2` like the blocking hooks when `jq` is missing or the payload is not JSON. | Claude only: `PreToolUse`, `Agent`. |
 
 `permissions.ask` entries for `Agent(...)` do not prompt on Claude Code, even in default mode. A
 hook's `ask` does, including for background launches, so this hook is the working gate beside chat
 approval.
+
+### `ask-opus-subagents.sh` inherited-model check
+
+A launch with no `model` of type `Explore`, `Plan`, `docs`, `jira`, `ansible` or `datadog` runs on
+the session model. The hook asks before such a launch when `usage.db` says the session runs on Opus
+or Fable and 7d quota is tight: pace at +10 points or more, or no rate-limit rows at all. Launches
+from inside a subagent (`agent_id` set) are skipped, since they inherit the subagent's model.
+
+- **No rate-limit rows** means a machine without weekly quota, so it asks on every such launch. Plan
+  mode launches `Explore` and `Plan` itself, so the prompts repeat there.
+- **Fails open.** The hook sources `../usage/lib.sh` only for this check, and any failure loading it
+  or reading `usage.db` passes the launch through.
+- **Statusline-dependent.** Surfaces where the statusline does not run, such as headless
+  `claude -p`, record no session row and are not gated. The session model follows the statusline, so
+  it can lag a `/model` switch.
 
 ## Audit and logging hooks
 

@@ -149,15 +149,17 @@ session-total budget; `--max-budget-usd` is a per-invocation CLI flag only):
   call sets a `model` containing `opus` or `fable`, so a per-call override to an expensive model
   does not silently outrank the Haiku floor. Its `ask` prompts for background launches and overrides
   the bare `Agent` allow. `Agent(...)` entries in `permissions.ask` do not prompt for subagent
-  launches (checked on 2.1.311 in default mode), so none are kept.
+  launches (checked on 2.1.311 in default mode), so none are kept. The same hook also prompts on a
+  model-less launch of an inheriting type (`Explore`, `Plan`, and the four domain personas) from an
+  Opus or Fable session when 7d quota is tight; see the hook's row in `etc/ai/hooks/README.md`.
 
 **Caveat:** the four domain personas (`docs`, `jira`, `datadog`, `ansible`) set `model: inherit`, so
-they run on the main session model and bypass the Haiku floor. The built-in `Explore` and `Plan`
-agents do the same: their definitions set `model: inherit` (main model, capped at Opus, since
-2.1.198), and since 2.1.251 a definition's `model:` outranks the env var. Only a built-in with no
-`model:` of its own, such as `general-purpose`, gets Haiku. `CLAUDE_CODE_SUBAGENT_MODEL_FORCE` would
-force the floor everywhere, but it also overrides `doubt-reviewer`'s `model: opus`, so it is not
-set.
+they run on the main session model and bypass the Haiku floor. The hook above gates them only when
+7d quota is tight. The built-in `Explore` and `Plan` agents do the same: their definitions set
+`model: inherit` (main model, capped at Opus, since 2.1.198), and since 2.1.251 a definition's
+`model:` outranks the env var. Only a built-in with no `model:` of its own, such as
+`general-purpose`, gets Haiku. `CLAUDE_CODE_SUBAGENT_MODEL_FORCE` would force the floor everywhere,
+but it also overrides `doubt-reviewer`'s `model: opus`, so it is not set.
 
 **Deliberate Opus exception:** the `doubt-reviewer` persona pins `model: opus` and `effort: high` in
 its frontmatter, so the doubt-driven-development check runs on the strongest model. A model set in
