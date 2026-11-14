@@ -20,6 +20,9 @@ Before anything else, read `etc/ai/steering/shared/model-gates.md` and search en
 harness: the main session stays on a mid or small model and steps up to the strongest model at
 gates. Do not reopen that decision unless you find evidence that it is failing.
 
+Also read the "Auditing Across Tools" section of `etc/ai/README.md`. It records which differences
+between Kiro CLI and Claude Code are intended, so judge each cross-tool gap against it.
+
 ## Grounding
 
 1. Read `AGENTS.md`, `etc/ai/README.md`, `etc/claude-code/README.md`, and

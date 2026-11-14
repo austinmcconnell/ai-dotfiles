@@ -99,6 +99,19 @@ This asymmetry exists because this repo's AI tooling was originally designed aro
 per-agent resource model (see `etc/kiro-cli/README.md`); tools without that concept — added later —
 inherited a distribution script that had to invent a static substitute.
 
+### Auditing Across Tools
+
+Claude Code is now the primary tool. Kiro CLI stays in sync where its model allows, and each tool
+keeps features the other lacks: Kiro has knowledge bases and per-agent resource scoping, and Claude
+Code has the usage store, the advisor, and the `doubt-reviewer` persona. Most differences between
+the two setups trace back to the asymmetry above. Kiro scopes steering by agent. Claude Code scopes
+it by file path through `paths:` frontmatter, with personas (`claude --agent <name>`) as an opt-in
+exception. When an audit compares the tools:
+
+- Classify each gap as Kiro only, Claude Code only, or both.
+- Treat a feature that only one tool supports as intended, not as a defect.
+- Do not recommend removing a feature from one tool only because the other tool cannot match it.
+
 ## Adding Things
 
 | To add a...  | Create                                                       | Then re-run                                                                |

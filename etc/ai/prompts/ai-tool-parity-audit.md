@@ -4,6 +4,9 @@ Audit the AI tool configurations in this dotfiles repo for permission and securi
 tools. The guiding principle is that all tools should enforce the same protections — same commands
 blocked, same files protected, same paths allowed.
 
+Feature differences outside these protections can be intended. Read the "Auditing Across Tools"
+section of `etc/ai/README.md` before flagging one.
+
 ## Tool Discovery
 
 Read `install/ai-tools.sh` and check which tool directories exist under `etc/` to determine the
