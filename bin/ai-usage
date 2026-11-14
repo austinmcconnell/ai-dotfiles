@@ -67,7 +67,7 @@ require_db() {
 # "nothing recorded yet".
 run_report() {
     local query="$1" empty_message="$2" output
-    output="$(sqlite3 -header -column "$USAGE_DB" "$query")"
+    output="$(usage_sql -header -column "$query")"
     if [[ -z "$output" ]]; then
         echo "$empty_message"
     else

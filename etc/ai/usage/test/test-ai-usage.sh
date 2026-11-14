@@ -88,6 +88,38 @@ else
     FAILURES=$((FAILURES + 1))
 fi
 
+# Holds an exclusive lock on the DB for $1 seconds. Unlike a write lock, it blocks readers too.
+hold_exclusive_lock() {
+    { printf 'BEGIN EXCLUSIVE;\n' && sleep "$1"; } 2>/dev/null | sqlite3 "$USAGE_DB" >/dev/null 2>&1 &
+    LOCK_PID=$!
+    sleep 0.5
+}
+
+hold_exclusive_lock 2
+started=$SECONDS
+check "a report waits out a short lock" 0 "claude-sonnet-5-5" -- --by-model
+if ((SECONDS - started >= 1)); then
+    echo "ok    a report actually waited for the lock"
+else
+    echo "FAIL  a report actually waited for the lock: returned in under a second"
+    FAILURES=$((FAILURES + 1))
+fi
+wait "$LOCK_PID" 2>/dev/null || true
+
+hold_exclusive_lock 7
+started=$SECONDS
+rc=0
+output="$("$AI_USAGE" --by-model 2>&1)" || rc=$?
+waited=$((SECONDS - started))
+kill "$LOCK_PID" 2>/dev/null || true
+wait "$LOCK_PID" 2>/dev/null || true
+if ((rc != 0 && waited >= 4)) && [[ "$output" == *"database is locked"* ]]; then
+    echo "ok    a report fails after the timeout when the lock outlasts it"
+else
+    printf 'FAIL  a report fails after the timeout: exit %s after %ss\n%s\n' "$rc" "$waited" "$output"
+    FAILURES=$((FAILURES + 1))
+fi
+
 SUMMARY_REACHED=true
 if [[ "$FAILURES" -gt 0 ]]; then
     echo "$FAILURES check(s) failed"
