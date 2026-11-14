@@ -1,3 +1,15 @@
+---
+paths:
+  - '**/book.toml'
+  - '**/SUMMARY.md'
+  - '**/INTRODUCTION.md'
+  - '**/components/**'
+  - '**/configuration/**'
+  - '**/decisions/**'
+  - '**/planning/**'
+  - '**/procedures/**'
+---
+
 # Formatting Conventions
 
 Rules aligned with pre-commit hooks (mdformat, rumdl, yamllint, prettier) shared across

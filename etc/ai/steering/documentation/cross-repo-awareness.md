@@ -1,3 +1,15 @@
+---
+paths:
+  - '**/book.toml'
+  - '**/SUMMARY.md'
+  - '**/INTRODUCTION.md'
+  - '**/components/**'
+  - '**/configuration/**'
+  - '**/decisions/**'
+  - '**/planning/**'
+  - '**/procedures/**'
+---
+
 # Cross-Repo Resource Awareness
 
 ## Principle

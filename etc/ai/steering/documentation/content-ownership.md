@@ -1,3 +1,15 @@
+---
+paths:
+  - '**/book.toml'
+  - '**/SUMMARY.md'
+  - '**/INTRODUCTION.md'
+  - '**/components/**'
+  - '**/configuration/**'
+  - '**/decisions/**'
+  - '**/planning/**'
+  - '**/procedures/**'
+---
+
 # Content Ownership Model
 
 **Purpose**: Guide for applying the WHAT/HOW/WHY/SPECS separation in documentation repositories.

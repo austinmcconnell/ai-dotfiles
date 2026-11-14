@@ -1,3 +1,15 @@
+---
+paths:
+  - '**/book.toml'
+  - '**/SUMMARY.md'
+  - '**/INTRODUCTION.md'
+  - '**/components/**'
+  - '**/configuration/**'
+  - '**/decisions/**'
+  - '**/planning/**'
+  - '**/procedures/**'
+---
+
 # Link Conventions
 
 **Purpose**: Standards for cross-referencing and linking to support "reference, don't duplicate."

@@ -79,7 +79,8 @@ fi
 # apply to any work in any session. Domain-specific steering (ansible,
 # documentation, datadog, scrum) is inlined per-persona into the relevant Claude
 # subagent file by scripts/generate-personas.sh, so it doesn't pollute unrelated
-# sessions.
+# sessions. Claude also gets path-scoped domains in rules/; see
+# CLAUDE_PATH_SCOPED_STEERING_DOMAINS below.
 # Single source of truth: every generator loops this array, so adding a
 # universal domain here updates all three tools at once.
 #
@@ -94,6 +95,13 @@ fi
 # etc/ai/README.md's "Why Some Steering Is Universal" section for the full
 # cross-tool rationale.
 UNIVERSAL_STEERING_DOMAINS=(code github security shared)
+
+# Domain steering linked into Claude Code rules only. Every doc in these domains
+# carries paths: frontmatter, so Claude loads it only after a session reads a
+# matching file. Cursor and Gemini have no path scoping and would load it always,
+# so they don't get these. scripts/validate-path-scoped-steering.sh enforces the
+# frontmatter.
+CLAUDE_PATH_SCOPED_STEERING_DOMAINS=(ansible documentation)
 
 # ---------------------------------------------------------------
 # Steering Generators
@@ -189,15 +197,15 @@ link_rules_domain() {
     assert_link_resolves "$dest" "$(basename "${first_doc[0]}")"
 }
 
-# Link each universal steering domain into the Claude Code rules dir, so an edit
-# in the repo reaches Claude without a regenerate step.
+# Link each universal and path-scoped steering domain into the Claude Code rules
+# dir, so an edit in the repo reaches Claude without a regenerate step.
 # Used by: Claude Code (~/.claude/rules/<domain> → etc/ai/steering/<domain>/)
 # Files with paths: frontmatter get conditional loading; others load unconditionally.
 generate_rules_steering() {
     local output_dir="$1"
     local claude_md="$2"
 
-    for domain in "${UNIVERSAL_STEERING_DOMAINS[@]}"; do
+    for domain in "${UNIVERSAL_STEERING_DOMAINS[@]}" "${CLAUDE_PATH_SCOPED_STEERING_DOMAINS[@]}"; do
         link_rules_domain "$output_dir/$domain" "$STEERING_SOURCE/$domain" || return 1
     done
 

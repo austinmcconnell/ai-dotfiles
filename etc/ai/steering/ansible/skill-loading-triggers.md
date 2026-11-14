@@ -1,3 +1,13 @@
+---
+paths:
+  - '**/ansible*'
+  - '**/roles/**'
+  - '**/playbooks/**'
+  - '**/inventory/**'
+  - '**/group_vars/**'
+  - '**/host_vars/**'
+---
+
 # Skill Loading Triggers
 
 Triggers common to every agent, and the rule for applying them, live in

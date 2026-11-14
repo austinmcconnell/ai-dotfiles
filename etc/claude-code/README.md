@@ -211,10 +211,14 @@ Steering is not configured in this directory. `install/ai-tools.sh` links each d
 directory into `~/.claude/rules/`, pointing at `etc/ai/steering/<domain>/`, so edits take effect
 without a regenerate step. Files with `paths:` frontmatter get conditional loading (only injected
 when Claude reads matching files). `CLAUDE.md` is a minimal pointer file, not a concatenated dump.
-Only the `code`, `github`, `security`, and `shared` steering domains are distributed this way
-(Claude Code has no per-persona resource scoping in the main session, unlike kiro's per-agent
-`resources` arrays) — domain-specific steering (`ansible`, `documentation`, `datadog`, `scrum`) is
-instead inlined into each persona at install time (see Personas below).
+The `code`, `github`, `security`, and `shared` steering domains are distributed this way (Claude
+Code has no per-persona resource scoping in the main session, unlike kiro's per-agent `resources`
+arrays). The `ansible` and `documentation` domains are linked too, but every doc in them carries
+`paths:` frontmatter, so they load only after a session reads a matching file, such as `book.toml`
+or a file under `roles/` (`CLAUDE_PATH_SCOPED_STEERING_DOMAINS` in `install/ai-tools.sh`;
+`scripts/validate-path-scoped-steering.sh` enforces the frontmatter). Domain-specific steering
+(`ansible`, `documentation`, `datadog`, `scrum`) is also inlined into each persona at install time
+(see Personas below), so a persona session can get the ansible or documentation docs twice.
 
 ### MCP Servers
 

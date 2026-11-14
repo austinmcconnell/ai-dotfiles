@@ -1,8 +1,11 @@
 ---
 paths:
-  - '**/*.yml'
-  - '**/*.yaml'
   - '**/ansible*'
+  - '**/roles/**'
+  - '**/playbooks/**'
+  - '**/inventory/**'
+  - '**/group_vars/**'
+  - '**/host_vars/**'
 ---
 
 # Naming Conventions

@@ -60,6 +60,12 @@ repos:
         entry: scripts/validate-steering-seams.sh
         files: ^install/ai-tools\.sh$|^scripts/validate-steering-seams\.sh$
         pass_filenames: false
+      - id: validate-path-scoped-steering
+        name: Validate path-scoped steering frontmatter
+        language: script
+        entry: scripts/validate-path-scoped-steering.sh
+        files: ^etc/ai/steering/.*\.md$|^install/ai-tools\.sh$|^scripts/validate-path-scoped-steering\.sh$
+        pass_filenames: false
       - id: validate-mcp-server-parity
         name: Validate MCP server parity
         language: script

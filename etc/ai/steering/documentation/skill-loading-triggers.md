@@ -1,3 +1,15 @@
+---
+paths:
+  - '**/book.toml'
+  - '**/SUMMARY.md'
+  - '**/INTRODUCTION.md'
+  - '**/components/**'
+  - '**/configuration/**'
+  - '**/decisions/**'
+  - '**/planning/**'
+  - '**/procedures/**'
+---
+
 # Skill Loading Triggers
 
 Triggers common to every agent, and the rule for applying them, live in

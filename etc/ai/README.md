@@ -122,5 +122,8 @@ exception. When an audit compares the tools:
 | Persona      | `etc/claude-code/agents/<name>.md` plus registry entries     | `install.sh`, which regenerates personas (see `etc/claude-code/README.md`) |
 
 A new steering domain reaches Claude Code sessions only if it is added to
-`UNIVERSAL_STEERING_DOMAINS` in `install/ai-tools.sh`; otherwise it is available only to Kiro agents
-(whose JSON lists the domain's glob) and to Claude personas that inline it.
+`UNIVERSAL_STEERING_DOMAINS` (loaded in every session) or `CLAUDE_PATH_SCOPED_STEERING_DOMAINS`
+(loaded when a session reads a file matching each doc's `paths:` frontmatter) in
+`install/ai-tools.sh`. A path-scoped domain needs `paths:` on every doc, which
+`scripts/validate-path-scoped-steering.sh` checks. Otherwise the domain is available only to Kiro
+agents (whose JSON lists the domain's glob) and to Claude personas that inline it.
