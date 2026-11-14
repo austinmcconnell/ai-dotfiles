@@ -20,7 +20,6 @@ Triggers common to every agent, and the rule for applying them, live in
 | Creating release analysis                                            | `release-analysis`                  |
 | Reviewing a PR / code review                                         | `pr-review`                         |
 | Stress-testing an article / auditing claims                          | `stress-test-analysis`              |
-| Doubting a non-trivial decision before it stands                     | `doubt-driven-development`          |
 | Hardening code / handling untrusted input, auth, secrets, LLM output | `security-and-hardening`            |
 | Instrumenting a service / adding metrics, spans, or alerts           | `observability-and-instrumentation` |
 | Designing/changing a service endpoint or retried outbound call       | `api-idempotency-and-contracts`     |

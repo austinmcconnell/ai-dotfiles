@@ -150,7 +150,7 @@ generate_mdc_steering() {
             fi
             desc="$(echo "$content" | grep -m1 '^# ' | sed 's/^# //')"
             # Prefix the domain so files sharing a basename across domains
-            # (e.g. code/ and github/ both have skill-loading-triggers.md) don't
+            # (e.g. code/ and shared/ both have skill-loading-triggers.md) don't
             # collide on a flat output name and silently overwrite each other.
             local mdc_file="$output_dir/${prefix}${domain}-${basename}.mdc"
             {
