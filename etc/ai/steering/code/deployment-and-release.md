@@ -1,10 +1,28 @@
+---
+paths:
+  - .github/workflows/**
+  - .gitlab-ci.yml
+  - Jenkinsfile
+  - '**/Chart.yaml'
+  - '**/charts/**'
+  - '**/helm/**'
+  - '**/k8s/**'
+  - '**/kubernetes/**'
+  - '**/deploy/**'
+  - '**/deployment/**'
+  - '**/argocd/**'
+  - '**/migrations/**'
+  - '**/*feature_flag*'
+  - '**/*feature-flag*'
+---
+
 # Deployment and Release
 
 How to think about shipping a change once the code is written: separate *deploying* code from
-*releasing* behavior, and make every deploy reversible. These are always-on principles for the
-strategy layer. The mechanics of the pipeline itself — workflow YAML, OIDC, pinned actions, secret
-handling — live in `../github/actions-conventions.md`; this doc is about the release *strategy* that
-pipeline carries out.
+*releasing* behavior, and make every deploy reversible. These are the principles for the strategy
+layer. The mechanics of the pipeline itself — workflow YAML, OIDC, pinned actions, secret handling —
+live in `../github/actions-conventions.md`; this doc is about the release *strategy* that pipeline
+carries out.
 
 > Adapted from [`addyosmani/agent-skills`](https://github.com/addyosmani/agent-skills) (MIT),
 > harvesting the feature-flag-lifecycle and staged-rollout/rollback principles from its
