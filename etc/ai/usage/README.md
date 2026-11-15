@@ -330,12 +330,12 @@ where requests cross the 100K-token tier — see "Cache-write rate check" in `co
 ## Reporting
 
 `bin/ai-usage` holds the canned reports (`--summary`, `--by-model`, `--by-effort`, `--subagents`,
-`--rate-limits`); query the DB directly (e.g. with `sqlite3`) for anything else. `--subagents` shows
-subagent launches by agent type, then the 20 most expensive launches by name, with unpriced launches
-sorted last and counted separately. Any aggregate should sum `sessions.total_cost_usd` alone — never
-add `subagent_tasks.estimated_cost_usd` on top of it. See "Does session cost already include
-subagent spend?" below for why; `subagent_tasks` is useful only as a separate, informational
-breakdown.
+`--rate-limits`, and the `--html` page below); query the DB directly (e.g. with `sqlite3`) for
+anything else. `--subagents` shows subagent launches by agent type, then the 20 most expensive
+launches by name, with unpriced launches sorted last and counted separately. Any aggregate should
+sum `sessions.total_cost_usd` alone — never add `subagent_tasks.estimated_cost_usd` on top of it.
+See "Does session cost already include subagent spend?" below for why; `subagent_tasks` is useful
+only as a separate, informational breakdown.
 
 `--by-model` and `--by-effort` read `v_cost_deltas` rather than `sessions`, because `sessions.model`
 and `sessions.effort` hold only the last value a session showed. The view (see "Cost trajectory"
@@ -343,6 +343,28 @@ above) splits each session's cost into the steps between its `cost_snapshots` ro
 that switched model splits its cost between the models it used, and the `sessions` column counts it
 once under each. These reports have no token columns: `sessions.input_tokens` and `output_tokens`
 hold only the latest API call, so summing them measures nothing.
+
+### HTML report: `--html`
+
+`bin/ai-usage --html` writes one static page to `${XDG_CACHE_HOME:-~/.cache}/ai-usage/report.html`,
+prints its path, and opens it with `open` (macOS) or `xdg-open` (Linux). `--no-open` only prints the
+path. A failing opener still exits 0, since the path is already printed. The page has no JavaScript,
+and its Content-Security-Policy blocks every fetch, so it works offline and loads nothing.
+
+`etc/ai/usage/report.sh` builds it in three steps:
+
+1. One `sqlite3 -readonly` statement returns the page's data as a single JSON object, so every
+   figure comes from one read transaction. The DB uses a rollback journal, so this read blocks
+   writers while it runs. Any query that scans `raw_json` must bound its rows by date to keep that
+   short; `v_cost_deltas` cannot be bounded from outside, since its window function sees every row.
+1. `report.jq` renders that object into `report.html.tmpl`. Every text field from the DB passes
+   through `@html`, and jq does no date handling: local-time formatting happens in SQL.
+1. The page goes to a temp file in the same directory and is moved into place.
+
+The report never creates or migrates the DB. A missing DB prints the same message as the other
+reports. A DB older than schema version 3 (`v_cost_deltas`) gets a message saying the next
+statusline render upgrades it. `USAGE_NOW_EPOCH` overrides the clock, which the tests use with a
+pinned `TZ`. The floor is SQLite 3.25 with JSON1 (window functions) and jq 1.6.
 
 ### Does session cost already include subagent spend?
 

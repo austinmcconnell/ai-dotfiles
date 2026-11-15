@@ -14,6 +14,10 @@ WORK="$(mktemp -d)"
 SUMMARY_REACHED=false
 trap 'rm -rf "$WORK"; [[ "$SUMMARY_REACHED" == true ]] || exit 1' EXIT
 export USAGE_DB_DIR="$WORK/db"
+# --html writes under XDG_CACHE_HOME and formats local time; pin both, and the clock.
+export XDG_CACHE_HOME="$WORK/cache"
+export TZ=America/Chicago
+REPORT="$XDG_CACHE_HOME/ai-usage/report.html"
 
 # shellcheck disable=SC1091
 source "$USAGE_DIR/lib.sh"
@@ -37,6 +41,7 @@ check() {
 }
 
 check "missing DB exits 0" 0 "No usage data yet" -- --summary
+check "html with a missing DB exits 0" 0 "No usage data yet" -- --html --no-open
 check "unknown flag exits 1" 1 "Usage:" -- --bogus
 
 usage_db_init
@@ -129,6 +134,95 @@ else
     FAILURES=$((FAILURES + 1))
 fi
 
+# Epochs come from sqlite, since BSD and GNU date disagree on parsing flags.
+epoch() {
+    sqlite3 :memory: "SELECT CAST(strftime('%s', '$1') AS INTEGER);"
+}
+export USAGE_NOW_EPOCH
+USAGE_NOW_EPOCH="$(epoch '2026-01-02 18:00:00')"
+
+# Usage: check_page <name> present|absent <substring>, against the last rendered report.
+check_page() {
+    local name="$1" want="$2" text="$3" found=absent
+    [[ "$(cat "$REPORT")" == *"$text"* ]] && found=present
+    if [[ "$found" == "$want" ]]; then
+        echo "ok    $name"
+    else
+        printf 'FAIL  %s: expected [%s] %s in %s\n' "$name" "$text" "$want" "$REPORT"
+        FAILURES=$((FAILURES + 1))
+    fi
+}
+
+check "html rejects an unknown option" 1 "unknown option --bogus" -- --html --no-open --bogus
+# Each render first removes the last page, so check_page never reads a stale one.
+rm -f "$REPORT"
+check "html prints the report path" 0 "$REPORT" -- --html --no-open
+csp="default-src 'none'; style-src 'unsafe-inline'; img-src data:; base-uri 'none';"
+csp+=" form-action 'none'"
+check_page "html sets the full CSP" present "Content-Security-Policy\" content=\"$csp\""
+check_page "html has no script" absent "<script"
+check_page "html shows generated-at in local time" present "Generated 2026-01-02 12:00:00 (UTC−6)"
+check_page "html lists page caveats" present "Quota is account-wide"
+
+# The model id is the first text field from the DB; a hostile one must render inert.
+hostile='</script><!--&"'
+sqlite3 "$USAGE_DB" "
+    INSERT INTO sessions (tool, session_id, model, started_at, updated_at)
+    VALUES ('claude-code', 'hostile', $(sql_str "$hostile"),
+        '2026-01-02T00:00:00Z', '2026-01-02T00:00:00Z'),
+        ('claude-code', 'no-model', NULL, '2026-01-02T00:00:00Z', '2026-01-02T00:00:00Z');
+"
+rm -f "$REPORT"
+check "html renders a seeded DB" 0 "$REPORT" -- --html --no-open
+check_page "html escapes a hostile model id" present "&lt;/script&gt;&lt;!--&amp;&quot;"
+check_page "html never emits a hostile model id raw" absent "$hostile"
+check_page "html shows a NULL model as (unknown)" present "(unknown)"
+check_page "html never renders null" absent "null"
+check_page "html counts sessions" present "3 sessions."
+
+rm -f "$REPORT"
+USAGE_NOW_EPOCH="$(epoch '2026-07-01 17:00:00')" \
+    check "html renders in daylight time" 0 "$REPORT" -- --html --no-open
+check_page "html labels the daylight offset" present "Generated 2026-07-01 12:00:00 (UTC−5)"
+USAGE_NOW_EPOCH=soon check "html rejects a non-numeric clock" 1 "USAGE_NOW_EPOCH" \
+    -- --html --no-open
+
+# A render that fails after the temp file exists must exit 1 and remove it.
+mkdir -p "$WORK/failing-jq"
+printf '#!/bin/bash\necho partial\nexit 5\n' >"$WORK/failing-jq/jq"
+chmod +x "$WORK/failing-jq/jq"
+PATH="$WORK/failing-jq:$PATH" check "html names a failed render" 1 "could not render" \
+    -- --html --no-open
+if find "$XDG_CACHE_HOME/ai-usage" -type f ! -name report.html | grep -q .; then
+    echo "FAIL  html removes its temp file after a failed render"
+    FAILURES=$((FAILURES + 1))
+else
+    echo "ok    html removes its temp file after a failed render"
+fi
+
+# The opener fails, which must not fail the report once its path is printed.
+mkdir -p "$WORK/fake-bin"
+for opener in open xdg-open; do
+    printf '#!/bin/bash\ntouch "%s/opened"\nexit 1\n' "$WORK" >"$WORK/fake-bin/$opener"
+    chmod +x "$WORK/fake-bin/$opener"
+done
+rc=0
+output="$(PATH="$WORK/fake-bin:$PATH" "$AI_USAGE" --html 2>&1)" || rc=$?
+if ((rc == 0)) && [[ "$output" == *"$REPORT"* && -f "$WORK/opened" ]]; then
+    echo "ok    html survives a failing opener"
+else
+    printf 'FAIL  html survives a failing opener: exit %s\n%s\n' "$rc" "$output"
+    FAILURES=$((FAILURES + 1))
+fi
+
+mkdir -p "$WORK/v2" "$WORK/garbage"
+sqlite3 "$WORK/v2/usage.db" 'PRAGMA user_version = 2;'
+USAGE_DB_DIR="$WORK/v2" check "html names an old schema version" 1 "schema version 2" \
+    -- --html --no-open
+printf 'not a database' >"$WORK/garbage/usage.db"
+USAGE_DB_DIR="$WORK/garbage" check "html names an unreadable DB" 1 "could not read" \
+    -- --html --no-open
+
 # Holds an exclusive lock on the DB for $1 seconds. Unlike a write lock, it blocks readers too.
 hold_exclusive_lock() {
     { printf 'BEGIN EXCLUSIVE;\n' && sleep "$1"; } 2>/dev/null | sqlite3 "$USAGE_DB" >/dev/null 2>&1 &
@@ -147,19 +241,32 @@ else
 fi
 wait "$LOCK_PID" 2>/dev/null || true
 
-hold_exclusive_lock 7
-started=$SECONDS
-rc=0
-output="$("$AI_USAGE" --by-model 2>&1)" || rc=$?
-waited=$((SECONDS - started))
+hold_exclusive_lock 2
+check "html waits out a short lock" 0 "$REPORT" -- --html --no-open
+wait "$LOCK_PID" 2>/dev/null || true
+
+# Usage: check_lock_timeout <name> <expected-substring> <ai-usage args...>
+check_lock_timeout() {
+    local name="$1" expected_text="$2" output rc=0 started=$SECONDS waited
+    shift 2
+    output="$("$AI_USAGE" "$@" 2>&1)" || rc=$?
+    waited=$((SECONDS - started))
+    if ((rc != 0 && waited >= 4)) && [[ "$output" == *"database is locked"* &&
+        "$output" == *"$expected_text"* ]]; then
+        echo "ok    $name"
+    else
+        printf 'FAIL  %s: exit %s after %ss\n%s\n' "$name" "$rc" "$waited" "$output"
+        FAILURES=$((FAILURES + 1))
+    fi
+}
+
+# Long enough to outlast two 5-second busy timeouts in a row, with margin.
+hold_exclusive_lock 14
+check_lock_timeout "a report fails after the timeout when the lock outlasts it" "" --by-model
+check_lock_timeout "html fails after the timeout with a clear message" "could not read" \
+    --html --no-open
 kill "$LOCK_PID" 2>/dev/null || true
 wait "$LOCK_PID" 2>/dev/null || true
-if ((rc != 0 && waited >= 4)) && [[ "$output" == *"database is locked"* ]]; then
-    echo "ok    a report fails after the timeout when the lock outlasts it"
-else
-    printf 'FAIL  a report fails after the timeout: exit %s after %ss\n%s\n' "$rc" "$waited" "$output"
-    FAILURES=$((FAILURES + 1))
-fi
 
 SUMMARY_REACHED=true
 if [[ "$FAILURES" -gt 0 ]]; then

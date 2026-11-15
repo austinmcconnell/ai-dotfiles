@@ -29,7 +29,7 @@ BIN_NAME="$(basename "$0")"
 
 usage() {
     cat <<EOF
-Usage: $BIN_NAME [--summary|--by-model|--by-effort|--subagents|--rate-limits]
+Usage: $BIN_NAME [--summary|--by-model|--by-effort|--subagents|--rate-limits|--html]
 
 Canned reports over the local AI usage/cost store ($USAGE_DB).
 
@@ -39,6 +39,8 @@ Options:
    --by-effort    Cost and sessions by main-session model, then effort
    --subagents    Subagent launches by agent type, and the most expensive launches
    --rate-limits  Current 5h/7d rate-limit usage (most recent snapshot)
+   --html         Write a static HTML report under \${XDG_CACHE_HOME:-~/.cache}/ai-usage and
+                  open it; add --no-open to only print its path
    --help         This help message
 EOF
 }
@@ -223,6 +225,10 @@ case "${1:---help}" in
     ;;
 --rate-limits)
     mode_rate_limits
+    ;;
+--html)
+    require_db
+    "$SCRIPT_DIR/../etc/ai/usage/report.sh" "${@:2}"
     ;;
 --help | -h)
     usage
