@@ -207,6 +207,10 @@ check_page "html stacks the grey Other on top" present \
     '<rect class="s4" x="272.2" y="88.4" width="131.6" height="2.1">'
 check_page "html labels API-rate dollars" present "Dollars are at API rates."
 check_page "html never calls cost spend" absent "spend"
+# The seeded DB has quota rows, so the page shows the quota tiles and no cost pace.
+check_page "html keeps the quota heading when quota rows exist" present \
+    "Am I on pace to run out of quota?"
+check_page "html shows no cost pace beside quota tiles" absent "How fast is cost building up?"
 check_page "html lists the costliest session first" present \
     "Cost at API rates</th></tr></thead><tbody><tr><th scope=\"row\"><code title=\"hostile\">"
 check_page "html gives a session its costliest model and last activity" present \
@@ -464,6 +468,129 @@ check_page "html folds agent types past the top 10 into Other" present \
 check_page "html heads mixed dollars plainly" present "<th scope=\"col\">Cost</th>"
 check_page "html notes mixed launch estimates" present \
     "Estimates from subscription sessions are API-equivalent, not money spent"
+
+# Burn-rate scenarios, each on a copy of the seeded DB with its own local clock. A machine with no
+# quota rows (Enterprise) has no rate_limits in any payload, so every scenario is API-rate. Rows
+# are "<local date> <cost>", one session a day at local noon, so a DST day still buckets to its date.
+local_epoch() {
+    sqlite3 :memory: "SELECT CAST(strftime('%s', '$1', 'utc') AS INTEGER);"
+}
+burn_page() {
+    local name="$1" now="$2" dir="$WORK/burn" rows="" day usd
+    rm -rf "$dir"
+    mkdir -p "$dir"
+    cp "$USAGE_DB" "$dir/usage.db"
+    while read -r day usd; do
+        rows+="('claude-code', 'day-$day', $usd,
+            strftime('%Y-%m-%dT%H:%M:%SZ', '$day 12:00:00', 'utc'),
+            '{\"model\":{\"id\":\"claude-opus-5-5\"}}'),"
+    done
+    sqlite3 "$dir/usage.db" "DELETE FROM cost_snapshots; DELETE FROM rate_limit_snapshots;
+        INSERT INTO cost_snapshots (tool, session_id, total_cost_usd, occurred_at, raw_json)
+        VALUES ${rows%,};"
+    rm -f "$REPORT"
+    USAGE_NOW_EPOCH="$(local_epoch "$now")" USAGE_DB_DIR="$dir" check "$name" 0 "$REPORT" \
+        -- --html --no-open
+}
+burn_tile_html() {
+    printf '<div class="tile"><h3>%s</h3><p class="figure">%s</p><p>%s</p></div>' "$@"
+}
+same_cost_days() {
+    local month="$1" first="$2" last="$3" usd="$4" day
+    for ((day = first; day <= last; day++)); do
+        printf '%s-%02d %s\n' "$month" "$day" "$usd"
+    done
+}
+rate_detail() { printf 'Mean of the last %s complete days, not counting today.' "$1"; }
+month_detail() { printf 'Local calendar month %s, through today.' "$1"; }
+projection_detail() {
+    printf 'By %s, if the rate holds. Today counts as at least one day at the rate.' "$1"
+}
+
+# 2026-03-18: seven complete days from 03-11 cost 42 with two days at 0, so the rate is 6.00; the
+# 50.00 days before them stay out of it. Today's 4.00 is under the rate, so it counts as 6.00 and
+# 13 days follow: 142 + 6 + 78.
+mid_month() {
+    printf '%s\n' "2026-03-09 50" "2026-03-10 50" "2026-03-11 7" "2026-03-13 14" "2026-03-14 7" \
+        "2026-03-16 7" "2026-03-17 7" "2026-03-18 $1"
+}
+burn_page "html renders a burn rate mid-month" "2026-03-18 15:00:00" < <(mid_month 4)
+check_page "html averages the 7 complete days before today" present \
+    "$(burn_tile_html 'Daily rate' "\$6.00 a day" "$(rate_detail 7)")"
+check_page "html books the month to date mid-month" present \
+    "$(burn_tile_html 'Month to date' "\$146.00" "$(month_detail 2026-03)")"
+check_page "html counts today at the rate when it is under it" present \
+    "$(burn_tile_html 'Projected month end' "\$226.00" "$(projection_detail 2026-03-31)")"
+check_page "html puts cost pace in the quota section's slot" present \
+    "<h2>How fast is cost building up?</h2>"
+check_page "html drops the quota heading without quota rows" absent \
+    "Am I on pace to run out of quota?"
+check_page "html names a machine with no quota data beside cost" present \
+    "No quota data on this machine"
+check_page "html labels Enterprise-style dollars as API rates" present "Dollars are at API rates."
+check_page "html never calls the projection spend" absent "spend"
+burn_page "html renders a day that costs more than the rate" "2026-03-18 15:00:00" < <(mid_month 9)
+check_page "html counts today at its own cost when over the rate" present \
+    "$(burn_tile_html 'Projected month end' "\$229.00" "$(projection_detail 2026-03-31)")"
+
+# 2026-12-31: the 31-day window reaches the 1st, so its 99.00 counts and the month is whole. No
+# day follows today, so the projection is 140 + the larger of today's 2.00 and the 3.00 rate.
+burn_page "html renders the last day of a 31-day month" "2026-12-31 15:00:00" <<EOF
+2026-11-30 500
+2026-12-01 99
+2026-12-05 10
+2026-12-20 10
+2026-12-24 7
+2026-12-30 14
+2026-12-31 2
+EOF
+check_page "html books the whole month on the 31st" present \
+    "$(burn_tile_html 'Month to date' "\$142.00" "$(month_detail 2026-12)")"
+check_page "html projects the last day of the month from the rate" present \
+    "$(burn_tile_html 'Projected month end' "\$143.00" "$(projection_detail 2026-12-31)")"
+
+# A first cost after the 1st: the month to date starts there, and the rate uses fewer days.
+burn_page "html renders a first cost after the 1st" "2026-11-16 15:00:00" <<EOF
+2026-11-10 6
+2026-11-11 6
+2026-11-12 6
+2026-11-13 6
+2026-11-15 6
+EOF
+check_page "html uses the days since the first cost when under 7" present \
+    "$(burn_tile_html 'Daily rate' "\$5.00 a day" "$(rate_detail 6)")"
+check_page "html projects a day with no cost so far at the rate" present \
+    "$(burn_tile_html 'Projected month end' "\$105.00" "$(projection_detail 2026-11-30)")"
+
+echo "2026-01-02 3" | burn_page "html renders a single day of cost" "2026-01-02 15:00:00"
+check_page "html shows no rate for a first day" present \
+    "$(burn_tile_html 'Daily rate' 'Not enough history' 'Needs 3 complete days; 0 so far.')"
+check_page "html still books a single day" present \
+    "$(burn_tile_html 'Month to date' "\$3.00" "$(month_detail 2026-01)")"
+
+# A leap February ends on the 29th: 19 days follow the 10th.
+burn_page "html renders a leap February" "2028-02-10 15:00:00" < <(same_cost_days 2028-02 1 9 2)
+check_page "html projects to the 29th of a leap February" present \
+    "$(burn_tile_html 'Projected month end' "\$58.00" "$(projection_detail 2028-02-29)")"
+
+# Spring forward on 2026-03-08 makes a 23-hour day; fall back on 2026-11-01 a 25-hour one. Each
+# is still one day, and the fall-back window straddles two months.
+burn_page "html renders across spring-forward" "2026-03-12 15:00:00" < <(same_cost_days 2026-03 5 11 3)
+check_page "html counts a 23-hour day as one day" present \
+    "$(burn_tile_html 'Projected month end' "\$81.00" "$(projection_detail 2026-03-31)")"
+burn_page "html renders across fall-back" "2026-11-04 15:00:00" <<EOF
+2026-10-30 4
+2026-10-31 4
+2026-11-01 4
+2026-11-02 4
+2026-11-03 4
+EOF
+check_page "html counts a 25-hour day as one day" present \
+    "$(burn_tile_html 'Daily rate' "\$4.00 a day" "$(rate_detail 5)")"
+check_page "html books only this month to the month to date" present \
+    "$(burn_tile_html 'Month to date' "\$12.00" "$(month_detail 2026-11)")"
+check_page "html projects across fall-back" present \
+    "$(burn_tile_html 'Projected month end' "\$120.00" "$(projection_detail 2026-11-30)")"
 
 # The window is 31 days, so on the 31st of a month it still reaches the 1st; the day before that
 # is out. One session a day, at local noon.

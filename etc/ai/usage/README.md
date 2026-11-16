@@ -366,15 +366,32 @@ and its Content-Security-Policy blocks every fetch, so it works offline and load
 1. The page goes to a temp file in the same directory and is moved into place.
 
 The quota section appears when any `rate_limit_snapshots` row carries a 7-day percentage, and
-otherwise says the machine has no quota data. The newest row with a window's percentage picks that
-window, and the tile shows the highest percentage recorded for it, in both the 7-day and 5-hour
-tiles: another session can write an older, lower figure after a higher one. A genuine drop within a
-window would therefore not show, and the page says so. A stale row that still carries the previous
-window's reset time is not caught: it shows that window until another session writes. A payload
-either carries a window's percentage and reset time together or omits the window, so a row without
-that window's percentage is skipped. SQL sets the tile's state: open while the reset time is ahead
-of the clock, reset once it has passed, or unknown when the row has no reset time, in which case the
-tile shows that row's own figure. A window with no row shows no data.
+otherwise the section shows cost pace instead (below). The newest row with a window's percentage
+picks that window, and the tile shows the highest percentage recorded for it, in both the 7-day and
+5-hour tiles: another session can write an older, lower figure after a higher one. A genuine drop
+within a window would therefore not show, and the page says so. A stale row that still carries the
+previous window's reset time is not caught: it shows that window until another session writes. A
+payload either carries a window's percentage and reset time together or omits the window, so a row
+without that window's percentage is skipped. SQL sets the tile's state: open while the reset time is
+ahead of the clock, reset once it has passed, or unknown when the row has no reset time, in which
+case the tile shows that row's own figure. A window with no row shows no data.
+
+Without quota rows (Enterprise or API use), the section is headed "How fast is cost building up?"
+and shows three tiles, longest window first: the month to date, a daily rate, and a projected month
+end. The cost window is 31 days, so the month to date is whole. The rate is the mean of up to 7
+complete days before today, counting a day with no cost as $0 from the first day with cost on. Today
+is left out, since a partial day would pull the rate down. Days before the window's first cost are
+unknown, not zero, so the rate needs at least 3 complete days; until then it reads "Not enough
+history", which also withholds the projection. The projection is the month to date before today,
+plus the larger of today's cost so far and the rate, plus the rate for each full day left in the
+local calendar month, taken from the rate rounded to cents. It extends a bursty series in a straight
+line, so it is an estimate. The report has no credit limit to compare against, so the heading does
+not claim to say whether quota will run out. A machine that has recorded quota rows shows the quota
+tiles and never these, since its dollars are API-equivalent and quota is the constraint; one that
+moved to Enterprise keeps showing quota tiles. The month is the local calendar month, while the
+Enterprise usage segment in the statusline assumes America/Chicago, so the two can disagree around a
+month boundary away from that zone. Like every figure here, it covers only what this machine
+recorded.
 
 The last time this machine saw quota is the later of the newest row in the 7-day tile's window
 carrying its figure and the newest `cost_snapshots` row whose payload carried `rate_limits` (scanned
@@ -410,7 +427,7 @@ throwaway runs rather than projects. Each row counts its sessions, so a session 
 projects counts in each row.
 
 A session counts as a subscription session when any of its snapshots in the window carries a
-`rate_limits` object; an explicit `null` does not count. Both cost sections' captions call
+`rate_limits` object; an explicit `null` does not count. The cost sections' captions call
 subscription dollars an API-equivalent estimate, not money spent, and other dollars API-rate
 figures. When both appear, they give the amount of each, and the dollar column headers match: "Cost
 at API rates", "API-equivalent cost", or plain "Cost" when mixed.

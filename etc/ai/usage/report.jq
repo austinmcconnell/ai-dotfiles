@@ -62,7 +62,48 @@ def tile($window; $title):
     end)
   + "</div>";
 
-def quota:
+def dollar_note:
+  if .kind == "subscription" then
+    "These sessions ran on a subscription, so the dollars are an API-equivalent estimate, not"
+    + " money spent."
+  elif .kind == "api" then "Dollars are at API rates."
+  else
+    "$\(.subscription_usd | esc) from subscription sessions is an API-equivalent estimate, not"
+    + " money spent; the other $\(.other_usd | esc) is at API rates."
+  end;
+
+def burn_tile($title; $figure; $detail):
+  "<div class=\"tile\"><h3>\($title)</h3><p class=\"figure\">\($figure)</p><p>\($detail)</p></div>";
+
+# Cost pace for a machine with no quota rows (Enterprise or API), the same tile row as the quota
+# windows, longest window first. A figure that is not available arrives as an empty string,
+# never null, and the tile says why instead.
+def cost_pace:
+  .cost as $c
+  | $c.burn as $b
+  | "<p class=\"meta\">No quota data on this machine, so this follows cost: this local calendar"
+  + " month, and where it is heading at the recent daily rate. It counts only what this machine"
+  + " recorded, so it is an estimate, not a bill. \($c | dollar_note)</p>"
+  + "<div class=\"tiles\">"
+  + burn_tile("Month to date"; "$\($b.mtd | esc)";
+      "Local calendar month \($b.month | esc), through today.")
+  + (if $b.state == "ready" then
+      burn_tile("Daily rate"; "$\($b.rate | esc) a day";
+        "Mean of the last \($b.rate_days | esc) complete days, not counting today.")
+    else
+      burn_tile("Daily rate"; "Not enough history";
+        "Needs \($b.min_days | esc) complete days; \($b.rate_days | esc) so far.")
+    end)
+  + (if $b.state == "ready" then
+      burn_tile("Projected month end"; "$\($b.projected | esc)";
+        "By \($b.month_end | esc), if the rate holds. Today counts as at least one day at the"
+        + " rate.")
+    else
+      burn_tile("Projected month end"; "Not enough history"; "A projection needs a daily rate.")
+    end)
+  + "</div>";
+
+def quota_tiles:
   "<section><h2>Am I on pace to run out of quota?</h2>"
   + (if .quota_observed == 1 then
       "<p class=\"meta\">Quota observed on this machine, most recently"
@@ -74,6 +115,14 @@ def quota:
       + " here).</p>"
     end)
   + "</section>";
+
+# Quota rows pick the quota tiles; otherwise any cost picks the cost pace. Without a credit limit
+# the cost view cannot say whether quota will run out, so its heading does not claim to.
+def quota:
+  if .quota_observed != 1 and .cost.burn.state != "none" then
+    "<section><h2>How fast is cost building up?</h2>" + cost_pace + "</section>"
+  else quota_tiles
+  end;
 
 # Burn-up chart geometry: a 640x260 viewBox with the plot inset for axis labels. Coordinates
 # are rounded to one decimal, the only numbers jq prints itself.
@@ -148,16 +197,6 @@ def cost_h($usd; $max): ($usd / $max * 220) * 10 | round / 10;
 def series_label:
   if .label == "Other" then "Other (" + (.members | map(esc) | join(", ")) + ")"
   else .label | esc
-  end;
-
-def dollar_note:
-  if .kind == "subscription" then
-    "These sessions ran on a subscription, so the dollars are an API-equivalent estimate, not"
-    + " money spent."
-  elif .kind == "api" then "Dollars are at API rates."
-  else
-    "$\(.subscription_usd | esc) from subscription sessions is an API-equivalent estimate, not"
-    + " money spent; the other $\(.other_usd | esc) is at API rates."
   end;
 
 def capitalize: (.[0:1] | ascii_upcase) + .[1:];

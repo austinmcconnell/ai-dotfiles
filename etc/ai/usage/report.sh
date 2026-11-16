@@ -13,6 +13,9 @@ source "$REPORT_DIR/lib.sh"
 REPORT_MIN_USER_VERSION=3
 REPORT_TOP_PROJECTS=8
 REPORT_TOP_ROWS=10
+# The daily rate averages up to 7 complete days and needs at least 3.
+REPORT_RATE_DAYS=7
+REPORT_MIN_RATE_DAYS=3
 REPORT_OUT_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/ai-usage"
 REPORT_OUT="$REPORT_OUT_DIR/report.html"
 # Global, so the EXIT trap can still see it after main returns.
@@ -182,7 +185,55 @@ cost_split(subscription_usd, other_usd) AS (
     FROM cost_groups g JOIN cost_sessions p ON p.tool = g.tool AND p.session_id = g.session_id
 ),
 $(project_ctes_sql),
-$(session_ctes_sql)
+$(session_ctes_sql),
+$(burn_ctes_sql)
+SQL
+}
+
+# The daily rate and month-end projection, from the daily totals above. A day with no cost counts
+# as $0 from the first day with cost on, so the rate needs REPORT_MIN_RATE_DAYS complete days
+# after that (a first day is often partial, and earlier days are unknown, not zero). All day
+# arithmetic is on date strings, so a 23- or 25-hour DST day is still one day.
+burn_ctes_sql() {
+    cat <<SQL
+cost_burn_hist(first_day, today, month_start, month_end, complete) AS (
+    SELECT first_day, to_day, date(to_day, 'start of month'),
+        date(to_day, 'start of month', '+1 month', '-1 day'),
+        CASE WHEN first_day IS NULL THEN 0
+            ELSE CAST(round(julianday(to_day) - julianday(first_day)) AS INTEGER) END
+    FROM cost_clock, (SELECT min(day) AS first_day FROM cost_days)
+),
+cost_burn(first_day, today, month_start, month_end, rate_days, rate, mtd, today_usd,
+        days_after) AS (
+    SELECT h.first_day, h.today, h.month_start, h.month_end,
+        min($REPORT_RATE_DAYS, h.complete),
+        CASE WHEN h.complete >= $REPORT_MIN_RATE_DAYS THEN round(COALESCE((
+            SELECT sum(t.usd) FROM cost_day_totals t WHERE t.day < h.today
+                AND t.day >= date(h.today, '-' || min($REPORT_RATE_DAYS, h.complete) || ' days')
+            ), 0) / min($REPORT_RATE_DAYS, h.complete), 2) END,
+        COALESCE((SELECT sum(usd) FROM cost_day_totals WHERE day >= h.month_start), 0),
+        COALESCE((SELECT usd FROM cost_day_totals WHERE day = h.today), 0),
+        CAST(round(julianday(h.month_end) - julianday(h.today)) AS INTEGER)
+    FROM cost_burn_hist h
+)
+SQL
+}
+
+# The burn blob key. Strings only, with '' for a figure that is not available, so no NULL reaches
+# the page. Today counts as the larger of its cost so far and the daily rate, since the day is
+# not over; the full days after it follow the rate.
+burn_json_sql() {
+    cat <<SQL
+json((SELECT json_object(
+    'state', CASE WHEN first_day IS NULL THEN 'none' WHEN rate IS NULL THEN 'history'
+        ELSE 'ready' END,
+    'mtd', printf('%.2f', mtd),
+    'rate', CASE WHEN rate IS NULL THEN '' ELSE printf('%.2f', rate) END,
+    'rate_days', printf('%d', rate_days), 'min_days', '$REPORT_MIN_RATE_DAYS',
+    'projected', CASE WHEN rate IS NULL THEN ''
+        ELSE printf('%.2f', (mtd - today_usd) + max(today_usd, rate) + rate * days_after) END,
+    'month', strftime('%Y-%m', today), 'month_end', month_end)
+    FROM cost_burn))
 SQL
 }
 
@@ -330,7 +381,8 @@ json_object(
         FROM (SELECT * FROM cost_project_slots ORDER BY slot))),
     'top_sessions', $(sessions_json_sql),
     'agent_types', $(agent_types_json_sql),
-    'launch_kind', $(launch_kind_sql))
+    'launch_kind', $(launch_kind_sql),
+    'burn', $(burn_json_sql))
 SQL
 }
 
