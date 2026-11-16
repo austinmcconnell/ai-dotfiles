@@ -35,6 +35,19 @@ running system, not of a wrong edit.
 - Re-tuning numbers against a stale artifact burns rounds and produces false evidence that the
   approach is wrong — the classic tell is that even a large change has no effect.
 
+## Fix where a check runs before changing what it checks
+
+When a check fails only because it runs somewhere other than the environment it verifies (a bash
+subprocess instead of the user's interactive shell, say), move the check into that environment.
+Don't change the code under test to imitate the real one; the imitation can hide real breakage.
+Before copying a nearby precedent, ask whether it was itself a workaround.
+
+## Shrink the load before raising the limit
+
+When a build or job runs out of disk, memory, or another quota, measure what is using it and propose
+ways to reduce that (prune, trim layers, change the cache strategy) before asking to raise the
+limit. Needing a second raise means the footprint is the problem, not the limit.
+
 ## Stop when the fix escapes the task
 
 If your change perturbs behavior OUTSIDE what you were asked to do — especially a pre-existing or
