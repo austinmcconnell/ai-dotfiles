@@ -347,6 +347,54 @@ check_page "html books only the in-window step" present "claude-opus-5-5: \$1.00
 check_page "html never books earlier cost to the window" absent "\$101.00"
 check_page "html reads a null rate_limits as API rates" present "Dollars are at API rates."
 
+# Project paths with a fake HOME and TMPDIR. Each row is <session> <cost> <project_dir>, all on
+# Opus an hour before the clock; "-" leaves project_dir out of the payload. Nine projects outside
+# the temp directories rank, so the two cheapest fold into Other with the three temp paths.
+mkdir -p "$WORK/projects"
+cp "$USAGE_DB" "$WORK/projects/usage.db"
+project_rows=""
+while read -r session cost dir; do
+    payload="$(jq -nc --arg dir "$dir" '{model: {id: "claude-opus-5-5"}}
+        + if $dir == "-" then {} else {workspace: {project_dir: $dir}} end')"
+    project_rows+="('claude-code', '$session', $cost,
+        strftime('%Y-%m-%dT%H:%M:%SZ', $((USAGE_NOW_EPOCH - 3600)), 'unixepoch'),
+        $(sql_str "$payload")),"
+done <<EOF
+a1 5 /home/tester/a
+a1 10 /home/tester/a
+home 1 /home/tester
+near 2 /home/testerx/b
+hostile 6 /srv/$hostile
+none 0.7 -
+p1 0.5 /srv/p1
+p2 0.5 /srv/p2
+p3 0.5 /srv/p3
+p4 0.5 /srv/p4
+p5 0.5 /srv/p5
+tmp 3 /tmp/x
+private 4 /private/tmp
+tmpdir 5 /var/tmpx/y
+EOF
+sqlite3 "$WORK/projects/usage.db" "DELETE FROM cost_snapshots;
+    INSERT INTO cost_snapshots (tool, session_id, total_cost_usd, occurred_at, raw_json)
+    VALUES ${project_rows%,};"
+rm -f "$REPORT"
+HOME=/home/tester TMPDIR=/var/tmpx/ USAGE_DB_DIR="$WORK/projects" \
+    check "html renders cost by project" 0 "$REPORT" -- --html --no-open
+check_page "html shows a project under HOME with ~" present \
+    "<th scope=\"row\">~/a</th><td>1</td><td>\$10.00</td>"
+check_page "html shows HOME itself as ~" present \
+    "<th scope=\"row\">~</th><td>1</td><td>\$1.00</td>"
+check_page "html keeps a sibling of HOME whole" present '<th scope="row">/home/testerx/b</th>'
+check_page "html escapes a hostile project path" present "/srv/&lt;/script&gt;&lt;!--&amp;&quot;"
+check_page "html shows a missing project as (unknown)" present '<th scope="row">(unknown)</th>'
+check_page "html folds temp paths and the tail into Other" present \
+    "<th scope=\"row\">Other</th><td>5</td><td>\$13.00</td>"
+check_page "html never lists a temp path" absent "/tmp/x"
+check_page "html folds TMPDIR into Other" absent "/var/tmpx"
+check_page "html lists Other last, scaled to the costliest row" present \
+    'width: 100%"></span></td></tr></tbody>'
+
 rm -f "$REPORT"
 USAGE_NOW_EPOCH="$(epoch '2026-07-01 17:00:00')" \
     check "html renders in daylight time" 0 "$REPORT" -- --html --no-open

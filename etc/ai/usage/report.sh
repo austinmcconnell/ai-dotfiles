@@ -11,6 +11,7 @@ source "$REPORT_DIR/lib.sh"
 
 # Migration 0003 adds v_cost_deltas, which the report reads.
 REPORT_MIN_USER_VERSION=3
+REPORT_TOP_PROJECTS=8
 REPORT_OUT_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/ai-usage"
 REPORT_OUT="$REPORT_OUT_DIR/report.html"
 # Global, so the EXIT trap can still see it after main returns.
@@ -106,20 +107,22 @@ cost_steps(id, tool, session_id, day, delta) AS (
     FROM cost_snapshots c
     WHERE c.id > (SELECT cost_id FROM cutoffs) AND c.occurred_at <= (SELECT now_iso FROM clock)
 ),
-cost_rows(tool, session_id, day, model, delta, subscription) AS (
+cost_rows(tool, session_id, day, model, project, delta, subscription) AS (
     SELECT s.tool, s.session_id, s.day,
         COALESCE(json_extract(CASE WHEN json_valid(c.raw_json) THEN c.raw_json END,
             '\$.model.id'), '(unknown)'),
+        json_extract(CASE WHEN json_valid(c.raw_json) THEN c.raw_json END,
+            '\$.workspace.project_dir'),
         s.delta, $(carries_rate_limits_sql c.raw_json)
     FROM cost_steps s JOIN cost_snapshots c ON c.id = s.id, cost_clock
     WHERE s.day BETWEEN from_day AND to_day
 ),
 -- The only CTE that reads cost_rows, so raw_json is parsed once however often the CTEs below
 -- reference this. A negative or zero step adds nothing to a column.
-cost_groups(tool, session_id, day, model, usd, subscription) AS (
-    SELECT tool, session_id, day, model, sum(CASE WHEN delta > 0 THEN delta ELSE 0 END),
-        max(subscription)
-    FROM cost_rows GROUP BY tool, session_id, day, model
+cost_groups(tool, session_id, day, model, project, usd, subscription) AS (
+    SELECT tool, session_id, day, model, project,
+        sum(CASE WHEN delta > 0 THEN delta ELSE 0 END), max(subscription)
+    FROM cost_rows GROUP BY tool, session_id, day, model, project
 ),
 cost_sessions(tool, session_id, subscription) AS (
     SELECT tool, session_id, max(subscription) FROM cost_groups GROUP BY tool, session_id
@@ -163,6 +166,42 @@ cost_split(subscription_usd, other_usd) AS (
     SELECT COALESCE(sum(CASE WHEN p.subscription THEN g.usd END), 0),
         COALESCE(sum(CASE WHEN p.subscription THEN NULL ELSE g.usd END), 0)
     FROM cost_groups g JOIN cost_sessions p ON p.tool = g.tool AND p.session_id = g.session_id
+),
+$(project_ctes_sql)
+SQL
+}
+
+# Cost per project over the same window. A path under $HOME shows as ~, and a temp-directory
+# path (/tmp, /private/tmp, $TMPDIR) folds into Other with every project past the top
+# REPORT_TOP_PROJECTS.
+project_ctes_sql() {
+    cat <<SQL
+cost_project_rows(tool, session_id, project, usd) AS (
+    SELECT tool, session_id, CASE
+            WHEN project IS NULL OR project = '' THEN '(unknown)'
+            WHEN project IN ('/tmp', '/private/tmp', tmpdir)
+                OR substr(project, 1, 5) = '/tmp/' OR substr(project, 1, 13) = '/private/tmp/'
+                OR (tmpdir != '' AND substr(project, 1, length(tmpdir) + 1) = tmpdir || '/')
+                THEN NULL
+            WHEN home = '' THEN project
+            WHEN project = home THEN '~'
+            WHEN substr(project, 1, length(home) + 1) = home || '/'
+                THEN '~' || substr(project, length(home) + 1)
+            ELSE project END,
+        usd
+    FROM cost_groups, clock WHERE usd > 0
+),
+cost_project_rank(project, rank) AS (
+    SELECT project, row_number() OVER (ORDER BY sum(usd) DESC, project)
+    FROM cost_project_rows WHERE project IS NOT NULL GROUP BY project
+),
+cost_project_slots(slot, project, usd, sessions) AS (
+    SELECT CASE WHEN r.rank <= $REPORT_TOP_PROJECTS THEN r.rank
+            ELSE $REPORT_TOP_PROJECTS + 1 END AS slot,
+        CASE WHEN r.rank <= $REPORT_TOP_PROJECTS THEN r.project ELSE 'Other' END,
+        sum(p.usd), COUNT(DISTINCT p.tool || ' ' || p.session_id)
+    FROM cost_project_rows p LEFT JOIN cost_project_rank r ON r.project = p.project
+    GROUP BY slot
 )
 SQL
 }
@@ -192,7 +231,11 @@ json_object(
     'kind', (SELECT CASE WHEN other_usd = 0 THEN 'subscription'
             WHEN subscription_usd = 0 THEN 'api' ELSE 'mixed' END FROM cost_split),
     'subscription_usd', (SELECT printf('%.2f', subscription_usd) FROM cost_split),
-    'other_usd', (SELECT printf('%.2f', other_usd) FROM cost_split))
+    'other_usd', (SELECT printf('%.2f', other_usd) FROM cost_split),
+    'projects', json((SELECT json_group_array(json_object('project', project,
+            'usd', usd, 'total', printf('%.2f', usd),
+            'sessions', printf('%d', sessions)))
+        FROM (SELECT * FROM cost_project_slots ORDER BY slot))))
 SQL
 }
 
@@ -201,15 +244,18 @@ SQL
 # $now and \$[...], so interpolate only validated numbers or sql_str output. A subquery's JSON
 # result can lose its JSON type and nest as a quoted string, so json() wraps each one.
 blob_sql() {
-    local now="$1"
+    local now="$1" home="${HOME:-}" tmpdir="${TMPDIR:-}"
+    home="${home%/}"
+    tmpdir="${tmpdir%/}"
     cat <<SQL
-WITH RECURSIVE clock(offset_min, now_iso, scan_from_iso, cost_from_iso) AS (
+WITH RECURSIVE clock(offset_min, now_iso, scan_from_iso, cost_from_iso, home, tmpdir) AS (
     SELECT CAST(round((julianday($now, 'unixepoch', 'localtime')
         - julianday($now, 'unixepoch')) * 1440) AS INTEGER),
         strftime('%Y-%m-%dT%H:%M:%SZ', $now, 'unixepoch'),
         strftime('%Y-%m-%dT%H:%M:%SZ', $now - 8 * 86400, 'unixepoch'),
         strftime('%Y-%m-%dT%H:%M:%SZ',
-            date($now, 'unixepoch', 'localtime', '-29 days'), 'utc')
+            date($now, 'unixepoch', 'localtime', '-29 days'), 'utc'),
+        COALESCE($(sql_str "$home"), ''), COALESCE($(sql_str "$tmpdir"), '')
 ),
 -- cost_snapshots has no date index, but rows are appended in time order, so the newest id
 -- before a bound lets a scan seek by rowid instead of reading the whole table. Each lookup reads

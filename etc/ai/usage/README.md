@@ -393,12 +393,17 @@ says it began before the window steps its first row there from its last earlier 
 series and the rest share Other. Light-mode colors fall below 3:1 contrast, so the daily figures
 also appear as a table.
 
-A session counts as a subscription session when any of its snapshots in the window carries a
-`rate_limits` object; an explicit `null` does not count. The caption calls subscription dollars an
-API-equivalent estimate, not money spent, and other dollars API-rate figures. When both appear, it
-gives the amount of each.
+The project table covers the same days, by the `workspace.project_dir` each snapshot reported. A
+path under `$HOME` shows as `~`, and the eight costliest projects get their own rows. The rest share
+Other with paths under `/tmp`, `/private/tmp`, and `$TMPDIR`, which are throwaway runs rather than
+projects. Each row counts its sessions, so a session that moved between projects counts in each row.
 
-With SQLite 3.54, the statement takes about 70 ms on a 4,600-row DB with 15 days of cost, and the
+A session counts as a subscription session when any of its snapshots in the window carries a
+`rate_limits` object; an explicit `null` does not count. Both cost sections' captions call
+subscription dollars an API-equivalent estimate, not money spent, and other dollars API-rate
+figures. When both appear, they give the amount of each.
+
+With SQLite 3.54, the statement takes about 80 ms on a 4,600-row DB with 15 days of cost, and the
 same on a 98,000-row copy with 20 months of older history, so it grows with the window, not the
 table. The statusline's busy timeout is 200 ms. SQLite before 3.35 evaluates a CTE once per
 reference rather than once in total, so the floor version is likely slower; it has not been

@@ -202,6 +202,29 @@ def cost:
     end)
   + "</section>";
 
+# Bars are widths relative to the costliest row, set inline: the CSP allows inline styles.
+def projects:
+  .cost as $c
+  | "<section><h2>Which projects is the cost going to?</h2>"
+  + (if ($c.projects | length) == 0 then
+      "<p>No cost is recorded for the last 30 days.</p>"
+    else
+      ($c.projects | map(.usd) | max) as $max
+      | "<p class=\"meta\">The same 30 days, by the project directory each snapshot reported."
+      + " Paths under <code>/tmp</code>, <code>/private/tmp</code>, and <code>$TMPDIR</code>"
+      + " count as Other. \($c | dollar_note)</p>"
+      + "<table class=\"projects\"><thead><tr><th scope=\"col\">Project</th>"
+      + "<th scope=\"col\">Sessions</th><th scope=\"col\">Cost at API rates</th>"
+      + "<td aria-hidden=\"true\"></td></tr></thead><tbody>"
+      + ($c.projects | map(
+          "<tr><th scope=\"row\">\(.project | esc)</th><td>\(.sessions | esc)</td>"
+          + "<td>$\(.total | esc)</td><td class=\"bar-cell\" aria-hidden=\"true\">"
+          + "<span class=\"bar\" style=\"width: \((.usd / $max * 1000 | round) / 10)%\">"
+          + "</span></td></tr>") | join(""))
+      + "</tbody></table>"
+    end)
+  + "</section>";
+
 def header:
   "<header><h1>AI usage</h1><p class=\"meta\">Generated \(.generated_at | esc) "
   + "(\(.utc_offset | esc)). All times are local.</p></header>";
@@ -211,7 +234,7 @@ def footer:
   + (caveats | map("<li>" + . + "</li>") | join(""))
   + "</ul></footer>";
 
-(header + "<main>" + quota + burnup + cost + "</main>" + footer) as $body
+(header + "<main>" + quota + burnup + cost + projects + "</main>" + footer) as $body
 | ($tmpl | split("@@BODY@@")) as $parts
 | if ($parts | length) != 2 then error("report.html.tmpl needs exactly one @@BODY@@")
   else $parts[0] + $body + $parts[1]
