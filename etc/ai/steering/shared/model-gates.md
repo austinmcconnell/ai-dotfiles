@@ -30,5 +30,11 @@ so:
 - To step down mid-session, delegate to a small-model subagent rather than switching the main model.
   A subagent starts with its own small context and cache, so it never resets the main session's.
 
+## Quota Can Override the Table
+
+On a subscription, the binding constraint is the 7-day quota, not API-equivalent dollars. When
+plenty of quota would otherwise go unused, starting on the strongest model and staying on it for
+implementation is deliberate, not drift. Still make the step-down offer; declining it is expected.
+
 Each tool's mechanics for these gates live in its own README; for Claude Code, see
 `etc/claude-code/README.md`.
