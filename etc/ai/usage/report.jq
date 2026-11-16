@@ -24,7 +24,8 @@ def caveats: [
     + " added to a total.",
   "Quota is account-wide: usage from other machines and claude.ai counts against it but is not"
     + " recorded here.",
-  "A new 5-hour window that opens at the same percentage as the last one leaves no boundary row.",
+  "A new quota window is recorded only once a percentage changes, so a tile can show Reset"
+    + " for a window that has already reopened.",
   "Each open session records quota, and one can report an older, lower figure than another"
     + " already did. A quota figure with a reset time is the highest recorded for its window, so"
     + " a genuine drop within a window would not show."
@@ -47,8 +48,8 @@ def tile($window; $title):
       "<p class=\"figure\">\($t.used | esc) used</p>"
       + "<p>Resets \($q.resets_local | esc), \($t.left | esc) left as of \($as_of | esc).</p>"
       + (if $t.pace == "" then ""
-        else "<p class=\"pace level-\($t.level | esc)\">\($t.pace | esc) points against an even"
-          + " pace when last observed: \($t.level | level_label).</p>"
+        else "<p class=\"pace level-\($t.level | esc)\">\($t.pace | esc) when last observed:"
+          + " \($t.level | level_label).</p>"
         end)
     elif $t.state == "reset" then
       "<p class=\"figure\">Reset</p>"
@@ -91,6 +92,18 @@ def step_path($points; $end_x):
   + ([range(1; $p | length) as $i | "H\($p[$i][0])V\($p[$i][1])"] | join(""))
   + "H\(plot_x([$end_x, $steps[-1][0]] | max))";
 
+# The current figure beside the line's end, the same rounding as the tile. Past 6 days it sits
+# above the end instead, so it stays inside the plot.
+def end_label($b; $used):
+  ([$b.end_x // 0, $b.points[-1][0]] | max) as $x
+  | plot_y($b.points[-1][1]) as $y
+  | if $x > 6 then
+      "<text class=\"end-label\" x=\"\(plot_x($x))\" y=\"\($y - 8)\" text-anchor=\"end\">"
+      + "\($used | esc)</text>"
+    else
+      "<text class=\"end-label\" x=\"\(plot_x($x) + 6)\" y=\"\($y + 4)\">\($used | esc)</text>"
+    end;
+
 def burnup_axes:
   ([0, 25, 50, 75, 100] | map(plot_y(.) as $y
     | "<line class=\"grid\" x1=\"40\" x2=\"620\" y1=\"\($y)\" y2=\"\($y)\"/>"
@@ -113,12 +126,13 @@ def burnup:
         + " aria-labelledby=\"burnup-title burnup-desc\">"
         + "<title id=\"burnup-title\">7-day usage this window</title>"
         + "<desc id=\"burnup-desc\">A solid stepped line of the highest 7-day share used so far,"
-        + " from the first observed figure to the last time quota was observed, against a dashed even-pace"
-        + " diagonal from 0% to 100% over 7 days.</desc>"
+        + " from the first observed figure to the last time quota was observed, against a dashed"
+        + " even-pace diagonal from 0% to 100% over 7 days.</desc>"
         + burnup_axes
         + "<line class=\"even\" x1=\"\(plot_x(0))\" y1=\"\(plot_y(0))\" x2=\"\(plot_x(7))\""
         + " y2=\"\(plot_y(100))\"/>"
         + "<path class=\"used\" d=\"\(step_path(.burnup.points; .burnup.end_x // 0))\"/>"
+        + end_label(.burnup; $tiles.seven_day.used)
         + "</svg>"
         + "<p class=\"meta\">Solid: share used. Dashed: even pace.</p>"
       end)
@@ -144,6 +158,27 @@ def dollar_note:
   else
     "$\(.subscription_usd | esc) from subscription sessions is an API-equivalent estimate, not"
     + " money spent; the other $\(.other_usd | esc) is at API rates."
+  end;
+
+def capitalize: (.[0:1] | ascii_upcase) + .[1:];
+
+# A dollar column header that matches the dollar note: $noun is "cost" or "estimate".
+def dollar_header($noun):
+  if .kind == "subscription" then "API-equivalent \($noun)"
+  elif .kind == "api" then "\($noun | capitalize) at API rates"
+  else $noun | capitalize
+  end;
+
+# Launches never add up, so their note names no amounts.
+def launch_note:
+  if .launch_kind == "subscription" then
+    " Their sessions ran on a subscription, so these are API-equivalent estimates, not money"
+    + " spent."
+  elif .launch_kind == "api" then " Estimates are at API rates."
+  elif .launch_kind == "mixed" then
+    " Estimates from subscription sessions are API-equivalent, not money spent; the rest are at"
+    + " API rates."
+  else ""
   end;
 
 def cost_columns($c):
@@ -195,7 +230,7 @@ def cost_table($c):
 
 def cost:
   .cost as $c
-  | "<section><h2>What did each day cost, by model?</h2>"
+  | "<section><h2>What did each day cost, by main-session model?</h2>"
   + (if ($c.days | length) == 0 then
       "<p>No cost is recorded for the last 30 days.</p>"
     else
@@ -226,7 +261,7 @@ def projects:
       + " Paths under <code>/tmp</code>, <code>/private/tmp</code>, and <code>$TMPDIR</code>"
       + " count as Other. \($c | dollar_note)</p>"
       + "<table class=\"projects\"><thead><tr><th scope=\"col\" class=\"text\">Project</th>"
-      + "<th scope=\"col\">Sessions</th><th scope=\"col\">Cost at API rates</th>"
+      + "<th scope=\"col\">Sessions</th><th scope=\"col\">\($c | dollar_header("cost"))</th>"
       + "<td aria-hidden=\"true\"></td></tr></thead><tbody>"
       + ($c.projects | map(
           "<tr><th scope=\"row\">\(.project | path_cell)</th><td>\(.sessions | esc)</td>"
@@ -247,7 +282,7 @@ def top_sessions:
       + " in those days. Model and project are where most of it went. \($c | dollar_note)</p>"
       + "<table><thead><tr><th scope=\"col\">Session</th><th scope=\"col\">Last active</th>"
       + "<th scope=\"col\" class=\"text\">Model</th><th scope=\"col\" class=\"text\">Project</th>"
-      + "<th scope=\"col\">Cost at API rates</th></tr></thead><tbody>"
+      + "<th scope=\"col\">\($c | dollar_header("cost"))</th></tr></thead><tbody>"
       + ($c.top_sessions | map(
           "<tr><th scope=\"row\"><code title=\"\(.session_id | esc)\">"
           + "\(.session_id[0:8] | esc)</code></th>"
@@ -265,14 +300,15 @@ def launches:
   | "<section><h2>Which subagent launches cost the most?</h2>"
   + "<p class=\"meta\">Partial: subagents that finish quickly can be missed. Each estimate is"
   + " already inside its session's cost, so these figures are never added to a total."
-  + (if ($c.top_sessions | length) == 0 then "" else " \($c | dollar_note)" end) + "</p>"
+  + ($c | launch_note) + "</p>"
   + (if ($l | length) == 0 then
       "<p>No subagent launch is recorded for the last 30 days.</p>"
     else
       "<table><thead><tr><th scope=\"col\">Started</th>"
       + "<th scope=\"col\" class=\"text\">Agent type</th>"
       + "<th scope=\"col\" class=\"text\">Name</th><th scope=\"col\" class=\"text\">Model</th>"
-      + "<th scope=\"col\">Estimate at API rates</th></tr></thead><tbody>"
+      + "<th scope=\"col\">\({kind: $c.launch_kind} | dollar_header("estimate"))</th>"
+      + "</tr></thead><tbody>"
       + ($l | map(
           "<tr><th scope=\"row\">\(.started | stamp)</th>"
           + "<td class=\"text\">\(.agent_type | nowrap)</td>"

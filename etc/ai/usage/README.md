@@ -382,24 +382,24 @@ over the last 8 days), since rate-limit rows are written only when a percentage 
 with a lower figure is a stale report and does not count. The section shows that time. The 7-day
 pace is taken at that moment, not at the clock: a figure held since then says nothing about usage
 after it. `report.sh` formats the used % and the pace with `pace_delta` and `pace_level` from
-`lib.sh`, so they match the statusline. Bash rounds 12.5 to 12, where SQLite and jq would show 13.
-The 5-hour window gets no pace.
+`lib.sh`, so they match the statusline, and words the pace as points over or under an even pace.
+Bash rounds 12.5 to 12, where SQLite and jq would show 13. The 5-hour window gets no pace.
 
 The 7-day burn-up charts the open window only: the window the 7-day tile shows as open, so the two
 always agree. Its line steps from the first recorded figure, not from zero, through each rise in the
-highest 7-day percentage so far, and holds the last figure until quota was last observed. A dashed
-diagonal marks an even pace. The SVG is drawn inline by `report.jq`, which rounds coordinates to one
-decimal place.
+highest 7-day percentage so far, and holds the last figure until quota was last observed. The tile's
+figure labels the line's end. A dashed diagonal marks an even pace. The SVG is drawn inline by
+`report.jq`, which rounds coordinates to one decimal place.
 
-The daily cost chart stacks each local day's cost by model, from the first day with cost to today,
-for at most 30 days. Empty days are filled. It follows `v_cost_deltas`: each snapshot's step is
-booked to the model in that snapshot, so subagent cost lands on the main session's model. The
-statement repeats that view's `lag()` over the window's rows only. A session whose `sessions` row
-says it began before the window steps its first row there from its last earlier snapshot, not from
-0, so its earlier cost stays out of the window. The three costliest models keep their own series and
-the rest share Other, which is always grey and stacked on top. A 2px surface gap separates stacked
-segments. The light-mode green falls below 3:1 contrast, so the daily figures also appear as a
-table.
+The daily cost chart stacks each local day's cost by main-session model, from the first day with
+cost to today, for at most 30 days. Empty days are filled. It follows `v_cost_deltas`: each
+snapshot's step is booked to the model in that snapshot, so subagent cost lands on the main
+session's model. The statement repeats that view's `lag()` over the window's rows only. A session
+whose `sessions` row says it began before the window steps its first row there from its last earlier
+snapshot, not from 0, so its earlier cost stays out of the window. The three costliest models keep
+their own series and the rest share Other, which is always grey and stacked on top. A 2px surface
+gap separates stacked segments. The light-mode green falls below 3:1 contrast, so the daily figures
+also appear as a table.
 
 The project table covers the same days, by the `workspace.project_dir` each snapshot reported. A
 path under `$HOME` shows as `~`, and the eight costliest projects get their own rows. The rest share
@@ -409,14 +409,17 @@ projects. Each row counts its sessions, so a session that moved between projects
 A session counts as a subscription session when any of its snapshots in the window carries a
 `rate_limits` object; an explicit `null` does not count. Both cost sections' captions call
 subscription dollars an API-equivalent estimate, not money spent, and other dollars API-rate
-figures. When both appear, they give the amount of each.
+figures. When both appear, they give the amount of each, and the dollar column headers match: "Cost
+at API rates", "API-equivalent cost", or plain "Cost" when mixed.
 
 Two more tables cover the same days. The 10 costliest sessions show only their cost in those days,
 with the model and project that carried most of it; a temp-directory project shows as such rather
 than as Other. A session shows the first 8 characters of its id, with the full id as a hover title.
 The 10 costliest subagent launches started in those days come from `subagent_tasks`, with unpriced
 launches last. That table is marked partial, since fast-finishing subagents can be missed, and its
-estimates are never summed: each is already inside its session's cost.
+estimates are never summed: each is already inside its session's cost. Its caption and header take
+the subscription split from the listed priced launches' own parent sessions, and name no amounts; a
+parent with no cost in the window counts as API-rate.
 
 With SQLite 3.54, the statement takes about 80 ms on a 4,600-row DB with 15 days of cost, and the
 same on a 98,000-row copy with 20 months of older history, so it grows with the window, not the

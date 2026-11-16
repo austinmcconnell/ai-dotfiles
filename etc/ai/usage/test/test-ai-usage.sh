@@ -223,6 +223,12 @@ check_page "html names an unpriced launch" present "<td>$(nw "(unpriced)")</td>"
 check_page "html leaves out launches outside the window" absent "Old review"
 check_page "html leaves out launches after the clock" absent "(no name)"
 check_page "html marks launches as partial" present "Partial: subagents that finish quickly"
+check_page "html notes API-rate launch estimates" present "Estimates are at API rates."
+check_page "html heads API-rate launch estimates" present "Estimate at API rates</th>"
+check_page "html titles the cost chart by main-session model" present \
+    "What did each day cost, by main-session model?"
+check_page "html says a window reopened at the same figure shows Reset" present \
+    "a tile can show Reset for a window that has already reopened"
 # The seeded rate-limit row has percentages but no reset times.
 check_page "html shows a 7d figure with an unknown reset" present \
     "7% used</p><p>Reset time unknown."
@@ -243,8 +249,8 @@ rate_row() {
 rate_row 32 50 $((USAGE_NOW_EPOCH + 4500)) $((USAGE_NOW_EPOCH + 302400)) 86400
 rm -f "$REPORT"
 check "html renders a day-old figure" 0 "$REPORT" -- --html --no-open
-check_page "html paces a figure when it was observed" present "+14 points against an even pace"
-check_page "html names the yellow level in text" present "level-yellow\">+14"
+check_page "html paces a figure when it was observed" present "14 points over an even pace"
+check_page "html names the yellow level in text" present "level-yellow\">14 points over"
 check_page "html dates a day-old observation" present "most recently 2026-01-01 12:00."
 
 # A later cost snapshot that carried rate_limits shows the figure still held at the clock.
@@ -255,10 +261,13 @@ rm -f "$REPORT"
 check "html renders a figure held until the clock" 0 "$REPORT" -- --html --no-open
 check_page "html takes the last observation from cost snapshots" present \
     "most recently 2026-01-02 12:00."
-check_page "html shows on pace in text" present "level-on\">+0 points against an even pace"
+check_page "html shows on pace in text" present "level-on\">Level with an even pace"
 split="\$1.25 from subscription sessions is an API-equivalent estimate, not money spent;"
 check_page "html splits subscription dollars from API-rate dollars" present \
     "$split the other \$7.15 is at API rates."
+check_page "html notes launch estimates by their own sessions" present \
+    "Their sessions ran on a subscription, so these are API-equivalent estimates"
+check_page "html heads subscription launch estimates" present "API-equivalent estimate</th>"
 
 # 3.5 days into the 7d window, so an even pace is 50%. 12.5 rounds to 12 as in the statusline,
 # including under a decimal-comma locale. The earlier 50% row is cleared: a lower figure in the
@@ -270,11 +279,11 @@ LC_ALL=de_DE.UTF-8 check "html renders open windows" 0 "$REPORT" -- --html --no-
 check_page "html rounds a 7d half like the statusline" present "12% used"
 check_page "html shows the 7d reset in local time" present "Resets 2026-01-06 00:00, 3d 12h left"
 check_page "html dates relative figures" present "left as of 2026-01-02 12:00:00."
-check_page "html shows 7d pace with room" present "−38 points against an even pace"
+check_page "html shows 7d pace with room" present "38 points under an even pace"
 check_page "html names the room-to-ramp level" present "level-green"
 check_page "html shows the 5h reset" present "Resets 2026-01-02 13:15, 1h 15m left"
 check_page "html dates the last observation" present "most recently 2026-01-02 12:00."
-if [[ "$(grep -o 'points against' "$REPORT" | wc -l | tr -d ' ')" == 1 ]]; then
+if [[ "$(grep -o 'an even pace when' "$REPORT" | wc -l | tr -d ' ')" == 1 ]]; then
     echo "ok    html gives the 5h window no pace"
 else
     echo "FAIL  html gives the 5h window no pace"
@@ -284,7 +293,7 @@ fi
 rate_row 31 80 $((USAGE_NOW_EPOCH + 4500)) $((USAGE_NOW_EPOCH + 302400))
 rm -f "$REPORT"
 check "html renders a tight 7d window" 0 "$REPORT" -- --html --no-open
-check_page "html shows 7d pace over" present "+30 points against an even pace"
+check_page "html shows 7d pace over" present "30 points over an even pace"
 check_page "html names the red level in text" present "well over pace"
 
 # The 5h window resets exactly at the clock, which counts as closed. The newest row of each
@@ -300,7 +309,7 @@ check_page "html keeps the window's highest 7d figure as secondary" present \
 check_page "html keeps the window's highest 5h figure as secondary" present \
     "highest figure recorded for that window was 35%."
 check_page "html closes a window that resets at the clock" present "Reset at 2026-01-02 12:00."
-check_page "html gives a closed window no pace" absent "points against"
+check_page "html gives a closed window no pace" absent "an even pace when"
 check_page "html charts no closed window" present "No open 7-day window is recorded"
 
 # A newer payload without the 7d window doesn't hide the older 7d row.
@@ -358,6 +367,9 @@ check_page "html marks steps as observed changes" present "Steps mark when this 
 check_page "html labels the burn-up for screen readers" present 'aria-labelledby="burnup-title'
 check_page "html labels subscription dollars" present \
     "the dollars are an API-equivalent estimate, not money spent."
+check_page "html heads subscription dollars" present "API-equivalent cost</th>"
+check_page "html labels the burn-up's current figure" present \
+    '<text class="end-label" x="336" y="168">30%</text>'
 
 # Another session's stale 20% and 40% after 50% and 60% in the same windows, with no cost
 # snapshot after it. The tiles, pace, and line keep the higher figures as last seen an hour
@@ -382,7 +394,7 @@ check_page "html keeps the highest 5h figure over a stale one" present "50% used
 check_page "html dates the observation to the highest figure" present \
     "most recently 2026-01-02 11:00."
 check_page "html paces the highest figure when it was seen" present \
-    "+11 points against an even pace"
+    "11 points over an even pace"
 check_page "html holds the burn-up line over a stale figure" present \
     'd="M323.1,142H326.5V98H326.5"'
 check_page "html says each quota figure is the window's highest" present \
@@ -396,9 +408,16 @@ for row in "5be12826-7786-4294-a90e-03d9d18cb72b 4 opus" "b 3 sonnet" "c 2 fable
     read -r session usd family <<<"$row"
     four_rows+="$(cost_row "$session" "$usd" "{\"model\":{\"id\":\"claude-$family\"}}"),"
 done
+# Session b ran on a subscription; the seeded launches' session s1 has no cost here.
 sqlite3 "$WORK/four/usage.db" "DELETE FROM cost_snapshots;
     INSERT INTO cost_snapshots (tool, session_id, total_cost_usd, occurred_at, raw_json)
-    VALUES ${four_rows%,};"
+    VALUES ${four_rows%,};
+    UPDATE cost_snapshots SET raw_json = json_set(raw_json, '\$.rate_limits', json('{}'))
+        WHERE session_id = 'b';
+    INSERT INTO subagent_tasks (tool, parent_session_id, task_id, name, estimated_cost_usd,
+        started_at, updated_at)
+    VALUES ('claude-code', 'b', 't6', 'Subscription review', 1, '2026-01-02T00:00:00Z',
+        '2026-01-02T00:00:00Z');"
 rm -f "$REPORT"
 USAGE_DB_DIR="$WORK/four" check "html renders four models" 0 "$REPORT" -- --html --no-open
 check_page "html shortens a session id, keeping the full id as its title" present \
@@ -407,6 +426,9 @@ check_page "html names at most three models" present \
     "<span class=\"swatch s3\"></span>claude-fable: \$2.00"
 check_page "html folds a lone fourth model into Other" present \
     "<span class=\"swatch s4\"></span>Other (claude-haiku): \$1.00"
+check_page "html heads mixed dollars plainly" present "<th scope=\"col\">Cost</th>"
+check_page "html notes mixed launch estimates" present \
+    "Estimates from subscription sessions are API-equivalent, not money spent"
 
 # A session that began before the 30-day window adds only its in-window step there; sessions
 # that began inside it (every other fixture) step from 0. An explicit null rate_limits is not a

@@ -63,6 +63,7 @@ h3 { font-size: 0.95rem; margin: 0 0 0.25rem; color: var(--muted); font-weight: 
 .chart .tick { fill: var(--muted); font-size: 11px; }
 .chart .even { stroke: var(--muted); stroke-width: 1.5; stroke-dasharray: 5 4; }
 .chart .used { fill: none; stroke: var(--fg); stroke-width: 2; }
+.chart .end-label { fill: var(--fg); font-size: 13px; font-weight: 600; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; }
 .chart .s1 { fill: var(--s1); }
 .chart .s2 { fill: var(--s2); }
 .chart .s3 { fill: var(--s3); }
@@ -89,6 +90,7 @@ section { overflow-x: auto; }
 @media (max-width: 40rem) {
   .chart { overflow: visible; box-sizing: border-box; padding-left: 0.5rem; }
   .chart .tick { font-size: 18px; }
+  .chart .end-label { font-size: 21px; }
   .bar-cell { width: 20%; }
   table { font-size: 0.8rem; }
   th, td { padding-right: 0.5rem; }
