@@ -96,7 +96,7 @@ payload_sql() {
     echo "json_extract(CASE WHEN json_valid($1) THEN $1 END, '\$.rate_limits.$2')"
 }
 
-# Cost per local day for the last 30 days, split into model series. Each snapshot's step is its
+# Cost per local day for the last 31 days, split into model series. Each snapshot's step is its
 # total less the session's previous one, as in v_cost_deltas. A session that began before the
 # window, or has no sessions row, steps its first row there from its last earlier snapshot, not
 # from 0, or the window would book its whole earlier cost to one day. A session is a subscription session if any of its rows
@@ -104,7 +104,7 @@ payload_sql() {
 cost_ctes_sql() {
     cat <<SQL
 cost_clock(from_day, to_day) AS (
-    SELECT date($now, 'unixepoch', 'localtime', '-29 days'),
+    SELECT date($now, 'unixepoch', 'localtime', '-30 days'),
         date($now, 'unixepoch', 'localtime')
 ),
 cost_steps(id, tool, session_id, at, day, delta) AS (
@@ -350,7 +350,7 @@ WITH RECURSIVE clock(offset_min, now_iso, scan_from_iso, cost_from_iso, home, tm
         strftime('%Y-%m-%dT%H:%M:%SZ', $now, 'unixepoch'),
         strftime('%Y-%m-%dT%H:%M:%SZ', $now - 8 * 86400, 'unixepoch'),
         strftime('%Y-%m-%dT%H:%M:%SZ',
-            date($now, 'unixepoch', 'localtime', '-29 days'), 'utc'),
+            date($now, 'unixepoch', 'localtime', '-30 days'), 'utc'),
         COALESCE($(sql_str "$home"), ''), COALESCE($(sql_str "$tmpdir"), '')
 ),
 -- cost_snapshots has no date index, but rows are appended in time order, so the newest id

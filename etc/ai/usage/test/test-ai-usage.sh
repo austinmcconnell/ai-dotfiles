@@ -73,7 +73,7 @@ rm -f "$REPORT"
 check "empty html" 0 "$REPORT" -- --html --no-open
 check_page "html names a machine with no quota data" present "No quota data on this machine"
 check_page "html charts nothing without quota data" absent "How has 7-day usage"
-check_page "html names an empty cost chart" present "No cost is recorded for the last 30 days."
+check_page "html names an empty cost chart" present "No cost is recorded for the last 31 days."
 
 # shellcheck disable=SC2153 # USAGE_DB is set by lib.sh
 sqlite3 "$USAGE_DB" "
@@ -465,7 +465,27 @@ check_page "html heads mixed dollars plainly" present "<th scope=\"col\">Cost</t
 check_page "html notes mixed launch estimates" present \
     "Estimates from subscription sessions are API-equivalent, not money spent"
 
-# A session that began before the 30-day window adds only its in-window step there; sessions
+# The window is 31 days, so on the 31st of a month it still reaches the 1st; the day before that
+# is out. One session a day, at local noon.
+mkdir -p "$WORK/window"
+cp "$USAGE_DB" "$WORK/window/usage.db"
+sqlite3 "$WORK/window/usage.db" "DELETE FROM cost_snapshots;
+    INSERT INTO cost_snapshots (tool, session_id, total_cost_usd, occurred_at, raw_json)
+    VALUES ('claude-code', 'before', 5,
+        strftime('%Y-%m-%dT%H:%M:%SZ', '2026-11-30 12:00:00', 'utc'),
+        '{\"model\":{\"id\":\"claude-opus-5-5\"}}'),
+        ('claude-code', 'first', 7,
+        strftime('%Y-%m-%dT%H:%M:%SZ', '2026-12-01 12:00:00', 'utc'),
+        '{\"model\":{\"id\":\"claude-opus-5-5\"}}');"
+rm -f "$REPORT"
+USAGE_NOW_EPOCH="$(sqlite3 :memory: "SELECT CAST(strftime('%s', '2026-12-31 15:00:00', 'utc')
+    AS INTEGER);")" USAGE_DB_DIR="$WORK/window" check "html renders the 31st of a month" 0 \
+    "$REPORT" -- --html --no-open
+check_page "html reaches the 1st from the 31st" present "$(nw "2026-12-01")"
+check_page "html leaves out the day before the 31-day window" absent "$(nw "2026-11-30")"
+check_page "html no longer calls the window 30 days" absent "last 30 days"
+
+# A session that began before the 31-day window adds only its in-window step there; sessions
 # that began inside it (every other fixture) step from 0. An explicit null rate_limits is not a
 # subscription.
 mkdir -p "$WORK/straddle"

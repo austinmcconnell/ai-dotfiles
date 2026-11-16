@@ -232,9 +232,9 @@ def cost:
   .cost as $c
   | "<section><h2>What did each day cost, by main-session model?</h2>"
   + (if ($c.days | length) == 0 then
-      "<p>No cost is recorded for the last 30 days.</p>"
+      "<p>No cost is recorded for the last 31 days.</p>"
     else
-      "<p class=\"meta\">One column per local day, for up to 30 days. Cost is booked to the"
+      "<p class=\"meta\">One column per local day, for up to 31 days. Cost is booked to the"
       + " main-session model, including its subagents. \($c | dollar_note)</p>"
       + "<svg class=\"chart\" viewBox=\"0 0 640 260\" role=\"img\""
       + " aria-labelledby=\"cost-title cost-desc\">"
@@ -254,10 +254,10 @@ def projects:
   .cost as $c
   | "<section><h2>Which projects is the cost going to?</h2>"
   + (if ($c.projects | length) == 0 then
-      "<p>No cost is recorded for the last 30 days.</p>"
+      "<p>No cost is recorded for the last 31 days.</p>"
     else
       ($c.projects | map(.usd) | max) as $max
-      | "<p class=\"meta\">The same 30 days, by the project directory each snapshot reported."
+      | "<p class=\"meta\">The same 31 days, by the project directory each snapshot reported."
       + " Paths under <code>/tmp</code>, <code>/private/tmp</code>, and <code>$TMPDIR</code>"
       + " count as Other. \($c | dollar_note)</p>"
       + "<table class=\"bars\"><thead><tr><th scope=\"col\" class=\"text\">Project</th>"
@@ -276,9 +276,9 @@ def top_sessions:
   .cost as $c
   | "<section><h2>Which sessions cost the most?</h2>"
   + (if ($c.top_sessions | length) == 0 then
-      "<p>No cost is recorded for the last 30 days.</p>"
+      "<p>No cost is recorded for the last 31 days.</p>"
     else
-      "<p class=\"meta\">The costliest sessions in the same 30 days, counting only their cost"
+      "<p class=\"meta\">The costliest sessions in the same 31 days, counting only their cost"
       + " in those days. Model and project are where most of it went. \($c | dollar_note)</p>"
       + "<table><thead><tr><th scope=\"col\">Session</th><th scope=\"col\">Last active</th>"
       + "<th scope=\"col\" class=\"text\">Model</th><th scope=\"col\" class=\"text\">Project</th>"
@@ -300,10 +300,10 @@ def agent_types:
   | $c.agent_types as $t
   | "<section><h2>Which subagent types cost the most?</h2>"
   + "<p class=\"meta\">Partial: subagents that finish quickly can be missed. Each type's estimate"
-  + " sums its priced launches in the same 30 days. Every estimate is already inside its"
+  + " sums its priced launches in the same 31 days. Every estimate is already inside its"
   + " session's cost, so these figures are never added to a total." + ($c | launch_note) + "</p>"
   + (if ($t | length) == 0 then
-      "<p>No subagent launch is recorded for the last 30 days.</p>"
+      "<p>No subagent launch is recorded for the last 31 days.</p>"
     else
       ([$t[] | .usd // 0] | max) as $max
       | "<table class=\"bars\"><thead><tr><th scope=\"col\" class=\"text\">Agent type</th>"
