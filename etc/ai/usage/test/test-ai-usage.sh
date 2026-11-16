@@ -252,7 +252,9 @@ check_page "html splits subscription dollars from API-rate dollars" present \
     "$split the other \$7.15 is at API rates."
 
 # 3.5 days into the 7d window, so an even pace is 50%. 12.5 rounds to 12 as in the statusline,
-# including under a decimal-comma locale.
+# including under a decimal-comma locale. The earlier 50% row is cleared: a lower figure in the
+# same window would read as a stale report.
+sqlite3 "$USAGE_DB" "DELETE FROM rate_limit_snapshots;"
 rate_row 30 12.5 $((USAGE_NOW_EPOCH + 4500)) $((USAGE_NOW_EPOCH + 302400))
 rm -f "$REPORT"
 LC_ALL=de_DE.UTF-8 check "html renders open windows" 0 "$REPORT" -- --html --no-open
@@ -276,14 +278,18 @@ check "html renders a tight 7d window" 0 "$REPORT" -- --html --no-open
 check_page "html shows 7d pace over" present "+30 points against an even pace"
 check_page "html names the red level in text" present "well over pace"
 
-# The 5h window resets exactly at the clock, which counts as closed.
+# The 5h window resets exactly at the clock, which counts as closed. The newest row of each
+# closed window is lower than the one before it, so the tiles keep the higher figures.
+rate_row 35 65 "$USAGE_NOW_EPOCH" $((USAGE_NOW_EPOCH - 3600)) 60
 rate_row 34 60 "$USAGE_NOW_EPOCH" $((USAGE_NOW_EPOCH - 3600))
 rm -f "$REPORT"
 check "html renders closed windows" 0 "$REPORT" -- --html --no-open
 check_page "html shows a closed 7d window" present \
     "Reset at 2026-01-02 11:00. No figure for the new window is recorded here."
-check_page "html keeps the last 7d figure as secondary" present \
-    "last recorded figure before the reset was 60%."
+check_page "html keeps the window's highest 7d figure as secondary" present \
+    "highest figure recorded for that window was 65%."
+check_page "html keeps the window's highest 5h figure as secondary" present \
+    "highest figure recorded for that window was 35%."
 check_page "html closes a window that resets at the clock" present "Reset at 2026-01-02 12:00."
 check_page "html gives a closed window no pace" absent "points against"
 check_page "html charts no closed window" present "No open 7-day window is recorded"
@@ -292,7 +298,7 @@ check_page "html charts no closed window" present "No open 7-day window is recor
 rate_row 20 NULL $((USAGE_NOW_EPOCH + 1800)) NULL
 rm -f "$REPORT"
 check "html renders a 5h-only row" 0 "$REPORT" -- --html --no-open
-check_page "html keeps the 7d tile from the last 7d row" present "before the reset was 60%."
+check_page "html keeps the 7d tile from the last 7d row" present "for that window was 65%."
 check_page "html reads the 5h tile from the 5h-only row" present "20% used"
 
 # The newest row wins even without a reset time.
@@ -343,6 +349,35 @@ check_page "html marks steps as observed changes" present "Steps mark when this 
 check_page "html labels the burn-up for screen readers" present 'aria-labelledby="burnup-title'
 check_page "html labels subscription dollars" present \
     "the dollars are an API-equivalent estimate, not money spent."
+
+# Another session's stale 20% and 40% after 50% and 60% in the same windows, with no cost
+# snapshot after it. The tiles, pace, and line keep the higher figures as last seen an hour
+# ago, when an even 7d pace was 49%.
+mkdir -p "$WORK/stale"
+cp "$USAGE_DB" "$WORK/stale/usage.db"
+stale_rows=""
+for row in "30 40 7200" "50 60 3600" "20 40 0"; do
+    read -r five seven age <<<"$row"
+    stale_rows+="('claude-code', $five, $seven, $((USAGE_NOW_EPOCH + 4500)), $window_end,
+        strftime('%Y-%m-%dT%H:%M:%SZ', $((USAGE_NOW_EPOCH - age)), 'unixepoch')),"
+done
+sqlite3 "$WORK/stale/usage.db" "DELETE FROM rate_limit_snapshots; DELETE FROM cost_snapshots;
+    INSERT INTO rate_limit_snapshots (tool, five_hour_used_percentage,
+        seven_day_used_percentage, five_hour_resets_at, seven_day_resets_at, occurred_at)
+    VALUES ${stale_rows%,};"
+rm -f "$REPORT"
+USAGE_DB_DIR="$WORK/stale" check "html renders a stale lower figure" 0 "$REPORT" \
+    -- --html --no-open
+check_page "html keeps the highest 7d figure over a stale one" present "60% used"
+check_page "html keeps the highest 5h figure over a stale one" present "50% used"
+check_page "html dates the observation to the highest figure" present \
+    "most recently 2026-01-02 11:00."
+check_page "html paces the highest figure when it was seen" present \
+    "+11 points against an even pace"
+check_page "html holds the burn-up line over a stale figure" present \
+    'd="M323.1,142H326.5V98H326.5"'
+check_page "html says each quota figure is the window's highest" present \
+    "A quota figure with a reset time is the highest recorded for its window"
 
 # A session that began before the 30-day window adds only its in-window step there; sessions
 # that began inside it (every other fixture) step from 0. An explicit null rate_limits is not a

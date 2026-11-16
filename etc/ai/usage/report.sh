@@ -44,28 +44,36 @@ check_schema_version() {
     fi
 }
 
-# The newest row with a used percentage for one rate-limit window ($1: five_hour or seven_day).
-# A payload carries a window's percentage and reset time together or omits the window, so a
-# NULL-percentage row is skipped rather than read as data.
+# One rate-limit window ($1: five_hour or seven_day): the newest row with its percentage picks
+# the window, and the tile shows the highest percentage recorded for that window. Every open
+# session's statusline writes rows, and one can report a figure older and lower than another
+# session already wrote. A payload carries a window's percentage and reset time together or
+# omits the window, so a NULL-percentage row is skipped; a row without a reset time keeps its
+# own figure.
 window_row_sql() {
     local window="$1"
     cat <<SQL
-SELECT '$window', * FROM (
-    SELECT ${window}_used_percentage, ${window}_resets_at FROM rate_limit_snapshots
+SELECT '$window', CASE WHEN resets_at IS NULL THEN pct
+        ELSE (SELECT max(${window}_used_percentage) FROM rate_limit_snapshots
+            WHERE tool = 'claude-code' AND ${window}_resets_at = newest.resets_at) END,
+    resets_at FROM (
+    SELECT ${window}_used_percentage AS pct, ${window}_resets_at AS resets_at
+    FROM rate_limit_snapshots
     WHERE tool = 'claude-code' AND ${window}_used_percentage IS NOT NULL
-    ORDER BY id DESC LIMIT 1)
+    ORDER BY id DESC LIMIT 1) AS newest
 SQL
 }
 
-# The open 7d window's rows as [days into the window, used %], in the order they were written,
-# plus the day quota was last observed, where the line ends. NULL when no 7d window is open.
+# The open 7d window's rows as [days into the window, highest used % so far], in the order they
+# were written, plus the day quota was last observed, where the line ends. NULL when no 7d
+# window is open.
 burnup_sql() {
     cat <<SQL
 json((SELECT json_object(
     'points', json((SELECT json_group_array(json_array(x, pct)) FROM (
         SELECT max(0, (CAST(strftime('%s', occurred_at) AS INTEGER)
                 - (tiles.resets_at - $SEVEN_DAY_SECONDS)) / 86400.0) AS x,
-            seven_day_used_percentage AS pct
+            max(seven_day_used_percentage) OVER (ORDER BY id) AS pct
         FROM rate_limit_snapshots
         WHERE tool = 'claude-code' AND seven_day_resets_at = tiles.resets_at
             AND seven_day_used_percentage IS NOT NULL
@@ -323,19 +331,6 @@ cutoffs(scan_id, cost_id) AS (
             ORDER BY id DESC LIMIT 1), 0)
     FROM clock
 ),
--- Rate-limit rows are written only when a percentage changes, so a later cost snapshot whose
--- payload carried rate_limits can be the last time this machine saw quota. Its raw_json scan
--- covers the last 8 days, enough for the current 7d window.
-observed(at) AS (
-    SELECT min(max(
-        COALESCE((SELECT max(occurred_at) FROM rate_limit_snapshots
-            WHERE tool = 'claude-code'), ''),
-        COALESCE((SELECT occurred_at FROM cost_snapshots
-            WHERE id > (SELECT scan_id FROM cutoffs) AND tool = 'claude-code'
-                AND occurred_at >= scan_from_iso AND $(carries_rate_limits_sql raw_json)
-            ORDER BY id DESC LIMIT 1), '')), now_iso)
-    FROM clock
-),
 windows(name, pct, resets_at) AS (
     $(window_row_sql seven_day)
     UNION ALL
@@ -347,6 +342,22 @@ tiles(name, state, pct, resets_at) AS (
             WHEN resets_at > $now THEN 'current' ELSE 'reset' END,
         CAST(pct AS TEXT), resets_at
     FROM windows
+),
+-- The last row carrying the 7d tile's figure is when this machine last saw it: a later, lower
+-- figure is another session's stale report. Rate-limit rows are written only when a percentage
+-- changes, so a later cost snapshot whose payload carried rate_limits can be later still. Its
+-- raw_json scan covers the last 8 days, enough for the current 7d window.
+observed(at) AS (
+    SELECT min(max(
+        COALESCE((SELECT max(r.occurred_at) FROM rate_limit_snapshots r, windows w
+            WHERE w.name = 'seven_day' AND r.tool = 'claude-code'
+                AND r.seven_day_resets_at IS w.resets_at
+                AND r.seven_day_used_percentage = w.pct), ''),
+        COALESCE((SELECT occurred_at FROM cost_snapshots
+            WHERE id > (SELECT scan_id FROM cutoffs) AND tool = 'claude-code'
+                AND occurred_at >= scan_from_iso AND $(carries_rate_limits_sql raw_json)
+            ORDER BY id DESC LIMIT 1), '')), now_iso)
+    FROM clock
 ),
 $(cost_ctes_sql)
 SELECT json_object(

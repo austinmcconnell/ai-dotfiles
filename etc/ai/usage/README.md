@@ -237,14 +237,16 @@ Their attribution has limits:
 
 Same append-only-on-change idea as `cost_snapshots`, but deliberately **no `session_id`**.
 `rate_limits` (`five_hour`/`seven_day` `used_percentage`/`resets_at`) is an account-wide figure, not
-a per-session one — every concurrently open session's statusline reports the identical percentage.
-Keying rows by `session_id` the way `cost_snapshots` does would duplicate one real-world change once
-per concurrently open session rather than attributing distinct usage to each, so the table instead
-has one global timeline: a row is appended only when `five_hour_used_percentage` or
-`seven_day_used_percentage` has changed since the table's last row (the same SQL `IS NOT` dedup
-`cost_snapshots` uses, `OR`-ed across both columns since either can change independently). Only
-fires when `rate_limits` is present in the payload at all (claude.ai Pro/Max/Ultra subscribers — see
-"Display decision" below); absent for Enterprise/API.
+a per-session one — every concurrently open session's statusline reports a figure for the same
+account. A session can still report an older, lower figure than another session already wrote, so
+rows within one window can go down and back up; the `--html` report reads each window's highest
+figure for that reason. Keying rows by `session_id` the way `cost_snapshots` does would duplicate
+one real-world change once per concurrently open session rather than attributing distinct usage to
+each, so the table instead has one global timeline: a row is appended only when
+`five_hour_used_percentage` or `seven_day_used_percentage` has changed since the table's last row
+(the same SQL `IS NOT` dedup `cost_snapshots` uses, `OR`-ed across both columns since either can
+change independently). Only fires when `rate_limits` is present in the payload at all (claude.ai
+Pro/Max/Ultra subscribers — see "Display decision" below); absent for Enterprise/API.
 
 Because the dedup check and insert aren't one atomic SQL statement across every writer, two sessions
 racing a near-simultaneous rate-limit change can both pass the check and insert a duplicate row.
@@ -364,25 +366,30 @@ and its Content-Security-Policy blocks every fetch, so it works offline and load
 1. The page goes to a temp file in the same directory and is moved into place.
 
 The quota section appears when any `rate_limit_snapshots` row carries a 7-day percentage, and
-otherwise says the machine has no quota data. Each window's tile reads the newest row with that
-window's percentage. A payload either carries a window's percentage and reset time together or omits
-the window, so a row without that window's percentage is skipped. SQL sets the tile's state: open
-while the reset time is ahead of the clock, reset once it has passed, or unknown when the row has no
-reset time. A window with no row shows no data.
+otherwise says the machine has no quota data. The newest row with a window's percentage picks that
+window, and the tile shows the highest percentage recorded for it, in both the 7-day and 5-hour
+tiles: another session can write an older, lower figure after a higher one. A genuine drop within a
+window would therefore not show, and the page says so. A stale row that still carries the previous
+window's reset time is not caught: it shows that window until another session writes. A payload
+either carries a window's percentage and reset time together or omits the window, so a row without
+that window's percentage is skipped. SQL sets the tile's state: open while the reset time is ahead
+of the clock, reset once it has passed, or unknown when the row has no reset time, in which case the
+tile shows that row's own figure. A window with no row shows no data.
 
-Rate-limit rows are written only when a percentage changes, so the last time this machine saw quota
-is the later of the newest row and the newest `cost_snapshots` row whose payload carried
-`rate_limits` (scanned over the last 8 days). The section shows that time. The 7-day pace is taken
-at that moment, not at the clock: a figure held since then says nothing about usage after it.
-`report.sh` formats the used % and the pace with `pace_delta` and `pace_level` from `lib.sh`, so
-they match the statusline. Bash rounds 12.5 to 12, where SQLite and jq would show 13. The 5-hour
-window gets no pace.
+The last time this machine saw quota is the later of the newest row in the 7-day tile's window
+carrying its figure and the newest `cost_snapshots` row whose payload carried `rate_limits` (scanned
+over the last 8 days), since rate-limit rows are written only when a percentage changes. A later row
+with a lower figure is a stale report and does not count. The section shows that time. The 7-day
+pace is taken at that moment, not at the clock: a figure held since then says nothing about usage
+after it. `report.sh` formats the used % and the pace with `pace_delta` and `pace_level` from
+`lib.sh`, so they match the statusline. Bash rounds 12.5 to 12, where SQLite and jq would show 13.
+The 5-hour window gets no pace.
 
 The 7-day burn-up charts the open window only: the window the 7-day tile shows as open, so the two
-always agree. Its line steps from the first recorded figure, not from zero, through each change in
-the 7-day percentage, and holds the last figure until quota was last observed. A dashed diagonal
-marks an even pace. The SVG is drawn inline by `report.jq`, which rounds coordinates to one decimal
-place.
+always agree. Its line steps from the first recorded figure, not from zero, through each rise in the
+highest 7-day percentage so far, and holds the last figure until quota was last observed. A dashed
+diagonal marks an even pace. The SVG is drawn inline by `report.jq`, which rounds coordinates to one
+decimal place.
 
 The daily cost chart stacks each local day's cost by model, from the first day with cost to today,
 for at most 30 days. Empty days are filled. It follows `v_cost_deltas`: each snapshot's step is

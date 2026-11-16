@@ -131,10 +131,12 @@ FROM cost_snapshots;
 -- five_hour_used_percentage or seven_day_used_percentage actually changed
 -- since the last recorded row (see claude-statusline.sh). Deliberately no
 -- session_id: unlike cost, rate limits are account-wide, not per-session --
--- every concurrently open session observes the same percentage, so keying
--- rows by session would just duplicate one real-world change N times (N =
--- concurrently open sessions) rather than attributing distinct usage to
--- each. Concurrent sessions can race on the dedup check and both insert a
+-- every concurrently open session observes a figure for the same account, so
+-- keying rows by session would just duplicate one real-world change N times
+-- (N = concurrently open sessions) rather than attributing distinct usage to
+-- each. A session can still report an older, lower figure than another
+-- already wrote; the --html report takes a window's highest figure for that
+-- reason. Concurrent sessions can race on the dedup check and both insert a
 -- near-simultaneous duplicate row; accepted as harmless, same as this
 -- tracker's other best-effort dedup checks.
 CREATE TABLE IF NOT EXISTS rate_limit_snapshots (

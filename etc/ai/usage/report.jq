@@ -18,7 +18,10 @@ def caveats: [
     + " added to a total.",
   "Quota is account-wide: usage from other machines and claude.ai counts against it but is not"
     + " recorded here.",
-  "A new 5-hour window that opens at the same percentage as the last one leaves no boundary row."
+  "A new 5-hour window that opens at the same percentage as the last one leaves no boundary row.",
+  "Each open session records quota, and one can report an older, lower figure than another"
+    + " already did. A quota figure with a reset time is the highest recorded for its window, so"
+    + " a genuine drop within a window would not show."
 ];
 
 def level_label:
@@ -28,7 +31,7 @@ def level_label:
   else "on pace"
   end;
 
-# One window's tile. $t is the bash-formatted tile, $q the window's newest row from SQL.
+# One window's tile. $t is the bash-formatted tile, $q the window's row from SQL.
 def tile($window; $title):
   $tiles[$window] as $t
   | (.quota[$window] // {}) as $q
@@ -44,7 +47,7 @@ def tile($window; $title):
     elif $t.state == "reset" then
       "<p class=\"figure\">Reset</p>"
       + "<p>Reset at \($q.resets_local | esc). No figure for the new window is recorded here.</p>"
-      + "<p class=\"meta\">The last recorded figure before the reset was \($t.used | esc).</p>"
+      + "<p class=\"meta\">The highest figure recorded for that window was \($t.used | esc).</p>"
     elif $t.state == "unknown" then
       "<p class=\"figure\">\($t.used | esc) used</p><p>Reset time unknown.</p>"
     else
@@ -71,15 +74,16 @@ def plot_x($day): (40 + ([[$day, 0] | max, 7] | min) / 7 * 580) * 10 | round / 1
 def plot_y($pct): (10 + (100 - ([[$pct, 0] | max, 100] | min)) / 100 * 220) * 10 | round / 10;
 
 # Step-after: each figure holds until the next observed change, then the last one holds until
-# quota was last observed. Rows written for a 5h change repeat the 7d figure, so they drop out.
+# quota was last observed. Points are a running maximum, so rows written for a 5h change and
+# stale lower figures from another session repeat the last figure and drop out.
 def step_path($points; $end_x):
   ($points
     | reduce .[] as $point ([];
-        if length > 0 and .[-1][1] == $point[1] then . else . + [$point] end)
-    | map([plot_x(.[0]), plot_y(.[1])])) as $p
+        if length > 0 and .[-1][1] == $point[1] then . else . + [$point] end)) as $steps
+  | ($steps | map([plot_x(.[0]), plot_y(.[1])])) as $p
   | "M\($p[0][0]),\($p[0][1])"
   + ([range(1; $p | length) as $i | "H\($p[$i][0])V\($p[$i][1])"] | join(""))
-  + "H\(plot_x([$end_x, $points[-1][0]] | max))";
+  + "H\(plot_x([$end_x, $steps[-1][0]] | max))";
 
 def burnup_axes:
   ([0, 25, 50, 75, 100] | map(plot_y(.) as $y
@@ -97,12 +101,12 @@ def burnup:
     + (if .burnup == null or (.burnup.points | length) == 0 then
         "<p>No open 7-day window is recorded, so there is nothing to chart.</p>"
       else
-        "<p class=\"meta\">Days into the current window against the share used. Steps mark when"
-        + " this machine observed a change; the quota is account-wide.</p>"
+        "<p class=\"meta\">Days into the current window against the highest share used so far."
+        + " Steps mark when this machine observed a change; the quota is account-wide.</p>"
         + "<svg class=\"chart\" viewBox=\"0 0 640 260\" role=\"img\""
         + " aria-labelledby=\"burnup-title burnup-desc\">"
         + "<title id=\"burnup-title\">7-day usage this window</title>"
-        + "<desc id=\"burnup-desc\">A solid stepped line of the 7-day share used, from the first"
+        + "<desc id=\"burnup-desc\">A solid stepped line of the highest 7-day share used so far, from the first"
         + " observed figure to the last time quota was observed, against a dashed even-pace"
         + " diagonal from 0% to 100% over 7 days.</desc>"
         + burnup_axes
