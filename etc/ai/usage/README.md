@@ -408,6 +408,15 @@ highest 7-day percentage so far, and holds the last figure until quota was last 
 figure labels the line's end. A dashed diagonal marks an even pace. The SVG is drawn inline by
 `report.jq`, which rounds coordinates to one decimal place.
 
+Without quota rows, that slot charts the cost so far this local calendar month instead, under "How
+has cost built up this month?". A solid line runs from zero on the 1st through each day's running
+total, with the days of the month along the x axis. When the cost pace has a daily rate, a dashed
+line carries today's total in a straight line to the projected month end, labelled with that figure;
+until then no projection is drawn and the label shows the month to date. The y axis fits the larger
+of the two in four 1-2-5 steps, and a "Month figures" table lists each day's cost and running total.
+The projection is the one in the cost-pace tiles, so the two always agree; the straight line is a
+picture of it, not a forecast of each day.
+
 The daily cost chart stacks each local day's cost by main-session model, from the first day with
 cost to today, for at most 31 days, so the current calendar month is always whole. Empty days are
 filled. It follows `v_cost_deltas`: each snapshot's step is booked to the model in that snapshot, so

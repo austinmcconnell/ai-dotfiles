@@ -99,6 +99,26 @@ payload_sql() {
     echo "json_extract(CASE WHEN json_valid($1) THEN $1 END, '\$.rate_limits.$2')"
 }
 
+# The smallest 1-2-5 step whose four multiples reach the bound ($1, a scalar subquery), for the
+# y axis of a cost chart.
+scale_step_sql() {
+    cat <<SQL
+SELECT min(column1) FROM (VALUES (0.01), (0.02), (0.05), (0.1), (0.2), (0.5), (1), (2), (5), (10),
+    (20), (50), (100), (200), (500), (1000), (2000), (5000), (10000), (20000), (50000), (100000))
+WHERE column1 * 4 >= $1
+SQL
+}
+
+# The five y-axis labels, 0 to four steps, from a one-row scale CTE ($1).
+scale_ticks_sql() {
+    cat <<SQL
+json((SELECT json_group_array(CASE WHEN step >= 1
+        THEN printf('\$%d', CAST(step * column1 AS INTEGER))
+        ELSE printf('\$%.2f', step * column1) END)
+    FROM (SELECT column1 FROM (VALUES (0), (1), (2), (3), (4)) ORDER BY column1), $1))
+SQL
+}
+
 # Cost per local day for the last 31 days, split into model series. Each snapshot's step is its
 # total less the session's previous one, as in v_cost_deltas. A session that began before the
 # window, or has no sessions row, steps its first row there from its last earlier snapshot, not
@@ -174,10 +194,7 @@ cost_days(day) AS (
 ),
 -- The y axis runs to four steps of the smallest 1-2-5 step that fits the costliest day.
 cost_scale(step) AS (
-    SELECT min(column1) FROM (VALUES (0.01), (0.02), (0.05), (0.1), (0.2), (0.5), (1), (2),
-        (5), (10), (20), (50), (100), (200), (500), (1000), (2000), (5000), (10000), (20000),
-        (50000), (100000))
-    WHERE column1 * 4 >= (SELECT max(usd) FROM cost_day_totals)
+    $(scale_step_sql "(SELECT max(usd) FROM cost_day_totals)")
 ),
 cost_split(subscription_usd, other_usd) AS (
     SELECT COALESCE(sum(CASE WHEN p.subscription THEN g.usd END), 0),
@@ -215,12 +232,32 @@ cost_burn(first_day, today, month_start, month_end, rate_days, rate, mtd, today_
         COALESCE((SELECT usd FROM cost_day_totals WHERE day = h.today), 0),
         CAST(round(julianday(h.month_end) - julianday(h.today)) AS INTEGER)
     FROM cost_burn_hist h
+),
+-- NULL until there is a daily rate.
+cost_projection(usd) AS (
+    SELECT CASE WHEN rate IS NULL THEN NULL
+        ELSE (mtd - today_usd) + max(today_usd, rate) + rate * days_after END
+    FROM cost_burn
+),
+-- Every local day of the month from the 1st to today, with its cost and the running total.
+cost_month_days(day) AS (
+    SELECT month_start FROM cost_burn
+    UNION ALL
+    SELECT date(day, '+1 day') FROM cost_month_days, cost_burn WHERE day < today
+),
+cost_month(day, n, usd, cum) AS (
+    SELECT d.day, CAST(strftime('%d', d.day) AS INTEGER), COALESCE(t.usd, 0),
+        sum(COALESCE(t.usd, 0)) OVER (ORDER BY d.day)
+    FROM cost_month_days d LEFT JOIN cost_day_totals t ON t.day = d.day
+),
+cost_burn_scale(step) AS (
+    $(scale_step_sql "(SELECT max(b.mtd, COALESCE(p.usd, 0)) FROM cost_burn b, cost_projection p)")
 )
 SQL
 }
 
-# The burn blob key. Strings only, with '' for a figure that is not available, so no NULL reaches
-# the page. Today counts as the larger of its cost so far and the daily rate, since the day is
+# The burn blob key. Display figures are strings, with '' for one that is not available, so no
+# NULL reaches the page; chart geometry is numeric. Today counts as the larger of its cost so far and the daily rate, since the day is
 # not over; the full days after it follow the rate.
 burn_json_sql() {
     cat <<SQL
@@ -231,8 +268,18 @@ json((SELECT json_object(
     'rate', CASE WHEN rate IS NULL THEN '' ELSE printf('%.2f', rate) END,
     'rate_days', printf('%d', rate_days), 'min_days', '$REPORT_MIN_RATE_DAYS',
     'projected', CASE WHEN rate IS NULL THEN ''
-        ELSE printf('%.2f', (mtd - today_usd) + max(today_usd, rate) + rate * days_after) END,
-    'month', strftime('%Y-%m', today), 'month_end', month_end)
+        ELSE printf('%.2f', (SELECT usd FROM cost_projection)) END,
+    'month', strftime('%Y-%m', today), 'month_end', month_end,
+    'chart', json_object(
+        'days', CAST(round(julianday(month_end) - julianday(month_start)) AS INTEGER) + 1,
+        'points', json((SELECT json_group_array(json_array(n, cum))
+            FROM (SELECT n, cum FROM cost_month ORDER BY day))),
+        'rows', json((SELECT json_group_array(json_object('day', day, 'usd', printf('%.2f', usd),
+                'cum', printf('%.2f', cum)))
+            FROM (SELECT * FROM cost_month ORDER BY day))),
+        'projected_y', COALESCE((SELECT usd FROM cost_projection), 0),
+        'scale_max', (SELECT step * 4 FROM cost_burn_scale),
+        'ticks', $(scale_ticks_sql cost_burn_scale)))
     FROM cost_burn))
 SQL
 }
@@ -367,10 +414,7 @@ json_object(
             FROM (SELECT * FROM cost_series ORDER BY total DESC, model)
             GROUP BY slot ORDER BY slot))),
     'scale_max', (SELECT step * 4 FROM cost_scale),
-    'ticks', json((SELECT json_group_array(CASE WHEN step >= 1
-            THEN printf('\$%d', CAST(step * column1 AS INTEGER))
-            ELSE printf('\$%.2f', step * column1) END)
-        FROM (SELECT column1 FROM (VALUES (0), (1), (2), (3), (4)) ORDER BY column1), cost_scale)),
+    'ticks', $(scale_ticks_sql cost_scale),
     'kind', (SELECT CASE WHEN other_usd = 0 THEN 'subscription'
             WHEN subscription_usd = 0 THEN 'api' ELSE 'mixed' END FROM cost_split),
     'subscription_usd', (SELECT printf('%.2f', subscription_usd) FROM cost_split),

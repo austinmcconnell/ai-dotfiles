@@ -162,7 +162,7 @@ def burnup_axes:
     | "<text class=\"tick\" x=\"\($x)\" y=\"248\" text-anchor=\"middle\">\(.)d</text>")
     | join(""));
 
-def burnup:
+def quota_burnup:
   if .quota_observed != 1 then ""
   else
     "<section><h2>How has 7-day usage built up this window?</h2>"
@@ -187,6 +187,88 @@ def burnup:
       end)
     + "</section>"
   end;
+
+# Month-to-date cost chart for a machine with no quota rows: the same viewBox and left inset as
+# the daily cost columns, with x as days into the local calendar month.
+def month_x($day; $n): (56 + $day / $n * 564) * 10 | round / 10;
+def month_y($usd; $max): (230 - $usd / $max * 220) * 10 | round / 10;
+
+def month_axes($b):
+  $b.chart as $ch
+  | ([range(0; 5)] | map((230 - . * 55) as $y
+      | "<line class=\"grid\" x1=\"56\" x2=\"620\" y1=\"\($y)\" y2=\"\($y)\"/>"
+      + "<text class=\"tick\" x=\"50\" y=\"\($y + 4)\" text-anchor=\"end\">"
+      + "\($ch.ticks[.] | esc)</text>") | join(""))
+  + ([0, 7, 14, 21, 28] | map(month_x(.; $ch.days) as $x
+      | "<text class=\"tick\" x=\"\($x)\" y=\"248\" text-anchor=\"middle\">\(.)d</text>")
+    | join(""));
+
+# The solid line runs from zero on the 1st through each day's running total, so its end is the
+# month to date. The dashed line runs on from there to the projected month end.
+def month_lines($b):
+  $b.chart as $ch
+  | ([[0, 0]] + $ch.points
+    | map("\(month_x(.[0]; $ch.days)),\(month_y(.[1]; $ch.scale_max))")) as $pts
+  | ($ch.points[-1]) as $last
+  | "<path class=\"used\" d=\"M\($pts | join("L"))\"/>"
+  + (if $b.state == "ready" then
+      "<path class=\"proj\" d=\"M\(month_x($last[0]; $ch.days)),\(month_y($last[1]; $ch.scale_max))"
+      + "L\(month_x($ch.days; $ch.days)),\(month_y($ch.projected_y; $ch.scale_max))\"/>"
+    else "" end);
+
+# The figure beside the line's end: the projection when there is one, else the month to date.
+# Near the top of the plot it sits under the line so it stays inside the viewBox.
+def month_end_label($b):
+  $b.chart as $ch
+  | (if $b.state == "ready" then {x: $ch.days, y: $ch.projected_y, text: $b.projected}
+     else {x: $ch.points[-1][0], y: $ch.points[-1][1], text: $b.mtd} end) as $end
+  | month_y($end.y; $ch.scale_max) as $y
+  | "<text class=\"end-label\" x=\"\(month_x($end.x; $ch.days))\""
+  + " y=\"\(if $y < 24 then $y + 18 else $y - 8 end)\" text-anchor=\"end\">"
+  + "$\($end.text | esc)</text>";
+
+def month_table($b):
+  "<details><summary>Month figures</summary><table><thead><tr><th scope=\"col\">Day</th>"
+  + "<th scope=\"col\">Cost</th><th scope=\"col\">Month to date</th></tr></thead><tbody>"
+  + ($b.chart.rows | map("<tr><th scope=\"row\">\(.day | nowrap)</th><td>$\(.usd | esc)</td>"
+      + "<td>$\(.cum | esc)</td></tr>") | join(""))
+  + "</tbody></table></details>";
+
+def month_desc($b):
+  "A solid line of the cost so far this local calendar month, from the 1st to today, in US"
+  + " dollars."
+  + (if $b.state == "ready" then
+      " A dashed line continues from there to a projected $\($b.projected | esc) on"
+      + " \($b.month_end | esc), at the recent daily rate."
+    else " No projection is drawn, because there is not yet a daily rate."
+    end)
+  + " The figures are in the table below.";
+
+def cost_burnup:
+  .cost as $c
+  | $c.burn as $b
+  | "<section><h2>How has cost built up this month?</h2>"
+  + "<p class=\"meta\">Days into the local calendar month against the cost so far."
+  + (if $b.state == "ready" then
+      " The dashed line carries today's total to the projected month end at the daily rate."
+    else " A projection is drawn once there is a daily rate."
+    end)
+  + " \($c | dollar_note)</p>"
+  + "<svg class=\"chart\" viewBox=\"0 0 640 260\" role=\"img\""
+  + " aria-labelledby=\"month-title month-desc\">"
+  + "<title id=\"month-title\">Cost this month</title>"
+  + "<desc id=\"month-desc\">\(month_desc($b))</desc>"
+  + month_axes($b) + month_lines($b) + month_end_label($b)
+  + "</svg>"
+  + (if $b.state == "ready" then "<p class=\"meta\">Solid: cost so far. Dashed: projection.</p>"
+     else "" end)
+  + month_table($b)
+  + "</section>";
+
+# Quota rows pick the quota burn-up, as they pick the quota tiles; otherwise any cost picks the
+# month-to-date chart.
+def burnup:
+  if .quota_observed != 1 and .cost.burn.state != "none" then cost_burnup else quota_burnup end;
 
 # Daily cost columns: the same viewBox, with a wider left inset for dollar labels. Each day
 # stacks its series bottom up in slot order, so Other sits on top. A segment above the first

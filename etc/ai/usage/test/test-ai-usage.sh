@@ -211,6 +211,8 @@ check_page "html never calls cost spend" absent "spend"
 check_page "html keeps the quota heading when quota rows exist" present \
     "Am I on pace to run out of quota?"
 check_page "html shows no cost pace beside quota tiles" absent "How fast is cost building up?"
+check_page "html shows no month cost chart beside the quota burn-up" absent \
+    "How has cost built up this month?"
 check_page "html lists the costliest session first" present \
     "Cost at API rates</th></tr></thead><tbody><tr><th scope=\"row\"><code title=\"hostile\">"
 check_page "html gives a session its costliest model and last activity" present \
@@ -533,6 +535,23 @@ burn_page "html renders a day that costs more than the rate" "2026-03-18 15:00:0
 check_page "html counts today at its own cost when over the rate" present \
     "$(burn_tile_html 'Projected month end' "\$229.00" "$(projection_detail 2026-03-31)")"
 
+# 2026-03-18 charts 31 days: the 1st to the 18th solid, then dashed to the 31st. The y axis fits
+# the 226.00 projection (four steps of 100), so the solid line ends at 146/400 of the plot height
+# and the dashed line at 226/400.
+burn_page "html charts the month so far with a projection" "2026-03-18 15:00:00" < <(mid_month 4)
+check_page "html puts the month chart in the burn-up slot" present \
+    "<h2>How has cost built up this month?</h2>"
+check_page "html drops the quota burn-up without quota rows" absent \
+    "How has 7-day usage built up this window?"
+check_page "html draws the projection as its own dashed path" present \
+    '<path class="proj" d="M383.5,149.7L620,105.7"/>'
+check_page "html labels the end of the dashed line with the projection" present \
+    "text-anchor=\"end\">\$226.00</text>"
+check_page "html scales the month axis to the projection" present ">\$400</text>"
+check_page "html figures the month day by day" present "<td>\$4.00</td><td>\$146.00</td>"
+check_page "html describes the projection in the chart" present \
+    "continues from there to a projected \$226.00 on 2026-03-31"
+
 # 2026-12-31: the 31-day window reaches the 1st, so its 99.00 counts and the month is whole. No
 # day follows today, so the projection is 140 + the larger of today's 2.00 and the 3.00 rate.
 burn_page "html renders the last day of a 31-day month" "2026-12-31 15:00:00" <<EOF
@@ -567,6 +586,10 @@ check_page "html shows no rate for a first day" present \
     "$(burn_tile_html 'Daily rate' 'Not enough history' 'Needs 3 complete days; 0 so far.')"
 check_page "html still books a single day" present \
     "$(burn_tile_html 'Month to date' "\$3.00" "$(month_detail 2026-01)")"
+check_page "html draws no projection before there is a rate" absent '<path class="proj"'
+check_page "html says why no projection is drawn" present "No projection is drawn"
+check_page "html labels the month to date when there is no projection" present \
+    "text-anchor=\"end\">\$3.00</text>"
 
 # A leap February ends on the 29th: 19 days follow the 10th.
 burn_page "html renders a leap February" "2028-02-10 15:00:00" < <(same_cost_days 2028-02 1 9 2)
