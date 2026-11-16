@@ -72,6 +72,7 @@ check "empty subagents" 0 "No subagent tasks recorded yet" -- --subagents
 rm -f "$REPORT"
 check "empty html" 0 "$REPORT" -- --html --no-open
 check_page "html names a machine with no quota data" present "No quota data on this machine"
+check_page "html charts nothing without quota data" absent "How has 7-day usage"
 
 # shellcheck disable=SC2153 # USAGE_DB is set by lib.sh
 sqlite3 "$USAGE_DB" "
@@ -251,6 +252,7 @@ check_page "html keeps the last 7d figure as secondary" present \
     "last recorded figure before the reset was 60%."
 check_page "html closes a window that resets at the clock" present "Reset at 2026-01-02 12:00."
 check_page "html gives a closed window no pace" absent "points against"
+check_page "html charts no closed window" present "No open 7-day window is recorded"
 
 # A newer payload without the 7d window doesn't hide the older 7d row.
 rate_row 20 NULL $((USAGE_NOW_EPOCH + 1800)) NULL
@@ -277,6 +279,34 @@ USAGE_DB_DIR="$WORK/seven-only" check "html renders 7d data alone" 0 "$REPORT" \
     -- --html --no-open
 check_page "html shows a window with no data" present \
     "<p class=\"figure\">No data</p>"
+
+# Burn-up over a window opened 3.5 days before the clock. Each row is [<5h pct>, <7d pct>,
+# <7d resets_at>, <seconds before now>]; only rows of the open window with a 7d figure plot.
+window_end=$((USAGE_NOW_EPOCH + 302400))
+mkdir -p "$WORK/burnup"
+cp "$USAGE_DB" "$WORK/burnup/usage.db"
+burnup_rows=""
+for row in "5 90 $((window_end - 604800)) $((4 * 86400))" "6 10 $window_end $((3 * 86400))" \
+    "7 NULL NULL $((2 * 86400))" "8 10 $window_end 129600" "9 30 $window_end 86400"; do
+    read -r five seven resets age <<<"$row"
+    burnup_rows+="('claude-code', $five, $seven, $resets,
+        strftime('%Y-%m-%dT%H:%M:%SZ', $((USAGE_NOW_EPOCH - age)), 'unixepoch')),"
+done
+sqlite3 "$WORK/burnup/usage.db" "DELETE FROM rate_limit_snapshots; DELETE FROM cost_snapshots;
+    INSERT INTO rate_limit_snapshots (tool, five_hour_used_percentage,
+        seven_day_used_percentage, seven_day_resets_at, occurred_at) VALUES ${burnup_rows%,};
+    INSERT INTO cost_snapshots (tool, session_id, total_cost_usd, occurred_at, raw_json)
+    VALUES ('claude-code', 's1', 1, strftime('%Y-%m-%dT%H:%M:%SZ', $USAGE_NOW_EPOCH, 'unixepoch'),
+        '{\"rate_limits\":{}}');"
+rm -f "$REPORT"
+USAGE_DB_DIR="$WORK/burnup" check "html renders a burn-up" 0 "$REPORT" -- --html --no-open
+# Day 0.5 at 10%, a repeat of 10% that adds no step, day 2.5 at 30%, then held to day 3.5. The
+# previous window's 90% and the row without a 7d figure stay off the line.
+check_page "html steps the burn-up from the first figure to the last observation" present \
+    'd="M81.4,208H247.1V164H330"'
+check_page "html draws the even-pace diagonal" present 'x1="40" y1="230" x2="620" y2="10"'
+check_page "html marks steps as observed changes" present "Steps mark when this machine observed"
+check_page "html labels the burn-up for screen readers" present 'aria-labelledby="burnup-title'
 
 rm -f "$REPORT"
 USAGE_NOW_EPOCH="$(epoch '2026-07-01 17:00:00')" \

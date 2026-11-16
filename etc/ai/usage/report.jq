@@ -65,6 +65,56 @@ def quota:
     end)
   + "</section>";
 
+# Burn-up chart geometry: a 640x260 viewBox with the plot inset for axis labels. Coordinates
+# are rounded to one decimal, the only numbers jq prints itself.
+def plot_x($day): (40 + ([[$day, 0] | max, 7] | min) / 7 * 580) * 10 | round / 10;
+def plot_y($pct): (10 + (100 - ([[$pct, 0] | max, 100] | min)) / 100 * 220) * 10 | round / 10;
+
+# Step-after: each figure holds until the next observed change, then the last one holds until
+# quota was last observed. Rows written for a 5h change repeat the 7d figure, so they drop out.
+def step_path($points; $end_x):
+  ($points
+    | reduce .[] as $point ([];
+        if length > 0 and .[-1][1] == $point[1] then . else . + [$point] end)
+    | map([plot_x(.[0]), plot_y(.[1])])) as $p
+  | "M\($p[0][0]),\($p[0][1])"
+  + ([range(1; $p | length) as $i | "H\($p[$i][0])V\($p[$i][1])"] | join(""))
+  + "H\(plot_x([$end_x, $points[-1][0]] | max))";
+
+def burnup_axes:
+  ([0, 25, 50, 75, 100] | map(plot_y(.) as $y
+    | "<line class=\"grid\" x1=\"40\" x2=\"620\" y1=\"\($y)\" y2=\"\($y)\"/>"
+    + "<text class=\"tick\" x=\"34\" y=\"\($y + 4)\" text-anchor=\"end\">\(.)%</text>")
+    | join(""))
+  + ([range(0; 8)] | map(plot_x(.) as $x
+    | "<text class=\"tick\" x=\"\($x)\" y=\"248\" text-anchor=\"middle\">\(.)d</text>")
+    | join(""));
+
+def burnup:
+  if .quota_observed != 1 then ""
+  else
+    "<section><h2>How has 7-day usage built up this window?</h2>"
+    + (if .burnup == null or (.burnup.points | length) == 0 then
+        "<p>No open 7-day window is recorded, so there is nothing to chart.</p>"
+      else
+        "<p class=\"meta\">Days into the current window against the share used. Steps mark when"
+        + " this machine observed a change; the quota is account-wide.</p>"
+        + "<svg class=\"chart\" viewBox=\"0 0 640 260\" role=\"img\""
+        + " aria-labelledby=\"burnup-title burnup-desc\">"
+        + "<title id=\"burnup-title\">7-day usage this window</title>"
+        + "<desc id=\"burnup-desc\">A solid stepped line of the 7-day share used, from the first"
+        + " observed figure to the last time quota was observed, against a dashed even-pace"
+        + " diagonal from 0% to 100% over 7 days.</desc>"
+        + burnup_axes
+        + "<line class=\"even\" x1=\"\(plot_x(0))\" y1=\"\(plot_y(0))\" x2=\"\(plot_x(7))\""
+        + " y2=\"\(plot_y(100))\"/>"
+        + "<path class=\"used\" d=\"\(step_path(.burnup.points; .burnup.end_x // 0))\"/>"
+        + "</svg>"
+        + "<p class=\"meta\">Solid: share used. Dashed: even pace.</p>"
+      end)
+    + "</section>"
+  end;
+
 def header:
   "<header><h1>AI usage</h1><p class=\"meta\">Generated \(.generated_at | esc) "
   + "(\(.utc_offset | esc)). All times are local.</p></header>";
@@ -80,7 +130,7 @@ def footer:
   + (caveats | map("<li>" + . + "</li>") | join(""))
   + "</ul></footer>";
 
-(header + "<main>" + quota + recorded + "</main>" + footer) as $body
+(header + "<main>" + quota + burnup + recorded + "</main>" + footer) as $body
 | ($tmpl | split("@@BODY@@")) as $parts
 | if ($parts | length) != 2 then error("report.html.tmpl needs exactly one @@BODY@@")
   else $parts[0] + $body + $parts[1]

@@ -55,6 +55,25 @@ SELECT '$window', * FROM (
 SQL
 }
 
+# The open 7d window's rows as [days into the window, used %], in the order they were written,
+# plus the day quota was last observed, where the line ends. NULL when no 7d window is open.
+burnup_sql() {
+    cat <<SQL
+json((SELECT json_object(
+    'points', json((SELECT json_group_array(json_array(x, pct)) FROM (
+        SELECT max(0, (CAST(strftime('%s', occurred_at) AS INTEGER)
+                - (tiles.resets_at - $SEVEN_DAY_SECONDS)) / 86400.0) AS x,
+            seven_day_used_percentage AS pct
+        FROM rate_limit_snapshots
+        WHERE tool = 'claude-code' AND seven_day_resets_at = tiles.resets_at
+            AND seven_day_used_percentage IS NOT NULL
+        ORDER BY id))),
+    'end_x', (SELECT (CAST(strftime('%s', at) AS INTEGER)
+        - (tiles.resets_at - $SEVEN_DAY_SECONDS)) / 86400.0 FROM observed WHERE at != ''))
+    FROM tiles WHERE name = 'seven_day' AND state = 'current'))
+SQL
+}
+
 # The one statement the page is built from, so every figure comes from one read transaction.
 # Local-time formatting happens here; report.jq does no date handling. The heredoc expands
 # $now and \$[...], so interpolate only validated numbers or sql_str output. A subquery's JSON
@@ -111,6 +130,7 @@ SELECT json_object(
     'last_observed', (SELECT strftime('%Y-%m-%d %H:%M', at, 'localtime') FROM observed
         WHERE at != ''),
     'last_observed_epoch', (SELECT strftime('%s', at) FROM observed WHERE at != ''),
+    'burnup', $(burnup_sql),
     'quota', json_object(
         'seven_day', json((SELECT json_object('state', state, 'pct', pct,
             'resets_at', CAST(resets_at AS TEXT),

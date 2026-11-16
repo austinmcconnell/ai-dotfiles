@@ -376,6 +376,12 @@ at that moment, not at the clock: a figure held since then says nothing about us
 they match the statusline. Bash rounds 12.5 to 12, where SQLite and jq would show 13. The 5-hour
 window gets no pace.
 
+The 7-day burn-up charts the open window only: the window the 7-day tile shows as open, so the two
+always agree. Its line steps from the first recorded figure, not from zero, through each change in
+the 7-day percentage, and holds the last figure until quota was last observed. A dashed diagonal
+marks an even pace. The SVG is drawn inline by `report.jq`, which rounds coordinates to one decimal
+place.
+
 The report never creates or migrates the DB. A missing DB prints the same message as the other
 reports. A DB older than schema version 3 (`v_cost_deltas`) gets a message saying the next
 statusline render upgrades it. `USAGE_NOW_EPOCH` overrides the clock, which the tests use with a
