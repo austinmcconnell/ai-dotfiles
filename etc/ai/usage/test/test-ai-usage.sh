@@ -169,6 +169,9 @@ check_page "html has no script" absent "<script"
 check_page "html shows generated-at in local time" present "Generated 2026-01-02 12:00:00 (UTC−6)"
 check_page "html lists page caveats" present "Quota is account-wide"
 
+# The page wraps hyphenated ids, dates, and amounts in a no-wrap span.
+nw() { printf '<span class="nw">%s</span>' "$1"; }
+
 # Model ids reach the page as series labels; a hostile one must render inert. It costs the
 # most, so it keeps its own series while the two cheapest models share Other.
 hostile='</script><!--&"'
@@ -194,9 +197,9 @@ check_page "html never renders null" absent "null"
 check_page "html folds models past the fourth into Other" present "<th scope=\"col\">Other</th>"
 # s1 and s2 cost 3.25 on 2025-12-31 local time; the other three 5.15 on 2026-01-01.
 check_page "html books a day's cost per model" present \
-    "2025-12-31</th><td></td><td>\$2.50</td><td>\$0.75</td><td></td><td>\$3.25</td>"
+    "2025-12-31</span></th><td></td><td>\$2.50</td><td>\$0.75</td><td></td><td>\$3.25</td>"
 check_page "html fills a day with no cost" present \
-    "2026-01-02</th><td></td><td></td><td></td><td></td><td>\$0.00</td>"
+    "2026-01-02</span></th><td></td><td></td><td></td><td></td><td>\$0.00</td>"
 check_page "html scales the cost axis to a 1-2-5 step" present ">\$8</text>"
 check_page "html leaves a 2px gap under each upper segment" present \
     '<rect class="s3" x="84.2" y="140.6" width="131.6" height="18.6">'
@@ -205,16 +208,18 @@ check_page "html stacks the grey Other on top" present \
 check_page "html labels API-rate dollars" present "Dollars are at API rates."
 check_page "html never calls cost spend" absent "spend"
 check_page "html lists the costliest session first" present \
-    "Cost at API rates</th></tr></thead><tbody><tr><th scope=\"row\"><code>hostile"
+    "Cost at API rates</th></tr></thead><tbody><tr><th scope=\"row\"><code title=\"hostile\">"
 check_page "html gives a session its costliest model and last activity" present \
-    "<code>s1</code></th><td>2025-12-31 18:00</td><td>claude-opus-5-5</td>"
+    "<code title=\"s1\">s1</code></th><td>$(nw "2025-12-31") $(nw "18:00")</td>"
+check_page "html keeps a model id on one line" present \
+    "<td class=\"text\">$(nw "claude-opus-5-5")</td>"
 check_page "html shows a session's missing project as (unknown)" present \
-    "<td class=\"text\">(unknown)</td><td>\$1.25</td>"
+    "<td class=\"text\">(unknown)</td><td>$(nw "\$1.25")</td>"
 check_page "html ranks launches by estimate, unpriced last" present \
-    "\$10.00</td></tr><tr><th scope=\"row\">2025-12-31 18:00</th><td>doubt-reviewer</td>"
+    "\$10.00</span></td></tr><tr><th scope=\"row\">$(nw "2025-12-31") $(nw "18:00")</th>"
 check_page "html lists an unpriced launch with its fallbacks" present \
-    "2026-01-01 19:00</th><td>(unknown)</td><td class=\"text\">&lt;/script&gt;"
-check_page "html names an unpriced launch" present "<td>(unpriced)</td>"
+    "$(nw "19:00")</th><td class=\"text\">$(nw "(unknown)")</td><td class=\"text\">&lt;/script&gt;"
+check_page "html names an unpriced launch" present "<td>$(nw "(unpriced)")</td>"
 check_page "html leaves out launches outside the window" absent "Old review"
 check_page "html leaves out launches after the clock" absent "(no name)"
 check_page "html marks launches as partial" present "Partial: subagents that finish quickly"
@@ -387,7 +392,7 @@ check_page "html says each quota figure is the window's highest" present \
 mkdir -p "$WORK/four"
 cp "$USAGE_DB" "$WORK/four/usage.db"
 four_rows=""
-for row in "a 4 opus" "b 3 sonnet" "c 2 fable" "d 1 haiku"; do
+for row in "5be12826-7786-4294-a90e-03d9d18cb72b 4 opus" "b 3 sonnet" "c 2 fable" "d 1 haiku"; do
     read -r session usd family <<<"$row"
     four_rows+="$(cost_row "$session" "$usd" "{\"model\":{\"id\":\"claude-$family\"}}"),"
 done
@@ -396,6 +401,8 @@ sqlite3 "$WORK/four/usage.db" "DELETE FROM cost_snapshots;
     VALUES ${four_rows%,};"
 rm -f "$REPORT"
 USAGE_DB_DIR="$WORK/four" check "html renders four models" 0 "$REPORT" -- --html --no-open
+check_page "html shortens a session id, keeping the full id as its title" present \
+    "<code title=\"5be12826-7786-4294-a90e-03d9d18cb72b\">5be12826</code>"
 check_page "html names at most three models" present \
     "<span class=\"swatch s3\"></span>claude-fable: \$2.00"
 check_page "html folds a lone fourth model into Other" present \
@@ -460,22 +467,24 @@ rm -f "$REPORT"
 HOME=/home/tester TMPDIR=/var/tmpx/ USAGE_DB_DIR="$WORK/projects" \
     check "html renders cost by project" 0 "$REPORT" -- --html --no-open
 check_page "html shows a project under HOME with ~" present \
-    "<th scope=\"row\">~/a</th><td>1</td><td>\$10.00</td>"
+    "<th scope=\"row\">~/<wbr>a</th><td>1</td><td>$(nw "\$10.00")</td>"
 check_page "html shows HOME itself as ~" present \
-    "<th scope=\"row\">~</th><td>1</td><td>\$1.00</td>"
-check_page "html keeps a sibling of HOME whole" present '<th scope="row">/home/testerx/b</th>'
-check_page "html escapes a hostile project path" present "/srv/&lt;/script&gt;&lt;!--&amp;&quot;"
+    "<th scope=\"row\">~</th><td>1</td><td>$(nw "\$1.00")</td>"
+check_page "html keeps a sibling of HOME whole" present \
+    '<th scope="row">/<wbr>home/<wbr>testerx/<wbr>b</th>'
+check_page "html escapes a hostile project path" present \
+    "/<wbr>srv/<wbr>&lt;/<wbr>script&gt;&lt;!--&amp;&quot;"
 check_page "html shows a missing project as (unknown)" present '<th scope="row">(unknown)</th>'
 check_page "html folds temp paths and the tail into Other" present \
-    "<th scope=\"row\">Other</th><td>5</td><td>\$13.00</td>"
+    "<th scope=\"row\">Other</th><td>5</td><td>$(nw "\$13.00")</td>"
 check_page "html never lists a temp path" absent "/tmp/x"
 check_page "html folds TMPDIR into Other" absent "/var/tmpx"
 check_page "html lists Other last, scaled to the costliest row" present \
     'width: 100%"></span></td></tr></tbody>'
 check_page "html shows a temp-directory session as such" present \
-    "<code>tmp</code></th><td>2026-01-02 11:00</td><td>claude-opus-5-5</td><td class=\"text\">\
-(temp directory)</td>"
-if [[ "$(grep -o '<th scope="row"><code>' "$REPORT" | wc -l | tr -d ' ')" == 10 ]]; then
+    "<code title=\"tmp\">tmp</code></th><td>$(nw "2026-01-02") $(nw "11:00")</td>\
+<td class=\"text\">$(nw "claude-opus-5-5")</td><td class=\"text\">(temp directory)</td>"
+if [[ "$(grep -o '<th scope="row"><code title=' "$REPORT" | wc -l | tr -d ' ')" == 10 ]]; then
     echo "ok    html lists at most 10 sessions"
 else
     echo "FAIL  html lists at most 10 sessions"

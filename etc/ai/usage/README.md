@@ -413,9 +413,10 @@ figures. When both appear, they give the amount of each.
 
 Two more tables cover the same days. The 10 costliest sessions show only their cost in those days,
 with the model and project that carried most of it; a temp-directory project shows as such rather
-than as Other. The 10 costliest subagent launches started in those days come from `subagent_tasks`,
-with unpriced launches last. That table is marked partial, since fast-finishing subagents can be
-missed, and its estimates are never summed: each is already inside its session's cost.
+than as Other. A session shows the first 8 characters of its id, with the full id as a hover title.
+The 10 costliest subagent launches started in those days come from `subagent_tasks`, with unpriced
+launches last. That table is marked partial, since fast-finishing subagents can be missed, and its
+estimates are never summed: each is already inside its session's cost.
 
 With SQLite 3.54, the statement takes about 80 ms on a 4,600-row DB with 15 days of cost, and the
 same on a 98,000-row copy with 20 months of older history, so it grows with the window, not the

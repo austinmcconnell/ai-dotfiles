@@ -11,6 +11,12 @@ def esc:
   else error("esc takes a string or null, got \(type)")
   end;
 
+# Phone-width table cells: hyphenated ids and dates must not break at a hyphen, a timestamp
+# may wrap between date and time, and a path wraps only after a slash.
+def nowrap: "<span class=\"nw\">\(esc)</span>";
+def stamp: split(" ") | map(nowrap) | join(" ");
+def path_cell: esc | gsub("/"; "/<wbr>");
+
 def caveats: [
   "Headless <code>claude -p</code> runs record no cost: the statusline that writes this data"
     + " does not run there.",
@@ -106,8 +112,8 @@ def burnup:
         + "<svg class=\"chart\" viewBox=\"0 0 640 260\" role=\"img\""
         + " aria-labelledby=\"burnup-title burnup-desc\">"
         + "<title id=\"burnup-title\">7-day usage this window</title>"
-        + "<desc id=\"burnup-desc\">A solid stepped line of the highest 7-day share used so far, from the first"
-        + " observed figure to the last time quota was observed, against a dashed even-pace"
+        + "<desc id=\"burnup-desc\">A solid stepped line of the highest 7-day share used so far,"
+        + " from the first observed figure to the last time quota was observed, against a dashed even-pace"
         + " diagonal from 0% to 100% over 7 days.</desc>"
         + burnup_axes
         + "<line class=\"even\" x1=\"\(plot_x(0))\" y1=\"\(plot_y(0))\" x2=\"\(plot_x(7))\""
@@ -179,7 +185,7 @@ def cost_table($c):
   + ($c.series | map("<th scope=\"col\">\(.label | esc)</th>") | join(""))
   + "<th scope=\"col\">Total</th></tr></thead><tbody>"
   + ($c.days | map(. as $day
-      | "<tr><th scope=\"row\">\($day.day | esc)</th>"
+      | "<tr><th scope=\"row\">\($day.day | nowrap)</th>"
       + ($c.series | map(.slot as $slot
           | ([$day.cells[] | select(.[0] == $slot)][0]) as $cell
           | "<td>" + (if $cell == null then "" else "$" + ($cell[2] | esc) end) + "</td>")
@@ -219,12 +225,12 @@ def projects:
       | "<p class=\"meta\">The same 30 days, by the project directory each snapshot reported."
       + " Paths under <code>/tmp</code>, <code>/private/tmp</code>, and <code>$TMPDIR</code>"
       + " count as Other. \($c | dollar_note)</p>"
-      + "<table class=\"projects\"><thead><tr><th scope=\"col\">Project</th>"
+      + "<table class=\"projects\"><thead><tr><th scope=\"col\" class=\"text\">Project</th>"
       + "<th scope=\"col\">Sessions</th><th scope=\"col\">Cost at API rates</th>"
       + "<td aria-hidden=\"true\"></td></tr></thead><tbody>"
       + ($c.projects | map(
-          "<tr><th scope=\"row\">\(.project | esc)</th><td>\(.sessions | esc)</td>"
-          + "<td>$\(.total | esc)</td><td class=\"bar-cell\" aria-hidden=\"true\">"
+          "<tr><th scope=\"row\">\(.project | path_cell)</th><td>\(.sessions | esc)</td>"
+          + "<td>\("$" + .total | nowrap)</td><td class=\"bar-cell\" aria-hidden=\"true\">"
           + "<span class=\"bar\" style=\"width: \((.usd / $max * 1000 | round) / 10)%\">"
           + "</span></td></tr>") | join(""))
       + "</tbody></table>"
@@ -240,12 +246,14 @@ def top_sessions:
       "<p class=\"meta\">The costliest sessions in the same 30 days, counting only their cost"
       + " in those days. Model and project are where most of it went. \($c | dollar_note)</p>"
       + "<table><thead><tr><th scope=\"col\">Session</th><th scope=\"col\">Last active</th>"
-      + "<th scope=\"col\">Model</th><th scope=\"col\">Project</th>"
+      + "<th scope=\"col\" class=\"text\">Model</th><th scope=\"col\" class=\"text\">Project</th>"
       + "<th scope=\"col\">Cost at API rates</th></tr></thead><tbody>"
       + ($c.top_sessions | map(
-          "<tr><th scope=\"row\"><code>\(.session_id | esc)</code></th>"
-          + "<td>\(.last_active | esc)</td><td>\(.model | esc)</td>"
-          + "<td class=\"text\">\(.project | esc)</td><td>$\(.total | esc)</td></tr>")
+          "<tr><th scope=\"row\"><code title=\"\(.session_id | esc)\">"
+          + "\(.session_id[0:8] | esc)</code></th>"
+          + "<td>\(.last_active | stamp)</td><td class=\"text\">\(.model | nowrap)</td>"
+          + "<td class=\"text\">\(.project | path_cell)</td><td>\("$" + .total | nowrap)</td>"
+          + "</tr>")
         | join(""))
       + "</tbody></table>"
     end)
@@ -261,13 +269,15 @@ def launches:
   + (if ($l | length) == 0 then
       "<p>No subagent launch is recorded for the last 30 days.</p>"
     else
-      "<table><thead><tr><th scope=\"col\">Started</th><th scope=\"col\">Agent type</th>"
-      + "<th scope=\"col\">Name</th><th scope=\"col\">Model</th>"
+      "<table><thead><tr><th scope=\"col\">Started</th>"
+      + "<th scope=\"col\" class=\"text\">Agent type</th>"
+      + "<th scope=\"col\" class=\"text\">Name</th><th scope=\"col\" class=\"text\">Model</th>"
       + "<th scope=\"col\">Estimate at API rates</th></tr></thead><tbody>"
       + ($l | map(
-          "<tr><th scope=\"row\">\(.started | esc)</th><td>\(.agent_type | esc)</td>"
-          + "<td class=\"text\">\(.name | esc)</td><td>\(.model | esc)</td>"
-          + "<td>\(.cost | esc)</td></tr>")
+          "<tr><th scope=\"row\">\(.started | stamp)</th>"
+          + "<td class=\"text\">\(.agent_type | nowrap)</td>"
+          + "<td class=\"text\">\(.name | esc)</td><td class=\"text\">\(.model | nowrap)</td>"
+          + "<td>\(.cost | nowrap)</td></tr>")
         | join(""))
       + "</tbody></table>"
     end)

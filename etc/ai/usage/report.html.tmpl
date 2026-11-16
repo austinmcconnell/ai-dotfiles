@@ -76,15 +76,23 @@ h3 { font-size: 0.95rem; margin: 0 0 0.25rem; color: var(--muted); font-weight: 
 details { margin-top: 0.5rem; }
 table { border-collapse: collapse; font-variant-numeric: tabular-nums; margin-top: 0.5rem; }
 th, td { padding: 0.2rem 0.75rem 0.2rem 0; text-align: right; border-bottom: 1px solid var(--rule); }
-th:first-child { text-align: left; }
+th:first-child, .text { text-align: left; }
 thead th { color: var(--muted); font-weight: 600; }
 .projects { width: 100%; max-width: 48rem; }
-.projects tbody th { font-weight: 400; overflow-wrap: anywhere; }
+.projects tbody th { font-weight: 400; overflow-wrap: break-word; }
 tbody th { font-weight: 400; }
-td.text { text-align: left; overflow-wrap: anywhere; }
+td.text { overflow-wrap: break-word; }
+.nw { white-space: nowrap; }
 section { overflow-x: auto; }
 .bar-cell { width: 35%; }
 .bar { display: block; height: 0.6rem; min-width: 1px; border-radius: 2px; background: var(--s1); }
+@media (max-width: 40rem) {
+  .chart { overflow: visible; box-sizing: border-box; padding-left: 0.5rem; }
+  .chart .tick { font-size: 18px; }
+  .bar-cell { width: 20%; }
+  table { font-size: 0.8rem; }
+  th, td { padding-right: 0.5rem; }
+}
 code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.9em; }
 </style>
 </head>
