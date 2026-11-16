@@ -373,6 +373,8 @@ check_page "html labels the burn-up for screen readers" present 'aria-labelledby
 check_page "html labels subscription dollars" present \
     "the dollars are an API-equivalent estimate, not money spent."
 check_page "html heads subscription dollars" present "API-equivalent cost</th>"
+check_page "html describes subscription dollars to screen readers" present \
+    "not money spent. The figures are in the table below.</desc>"
 check_page "html labels the burn-up's current figure" present \
     '<text class="end-label" x="336" y="168">30%</text>'
 

@@ -239,9 +239,9 @@ def cost:
       + "<svg class=\"chart\" viewBox=\"0 0 640 260\" role=\"img\""
       + " aria-labelledby=\"cost-title cost-desc\">"
       + "<title id=\"cost-title\">Daily cost by model</title>"
-      + "<desc id=\"cost-desc\">Stacked columns of each local day's cost in US dollars at API"
-      + " rates, one color per model, from \($c.days[0].day | esc) to"
-      + " \($c.days[-1].day | esc). The figures are in the table below.</desc>"
+      + "<desc id=\"cost-desc\">Stacked columns of each local day's cost in US dollars, one"
+      + " color per model, from \($c.days[0].day | esc) to \($c.days[-1].day | esc)."
+      + " \($c | dollar_note) The figures are in the table below.</desc>"
       + cost_chart($c)
       + "</svg>"
       + cost_legend($c)
