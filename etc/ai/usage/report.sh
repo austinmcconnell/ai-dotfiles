@@ -90,6 +90,12 @@ carries_rate_limits_sql() {
     echo "json_type(CASE WHEN json_valid($1) THEN $1 END, '\$.rate_limits') = 'object'"
 }
 
+# A rate_limits field ($2, e.g. seven_day.resets_at) from a payload column ($1), NULL when the
+# payload is not valid JSON.
+payload_sql() {
+    echo "json_extract(CASE WHEN json_valid($1) THEN $1 END, '\$.rate_limits.$2')"
+}
+
 # Cost per local day for the last 30 days, split into model series. Each snapshot's step is its
 # total less the session's previous one, as in v_cost_deltas. A session that began before the
 # window steps its first row there from its last earlier snapshot, not from 0, or the window would
@@ -371,19 +377,20 @@ tiles(name, state, pct, resets_at) AS (
 ),
 -- The last row carrying the 7d tile's figure is when this machine last saw it: a later, lower
 -- figure is another session's stale report. Rate-limit rows are written only when a percentage
--- changes, so a later cost snapshot whose payload carried rate_limits can be later still. Its
+-- changes, so a later cost snapshot whose payload carried the same figure can be later still. Its
 -- raw_json scan covers the last 8 days, enough for the current 7d window.
 observed(at) AS (
     SELECT min(max(
-        COALESCE((SELECT max(r.occurred_at) FROM rate_limit_snapshots r, windows w
-            WHERE w.name = 'seven_day' AND r.tool = 'claude-code'
-                AND r.seven_day_resets_at IS w.resets_at
+        COALESCE((SELECT max(r.occurred_at) FROM rate_limit_snapshots r
+            WHERE r.tool = 'claude-code' AND r.seven_day_resets_at IS w.resets_at
                 AND r.seven_day_used_percentage = w.pct), ''),
         COALESCE((SELECT occurred_at FROM cost_snapshots
             WHERE id > (SELECT scan_id FROM cutoffs) AND tool = 'claude-code'
-                AND occurred_at >= scan_from_iso AND $(carries_rate_limits_sql raw_json)
+                AND occurred_at >= scan_from_iso
+                AND $(payload_sql raw_json seven_day.used_percentage) = w.pct
+                AND $(payload_sql raw_json seven_day.resets_at) IS w.resets_at
             ORDER BY id DESC LIMIT 1), '')), now_iso)
-    FROM clock
+    FROM clock, windows w WHERE w.name = 'seven_day'
 ),
 $(cost_ctes_sql)
 SELECT json_object(

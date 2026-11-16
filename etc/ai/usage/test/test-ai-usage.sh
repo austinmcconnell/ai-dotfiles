@@ -256,10 +256,12 @@ check_page "html paces a figure when it was observed" present "14 points over an
 check_page "html names the yellow level in text" present "level-yellow\">14 points over"
 check_page "html dates a day-old observation" present "most recently 2026-01-01 12:00."
 
-# A later cost snapshot that carried rate_limits shows the figure still held at the clock.
+# A later cost snapshot that carried the same figure shows it still held at the clock.
 sqlite3 "$USAGE_DB" "INSERT INTO cost_snapshots (tool, session_id, total_cost_usd, occurred_at,
     raw_json) VALUES ('claude-code', 's1', 1.25,
-    strftime('%Y-%m-%dT%H:%M:%SZ', $USAGE_NOW_EPOCH, 'unixepoch'), '{\"rate_limits\":{}}');"
+    strftime('%Y-%m-%dT%H:%M:%SZ', $USAGE_NOW_EPOCH, 'unixepoch'),
+    '{\"rate_limits\":{\"seven_day\":{\"used_percentage\":50,
+        \"resets_at\":$((USAGE_NOW_EPOCH + 302400))}}}');"
 rm -f "$REPORT"
 check "html renders a figure held until the clock" 0 "$REPORT" -- --html --no-open
 check_page "html takes the last observation from cost snapshots" present \
@@ -358,7 +360,7 @@ sqlite3 "$WORK/burnup/usage.db" "DELETE FROM rate_limit_snapshots; DELETE FROM c
         seven_day_used_percentage, seven_day_resets_at, occurred_at) VALUES ${burnup_rows%,};
     INSERT INTO cost_snapshots (tool, session_id, total_cost_usd, occurred_at, raw_json)
     VALUES ('claude-code', 's1', 1, strftime('%Y-%m-%dT%H:%M:%SZ', $USAGE_NOW_EPOCH, 'unixepoch'),
-        '{\"rate_limits\":{}}');"
+        '{\"rate_limits\":{\"seven_day\":{\"used_percentage\":30,\"resets_at\":$window_end}}}');"
 rm -f "$REPORT"
 USAGE_DB_DIR="$WORK/burnup" check "html renders a burn-up" 0 "$REPORT" -- --html --no-open
 # Day 0.5 at 10%, a repeat of 10% that adds no step, day 2.5 at 30%, then held to day 3.5. The
@@ -402,6 +404,24 @@ check_page "html holds the burn-up line over a stale figure" present \
     'd="M323.1,142H326.5V98H326.5"'
 check_page "html says each quota figure is the window's highest" present \
     "A quota figure with a reset time is the highest recorded for its window"
+
+# Cost snapshots carrying the 60% figure half an hour ago and the stale 40% ten minutes ago:
+# only the first moves the observation.
+stale_payload() {
+    jq -nc --argjson pct "$1" --argjson resets "$window_end" \
+        '{rate_limits: {seven_day: {used_percentage: $pct, resets_at: $resets}}}'
+}
+sqlite3 "$WORK/stale/usage.db" "INSERT INTO cost_snapshots (tool, session_id, total_cost_usd,
+        occurred_at, raw_json)
+    VALUES ('claude-code', 'fresh', 1, strftime('%Y-%m-%dT%H:%M:%SZ', $((USAGE_NOW_EPOCH - 1800)),
+            'unixepoch'), $(sql_str "$(stale_payload 60)")),
+        ('claude-code', 'stale', 1, strftime('%Y-%m-%dT%H:%M:%SZ', $((USAGE_NOW_EPOCH - 600)),
+            'unixepoch'), $(sql_str "$(stale_payload 40)"));"
+rm -f "$REPORT"
+USAGE_DB_DIR="$WORK/stale" check "html renders stale cost snapshots" 0 "$REPORT" \
+    -- --html --no-open
+check_page "html dates the observation by a payload with the highest figure" present \
+    "most recently 2026-01-02 11:30."
 
 # A fourth model alone still folds into Other, so slot 4 always means Other.
 mkdir -p "$WORK/four"
