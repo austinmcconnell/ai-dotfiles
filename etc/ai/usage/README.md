@@ -395,16 +395,17 @@ The daily cost chart stacks each local day's cost by main-session model, from th
 cost to today, for at most 30 days. Empty days are filled. It follows `v_cost_deltas`: each
 snapshot's step is booked to the model in that snapshot, so subagent cost lands on the main
 session's model. The statement repeats that view's `lag()` over the window's rows only. A session
-whose `sessions` row says it began before the window steps its first row there from its last earlier
-snapshot, not from 0, so its earlier cost stays out of the window. The three costliest models keep
-their own series and the rest share Other, which is always grey and stacked on top. A 2px surface
-gap separates stacked segments. The light-mode green falls below 3:1 contrast, so the daily figures
-also appear as a table.
+whose `sessions` row says it began before the window, or that has no `sessions` row, steps its first
+row there from its last earlier snapshot, not from 0, so its earlier cost stays out of the window.
+The three costliest models keep their own series and the rest share Other, which is always grey and
+stacked on top. A 2px surface gap separates stacked segments. The light-mode green falls below 3:1
+contrast, so the daily figures also appear as a table.
 
 The project table covers the same days, by the `workspace.project_dir` each snapshot reported. A
 path under `$HOME` shows as `~`, and the eight costliest projects get their own rows. The rest share
-Other with paths under `/tmp`, `/private/tmp`, and `$TMPDIR`, which are throwaway runs rather than
-projects. Each row counts its sessions, so a session that moved between projects counts in each row.
+Other with paths under `/tmp` and `$TMPDIR`, with or without a leading `/private`, which are
+throwaway runs rather than projects. Each row counts its sessions, so a session that moved between
+projects counts in each row.
 
 A session counts as a subscription session when any of its snapshots in the window carries a
 `rate_limits` object; an explicit `null` does not count. Both cost sections' captions call

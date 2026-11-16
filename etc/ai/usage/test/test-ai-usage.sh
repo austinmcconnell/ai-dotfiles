@@ -485,7 +485,27 @@ USAGE_DB_DIR="$WORK/straddle" check "html renders a session older than the windo
     -- --html --no-open
 check_page "html books only the in-window step" present "claude-opus-5-5: \$1.00</li>"
 check_page "html never books earlier cost to the window" absent "\$101.00"
+
 check_page "html reads a null rate_limits as API rates" present "Dollars are at API rates."
+
+# The same session with no sessions row still steps from its earlier snapshot.
+sqlite3 "$WORK/straddle/usage.db" "DELETE FROM sessions WHERE session_id = 'old';"
+rm -f "$REPORT"
+USAGE_DB_DIR="$WORK/straddle" check "html renders a session with no sessions row" 0 "$REPORT" \
+    -- --html --no-open
+check_page "html books only the in-window step without a sessions row" present \
+    "claude-opus-5-5: \$1.00</li>"
+
+# A payload whose model and project are numbers still renders.
+sqlite3 "$WORK/straddle/usage.db" "INSERT INTO cost_snapshots (tool, session_id,
+        total_cost_usd, occurred_at, raw_json)
+    VALUES ('claude-code', 'numeric', 0.5,
+        strftime('%Y-%m-%dT%H:%M:%SZ', $((USAGE_NOW_EPOCH - 3600)), 'unixepoch'),
+        '{\"model\":{\"id\":42},\"workspace\":{\"project_dir\":7}}');"
+rm -f "$REPORT"
+USAGE_DB_DIR="$WORK/straddle" check "html renders numeric payload strings" 0 "$REPORT" \
+    -- --html --no-open
+check_page "html renders a numeric model id" present "42: \$0.50</li>"
 
 # Project paths with a fake HOME and TMPDIR. Each row is <session> <cost> <project_dir>, all on
 # Opus an hour before the clock; "-" leaves project_dir out of the payload. Nine projects outside
@@ -514,6 +534,7 @@ p5 0.5 /srv/p5
 tmp 3 /tmp/x
 private 4 /private/tmp
 tmpdir 5 /var/tmpx/y
+realtmp 1 /private/var/tmpx/z
 EOF
 sqlite3 "$WORK/projects/usage.db" "DELETE FROM cost_snapshots;
     INSERT INTO cost_snapshots (tool, session_id, total_cost_usd, occurred_at, raw_json)
@@ -531,7 +552,7 @@ check_page "html escapes a hostile project path" present \
     "/<wbr>srv/<wbr>&lt;/<wbr>script&gt;&lt;!--&amp;&quot;"
 check_page "html shows a missing project as (unknown)" present '<th scope="row">(unknown)</th>'
 check_page "html folds temp paths and the tail into Other" present \
-    "<th scope=\"row\">Other</th><td>5</td><td>$(nw "\$13.00")</td>"
+    "<th scope=\"row\">Other</th><td>6</td><td>$(nw "\$14.00")</td>"
 check_page "html never lists a temp path" absent "/tmp/x"
 check_page "html folds TMPDIR into Other" absent "/var/tmpx"
 check_page "html lists Other last, scaled to the costliest row" present \

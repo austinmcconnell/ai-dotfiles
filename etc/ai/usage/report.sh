@@ -98,8 +98,8 @@ payload_sql() {
 
 # Cost per local day for the last 30 days, split into model series. Each snapshot's step is its
 # total less the session's previous one, as in v_cost_deltas. A session that began before the
-# window steps its first row there from its last earlier snapshot, not from 0, or the window would
-# book its whole earlier cost to one day. A session is a subscription session if any of its rows
+# window, or has no sessions row, steps its first row there from its last earlier snapshot, not
+# from 0, or the window would book its whole earlier cost to one day. A session is a subscription session if any of its rows
 # in the window carries rate_limits (a session's first snapshot never does).
 cost_ctes_sql() {
     cat <<SQL
@@ -112,8 +112,8 @@ cost_steps(id, tool, session_id, at, day, delta) AS (
         c.total_cost_usd - CASE
             WHEN lag(c.id) OVER (PARTITION BY c.tool, c.session_id ORDER BY c.id) IS NOT NULL
             THEN lag(c.total_cost_usd) OVER (PARTITION BY c.tool, c.session_id ORDER BY c.id)
-            WHEN (SELECT started_at FROM sessions s WHERE s.tool = c.tool
-                AND s.session_id = c.session_id) < (SELECT cost_from_iso FROM clock)
+            WHEN COALESCE((SELECT started_at FROM sessions s WHERE s.tool = c.tool
+                AND s.session_id = c.session_id), '') < (SELECT cost_from_iso FROM clock)
             THEN COALESCE((SELECT p.total_cost_usd FROM cost_snapshots p
                 WHERE p.id <= (SELECT cost_id FROM cutoffs) AND p.tool = c.tool
                     AND p.session_id = c.session_id
@@ -124,10 +124,10 @@ cost_steps(id, tool, session_id, at, day, delta) AS (
 ),
 cost_rows(tool, session_id, at, day, model, project, delta, subscription) AS (
     SELECT s.tool, s.session_id, s.at, s.day,
-        COALESCE(json_extract(CASE WHEN json_valid(c.raw_json) THEN c.raw_json END,
-            '\$.model.id'), '(unknown)'),
-        json_extract(CASE WHEN json_valid(c.raw_json) THEN c.raw_json END,
-            '\$.workspace.project_dir'),
+        COALESCE(CAST(json_extract(CASE WHEN json_valid(c.raw_json) THEN c.raw_json END,
+            '\$.model.id') AS TEXT), '(unknown)'),
+        CAST(json_extract(CASE WHEN json_valid(c.raw_json) THEN c.raw_json END,
+            '\$.workspace.project_dir') AS TEXT),
         s.delta, $(carries_rate_limits_sql c.raw_json)
     FROM cost_steps s JOIN cost_snapshots c ON c.id = s.id, cost_clock
     WHERE s.day BETWEEN from_day AND to_day
@@ -187,15 +187,15 @@ SQL
 }
 
 # A project path ($1) for display: under $HOME as ~, NULL for a temp-directory path (/tmp,
-# /private/tmp, $TMPDIR). Needs the clock CTE in scope for home and tmpdir.
+# $TMPDIR, either under /private). Needs the clock CTE in scope for home and tmpdir.
 project_label_sql() {
     local path="$1"
+    local bare="CASE WHEN substr($path, 1, 9) = '/private/' THEN substr($path, 9) ELSE $path END"
     cat <<SQL
 CASE
             WHEN $path IS NULL OR $path = '' THEN '(unknown)'
-            WHEN $path IN ('/tmp', '/private/tmp', tmpdir)
-                OR substr($path, 1, 5) = '/tmp/' OR substr($path, 1, 13) = '/private/tmp/'
-                OR (tmpdir != '' AND substr($path, 1, length(tmpdir) + 1) = tmpdir || '/')
+            WHEN $bare IN ('/tmp', tmpdir) OR substr($bare, 1, 5) = '/tmp/'
+                OR (tmpdir != '' AND substr($bare, 1, length(tmpdir) + 1) = tmpdir || '/')
                 THEN NULL
             WHEN home = '' THEN $path
             WHEN $path = home THEN '~'
@@ -342,6 +342,7 @@ blob_sql() {
     local now="$1" home="${HOME:-}" tmpdir="${TMPDIR:-}"
     home="${home%/}"
     tmpdir="${tmpdir%/}"
+    tmpdir="${tmpdir#/private}"
     cat <<SQL
 WITH RECURSIVE clock(offset_min, now_iso, scan_from_iso, cost_from_iso, home, tmpdir) AS (
     SELECT CAST(round((julianday($now, 'unixepoch', 'localtime')
