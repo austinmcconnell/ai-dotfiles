@@ -16,6 +16,10 @@
   --red: #b42318;
   --yellow: #8a5a00;
   --green: #1a7f37;
+  --s1: #2a78d6;
+  --s2: #eb6834;
+  --s3: #1baf7a;
+  --s4: #eda100;
 }
 @media (prefers-color-scheme: dark) {
   :root {
@@ -27,6 +31,10 @@
     --red: #ff8b80;
     --yellow: #e3b341;
     --green: #56d364;
+    --s1: #3987e5;
+    --s2: #d95926;
+    --s3: #199e70;
+    --s4: #c98500;
   }
 }
 body {
@@ -55,6 +63,22 @@ h3 { font-size: 0.95rem; margin: 0 0 0.25rem; color: var(--muted); font-weight: 
 .chart .tick { fill: var(--muted); font-size: 11px; }
 .chart .even { stroke: var(--muted); stroke-width: 1.5; stroke-dasharray: 5 4; }
 .chart .used { fill: none; stroke: var(--fg); stroke-width: 2; }
+.chart .s1 { fill: var(--s1); }
+.chart .s2 { fill: var(--s2); }
+.chart .s3 { fill: var(--s3); }
+.chart .s4 { fill: var(--s4); }
+.chart rect { stroke: var(--bg); stroke-width: 1; }
+.legend { list-style: none; padding: 0; margin: 0.5rem 0; display: flex; flex-wrap: wrap; gap: 0.25rem 1.25rem; }
+.swatch { display: inline-block; width: 0.75rem; height: 0.75rem; border-radius: 2px; margin-right: 0.4rem; vertical-align: -1px; }
+.swatch.s1 { background: var(--s1); }
+.swatch.s2 { background: var(--s2); }
+.swatch.s3 { background: var(--s3); }
+.swatch.s4 { background: var(--s4); }
+details { margin-top: 0.5rem; }
+table { border-collapse: collapse; font-variant-numeric: tabular-nums; margin-top: 0.5rem; }
+th, td { padding: 0.2rem 0.75rem 0.2rem 0; text-align: right; border-bottom: 1px solid var(--rule); }
+th:first-child { text-align: left; }
+thead th { color: var(--muted); font-weight: 600; }
 code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.9em; }
 </style>
 </head>

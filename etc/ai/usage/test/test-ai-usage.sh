@@ -73,6 +73,7 @@ rm -f "$REPORT"
 check "empty html" 0 "$REPORT" -- --html --no-open
 check_page "html names a machine with no quota data" present "No quota data on this machine"
 check_page "html charts nothing without quota data" absent "How has 7-day usage"
+check_page "html names an empty cost chart" present "No cost is recorded for the last 30 days."
 
 # shellcheck disable=SC2153 # USAGE_DB is set by lib.sh
 sqlite3 "$USAGE_DB" "
@@ -168,21 +169,30 @@ check_page "html has no script" absent "<script"
 check_page "html shows generated-at in local time" present "Generated 2026-01-02 12:00:00 (UTC−6)"
 check_page "html lists page caveats" present "Quota is account-wide"
 
-# The model id is the first text field from the DB; a hostile one must render inert.
+# Model ids reach the page as series labels; a hostile one must render inert. It costs the
+# most, so it keeps its own series while the two cheapest models share Other.
 hostile='</script><!--&"'
-sqlite3 "$USAGE_DB" "
-    INSERT INTO sessions (tool, session_id, model, started_at, updated_at)
-    VALUES ('claude-code', 'hostile', $(sql_str "$hostile"),
-        '2026-01-02T00:00:00Z', '2026-01-02T00:00:00Z'),
-        ('claude-code', 'no-model', NULL, '2026-01-02T00:00:00Z', '2026-01-02T00:00:00Z');
-"
+cost_row() {
+    printf "('claude-code', '%s', %s, '2026-01-02T00:00:00Z', %s)" "$1" "$2" "$(sql_str "$3")"
+}
+sqlite3 "$USAGE_DB" "INSERT INTO cost_snapshots (tool, session_id, total_cost_usd, occurred_at,
+    raw_json) VALUES $(cost_row hostile 5 "$(jq -nc --arg id "$hostile" '{model: {id: $id}}')"),
+    $(cost_row no-model 0.10 '{}'), $(cost_row haiku 0.05 '{"model":{"id":"claude-haiku-5-5"}}');"
 rm -f "$REPORT"
 check "html renders a seeded DB" 0 "$REPORT" -- --html --no-open
 check_page "html escapes a hostile model id" present "&lt;/script&gt;&lt;!--&amp;&quot;"
 check_page "html never emits a hostile model id raw" absent "$hostile"
-check_page "html shows a NULL model as (unknown)" present "(unknown)"
+check_page "html shows a missing model as (unknown)" present "(unknown)"
 check_page "html never renders null" absent "null"
-check_page "html counts sessions" present "3 sessions."
+check_page "html folds models past the fourth into Other" present "<th scope=\"col\">Other</th>"
+# s1 and s2 cost 3.25 on 2025-12-31 local time; the other three 5.15 on 2026-01-01.
+check_page "html books a day's cost per model" present \
+    "2025-12-31</th><td></td><td>\$2.50</td><td>\$0.75</td><td></td><td>\$3.25</td>"
+check_page "html fills a day with no cost" present \
+    "2026-01-02</th><td></td><td></td><td></td><td></td><td>\$0.00</td>"
+check_page "html scales the cost axis to a 1-2-5 step" present ">\$8</text>"
+check_page "html labels API-rate dollars" present "Dollars are at API rates."
+check_page "html never calls cost spend" absent "spend"
 # The seeded rate-limit row has percentages but no reset times.
 check_page "html shows a 7d figure with an unknown reset" present \
     "7% used</p><p>Reset time unknown."
@@ -216,6 +226,9 @@ check "html renders a figure held until the clock" 0 "$REPORT" -- --html --no-op
 check_page "html takes the last observation from cost snapshots" present \
     "most recently 2026-01-02 12:00."
 check_page "html shows on pace in text" present "level-on\">+0 points against an even pace"
+split="\$1.25 from subscription sessions is an API-equivalent estimate, not money spent;"
+check_page "html splits subscription dollars from API-rate dollars" present \
+    "$split the other \$7.15 is at API rates."
 
 # 3.5 days into the 7d window, so an even pace is 50%. 12.5 rounds to 12 as in the statusline,
 # including under a decimal-comma locale.
@@ -307,6 +320,32 @@ check_page "html steps the burn-up from the first figure to the last observation
 check_page "html draws the even-pace diagonal" present 'x1="40" y1="230" x2="620" y2="10"'
 check_page "html marks steps as observed changes" present "Steps mark when this machine observed"
 check_page "html labels the burn-up for screen readers" present 'aria-labelledby="burnup-title'
+check_page "html labels subscription dollars" present \
+    "the dollars are an API-equivalent estimate, not money spent."
+
+# A session that began before the 30-day window adds only its in-window step there; sessions
+# that began inside it (every other fixture) step from 0. An explicit null rate_limits is not a
+# subscription.
+mkdir -p "$WORK/straddle"
+cp "$USAGE_DB" "$WORK/straddle/usage.db"
+sqlite3 "$WORK/straddle/usage.db" "DELETE FROM cost_snapshots;
+    INSERT INTO sessions (tool, session_id, started_at, updated_at)
+    VALUES ('claude-code', 'old',
+        strftime('%Y-%m-%dT%H:%M:%SZ', $((USAGE_NOW_EPOCH - 40 * 86400)), 'unixepoch'),
+        strftime('%Y-%m-%dT%H:%M:%SZ', $USAGE_NOW_EPOCH, 'unixepoch'));
+    INSERT INTO cost_snapshots (tool, session_id, total_cost_usd, occurred_at, raw_json)
+    VALUES ('claude-code', 'old', 100,
+        strftime('%Y-%m-%dT%H:%M:%SZ', $((USAGE_NOW_EPOCH - 40 * 86400)), 'unixepoch'),
+        '{\"model\":{\"id\":\"claude-opus-5-5\"}}'),
+        ('claude-code', 'old', 101,
+        strftime('%Y-%m-%dT%H:%M:%SZ', $((USAGE_NOW_EPOCH - 3600)), 'unixepoch'),
+        '{\"model\":{\"id\":\"claude-opus-5-5\"},\"rate_limits\":null}');"
+rm -f "$REPORT"
+USAGE_DB_DIR="$WORK/straddle" check "html renders a session older than the window" 0 "$REPORT" \
+    -- --html --no-open
+check_page "html books only the in-window step" present "claude-opus-5-5: \$1.00</li>"
+check_page "html never books earlier cost to the window" absent "\$101.00"
+check_page "html reads a null rate_limits as API rates" present "Dollars are at API rates."
 
 rm -f "$REPORT"
 USAGE_NOW_EPOCH="$(epoch '2026-07-01 17:00:00')" \

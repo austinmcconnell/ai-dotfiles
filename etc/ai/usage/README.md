@@ -355,8 +355,10 @@ and its Content-Security-Policy blocks every fetch, so it works offline and load
 
 1. One `sqlite3 -readonly` statement returns the page's data as a single JSON object, so every
    figure comes from one read transaction. The DB uses a rollback journal, so this read blocks
-   writers while it runs. Any query that scans `raw_json` must bound its rows by date to keep that
-   short; `v_cost_deltas` cannot be bounded from outside, since its window function sees every row.
+   writers while it runs. Any query that scans `cost_snapshots` must bound its rows by date to keep
+   that short. The table has no date index, but rows are appended in time order, so the statement
+   finds the newest id before each date bound and scans by rowid from there. `v_cost_deltas` cannot
+   be bounded from outside, since its window function sees every row.
 1. `report.jq` renders that object into `report.html.tmpl`. Every text field from the DB passes
    through `@html`, and jq does no date handling: local-time formatting happens in SQL.
 1. The page goes to a temp file in the same directory and is moved into place.
@@ -381,6 +383,26 @@ always agree. Its line steps from the first recorded figure, not from zero, thro
 the 7-day percentage, and holds the last figure until quota was last observed. A dashed diagonal
 marks an even pace. The SVG is drawn inline by `report.jq`, which rounds coordinates to one decimal
 place.
+
+The daily cost chart stacks each local day's cost by model, from the first day with cost to today,
+for at most 30 days. Empty days are filled. It follows `v_cost_deltas`: each snapshot's step is
+booked to the model in that snapshot, so subagent cost lands on the main session's model. The
+statement repeats that view's `lag()` over the window's rows only. A session whose `sessions` row
+says it began before the window steps its first row there from its last earlier snapshot, not from
+0, so its earlier cost stays out of the window. Past four models, the three costliest keep their own
+series and the rest share Other. Light-mode colors fall below 3:1 contrast, so the daily figures
+also appear as a table.
+
+A session counts as a subscription session when any of its snapshots in the window carries a
+`rate_limits` object; an explicit `null` does not count. The caption calls subscription dollars an
+API-equivalent estimate, not money spent, and other dollars API-rate figures. When both appear, it
+gives the amount of each.
+
+With SQLite 3.54, the statement takes about 70 ms on a 4,600-row DB with 15 days of cost, and the
+same on a 98,000-row copy with 20 months of older history, so it grows with the window, not the
+table. The statusline's busy timeout is 200 ms. SQLite before 3.35 evaluates a CTE once per
+reference rather than once in total, so the floor version is likely slower; it has not been
+measured.
 
 The report never creates or migrates the DB. A missing DB prints the same message as the other
 reports. A DB older than schema version 3 (`v_cost_deltas`) gets a message saying the next

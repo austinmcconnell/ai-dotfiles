@@ -115,22 +115,103 @@ def burnup:
     + "</section>"
   end;
 
+# Daily cost columns: the same viewBox, with a wider left inset for dollar labels. Each day
+# stacks its series bottom up in slot order.
+def cost_x($i; $n): (56 + $i * 564 / $n) * 10 | round / 10;
+def cost_h($usd; $max): ($usd / $max * 220) * 10 | round / 10;
+
+def series_label:
+  if .label == "Other" then "Other (" + (.members | map(esc) | join(", ")) + ")"
+  else .label | esc
+  end;
+
+def dollar_note:
+  if .kind == "subscription" then
+    "These sessions ran on a subscription, so the dollars are an API-equivalent estimate, not"
+    + " money spent."
+  elif .kind == "api" then "Dollars are at API rates."
+  else
+    "$\(.subscription_usd | esc) from subscription sessions is an API-equivalent estimate, not"
+    + " money spent; the other $\(.other_usd | esc) is at API rates."
+  end;
+
+def cost_columns($c):
+  ($c.days | length) as $n
+  | ([$n, 1] | max) as $n
+  | ((564 / $n * 0.7) * 10 | round / 10) as $bar
+  | ($c.series | map({key: (.slot | tostring), value: .label}) | from_entries) as $names
+  | [range(0; $c.days | length) as $i | $c.days[$i] as $day
+    | (cost_x($i; $n) + (564 / $n - $bar) / 2) as $x
+    | reduce $day.cells[] as $cell ({y: 230, out: ""};
+        cost_h($cell[1]; $c.scale_max) as $h
+        | .y = ((.y - $h) * 10 | round / 10)
+        | .out += "<rect class=\"s\($cell[0])\" x=\"\(($x * 10 | round) / 10)\" y=\"\(.y)\""
+          + " width=\"\($bar)\" height=\"\($h)\"><title>\($day.day | esc),"
+          + " \($names[$cell[0] | tostring] | esc): $\($cell[2] | esc)</title></rect>")
+    | .out]
+  | join("");
+
+def cost_chart($c):
+  ($c.days | length) as $n
+  | ([range(0; 5)] | map((230 - . * 55) as $y
+      | "<line class=\"grid\" x1=\"56\" x2=\"620\" y1=\"\($y)\" y2=\"\($y)\"/>"
+      + "<text class=\"tick\" x=\"50\" y=\"\($y + 4)\" text-anchor=\"end\">"
+      + "\($c.ticks[.] | esc)</text>") | join(""))
+  + ([range(0; $n) | select(($n - 1 - .) % 7 == 0)] | map(
+      "<text class=\"tick\" x=\"\(cost_x(. + 0.5; $n))\" y=\"248\" text-anchor=\"middle\">"
+      + "\($c.days[.].label | esc)</text>") | join(""))
+  + cost_columns($c);
+
+def cost_legend($c):
+  "<ul class=\"legend\">"
+  + ($c.series | map("<li><span class=\"swatch s\(.slot)\"></span>\(series_label):"
+      + " $\(.total | esc)</li>") | join(""))
+  + "</ul>";
+
+def cost_table($c):
+  "<details><summary>Daily figures</summary><table><thead><tr><th scope=\"col\">Day</th>"
+  + ($c.series | map("<th scope=\"col\">\(.label | esc)</th>") | join(""))
+  + "<th scope=\"col\">Total</th></tr></thead><tbody>"
+  + ($c.days | map(. as $day
+      | "<tr><th scope=\"row\">\($day.day | esc)</th>"
+      + ($c.series | map(.slot as $slot
+          | ([$day.cells[] | select(.[0] == $slot)][0]) as $cell
+          | "<td>" + (if $cell == null then "" else "$" + ($cell[2] | esc) end) + "</td>")
+        | join(""))
+      + "<td>$\($day.total | esc)</td></tr>") | join(""))
+  + "</tbody></table></details>";
+
+def cost:
+  .cost as $c
+  | "<section><h2>What did each day cost, by model?</h2>"
+  + (if ($c.days | length) == 0 then
+      "<p>No cost is recorded for the last 30 days.</p>"
+    else
+      "<p class=\"meta\">One column per local day, for up to 30 days. Cost is booked to the"
+      + " main-session model, including its subagents. \($c | dollar_note)</p>"
+      + "<svg class=\"chart\" viewBox=\"0 0 640 260\" role=\"img\""
+      + " aria-labelledby=\"cost-title cost-desc\">"
+      + "<title id=\"cost-title\">Daily cost by model</title>"
+      + "<desc id=\"cost-desc\">Stacked columns of each local day's cost in US dollars at API"
+      + " rates, one color per model, from \($c.days[0].day | esc) to"
+      + " \($c.days[-1].day | esc). The figures are in the table below.</desc>"
+      + cost_chart($c)
+      + "</svg>"
+      + cost_legend($c)
+      + cost_table($c)
+    end)
+  + "</section>";
+
 def header:
   "<header><h1>AI usage</h1><p class=\"meta\">Generated \(.generated_at | esc) "
   + "(\(.utc_offset | esc)). All times are local.</p></header>";
-
-def recorded:
-  "<section><h2>What is recorded on this machine?</h2><p>\(.sessions | esc). "
-  + "Models they last ran on, most recent first: "
-  + (if (.models | length) == 0 then "none" else (.models | map(esc) | join(", ")) end)
-  + ".</p></section>";
 
 def footer:
   "<footer><h2>Caveats</h2><ul>"
   + (caveats | map("<li>" + . + "</li>") | join(""))
   + "</ul></footer>";
 
-(header + "<main>" + quota + burnup + recorded + "</main>" + footer) as $body
+(header + "<main>" + quota + burnup + cost + "</main>" + footer) as $body
 | ($tmpl | split("@@BODY@@")) as $parts
 | if ($parts | length) != 2 then error("report.html.tmpl needs exactly one @@BODY@@")
   else $parts[0] + $body + $parts[1]
