@@ -22,14 +22,33 @@ decision).
 
 ## When to Use
 
-A decision is **non-trivial** when at least one is true:
+A decision is **non-trivial** when it meets a **risk** criterion and also clears the **size gate**.
 
-- It introduces or modifies branching logic
+Risk criteria (at least one must be true):
+
 - It crosses a module or service boundary
 - It asserts a property the type system or compiler cannot verify (thread-safety, idempotence,
   ordering, invariants)
-- Its correctness depends on context a future reader cannot see
+- Its correctness depends on a constraint that is neither visible in the artifact nor written down
+  in the repo, such as an unrecorded ordering rule or a consumer outside this repo
 - Its blast radius is hard to reverse (production deploy, data migration, public API change)
+- It parses, validates, or decodes untrusted input, or changes authentication or authorization
+  checks
+
+Branching logic alone is not a risk criterion. A new `if` in a helper with existing test coverage
+does not qualify.
+
+A risk criterion always wins over the "obviously correct" exclusion below: a one-line change to an
+authentication, authorization, or untrusted-input check gets a review suggestion.
+
+Size gate, for diffs only: a diff clears it at 100 or more changed lines, counted as insertions plus
+deletions with `git diff --cached --numstat` (or `git diff --numstat` for unstaged work) and the
+pathspec `-- . ':(exclude)*.lock' ':(exclude)*lock.json' ':(exclude)*.lockb'`. A diff that meets the
+authentication, authorization, or untrusted-input criterion clears the gate at any size. Changes
+that fail the gate rely on the author's tests and the verification loop. The 100-line figure is a
+judgment call, not a measured cutoff; adjust it if small risky changes slip through.
+
+A plan has no diff to measure, so a plan clears the gate on a risk criterion alone.
 
 **When NOT to use** — if you doubt every keystroke, you ship nothing:
 
@@ -71,6 +90,12 @@ Every review spends Opus tokens, so **suggest it, don't launch it**:
    not.
 
 Small or simple artifacts get no suggestion at all, even when this skill is loaded.
+
+Cadence: suggest at most one review per plan and one per commit-to-be. A re-review after a
+substantive change to the same artifact is the next cycle of Step 5, not a new suggestion, and it
+counts against that cycle's 3-cycle ceiling. The ceiling applies per artifact, so a plan review and
+the later commit review each get their own. Do not re-review an unchanged artifact, and do not
+suggest a review for each step of an approved plan.
 
 When the user asks for a "doubt review", they mean one `doubt-reviewer` run on the artifact in front
 of you (a plan, diff, or assertion), not the full doubt cycle and not a later artifact.

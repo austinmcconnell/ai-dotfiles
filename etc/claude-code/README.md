@@ -198,8 +198,10 @@ mechanical work. On Claude Code:
   per commit. Plan mode blocks edits, so `ideas.md`/`backlog.md` promotions and recording the plan
   in `todo.md` happen after exiting it. It never selects Haiku.
 - **Doubt checks** — the `doubt-reviewer` persona runs the plan and pre-commit checks on Opus in a
-  fresh context, so the main session keeps its model. The user approves each run in chat, and the
-  `ask-opus-subagents.sh` hook prompts if a launch skips that step (see Cost Controls).
+  fresh context, so the main session keeps its model. A plan qualifies on a risk criterion; a commit
+  also needs the size gate (see the `doubt-driven-development` skill). The user approves each run in
+  chat, and the `ask-opus-subagents.sh` hook prompts if a launch skips that step (see Cost
+  Controls).
 - **Mechanical work** — delegate it to `general-purpose`, which `CLAUDE_CODE_SUBAGENT_MODEL=haiku`
   runs on Haiku, or pass `model: "haiku"` when launching `Explore`, rather than switching the main
   session to Haiku. A default `Explore` and the domain personas inherit the main model instead (see
