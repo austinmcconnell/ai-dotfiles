@@ -225,6 +225,48 @@ def projects:
     end)
   + "</section>";
 
+def top_sessions:
+  .cost as $c
+  | "<section><h2>Which sessions cost the most?</h2>"
+  + (if ($c.top_sessions | length) == 0 then
+      "<p>No cost is recorded for the last 30 days.</p>"
+    else
+      "<p class=\"meta\">The costliest sessions in the same 30 days, counting only their cost"
+      + " in those days. Model and project are where most of it went. \($c | dollar_note)</p>"
+      + "<table><thead><tr><th scope=\"col\">Session</th><th scope=\"col\">Last active</th>"
+      + "<th scope=\"col\">Model</th><th scope=\"col\">Project</th>"
+      + "<th scope=\"col\">Cost at API rates</th></tr></thead><tbody>"
+      + ($c.top_sessions | map(
+          "<tr><th scope=\"row\"><code>\(.session_id | esc)</code></th>"
+          + "<td>\(.last_active | esc)</td><td>\(.model | esc)</td>"
+          + "<td class=\"text\">\(.project | esc)</td><td>$\(.total | esc)</td></tr>")
+        | join(""))
+      + "</tbody></table>"
+    end)
+  + "</section>";
+
+def launches:
+  .cost as $c
+  | $c.launches as $l
+  | "<section><h2>Which subagent launches cost the most?</h2>"
+  + "<p class=\"meta\">Partial: subagents that finish quickly can be missed. Each estimate is"
+  + " already inside its session's cost, so these figures are never added to a total."
+  + (if ($c.top_sessions | length) == 0 then "" else " \($c | dollar_note)" end) + "</p>"
+  + (if ($l | length) == 0 then
+      "<p>No subagent launch is recorded for the last 30 days.</p>"
+    else
+      "<table><thead><tr><th scope=\"col\">Started</th><th scope=\"col\">Agent type</th>"
+      + "<th scope=\"col\">Name</th><th scope=\"col\">Model</th>"
+      + "<th scope=\"col\">Estimate at API rates</th></tr></thead><tbody>"
+      + ($l | map(
+          "<tr><th scope=\"row\">\(.started | esc)</th><td>\(.agent_type | esc)</td>"
+          + "<td class=\"text\">\(.name | esc)</td><td>\(.model | esc)</td>"
+          + "<td>\(.cost | esc)</td></tr>")
+        | join(""))
+      + "</tbody></table>"
+    end)
+  + "</section>";
+
 def header:
   "<header><h1>AI usage</h1><p class=\"meta\">Generated \(.generated_at | esc) "
   + "(\(.utc_offset | esc)). All times are local.</p></header>";
@@ -234,7 +276,8 @@ def footer:
   + (caveats | map("<li>" + . + "</li>") | join(""))
   + "</ul></footer>";
 
-(header + "<main>" + quota + burnup + cost + projects + "</main>" + footer) as $body
+(header + "<main>" + quota + burnup + cost + projects + top_sessions + launches + "</main>"
+  + footer) as $body
 | ($tmpl | split("@@BODY@@")) as $parts
 | if ($parts | length) != 2 then error("report.html.tmpl needs exactly one @@BODY@@")
   else $parts[0] + $body + $parts[1]

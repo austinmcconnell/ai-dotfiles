@@ -12,6 +12,7 @@ source "$REPORT_DIR/lib.sh"
 # Migration 0003 adds v_cost_deltas, which the report reads.
 REPORT_MIN_USER_VERSION=3
 REPORT_TOP_PROJECTS=8
+REPORT_TOP_ROWS=10
 REPORT_OUT_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/ai-usage"
 REPORT_OUT="$REPORT_OUT_DIR/report.html"
 # Global, so the EXIT trap can still see it after main returns.
@@ -92,8 +93,8 @@ cost_clock(from_day, to_day) AS (
     SELECT date($now, 'unixepoch', 'localtime', '-29 days'),
         date($now, 'unixepoch', 'localtime')
 ),
-cost_steps(id, tool, session_id, day, delta) AS (
-    SELECT c.id, c.tool, c.session_id, date(c.occurred_at, 'localtime'),
+cost_steps(id, tool, session_id, at, day, delta) AS (
+    SELECT c.id, c.tool, c.session_id, c.occurred_at, date(c.occurred_at, 'localtime'),
         c.total_cost_usd - CASE
             WHEN lag(c.id) OVER (PARTITION BY c.tool, c.session_id ORDER BY c.id) IS NOT NULL
             THEN lag(c.total_cost_usd) OVER (PARTITION BY c.tool, c.session_id ORDER BY c.id)
@@ -107,8 +108,8 @@ cost_steps(id, tool, session_id, day, delta) AS (
     FROM cost_snapshots c
     WHERE c.id > (SELECT cost_id FROM cutoffs) AND c.occurred_at <= (SELECT now_iso FROM clock)
 ),
-cost_rows(tool, session_id, day, model, project, delta, subscription) AS (
-    SELECT s.tool, s.session_id, s.day,
+cost_rows(tool, session_id, at, day, model, project, delta, subscription) AS (
+    SELECT s.tool, s.session_id, s.at, s.day,
         COALESCE(json_extract(CASE WHEN json_valid(c.raw_json) THEN c.raw_json END,
             '\$.model.id'), '(unknown)'),
         json_extract(CASE WHEN json_valid(c.raw_json) THEN c.raw_json END,
@@ -119,9 +120,9 @@ cost_rows(tool, session_id, day, model, project, delta, subscription) AS (
 ),
 -- The only CTE that reads cost_rows, so raw_json is parsed once however often the CTEs below
 -- reference this. A negative or zero step adds nothing to a column.
-cost_groups(tool, session_id, day, model, project, usd, subscription) AS (
+cost_groups(tool, session_id, day, model, project, usd, subscription, last_at) AS (
     SELECT tool, session_id, day, model, project,
-        sum(CASE WHEN delta > 0 THEN delta ELSE 0 END), max(subscription)
+        sum(CASE WHEN delta > 0 THEN delta ELSE 0 END), max(subscription), max(at)
     FROM cost_rows GROUP BY tool, session_id, day, model, project
 ),
 cost_sessions(tool, session_id, subscription) AS (
@@ -167,28 +168,36 @@ cost_split(subscription_usd, other_usd) AS (
         COALESCE(sum(CASE WHEN p.subscription THEN NULL ELSE g.usd END), 0)
     FROM cost_groups g JOIN cost_sessions p ON p.tool = g.tool AND p.session_id = g.session_id
 ),
-$(project_ctes_sql)
+$(project_ctes_sql),
+$(session_ctes_sql)
 SQL
 }
 
-# Cost per project over the same window. A path under $HOME shows as ~, and a temp-directory
-# path (/tmp, /private/tmp, $TMPDIR) folds into Other with every project past the top
-# REPORT_TOP_PROJECTS.
+# A project path ($1) for display: under $HOME as ~, NULL for a temp-directory path (/tmp,
+# /private/tmp, $TMPDIR). Needs the clock CTE in scope for home and tmpdir.
+project_label_sql() {
+    local path="$1"
+    cat <<SQL
+CASE
+            WHEN $path IS NULL OR $path = '' THEN '(unknown)'
+            WHEN $path IN ('/tmp', '/private/tmp', tmpdir)
+                OR substr($path, 1, 5) = '/tmp/' OR substr($path, 1, 13) = '/private/tmp/'
+                OR (tmpdir != '' AND substr($path, 1, length(tmpdir) + 1) = tmpdir || '/')
+                THEN NULL
+            WHEN home = '' THEN $path
+            WHEN $path = home THEN '~'
+            WHEN substr($path, 1, length(home) + 1) = home || '/'
+                THEN '~' || substr($path, length(home) + 1)
+            ELSE $path END
+SQL
+}
+
+# Cost per project over the same window. Temp-directory paths fold into Other with every
+# project past the top REPORT_TOP_PROJECTS.
 project_ctes_sql() {
     cat <<SQL
 cost_project_rows(tool, session_id, project, usd) AS (
-    SELECT tool, session_id, CASE
-            WHEN project IS NULL OR project = '' THEN '(unknown)'
-            WHEN project IN ('/tmp', '/private/tmp', tmpdir)
-                OR substr(project, 1, 5) = '/tmp/' OR substr(project, 1, 13) = '/private/tmp/'
-                OR (tmpdir != '' AND substr(project, 1, length(tmpdir) + 1) = tmpdir || '/')
-                THEN NULL
-            WHEN home = '' THEN project
-            WHEN project = home THEN '~'
-            WHEN substr(project, 1, length(home) + 1) = home || '/'
-                THEN '~' || substr(project, length(home) + 1)
-            ELSE project END,
-        usd
+    SELECT tool, session_id, $(project_label_sql project), usd
     FROM cost_groups, clock WHERE usd > 0
 ),
 cost_project_rank(project, rank) AS (
@@ -203,6 +212,50 @@ cost_project_slots(slot, project, usd, sessions) AS (
     FROM cost_project_rows p LEFT JOIN cost_project_rank r ON r.project = p.project
     GROUP BY slot
 )
+SQL
+}
+
+# The costliest sessions over the same window, each with the model and project that carried
+# most of its cost there.
+session_ctes_sql() {
+    cat <<SQL
+top_sessions(tool, session_id, usd, last_at) AS (
+    SELECT tool, session_id, sum(usd), max(last_at) FROM cost_groups
+    GROUP BY tool, session_id HAVING sum(usd) > 0
+    ORDER BY sum(usd) DESC, max(last_at) DESC LIMIT $REPORT_TOP_ROWS
+)
+SQL
+}
+
+# The top sessions blob key. A temp-directory project shows as such rather than as Other.
+sessions_json_sql() {
+    cat <<SQL
+json((SELECT json_group_array(json_object('session_id', session_id,
+        'last_active', strftime('%Y-%m-%d %H:%M', last_at, 'localtime'),
+        'model', (SELECT model FROM cost_groups g WHERE g.tool = t.tool
+            AND g.session_id = t.session_id GROUP BY model ORDER BY sum(usd) DESC, model LIMIT 1),
+        'project', (SELECT COALESCE($(project_label_sql project), '(temp directory)')
+            FROM cost_groups g, clock WHERE g.tool = t.tool AND g.session_id = t.session_id
+            GROUP BY project ORDER BY sum(usd) DESC, project LIMIT 1),
+        'total', printf('%.2f', usd)))
+    FROM (SELECT * FROM top_sessions ORDER BY usd DESC, last_at DESC) t))
+SQL
+}
+
+# The costliest subagent launches started in the same window, unpriced ones last. Their
+# estimates are already inside their sessions' cost, so nothing here is summed.
+launches_json_sql() {
+    cat <<SQL
+json((SELECT json_group_array(json_object(
+        'started', strftime('%Y-%m-%d %H:%M', started_at, 'localtime'),
+        'agent_type', COALESCE(agent_type, '(unknown)'), 'name', COALESCE(name, '(no name)'),
+        'model', COALESCE(model, '(unknown)'),
+        'cost', CASE WHEN estimated_cost_usd IS NULL THEN '(unpriced)'
+            ELSE printf('\$%.2f', estimated_cost_usd) END))
+    FROM (SELECT * FROM subagent_tasks, clock
+        WHERE started_at >= cost_from_iso AND started_at <= now_iso
+        ORDER BY estimated_cost_usd IS NULL, estimated_cost_usd DESC, started_at DESC
+        LIMIT $REPORT_TOP_ROWS)))
 SQL
 }
 
@@ -235,7 +288,9 @@ json_object(
     'projects', json((SELECT json_group_array(json_object('project', project,
             'usd', usd, 'total', printf('%.2f', usd),
             'sessions', printf('%d', sessions)))
-        FROM (SELECT * FROM cost_project_slots ORDER BY slot))))
+        FROM (SELECT * FROM cost_project_slots ORDER BY slot))),
+    'top_sessions', $(sessions_json_sql),
+    'launches', $(launches_json_sql))
 SQL
 }
 

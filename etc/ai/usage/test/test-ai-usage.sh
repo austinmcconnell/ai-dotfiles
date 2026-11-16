@@ -178,6 +178,13 @@ cost_row() {
 sqlite3 "$USAGE_DB" "INSERT INTO cost_snapshots (tool, session_id, total_cost_usd, occurred_at,
     raw_json) VALUES $(cost_row hostile 5 "$(jq -nc --arg id "$hostile" '{model: {id: $id}}')"),
     $(cost_row no-model 0.10 '{}'), $(cost_row haiku 0.05 '{"model":{"id":"claude-haiku-5-5"}}');"
+# An unpriced launch inside the window with a hostile name, and a priced one before the window.
+sqlite3 "$USAGE_DB" "INSERT INTO subagent_tasks (tool, parent_session_id, task_id, name,
+        estimated_cost_usd, started_at, updated_at)
+    VALUES ('claude-code', 's1', 't4', $(sql_str "$hostile"), NULL, '2026-01-02T01:00:00Z',
+        '2026-01-02T01:00:00Z'),
+        ('claude-code', 's1', 't5', 'Old review', 50, '2025-11-01T00:00:00Z',
+        '2025-11-01T00:00:00Z');"
 rm -f "$REPORT"
 check "html renders a seeded DB" 0 "$REPORT" -- --html --no-open
 check_page "html escapes a hostile model id" present "&lt;/script&gt;&lt;!--&amp;&quot;"
@@ -193,6 +200,20 @@ check_page "html fills a day with no cost" present \
 check_page "html scales the cost axis to a 1-2-5 step" present ">\$8</text>"
 check_page "html labels API-rate dollars" present "Dollars are at API rates."
 check_page "html never calls cost spend" absent "spend"
+check_page "html lists the costliest session first" present \
+    "Cost at API rates</th></tr></thead><tbody><tr><th scope=\"row\"><code>hostile"
+check_page "html gives a session its costliest model and last activity" present \
+    "<code>s1</code></th><td>2025-12-31 18:00</td><td>claude-opus-5-5</td>"
+check_page "html shows a session's missing project as (unknown)" present \
+    "<td class=\"text\">(unknown)</td><td>\$1.25</td>"
+check_page "html ranks launches by estimate, unpriced last" present \
+    "\$10.00</td></tr><tr><th scope=\"row\">2025-12-31 18:00</th><td>doubt-reviewer</td>"
+check_page "html lists an unpriced launch with its fallbacks" present \
+    "2026-01-01 19:00</th><td>(unknown)</td><td class=\"text\">&lt;/script&gt;"
+check_page "html names an unpriced launch" present "<td>(unpriced)</td>"
+check_page "html leaves out launches outside the window" absent "Old review"
+check_page "html leaves out launches after the clock" absent "(no name)"
+check_page "html marks launches as partial" present "Partial: subagents that finish quickly"
 # The seeded rate-limit row has percentages but no reset times.
 check_page "html shows a 7d figure with an unknown reset" present \
     "7% used</p><p>Reset time unknown."
@@ -394,6 +415,15 @@ check_page "html never lists a temp path" absent "/tmp/x"
 check_page "html folds TMPDIR into Other" absent "/var/tmpx"
 check_page "html lists Other last, scaled to the costliest row" present \
     'width: 100%"></span></td></tr></tbody>'
+check_page "html shows a temp-directory session as such" present \
+    "<code>tmp</code></th><td>2026-01-02 11:00</td><td>claude-opus-5-5</td><td class=\"text\">\
+(temp directory)</td>"
+if [[ "$(grep -o '<th scope="row"><code>' "$REPORT" | wc -l | tr -d ' ')" == 10 ]]; then
+    echo "ok    html lists at most 10 sessions"
+else
+    echo "FAIL  html lists at most 10 sessions"
+    FAILURES=$((FAILURES + 1))
+fi
 
 rm -f "$REPORT"
 USAGE_NOW_EPOCH="$(epoch '2026-07-01 17:00:00')" \
