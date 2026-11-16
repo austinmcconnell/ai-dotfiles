@@ -215,11 +215,14 @@ check_page "html keeps a model id on one line" present \
     "<td class=\"text\">$(nw "claude-opus-5-5")</td>"
 check_page "html shows a session's missing project as (unknown)" present \
     "<td class=\"text\">(unknown)</td><td>$(nw "\$1.25")</td>"
-check_page "html ranks launches by estimate, unpriced last" present \
-    "\$10.00</span></td></tr><tr><th scope=\"row\">$(nw "2025-12-31") $(nw "18:00")</th>"
-check_page "html lists an unpriced launch with its fallbacks" present \
-    "$(nw "19:00")</th><td class=\"text\">$(nw "(unknown)")</td><td class=\"text\">&lt;/script&gt;"
-check_page "html names an unpriced launch" present "<td>$(nw "(unpriced)")</td>"
+# 9.00 and 10.00 sum to 19.00 per type, not as text; the unpriced launch has no agent type.
+check_page "html sums a type's priced launches, costliest first" present \
+    "<tr><th scope=\"row\">$(nw "doubt-reviewer")</th><td>2</td><td>0</td><td>$(nw "\$19.00")</td>\
+<td class=\"bar-cell\" aria-hidden=\"true\"><span class=\"bar\" style=\"width: 100%\">"
+check_page "html lists an unpriced type last, with no bar" present \
+    "<tr><th scope=\"row\">$(nw "(unknown)")</th><td>1</td><td>1</td><td>$(nw "(unpriced)")</td>\
+<td class=\"bar-cell\" aria-hidden=\"true\"></td></tr></tbody>"
+check_page "html never lists launch names" absent "Review ten"
 check_page "html leaves out launches outside the window" absent "Old review"
 check_page "html leaves out launches after the clock" absent "(no name)"
 check_page "html marks launches as partial" present "Partial: subagents that finish quickly"
@@ -418,6 +421,14 @@ sqlite3 "$WORK/four/usage.db" "DELETE FROM cost_snapshots;
         started_at, updated_at)
     VALUES ('claude-code', 'b', 't6', 'Subscription review', 1, '2026-01-02T00:00:00Z',
         '2026-01-02T00:00:00Z');"
+# Eleven more agent types at 1.00 each: the last three past the top 10 share Other.
+type_rows=""
+for n in 01 02 03 04 05 06 07 08 09 10 11; do
+    type_rows+="('claude-code', 'c', 'type$n', 'type$n', 1, '2026-01-02T00:00:00Z',
+        '2026-01-02T00:00:00Z'),"
+done
+sqlite3 "$WORK/four/usage.db" "INSERT INTO subagent_tasks (tool, parent_session_id, task_id,
+    agent_type, estimated_cost_usd, started_at, updated_at) VALUES ${type_rows%,};"
 rm -f "$REPORT"
 USAGE_DB_DIR="$WORK/four" check "html renders four models" 0 "$REPORT" -- --html --no-open
 check_page "html shortens a session id, keeping the full id as its title" present \
@@ -426,6 +437,8 @@ check_page "html names at most three models" present \
     "<span class=\"swatch s3\"></span>claude-fable: \$2.00"
 check_page "html folds a lone fourth model into Other" present \
     "<span class=\"swatch s4\"></span>Other (claude-haiku): \$1.00"
+check_page "html folds agent types past the top 10 into Other" present \
+    "<tr><th scope=\"row\">$(nw "Other")</th><td>3</td><td>0</td><td>$(nw "\$3.00")</td>"
 check_page "html heads mixed dollars plainly" present "<th scope=\"col\">Cost</th>"
 check_page "html notes mixed launch estimates" present \
     "Estimates from subscription sessions are API-equivalent, not money spent"

@@ -249,38 +249,44 @@ json((SELECT json_group_array(json_object('session_id', session_id,
 SQL
 }
 
-# The costliest subagent launches started in the same window, unpriced ones last.
-top_launches_sql() {
+# Subagent launches started in the same window.
+window_launches_sql() {
     cat <<SQL
-SELECT * FROM subagent_tasks, clock
+SELECT subagent_tasks.* FROM subagent_tasks, clock
     WHERE started_at >= cost_from_iso AND started_at <= now_iso
-    ORDER BY estimated_cost_usd IS NULL, estimated_cost_usd DESC, started_at DESC
-    LIMIT $REPORT_TOP_ROWS
 SQL
 }
 
-# The listed launches. Their estimates are already inside their sessions' cost, so nothing
-# here is summed.
-launches_json_sql() {
+# Launch estimates per agent type, the costliest REPORT_TOP_ROWS types first and the rest as
+# Other. A type sums its own priced launches; estimates are already inside their sessions'
+# cost, so nothing here is summed across types.
+agent_types_json_sql() {
     cat <<SQL
-json((SELECT json_group_array(json_object(
-        'started', strftime('%Y-%m-%d %H:%M', started_at, 'localtime'),
-        'agent_type', COALESCE(agent_type, '(unknown)'), 'name', COALESCE(name, '(no name)'),
-        'model', COALESCE(model, '(unknown)'),
-        'cost', CASE WHEN estimated_cost_usd IS NULL THEN '(unpriced)'
-            ELSE printf('\$%.2f', estimated_cost_usd) END))
-    FROM ($(top_launches_sql))))
+json((SELECT json_group_array(json_object('agent_type', label, 'launches', launches,
+        'unpriced', unpriced, 'usd', usd,
+        'estimate', CASE WHEN usd IS NULL THEN '(unpriced)' ELSE printf('\$%.2f', usd) END))
+    FROM (SELECT CASE WHEN rank <= $REPORT_TOP_ROWS THEN agent_type ELSE 'Other' END AS label,
+            CAST(sum(launches) AS TEXT) AS launches, CAST(sum(unpriced) AS TEXT) AS unpriced,
+            sum(usd) AS usd, min(rank) AS first_rank
+        FROM (SELECT agent_type, launches, unpriced, usd,
+                row_number() OVER (ORDER BY usd IS NULL, usd DESC, agent_type) AS rank
+            FROM (SELECT COALESCE(agent_type, '(unknown)') AS agent_type, COUNT(*) AS launches,
+                    COUNT(*) - COUNT(estimated_cost_usd) AS unpriced,
+                    sum(estimated_cost_usd) AS usd
+                FROM ($(window_launches_sql)) GROUP BY 1))
+        GROUP BY label ORDER BY first_rank)))
 SQL
 }
 
-# Whether the listed priced launches came from subscription sessions, by their parent session.
-# A parent with no cost in the window counts as not a subscription. NULL when none is priced.
+# Whether the window's priced launches came from subscription sessions, by their parent
+# session. A parent with no cost in the window counts as not a subscription. NULL when none is
+# priced.
 launch_kind_sql() {
     cat <<SQL
 (SELECT CASE WHEN COUNT(*) = 0 THEN NULL
         WHEN sum(COALESCE(p.subscription, 0)) = COUNT(*) THEN 'subscription'
         WHEN sum(COALESCE(p.subscription, 0)) = 0 THEN 'api' ELSE 'mixed' END
-    FROM ($(top_launches_sql)) l LEFT JOIN cost_sessions p
+    FROM ($(window_launches_sql)) l LEFT JOIN cost_sessions p
         ON p.tool = l.tool AND p.session_id = l.parent_session_id
     WHERE l.estimated_cost_usd IS NOT NULL)
 SQL
@@ -317,7 +323,7 @@ json_object(
             'sessions', printf('%d', sessions)))
         FROM (SELECT * FROM cost_project_slots ORDER BY slot))),
     'top_sessions', $(sessions_json_sql),
-    'launches', $(launches_json_sql),
+    'agent_types', $(agent_types_json_sql),
     'launch_kind', $(launch_kind_sql))
 SQL
 }

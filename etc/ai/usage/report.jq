@@ -260,7 +260,7 @@ def projects:
       | "<p class=\"meta\">The same 30 days, by the project directory each snapshot reported."
       + " Paths under <code>/tmp</code>, <code>/private/tmp</code>, and <code>$TMPDIR</code>"
       + " count as Other. \($c | dollar_note)</p>"
-      + "<table class=\"projects\"><thead><tr><th scope=\"col\" class=\"text\">Project</th>"
+      + "<table class=\"bars\"><thead><tr><th scope=\"col\" class=\"text\">Project</th>"
       + "<th scope=\"col\">Sessions</th><th scope=\"col\">\($c | dollar_header("cost"))</th>"
       + "<td aria-hidden=\"true\"></td></tr></thead><tbody>"
       + ($c.projects | map(
@@ -294,27 +294,31 @@ def top_sessions:
     end)
   + "</section>";
 
-def launches:
+# Bars are widths relative to the costliest type; an unpriced type gets none.
+def agent_types:
   .cost as $c
-  | $c.launches as $l
-  | "<section><h2>Which subagent launches cost the most?</h2>"
-  + "<p class=\"meta\">Partial: subagents that finish quickly can be missed. Each estimate is"
-  + " already inside its session's cost, so these figures are never added to a total."
-  + ($c | launch_note) + "</p>"
-  + (if ($l | length) == 0 then
+  | $c.agent_types as $t
+  | "<section><h2>Which subagent types cost the most?</h2>"
+  + "<p class=\"meta\">Partial: subagents that finish quickly can be missed. Each type's estimate"
+  + " sums its priced launches in the same 30 days. Every estimate is already inside its"
+  + " session's cost, so these figures are never added to a total." + ($c | launch_note) + "</p>"
+  + (if ($t | length) == 0 then
       "<p>No subagent launch is recorded for the last 30 days.</p>"
     else
-      "<table><thead><tr><th scope=\"col\">Started</th>"
-      + "<th scope=\"col\" class=\"text\">Agent type</th>"
-      + "<th scope=\"col\" class=\"text\">Name</th><th scope=\"col\" class=\"text\">Model</th>"
+      ([$t[] | .usd // 0] | max) as $max
+      | "<table class=\"bars\"><thead><tr><th scope=\"col\" class=\"text\">Agent type</th>"
+      + "<th scope=\"col\">Launches</th><th scope=\"col\">Unpriced</th>"
       + "<th scope=\"col\">\({kind: $c.launch_kind} | dollar_header("estimate"))</th>"
-      + "</tr></thead><tbody>"
-      + ($l | map(
-          "<tr><th scope=\"row\">\(.started | stamp)</th>"
-          + "<td class=\"text\">\(.agent_type | nowrap)</td>"
-          + "<td class=\"text\">\(.name | esc)</td><td class=\"text\">\(.model | nowrap)</td>"
-          + "<td>\(.cost | nowrap)</td></tr>")
-        | join(""))
+      + "<td aria-hidden=\"true\"></td></tr></thead><tbody>"
+      + ($t | map(
+          "<tr><th scope=\"row\">\(.agent_type | nowrap)</th><td>\(.launches | esc)</td>"
+          + "<td>\(.unpriced | esc)</td><td>\(.estimate | nowrap)</td>"
+          + "<td class=\"bar-cell\" aria-hidden=\"true\">"
+          + (if .usd == null or $max == 0 then ""
+            else "<span class=\"bar\" style=\"width: \((.usd / $max * 1000 | round) / 10)%\">"
+              + "</span>"
+            end)
+          + "</td></tr>") | join(""))
       + "</tbody></table>"
     end)
   + "</section>";
@@ -328,7 +332,7 @@ def footer:
   + (caveats | map("<li>" + . + "</li>") | join(""))
   + "</ul></footer>";
 
-(header + "<main>" + quota + burnup + cost + projects + top_sessions + launches + "</main>"
+(header + "<main>" + quota + burnup + cost + projects + top_sessions + agent_types + "</main>"
   + footer) as $body
 | ($tmpl | split("@@BODY@@")) as $parts
 | if ($parts | length) != 2 then error("report.html.tmpl needs exactly one @@BODY@@")
