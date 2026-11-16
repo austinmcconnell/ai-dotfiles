@@ -40,6 +40,25 @@ check() {
     fi
 }
 
+# Epochs come from sqlite, since BSD and GNU date disagree on parsing flags.
+epoch() {
+    sqlite3 :memory: "SELECT CAST(strftime('%s', '$1') AS INTEGER);"
+}
+export USAGE_NOW_EPOCH
+USAGE_NOW_EPOCH="$(epoch '2026-01-02 18:00:00')"
+
+# Usage: check_page <name> present|absent <substring>, against the last rendered report.
+check_page() {
+    local name="$1" want="$2" text="$3" found=absent
+    [[ "$(cat "$REPORT")" == *"$text"* ]] && found=present
+    if [[ "$found" == "$want" ]]; then
+        echo "ok    $name"
+    else
+        printf 'FAIL  %s: expected [%s] %s in %s\n' "$name" "$text" "$want" "$REPORT"
+        FAILURES=$((FAILURES + 1))
+    fi
+}
+
 check "missing DB exits 0" 0 "No usage data yet" -- --summary
 check "html with a missing DB exits 0" 0 "No usage data yet" -- --html --no-open
 check "unknown flag exits 1" 1 "Usage:" -- --bogus
@@ -50,6 +69,9 @@ check "empty by-model" 0 "No cost snapshots recorded yet." -- --by-model
 check "empty by-effort" 0 "No cost snapshots recorded yet." -- --by-effort
 check "empty rate-limits" 0 "No rate-limit data recorded yet" -- --rate-limits
 check "empty subagents" 0 "No subagent tasks recorded yet" -- --subagents
+rm -f "$REPORT"
+check "empty html" 0 "$REPORT" -- --html --no-open
+check_page "html names a machine with no quota data" present "No quota data on this machine"
 
 # shellcheck disable=SC2153 # USAGE_DB is set by lib.sh
 sqlite3 "$USAGE_DB" "
@@ -134,25 +156,6 @@ else
     FAILURES=$((FAILURES + 1))
 fi
 
-# Epochs come from sqlite, since BSD and GNU date disagree on parsing flags.
-epoch() {
-    sqlite3 :memory: "SELECT CAST(strftime('%s', '$1') AS INTEGER);"
-}
-export USAGE_NOW_EPOCH
-USAGE_NOW_EPOCH="$(epoch '2026-01-02 18:00:00')"
-
-# Usage: check_page <name> present|absent <substring>, against the last rendered report.
-check_page() {
-    local name="$1" want="$2" text="$3" found=absent
-    [[ "$(cat "$REPORT")" == *"$text"* ]] && found=present
-    if [[ "$found" == "$want" ]]; then
-        echo "ok    $name"
-    else
-        printf 'FAIL  %s: expected [%s] %s in %s\n' "$name" "$text" "$want" "$REPORT"
-        FAILURES=$((FAILURES + 1))
-    fi
-}
-
 check "html rejects an unknown option" 1 "unknown option --bogus" -- --html --no-open --bogus
 # Each render first removes the last page, so check_page never reads a stale one.
 rm -f "$REPORT"
@@ -179,6 +182,101 @@ check_page "html never emits a hostile model id raw" absent "$hostile"
 check_page "html shows a NULL model as (unknown)" present "(unknown)"
 check_page "html never renders null" absent "null"
 check_page "html counts sessions" present "3 sessions."
+# The seeded rate-limit row has percentages but no reset times.
+check_page "html shows a 7d figure with an unknown reset" present \
+    "7% used</p><p>Reset time unknown."
+check_page "html shows a 5h figure with an unknown reset" present \
+    "42% used</p><p>Reset time unknown."
+
+# Usage: rate_row <5h pct> <7d pct> <5h resets_at> <7d resets_at> [<seconds before now>];
+# NULL for a missing value. A row is observed at the clock unless an age is given.
+rate_row() {
+    sqlite3 "$USAGE_DB" "INSERT INTO rate_limit_snapshots (tool, five_hour_used_percentage,
+        seven_day_used_percentage, five_hour_resets_at, seven_day_resets_at, occurred_at)
+        VALUES ('claude-code', $1, $2, $3, $4,
+        strftime('%Y-%m-%dT%H:%M:%SZ', $((USAGE_NOW_EPOCH - ${5:-0})), 'unixepoch'));"
+}
+
+# Observed a day ago at 2.5 days in: an even pace was 36%, so 50% then was +14. Pacing that
+# figure against the clock instead would read 0, on pace, from data a day old.
+rate_row 32 50 $((USAGE_NOW_EPOCH + 4500)) $((USAGE_NOW_EPOCH + 302400)) 86400
+rm -f "$REPORT"
+check "html renders a day-old figure" 0 "$REPORT" -- --html --no-open
+check_page "html paces a figure when it was observed" present "+14 points against an even pace"
+check_page "html names the yellow level in text" present "level-yellow\">+14"
+check_page "html dates a day-old observation" present "most recently 2026-01-01 12:00."
+
+# A later cost snapshot that carried rate_limits shows the figure still held at the clock.
+sqlite3 "$USAGE_DB" "INSERT INTO cost_snapshots (tool, session_id, total_cost_usd, occurred_at,
+    raw_json) VALUES ('claude-code', 's1', 1.25,
+    strftime('%Y-%m-%dT%H:%M:%SZ', $USAGE_NOW_EPOCH, 'unixepoch'), '{\"rate_limits\":{}}');"
+rm -f "$REPORT"
+check "html renders a figure held until the clock" 0 "$REPORT" -- --html --no-open
+check_page "html takes the last observation from cost snapshots" present \
+    "most recently 2026-01-02 12:00."
+check_page "html shows on pace in text" present "level-on\">+0 points against an even pace"
+
+# 3.5 days into the 7d window, so an even pace is 50%. 12.5 rounds to 12 as in the statusline,
+# including under a decimal-comma locale.
+rate_row 30 12.5 $((USAGE_NOW_EPOCH + 4500)) $((USAGE_NOW_EPOCH + 302400))
+rm -f "$REPORT"
+LC_ALL=de_DE.UTF-8 check "html renders open windows" 0 "$REPORT" -- --html --no-open
+check_page "html rounds a 7d half like the statusline" present "12% used"
+check_page "html shows the 7d reset in local time" present "Resets 2026-01-06 00:00, 3d 12h left"
+check_page "html dates relative figures" present "left as of 2026-01-02 12:00:00."
+check_page "html shows 7d pace with room" present "−38 points against an even pace"
+check_page "html names the room-to-ramp level" present "level-green"
+check_page "html shows the 5h reset" present "Resets 2026-01-02 13:15, 1h 15m left"
+check_page "html dates the last observation" present "most recently 2026-01-02 12:00."
+if [[ "$(grep -o 'points against' "$REPORT" | wc -l | tr -d ' ')" == 1 ]]; then
+    echo "ok    html gives the 5h window no pace"
+else
+    echo "FAIL  html gives the 5h window no pace"
+    FAILURES=$((FAILURES + 1))
+fi
+
+rate_row 31 80 $((USAGE_NOW_EPOCH + 4500)) $((USAGE_NOW_EPOCH + 302400))
+rm -f "$REPORT"
+check "html renders a tight 7d window" 0 "$REPORT" -- --html --no-open
+check_page "html shows 7d pace over" present "+30 points against an even pace"
+check_page "html names the red level in text" present "well over pace"
+
+# The 5h window resets exactly at the clock, which counts as closed.
+rate_row 34 60 "$USAGE_NOW_EPOCH" $((USAGE_NOW_EPOCH - 3600))
+rm -f "$REPORT"
+check "html renders closed windows" 0 "$REPORT" -- --html --no-open
+check_page "html shows a closed 7d window" present \
+    "Reset at 2026-01-02 11:00. No figure for the new window is recorded here."
+check_page "html keeps the last 7d figure as secondary" present \
+    "last recorded figure before the reset was 60%."
+check_page "html closes a window that resets at the clock" present "Reset at 2026-01-02 12:00."
+check_page "html gives a closed window no pace" absent "points against"
+
+# A newer payload without the 7d window doesn't hide the older 7d row.
+rate_row 20 NULL $((USAGE_NOW_EPOCH + 1800)) NULL
+rm -f "$REPORT"
+check "html renders a 5h-only row" 0 "$REPORT" -- --html --no-open
+check_page "html keeps the 7d tile from the last 7d row" present "before the reset was 60%."
+check_page "html reads the 5h tile from the 5h-only row" present "20% used"
+
+# The newest row wins even without a reset time.
+rate_row 21 70 NULL NULL
+rm -f "$REPORT"
+check "html renders a row with no reset times" 0 "$REPORT" -- --html --no-open
+check_page "html reads an unknown reset from the newest row" present \
+    "70% used</p><p>Reset time unknown."
+
+# A machine whose payloads never carried the 5h window.
+mkdir -p "$WORK/seven-only"
+cp "$USAGE_DB" "$WORK/seven-only/usage.db"
+sqlite3 "$WORK/seven-only/usage.db" "DELETE FROM rate_limit_snapshots;
+    INSERT INTO rate_limit_snapshots (tool, seven_day_used_percentage, seven_day_resets_at,
+    occurred_at) VALUES ('claude-code', 5, $((USAGE_NOW_EPOCH + 3600)), '2026-01-02T18:00:00Z');"
+rm -f "$REPORT"
+USAGE_DB_DIR="$WORK/seven-only" check "html renders 7d data alone" 0 "$REPORT" \
+    -- --html --no-open
+check_page "html shows a window with no data" present \
+    "<p class=\"figure\">No data</p>"
 
 rm -f "$REPORT"
 USAGE_NOW_EPOCH="$(epoch '2026-07-01 17:00:00')" \
@@ -187,9 +285,17 @@ check_page "html labels the daylight offset" present "Generated 2026-07-01 12:00
 USAGE_NOW_EPOCH=soon check "html rejects a non-numeric clock" 1 "USAGE_NOW_EPOCH" \
     -- --html --no-open
 
-# A render that fails after the temp file exists must exit 1 and remove it.
+# A render that fails after the temp file exists must exit 1 and remove it. Only the final
+# render passes --rawfile, so the fake jq fails there and defers to the real one elsewhere.
 mkdir -p "$WORK/failing-jq"
-printf '#!/bin/bash\necho partial\nexit 5\n' >"$WORK/failing-jq/jq"
+cat >"$WORK/failing-jq/jq" <<EOF
+#!/bin/bash
+if [[ " \$* " == *" --rawfile "* ]]; then
+    echo partial
+    exit 5
+fi
+exec "$(command -v jq)" "\$@"
+EOF
 chmod +x "$WORK/failing-jq/jq"
 PATH="$WORK/failing-jq:$PATH" check "html names a failed render" 1 "could not render" \
     -- --html --no-open

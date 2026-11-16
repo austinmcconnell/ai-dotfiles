@@ -361,6 +361,21 @@ and its Content-Security-Policy blocks every fetch, so it works offline and load
    through `@html`, and jq does no date handling: local-time formatting happens in SQL.
 1. The page goes to a temp file in the same directory and is moved into place.
 
+The quota section appears when any `rate_limit_snapshots` row carries a 7-day percentage, and
+otherwise says the machine has no quota data. Each window's tile reads the newest row with that
+window's percentage. A payload either carries a window's percentage and reset time together or omits
+the window, so a row without that window's percentage is skipped. SQL sets the tile's state: open
+while the reset time is ahead of the clock, reset once it has passed, or unknown when the row has no
+reset time. A window with no row shows no data.
+
+Rate-limit rows are written only when a percentage changes, so the last time this machine saw quota
+is the later of the newest row and the newest `cost_snapshots` row whose payload carried
+`rate_limits` (scanned over the last 8 days). The section shows that time. The 7-day pace is taken
+at that moment, not at the clock: a figure held since then says nothing about usage after it.
+`report.sh` formats the used % and the pace with `pace_delta` and `pace_level` from `lib.sh`, so
+they match the statusline. Bash rounds 12.5 to 12, where SQLite and jq would show 13. The 5-hour
+window gets no pace.
+
 The report never creates or migrates the DB. A missing DB prints the same message as the other
 reports. A DB older than schema version 3 (`v_cost_deltas`) gets a message saying the next
 statusline render upgrades it. `USAGE_NOW_EPOCH` overrides the clock, which the tests use with a
