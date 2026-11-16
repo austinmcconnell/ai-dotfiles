@@ -378,12 +378,15 @@ def cost:
 # Bars are widths relative to the costliest row, set inline: the CSP allows inline styles.
 def projects:
   .cost as $c
+  | (.quota_observed != 1) as $month
   | "<section><h2>Which projects is the cost going to?</h2>"
   + (if ($c.projects | length) == 0 then
-      "<p>No cost is recorded for the last 31 days.</p>"
+      "<p>No cost is recorded \(if $month then "yet this month" else "for the last 31 days" end)."
+      + "</p>"
     else
       ($c.projects | map(.usd) | max) as $max
-      | "<p class=\"meta\">The same 31 days, by the project directory each snapshot reported."
+      | "<p class=\"meta\">\(if $month then "This month" else "The same 31 days" end),"
+      + " by the project directory each snapshot reported."
       + " Paths under <code>/tmp</code>, <code>/private/tmp</code>, and <code>$TMPDIR</code>"
       + " count as Other. \($c | dollar_note)</p>"
       + "<table class=\"bars\"><thead><tr><th scope=\"col\" class=\"text\">Project</th>"
@@ -400,12 +403,16 @@ def projects:
 
 def top_sessions:
   .cost as $c
+  | (.quota_observed != 1) as $month
   | "<section><h2>Which sessions cost the most?</h2>"
   + (if ($c.top_sessions | length) == 0 then
-      "<p>No cost is recorded for the last 31 days.</p>"
+      "<p>No cost is recorded \(if $month then "yet this month" else "for the last 31 days" end)."
+      + "</p>"
     else
-      "<p class=\"meta\">The costliest sessions in the same 31 days, counting only their cost"
-      + " in those days. Model and project are where most of it went. \($c | dollar_note)</p>"
+      "<p class=\"meta\">The costliest sessions "
+      + (if $month then "this month, counting only their cost this month."
+        else "in the same 31 days, counting only their cost in those days." end)
+      + " Model and project are where most of it went. \($c | dollar_note)</p>"
       + "<table><thead><tr><th scope=\"col\">Session</th><th scope=\"col\">Last active</th>"
       + "<th scope=\"col\" class=\"text\">Model</th><th scope=\"col\" class=\"text\">Project</th>"
       + "<th scope=\"col\">\($c | dollar_header("cost"))</th></tr></thead><tbody>"
@@ -424,12 +431,15 @@ def top_sessions:
 def agent_types:
   .cost as $c
   | $c.agent_types as $t
+  | (.quota_observed != 1) as $month
   | "<section><h2>Which subagent types cost the most?</h2>"
   + "<p class=\"meta\">Partial: subagents that finish quickly can be missed. Each type's estimate"
-  + " sums its priced launches in the same 31 days. Every estimate is already inside its"
-  + " session's cost, so these figures are never added to a total." + ($c | launch_note) + "</p>"
+  + " sums its priced launches \(if $month then "this month" else "in the same 31 days" end)."
+  + " Every estimate is already inside its session's cost, so these figures are never added to"
+  + " a total." + ($c | launch_note) + "</p>"
   + (if ($t | length) == 0 then
-      "<p>No subagent launch is recorded for the last 31 days.</p>"
+      "<p>No subagent launch is recorded \(if $month then "yet this month"
+        else "for the last 31 days" end).</p>"
     else
       ([$t[] | .usd // 0] | max) as $max
       | "<table class=\"bars\"><thead><tr><th scope=\"col\" class=\"text\">Agent type</th>"

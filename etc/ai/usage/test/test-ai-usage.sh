@@ -73,7 +73,10 @@ rm -f "$REPORT"
 check "empty html" 0 "$REPORT" -- --html --no-open
 check_page "html names a machine with no quota data" present "No quota data on this machine"
 check_page "html charts nothing without quota data" absent "How has 7-day usage"
-check_page "html names an empty cost chart" present "No cost is recorded for the last 31 days."
+check_page "html names an empty cost chart" present "No cost is recorded yet this month."
+check_page "html names an empty subagent table" present \
+    "No subagent launch is recorded yet this month."
+check_page "html does not name a 31-day window without cost" absent "last 31 days"
 
 # shellcheck disable=SC2153 # USAGE_DB is set by lib.sh
 sqlite3 "$USAGE_DB" "
@@ -493,6 +496,7 @@ burn_page() {
     sqlite3 "$dir/usage.db" "DELETE FROM cost_snapshots; DELETE FROM rate_limit_snapshots;
         INSERT INTO cost_snapshots (tool, session_id, total_cost_usd, occurred_at, raw_json)
         VALUES ${rows%,};"
+    [[ -z "${BURN_EXTRA_SQL:-}" ]] || sqlite3 "$dir/usage.db" "$BURN_EXTRA_SQL"
     rm -f "$REPORT"
     USAGE_NOW_EPOCH="$(local_epoch "$now")" USAGE_DB_DIR="$dir" check "$name" 0 "$REPORT" \
         -- --html --no-open
@@ -558,7 +562,15 @@ check_page "html describes the projection in the chart" present \
 # The daily chart and table show the month, but the rate keeps the whole window's history: on
 # 2026-03-02 the seven complete days run back into February, so the rate is still 14.00 a day.
 # The month to date is 14 + 2, and 29 days follow: 14 + 14 + 14 * 29.
-burn_page "html keeps the rate's history across the month boundary" "2026-03-02 15:00:00" <<EOF
+# Launches start well inside each month so the local boundary cannot move them: one in February,
+# one in March.
+BURN_EXTRA_SQL="INSERT INTO subagent_tasks (tool, parent_session_id, task_id, name, agent_type,
+        estimated_cost_usd, started_at, updated_at)
+    VALUES ('claude-code', 'day-2026-02-23', 'feb', 'Feb launch', 'feb-agent', 5,
+        '2026-02-26T12:00:00Z', '2026-02-26T12:00:00Z'),
+        ('claude-code', 'day-2026-03-01', 'mar', 'Mar launch', 'mar-agent', 7,
+        '2026-03-01T18:00:00Z', '2026-03-01T18:00:00Z');" \
+    burn_page "html keeps the rate's history across the month boundary" "2026-03-02 15:00:00" <<EOF
 2026-02-23 14
 2026-02-24 14
 2026-02-25 14
@@ -577,6 +589,17 @@ check_page "html leaves last month out of the daily table" absent \
 check_page "html words the daily chart for the month" present \
     "from the first day with cost this month."
 check_page "html does not call the month 31 days" absent "for up to 31 days."
+check_page "html totals the projects for the month only" absent "\$100.00"
+check_page "html leaves last month's sessions out of the top sessions" absent \
+    "title=\"day-2026-02-28\""
+check_page "html keeps this month's sessions in the top sessions" present \
+    "title=\"day-2026-03-01\""
+check_page "html leaves last month's launches out of the agent types" absent \
+    "<th scope=\"row\">$(nw "feb-agent")</th>"
+check_page "html keeps this month's launches in the agent types" present \
+    "<th scope=\"row\">$(nw "mar-agent")</th>"
+check_page "html words the lower sections for the month" present \
+    "The costliest sessions this month, counting only their cost this month."
 
 # The 1st before any cost: the chart has nothing to show, and the rate still has its history. The
 # nine complete days from 02-20 give a 3.00 rate: 0 + 3 + 3 * 30.

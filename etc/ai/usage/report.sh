@@ -320,7 +320,7 @@ project_ctes_sql() {
     cat <<SQL
 cost_project_rows(tool, session_id, project, usd) AS (
     SELECT tool, session_id, $(project_label_sql project), usd
-    FROM cost_groups, clock WHERE usd > 0
+    FROM cost_shown, clock WHERE usd > 0
 ),
 cost_project_rank(project, rank) AS (
     SELECT project, row_number() OVER (ORDER BY sum(usd) DESC, project)
@@ -342,7 +342,7 @@ SQL
 session_ctes_sql() {
     cat <<SQL
 top_sessions(tool, session_id, usd, last_at) AS (
-    SELECT tool, session_id, sum(usd), max(last_at) FROM cost_groups
+    SELECT tool, session_id, sum(usd), max(last_at) FROM cost_shown
     GROUP BY tool, session_id HAVING sum(usd) > 0
     ORDER BY sum(usd) DESC, max(last_at) DESC LIMIT $REPORT_TOP_ROWS
 )
@@ -354,21 +354,23 @@ sessions_json_sql() {
     cat <<SQL
 json((SELECT json_group_array(json_object('session_id', session_id,
         'last_active', strftime('%Y-%m-%d %H:%M', last_at, 'localtime'),
-        'model', (SELECT model FROM cost_groups g WHERE g.tool = t.tool
+        'model', (SELECT model FROM cost_shown g WHERE g.tool = t.tool
             AND g.session_id = t.session_id GROUP BY model ORDER BY sum(usd) DESC, model LIMIT 1),
         'project', (SELECT COALESCE($(project_label_sql project), '(temp directory)')
-            FROM cost_groups g, clock WHERE g.tool = t.tool AND g.session_id = t.session_id
+            FROM cost_shown g, clock WHERE g.tool = t.tool AND g.session_id = t.session_id
             GROUP BY project ORDER BY sum(usd) DESC, project LIMIT 1),
         'total', printf('%.2f', usd)))
     FROM (SELECT * FROM top_sessions ORDER BY usd DESC, last_at DESC) t))
 SQL
 }
 
-# Subagent launches started in the same window.
+# Subagent launches started in the displayed window, which is the same local days the cost
+# sections show.
 window_launches_sql() {
     cat <<SQL
-SELECT subagent_tasks.* FROM subagent_tasks, clock
-    WHERE started_at >= cost_from_iso AND started_at <= now_iso
+SELECT subagent_tasks.* FROM subagent_tasks, clock, cost_clock
+    WHERE started_at >= strftime('%Y-%m-%dT%H:%M:%SZ', shown_from, 'utc')
+        AND started_at <= now_iso
 SQL
 }
 
