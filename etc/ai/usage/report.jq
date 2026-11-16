@@ -349,14 +349,19 @@ def cost_table($c):
       + "<td>$\($day.total | esc)</td></tr>") | join(""))
   + "</tbody></table></details>";
 
+# Machines with no quota rows show the local calendar month; the others show the whole window.
 def cost:
   .cost as $c
+  | (.quota_observed != 1) as $month
   | "<section><h2>What did each day cost, by main-session model?</h2>"
   + (if ($c.days | length) == 0 then
-      "<p>No cost is recorded for the last 31 days.</p>"
+      "<p>No cost is recorded \(if $month then "yet this month" else "for the last 31 days" end)."
+      + "</p>"
     else
-      "<p class=\"meta\">One column per local day, for up to 31 days. Cost is booked to the"
-      + " main-session model, including its subagents. \($c | dollar_note)</p>"
+      "<p class=\"meta\">One column per local day, "
+      + (if $month then "from the first day with cost this month." else "for up to 31 days." end)
+      + " Cost is booked to the main-session model, including its subagents."
+      + " \($c | dollar_note)</p>"
       + "<svg class=\"chart\" viewBox=\"0 0 640 260\" role=\"img\""
       + " aria-labelledby=\"cost-title cost-desc\">"
       + "<title id=\"cost-title\">Daily cost by model</title>"

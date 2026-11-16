@@ -211,6 +211,9 @@ check_page "html never calls cost spend" absent "spend"
 check_page "html keeps the quota heading when quota rows exist" present \
     "Am I on pace to run out of quota?"
 check_page "html shows no cost pace beside quota tiles" absent "How fast is cost building up?"
+check_page "html keeps the 31-day wording beside quota tiles" present "for up to 31 days."
+check_page "html does not word the daily chart for the month beside quota tiles" absent \
+    "yet this month"
 check_page "html shows no month cost chart beside the quota burn-up" absent \
     "How has cost built up this month?"
 check_page "html lists the costliest session first" present \
@@ -552,6 +555,37 @@ check_page "html figures the month day by day" present "<td>\$4.00</td><td>\$146
 check_page "html describes the projection in the chart" present \
     "continues from there to a projected \$226.00 on 2026-03-31"
 
+# The daily chart and table show the month, but the rate keeps the whole window's history: on
+# 2026-03-02 the seven complete days run back into February, so the rate is still 14.00 a day.
+# The month to date is 14 + 2, and 29 days follow: 14 + 14 + 14 * 29.
+burn_page "html keeps the rate's history across the month boundary" "2026-03-02 15:00:00" <<EOF
+2026-02-23 14
+2026-02-24 14
+2026-02-25 14
+2026-02-26 14
+2026-02-27 14
+2026-02-28 14
+2026-03-01 14
+2026-03-02 2
+EOF
+check_page "html still rates the days before the 1st" present \
+    "$(burn_tile_html 'Daily rate' "\$14.00 a day" "$(rate_detail 7)")"
+check_page "html still projects from the days before the 1st" present \
+    "$(burn_tile_html 'Projected month end' "\$434.00" "$(projection_detail 2026-03-31)")"
+check_page "html leaves last month out of the daily table" absent \
+    "<th scope=\"row\">$(nw "2026-02-28")</th>"
+check_page "html words the daily chart for the month" present \
+    "from the first day with cost this month."
+check_page "html does not call the month 31 days" absent "for up to 31 days."
+
+# The 1st before any cost: the chart has nothing to show, and the rate still has its history. The
+# nine complete days from 02-20 give a 3.00 rate: 0 + 3 + 3 * 30.
+burn_page "html renders the 1st before any cost" "2026-03-01 09:00:00" < <(same_cost_days 2026-02 20 28 3)
+check_page "html says no cost is recorded yet this month" present \
+    "No cost is recorded yet this month."
+check_page "html still projects on the 1st from last month's rate" present \
+    "$(burn_tile_html 'Projected month end' "\$93.00" "$(projection_detail 2026-03-31)")"
+
 # 2026-12-31: the 31-day window reaches the 1st, so its 99.00 counts and the month is whole. No
 # day follows today, so the projection is 140 + the larger of today's 2.00 and the 3.00 rate.
 burn_page "html renders the last day of a 31-day month" "2026-12-31 15:00:00" <<EOF
@@ -610,6 +644,8 @@ burn_page "html renders across fall-back" "2026-11-04 15:00:00" <<EOF
 EOF
 check_page "html counts a 25-hour day as one day" present \
     "$(burn_tile_html 'Daily rate' "\$4.00 a day" "$(rate_detail 5)")"
+check_page "html leaves the day before the 1st out of the daily table" absent \
+    "<th scope=\"row\">$(nw "2026-10-31")</th>"
 check_page "html books only this month to the month to date" present \
     "$(burn_tile_html 'Month to date' "\$12.00" "$(month_detail 2026-11)")"
 check_page "html projects across fall-back" present \

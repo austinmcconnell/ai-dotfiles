@@ -126,9 +126,12 @@ SQL
 # in the window carries rate_limits (a session's first snapshot never does).
 cost_ctes_sql() {
     cat <<SQL
-cost_clock(from_day, to_day) AS (
+cost_clock(from_day, to_day, shown_from) AS (
     SELECT date($now, 'unixepoch', 'localtime', '-30 days'),
-        date($now, 'unixepoch', 'localtime')
+        date($now, 'unixepoch', 'localtime'),
+        CASE WHEN (SELECT seen FROM quota_seen)
+            THEN date($now, 'unixepoch', 'localtime', '-30 days')
+            ELSE date($now, 'unixepoch', 'localtime', 'start of month') END
 ),
 cost_steps(id, tool, session_id, at, day, delta) AS (
     SELECT c.id, c.tool, c.session_id, c.occurred_at, date(c.occurred_at, 'localtime'),
@@ -162,6 +165,14 @@ cost_groups(tool, session_id, day, model, project, usd, subscription, last_at) A
         sum(CASE WHEN delta > 0 THEN delta ELSE 0 END), max(subscription), max(at)
     FROM cost_rows GROUP BY tool, session_id, day, model, project
 ),
+-- What the sections display: the local calendar month on a machine with no quota rows, else the
+-- whole window. The daily rate reads cost_daily instead, so it keeps the whole window's history.
+cost_shown(tool, session_id, day, model, project, usd, subscription, last_at) AS (
+    SELECT g.* FROM cost_groups g, cost_clock WHERE g.day >= shown_from
+),
+cost_daily(day, usd) AS (
+    SELECT day, sum(usd) FROM cost_groups WHERE usd > 0 GROUP BY day
+),
 cost_sessions(tool, session_id, subscription) AS (
     SELECT tool, session_id, max(subscription) FROM cost_groups GROUP BY tool, session_id
 ),
@@ -169,13 +180,13 @@ cost_sessions(tool, session_id, subscription) AS (
 -- the page draws grey and stacks on top.
 cost_models(model, total, rank) AS (
     SELECT model, sum(usd), row_number() OVER (ORDER BY sum(usd) DESC, model)
-    FROM cost_groups WHERE usd > 0 GROUP BY model
+    FROM cost_shown WHERE usd > 0 GROUP BY model
 ),
 cost_series(model, total, slot) AS (
     SELECT model, total, CASE WHEN rank <= 3 THEN rank ELSE 4 END FROM cost_models
 ),
 cost_cells(day, slot, usd) AS (
-    SELECT g.day, s.slot, sum(g.usd) FROM cost_groups g JOIN cost_series s ON s.model = g.model
+    SELECT g.day, s.slot, sum(g.usd) FROM cost_shown g JOIN cost_series s ON s.model = g.model
     WHERE g.usd > 0 GROUP BY g.day, s.slot
 ),
 -- One row per day with cost. cells is JSON text here: a CTE drops the JSON subtype, so the
@@ -218,18 +229,18 @@ cost_burn_hist(first_day, today, month_start, month_end, complete) AS (
         date(to_day, 'start of month', '+1 month', '-1 day'),
         CASE WHEN first_day IS NULL THEN 0
             ELSE CAST(round(julianday(to_day) - julianday(first_day)) AS INTEGER) END
-    FROM cost_clock, (SELECT min(day) AS first_day FROM cost_days)
+    FROM cost_clock, (SELECT min(day) AS first_day FROM cost_daily)
 ),
 cost_burn(first_day, today, month_start, month_end, rate_days, rate, mtd, today_usd,
         days_after) AS (
     SELECT h.first_day, h.today, h.month_start, h.month_end,
         min($REPORT_RATE_DAYS, h.complete),
         CASE WHEN h.complete >= $REPORT_MIN_RATE_DAYS THEN round(COALESCE((
-            SELECT sum(t.usd) FROM cost_day_totals t WHERE t.day < h.today
+            SELECT sum(t.usd) FROM cost_daily t WHERE t.day < h.today
                 AND t.day >= date(h.today, '-' || min($REPORT_RATE_DAYS, h.complete) || ' days')
             ), 0) / min($REPORT_RATE_DAYS, h.complete), 2) END,
-        COALESCE((SELECT sum(usd) FROM cost_day_totals WHERE day >= h.month_start), 0),
-        COALESCE((SELECT usd FROM cost_day_totals WHERE day = h.today), 0),
+        COALESCE((SELECT sum(usd) FROM cost_daily WHERE day >= h.month_start), 0),
+        COALESCE((SELECT usd FROM cost_daily WHERE day = h.today), 0),
         CAST(round(julianday(h.month_end) - julianday(h.today)) AS INTEGER)
     FROM cost_burn_hist h
 ),
@@ -248,7 +259,7 @@ cost_month_days(day) AS (
 cost_month(day, n, usd, cum) AS (
     SELECT d.day, CAST(strftime('%d', d.day) AS INTEGER), COALESCE(t.usd, 0),
         sum(COALESCE(t.usd, 0)) OVER (ORDER BY d.day)
-    FROM cost_month_days d LEFT JOIN cost_day_totals t ON t.day = d.day
+    FROM cost_month_days d LEFT JOIN cost_daily t ON t.day = d.day
 ),
 cost_burn_scale(step) AS (
     $(scale_step_sql "(SELECT max(b.mtd, COALESCE(p.usd, 0)) FROM cost_burn b, cost_projection p)")
@@ -489,6 +500,10 @@ observed(at) AS (
             ORDER BY id DESC LIMIT 1), '')), now_iso)
     FROM clock, windows w WHERE w.name = 'seven_day'
 ),
+quota_seen(seen) AS (
+    SELECT EXISTS (SELECT 1 FROM rate_limit_snapshots
+        WHERE tool = 'claude-code' AND seven_day_used_percentage IS NOT NULL)
+),
 $(cost_ctes_sql)
 SELECT json_object(
     'generated_at', datetime($now, 'unixepoch', 'localtime'),
@@ -497,9 +512,7 @@ SELECT json_object(
             || CASE WHEN abs(offset_min) % 60 = 0 THEN ''
                 ELSE printf(':%02d', abs(offset_min) % 60) END
         END FROM clock),
-    'quota_observed', (SELECT EXISTS (
-        SELECT 1 FROM rate_limit_snapshots
-        WHERE tool = 'claude-code' AND seven_day_used_percentage IS NOT NULL)),
+    'quota_observed', (SELECT seen FROM quota_seen),
     'last_observed', (SELECT strftime('%Y-%m-%d %H:%M', at, 'localtime') FROM observed
         WHERE at != ''),
     'last_observed_epoch', (SELECT strftime('%s', at) FROM observed WHERE at != ''),
