@@ -136,15 +136,14 @@ cost_groups(tool, session_id, day, model, project, usd, subscription, last_at) A
 cost_sessions(tool, session_id, subscription) AS (
     SELECT tool, session_id, max(subscription) FROM cost_groups GROUP BY tool, session_id
 ),
--- At most four series: past four models, the top three keep their own and the rest share Other.
+-- The three costliest models keep their own series and the rest share Other, slot 4, which
+-- the page draws grey and stacks on top.
 cost_models(model, total, rank) AS (
     SELECT model, sum(usd), row_number() OVER (ORDER BY sum(usd) DESC, model)
     FROM cost_groups WHERE usd > 0 GROUP BY model
 ),
 cost_series(model, total, slot) AS (
-    SELECT model, total,
-        CASE WHEN (SELECT COUNT(*) FROM cost_models) <= 4 OR rank <= 3 THEN rank ELSE 4 END
-    FROM cost_models
+    SELECT model, total, CASE WHEN rank <= 3 THEN rank ELSE 4 END FROM cost_models
 ),
 cost_cells(day, slot, usd) AS (
     SELECT g.day, s.slot, sum(g.usd) FROM cost_groups g JOIN cost_series s ON s.model = g.model
@@ -278,9 +277,9 @@ json_object(
         FROM (SELECT day FROM cost_days ORDER BY day) d LEFT JOIN cost_day_totals t
             ON t.day = d.day)),
     'series', json((SELECT json_group_array(json_object('slot', slot,
-            'label', CASE WHEN members = 1 THEN first_model ELSE 'Other' END,
+            'label', CASE WHEN slot < 4 THEN first_model ELSE 'Other' END,
             'members', json(member_list), 'total', printf('%.2f', total)))
-        FROM (SELECT slot, COUNT(*) AS members, min(model) AS first_model,
+        FROM (SELECT slot, min(model) AS first_model,
                 json_group_array(model) AS member_list, sum(total) AS total
             FROM (SELECT * FROM cost_series ORDER BY total DESC, model)
             GROUP BY slot ORDER BY slot))),

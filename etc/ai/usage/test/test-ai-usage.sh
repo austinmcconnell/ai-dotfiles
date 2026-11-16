@@ -198,6 +198,10 @@ check_page "html books a day's cost per model" present \
 check_page "html fills a day with no cost" present \
     "2026-01-02</th><td></td><td></td><td></td><td></td><td>\$0.00</td>"
 check_page "html scales the cost axis to a 1-2-5 step" present ">\$8</text>"
+check_page "html leaves a 2px gap under each upper segment" present \
+    '<rect class="s3" x="84.2" y="140.6" width="131.6" height="18.6">'
+check_page "html stacks the grey Other on top" present \
+    '<rect class="s4" x="272.2" y="88.4" width="131.6" height="2.1">'
 check_page "html labels API-rate dollars" present "Dollars are at API rates."
 check_page "html never calls cost spend" absent "spend"
 check_page "html lists the costliest session first" present \
@@ -378,6 +382,24 @@ check_page "html holds the burn-up line over a stale figure" present \
     'd="M323.1,142H326.5V98H326.5"'
 check_page "html says each quota figure is the window's highest" present \
     "A quota figure with a reset time is the highest recorded for its window"
+
+# A fourth model alone still folds into Other, so slot 4 always means Other.
+mkdir -p "$WORK/four"
+cp "$USAGE_DB" "$WORK/four/usage.db"
+four_rows=""
+for row in "a 4 opus" "b 3 sonnet" "c 2 fable" "d 1 haiku"; do
+    read -r session usd family <<<"$row"
+    four_rows+="$(cost_row "$session" "$usd" "{\"model\":{\"id\":\"claude-$family\"}}"),"
+done
+sqlite3 "$WORK/four/usage.db" "DELETE FROM cost_snapshots;
+    INSERT INTO cost_snapshots (tool, session_id, total_cost_usd, occurred_at, raw_json)
+    VALUES ${four_rows%,};"
+rm -f "$REPORT"
+USAGE_DB_DIR="$WORK/four" check "html renders four models" 0 "$REPORT" -- --html --no-open
+check_page "html names at most three models" present \
+    "<span class=\"swatch s3\"></span>claude-fable: \$2.00"
+check_page "html folds a lone fourth model into Other" present \
+    "<span class=\"swatch s4\"></span>Other (claude-haiku): \$1.00"
 
 # A session that began before the 30-day window adds only its in-window step there; sessions
 # that began inside it (every other fixture) step from 0. An explicit null rate_limits is not a

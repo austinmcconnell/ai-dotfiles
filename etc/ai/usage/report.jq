@@ -120,7 +120,8 @@ def burnup:
   end;
 
 # Daily cost columns: the same viewBox, with a wider left inset for dollar labels. Each day
-# stacks its series bottom up in slot order.
+# stacks its series bottom up in slot order, so Other sits on top. A segment above the first
+# gives up its bottom 2 units to a surface gap, keeping the column's top at its true total.
 def cost_x($i; $n): (56 + $i * 564 / $n) * 10 | round / 10;
 def cost_h($usd; $max): ($usd / $max * 220) * 10 | round / 10;
 
@@ -148,9 +149,10 @@ def cost_columns($c):
     | (cost_x($i; $n) + (564 / $n - $bar) / 2) as $x
     | reduce $day.cells[] as $cell ({y: 230, out: ""};
         cost_h($cell[1]; $c.scale_max) as $h
+        | (if .y < 230 then ([$h - 2, 0.5] | max) * 10 | round / 10 else $h end) as $drawn
         | .y = ((.y - $h) * 10 | round / 10)
         | .out += "<rect class=\"s\($cell[0])\" x=\"\(($x * 10 | round) / 10)\" y=\"\(.y)\""
-          + " width=\"\($bar)\" height=\"\($h)\"><title>\($day.day | esc),"
+          + " width=\"\($bar)\" height=\"\($drawn)\"><title>\($day.day | esc),"
           + " \($names[$cell[0] | tostring] | esc): $\($cell[2] | esc)</title></rect>")
     | .out]
   | join("");
