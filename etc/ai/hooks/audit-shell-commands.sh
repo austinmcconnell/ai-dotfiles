@@ -16,7 +16,7 @@ LOG_DIR="$HOME/.local/share/ai-audit"
 mkdir -p "$LOG_DIR"
 
 # Log AWS commands
-if echo "$CMD" | grep -qE '(^|[;&|])aws '; then
+if grep -qE '(^|[;&|])aws ' <<<"$CMD"; then
     jq -nc \
         --arg ts "$(date -u +"%Y-%m-%dT%H:%M:%SZ")" \
         --arg agent "$AGENT" \
@@ -27,7 +27,7 @@ if echo "$CMD" | grep -qE '(^|[;&|])aws '; then
 fi
 
 # Log kubectl commands
-if echo "$CMD" | grep -qE '(^|[;&|])kubectl '; then
+if grep -qE '(^|[;&|])kubectl ' <<<"$CMD"; then
     jq -nc \
         --arg ts "$(date -u +"%Y-%m-%dT%H:%M:%SZ")" \
         --arg agent "$AGENT" \

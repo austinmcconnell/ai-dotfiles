@@ -53,7 +53,7 @@ SET_TRACE_RE="${CMD_START}set([[:space:]]+${OPTION_WORD})*[[:space:]]+(${TRACE_F
 # A shell interpreter whose leading options include a trace flag.
 SHELL_TRACE_RE="${INTERP_START}(bash|sh|zsh|dash|ksh)([[:space:]]+${OPTION_WORD})*[[:space:]]+(${TRACE_FLAG}|-[A-Za-z]*o[[:space:]]+xtrace)"
 
-if echo "$CMD" | grep -qE "$SET_TRACE_RE" || echo "$CMD" | grep -qE "$SHELL_TRACE_RE"; then
+if grep -qE "$SET_TRACE_RE" <<<"$CMD" || grep -qE "$SHELL_TRACE_RE" <<<"$CMD"; then
     echo "BLOCKED: shell trace mode (bash -x / set -x) is not permitted — it prints every" >&2
     echo "         variable value in cleartext and can leak secrets or PII/PHI. Diagnose" >&2
     echo "         without a trace (capture output into vars, echo only non-secret state," >&2

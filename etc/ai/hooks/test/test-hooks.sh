@@ -100,6 +100,29 @@ persona_call() {
         + (if $agent == "" then {} else {agent_type: $agent} end)'
 }
 
+# A Bash call whose command is $1 plus a 1 MB comment, larger than any pipe buffer; $2 is an
+# optional persona agent_type. Built through stdin: Linux caps a single argument at 128 KB.
+oversized_call() {
+    {
+        printf '%s\n# ' "$1"
+        head -c 1000000 /dev/zero | tr '\0' 'a'
+    } |
+        jq --raw-input --slurp --compact-output --arg agent "${2:-}" \
+            '{tool_name: "Bash", tool_input: {command: .}}
+            + (if $agent == "" then {} else {agent_type: $agent} end)'
+}
+
+# A Bash call whose command is $1 followed by 30,000 lines of $2. A one-line oversized command does
+# not catch a multi-stage grep pipe, whose later stage quits early on many matching lines.
+many_lines_call() {
+    {
+        printf '%s\n' "$1"
+        for ((i = 0; i < 30000; i++)); do
+            printf '%s\n' "$2"
+        done
+    } | jq --raw-input --slurp --compact-output '{tool_name: "Bash", tool_input: {command: .}}'
+}
+
 hook=block-env-files.sh
 check "reads a dot-env file" "$hook" 2 "$(read_call "/repo/$DOT_ENV")"
 check "cats a suffixed dot-env file" "$hook" 2 "$(bash_call "cat config/$DOT_ENV.production")"
@@ -149,6 +172,7 @@ check "runs sops -d" "$hook" 2 "$(bash_call "sops -d secrets.enc.yaml")"
 check "reads the sops config" "$hook" 0 "$(read_call "/repo/.sops.yaml")"
 check "reads an encrypted file" "$hook" 0 "$(read_call "/repo/secrets.enc.yaml")"
 check "runs sops encrypt" "$hook" 0 "$(bash_call "sops --encrypt secrets.yaml")"
+check "sops -d in an oversized command" "$hook" 2 "$(oversized_call "sops -d secrets.enc.yaml")"
 
 hook=block-ssh-private-keys.sh
 check "reads a private key" "$hook" 2 "$(read_call "$HOME/${SSH_KEY_DIR}ed25519")"
@@ -157,6 +181,10 @@ check "kiro reads a private key" "$hook" 2 "$(kiro_read_call "$HOME/${SSH_KEY_DI
 check "reads a public key" "$hook" 0 "$(read_call "$HOME/${SSH_KEY_DIR}ed25519.pub")"
 check "reads the ssh config" "$hook" 0 "$(read_call "$HOME/.ssh/config")"
 check "reads known_hosts" "$hook" 0 "$(read_call "$HOME/.ssh/known_hosts")"
+check "private key among many key lines" "$hook" 2 \
+    "$(many_lines_call "cat ~/${SSH_KEY_DIR}ed25519" "x ~/${SSH_KEY_DIR}rsa y")"
+check "many public key lines" "$hook" 0 \
+    "$(many_lines_call "cat ~/${SSH_KEY_DIR}a.pub" "x ~/${SSH_KEY_DIR}rsa.pub y")"
 
 hook=block-shell-trace-mode.sh
 check "bash with -x" "$hook" 2 "$(bash_call "bash -""x script.sh")"
@@ -211,6 +239,7 @@ check "set -- with an -x argument" "$hook" 0 "$(bash_call "set -- -""x")"
 check "set -o pipefail" "$hook" 0 "$(bash_call "set -o pipefail")"
 # Accepted limitation (see the hook header): a trace inside a quoted -c string passes.
 check "set -x inside a quoted -c string" "$hook" 0 "$(bash_call "bash -c 'set -""x; make'")"
+check "bash -x in an oversized command" "$hook" 2 "$(oversized_call "bash -""x script.sh")"
 check "a call with no command" "$hook" 0 "$(read_call "/repo/README.md")"
 
 for hook in block-env-files.sh block-sops-age-files.sh block-ssh-private-keys.sh \
@@ -241,6 +270,8 @@ check "main session runs kubectl" "$hook" 0 "$(persona_call "" "kubectl get pods
 check "docs runs git" "$hook" 0 "$(persona_call docs "git status")"
 check "ansible checks its version" "$hook" 0 "$(persona_call ansible "ansible --version")"
 check "datadog lists monitors" "$hook" 0 "$(persona_call datadog "pup monitors list")"
+check "docs runs kubectl in an oversized command" "$hook" 2 \
+    "$(oversized_call "kubectl get pods" docs)"
 
 # $1 is the hook script, $2 the payload. Prints the permissionDecision the hook asks for, or "none".
 ask_decision() {

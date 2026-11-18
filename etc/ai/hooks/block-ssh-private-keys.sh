@@ -21,7 +21,10 @@ PATHS=$(echo "$TOOL_INPUT" | jq -r '
     ] | .[]' 2>/dev/null)
 
 # Block SSH private keys (id_* without .pub extension)
-if echo "$PATHS" | grep -iE '\.ssh/id_' | grep -qvE '\.pub($|[^a-z])'; then
+# Two steps, not a pipe: under pipefail an early-exiting grep -q can SIGPIPE the first grep and
+# fail open. The empty check stops the here-string's lone newline from matching -v.
+KEY_PATHS=$(grep -iE '\.ssh/id_' <<<"$PATHS" || true)
+if [[ -n "$KEY_PATHS" ]] && grep -qvE '\.pub($|[^a-z])' <<<"$KEY_PATHS"; then
     echo "BLOCKED: Access to SSH private key files is not permitted" >&2
     exit 2
 fi

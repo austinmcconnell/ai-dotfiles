@@ -24,13 +24,13 @@ PATHS=$(echo "$TOOL_INPUT" | jq -r '
     ] | .[]' 2>/dev/null)
 
 # Block age private keys
-if echo "$PATHS" | grep -qiE '(sops/age/keys\.txt|\.agekey($|[^a-z]))'; then
+if grep -qiE '(sops/age/keys\.txt|\.agekey($|[^a-z]))' <<<"$PATHS"; then
     echo "BLOCKED: Access to age private key files is not permitted" >&2
     exit 2
 fi
 
 # Block sops decrypt commands (would output plaintext secrets)
-if echo "$PATHS" | grep -qiE 'sops (decrypt|--decrypt|-d )'; then
+if grep -qiE 'sops (decrypt|--decrypt|-d )' <<<"$PATHS"; then
     echo "BLOCKED: sops decrypt commands are not permitted" >&2
     exit 2
 fi

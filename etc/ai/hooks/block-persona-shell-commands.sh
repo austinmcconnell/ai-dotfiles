@@ -46,7 +46,7 @@ ansible)
 esac
 
 for pattern in "${PATTERNS[@]}"; do
-    if echo "${CMD}" | grep -qE "(^|[;&|][[:space:]]*)${pattern}"; then
+    if grep -qE "(^|[;&|][[:space:]]*)${pattern}" <<<"${CMD}"; then
         echo "BLOCKED: the '${PERSONA}' persona denies this command pattern (mirrors kiro-cli's shell.deniedCommands): ${pattern}" >&2
         exit 2
     fi

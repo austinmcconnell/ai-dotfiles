@@ -67,7 +67,7 @@ anchored="${clause}(no,|nope|actually,|wrong|that.s (wrong|incorrect|not right)|
 # false positives in real prompts. "use X not Y" is kept because it is a directive.
 correction_re="${anchored}|use [^ ]+ not "
 
-if echo "${PROMPT}" | grep -qiE "${correction_re}"; then
+if grep -qiE "${correction_re}" <<<"${PROMPT}"; then
     echo "↳ That looked like a correction, redirection, or stated preference. Per the capturing-corrections steering, save it now with mem_save (type: preference, topic_key: correction/<area>-<slug>) before continuing — do not wait until end of session."
     mkdir -p "${SENTINEL_DIR}"
     : >"${SENTINEL}"
