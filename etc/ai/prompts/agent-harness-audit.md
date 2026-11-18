@@ -89,6 +89,8 @@ These recipes avoid known miscounts:
 - Attribute cost by model or day through the `v_cost_deltas` view in `etc/ai/usage/schema.sql`, not
   `sessions.model`, which holds only the last model. Dollar figures are API-equivalent, not
   subscription spend, so label them that way.
+- Find hook decisions, asks included, through `hook_success` attachment records: `hookName` names
+  the hook, `toolUseID` ties it to the tool call, and `stdout` holds the decision.
 
 Transcripts are local to each machine. A commit that arrived by a fast-forward pull (`git reflog`
 shows it as a merge from a remote) has no session to sample here, so list it as unobserved rather

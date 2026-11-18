@@ -87,7 +87,8 @@ tight — a sentence or a bullet, not a paragraph. Do not restate what the doc a
 
 ### 4. Apply approved edits
 
-For each approved item:
+Load the `commit-workflow` skill before the first edit: applying approved edits is work you intend
+to commit. Then, for each approved item:
 
 - Make the edit with a file edit, matching the target doc's existing style and formatting.
 - After editing steering or skills, run `pre-commit run --files <changed-files>` (see the
