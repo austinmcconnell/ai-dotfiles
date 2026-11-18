@@ -14,13 +14,19 @@ Before drafting a PR description, check for project-specific templates:
 When a project template has an **Implementation Details** section:
 
 - Keep implementation details focused on *what was changed* — the specific code/config modifications
-- Use a bullet list for implementation details when there are multiple changes
+- Write implementation details as one flat bullet list: one bullet per change, no sub-headings, no
+  rationale (the commits carry the detail). If the template prescribes its own structure, follow the
+  template.
 - Add a **Background Information** section before Implementation Details — even if the template
   doesn't define one — when the reviewer needs context to understand *why* the change was made: root
   cause analysis, metric explanations, architectural context, etc.
-- Background should explain the problem and its cause; implementation details should explain the fix
+- Background should explain the problem and its cause in a few sentences, with no plans or future
+  work; implementation details should say what the fix changes
 - Skip Background Information for self-explanatory changes (typo fixes, dependency bumps,
   formatting)
+- Testing lists only what ran and its result; do not list checks that were not run
+- Size the description to the change, not the commit count. Reviewer caveats and notes for the
+  author belong in chat or a PR comment, not the description
 
 For templates without an Implementation Details section, follow the template's own structure.
 Lightweight templates (few sections, minimal guidance) are a minimum — add sections when they help
@@ -40,7 +46,7 @@ For template sections that don't apply to the change, write "N/A" rather than re
 
 - **Summary**: 1-3 sentences explaining what and why
 - **Changes**: bullet list of meaningful changes
-- **Testing**: what was tested and how
+- **Testing**: what was tested and the result
 
 ## Workflow
 
