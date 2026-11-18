@@ -61,11 +61,16 @@ Layers:
 
 Configuration says what should happen; transcripts show what did. Sample recent sessions (Claude
 Code transcripts live under `~/.claude/projects/`; use other tools' logs where they exist) and
-check whether the gates and skills fired when they should have. For example:
+check whether the gates and skills fired when they should have.
 
-- Was a doubt review suggested before a non-trivial plan was presented?
-- Did a required skill load before its work began?
-- Did a subagent run on the expected model?
+Give each sampled session to its own subagent, and set `model` on every launch. An inheriting
+subagent in a strongest-model session spends that model with no gate. Each subagent answers the same
+rubric and returns its answers with transcript evidence:
+
+- Was the plan non-trivial, and was a doubt review suggested before it was presented?
+- Did each required skill load before its work began?
+- Which model did each `Agent` call run on, and was that the expected one?
+- Was the step-down offer made, and how did the user answer it?
 
 Note every advisory rule that was skipped and every enforced one that did not fire.
 
@@ -92,6 +97,22 @@ exists, say so and skip this section.
 Rank the gaps by impact. For each, propose the smallest fix that uses the repo's existing building
 blocks: a skill line, a hook, a permission rule, or a validator. Recommend an outside harness only
 if no existing building block can close the gap, and say why.
+
+## Open Questions
+
+An open question carried forward from the prior audit is not carried a third time. Settle it with a
+cheap live probe during this audit, or move it to `ideas.md` with the reason it stays open.
+
+## Evidence Check
+
+Before writing the final file, send the evidence to a fresh-context `doubt-reviewer`. The ARTIFACT
+is the ranked gaps, the Resolved table, and about 10 sampled **[V]** claims with their cited
+evidence. The CONTRACT is that each claim must be reproducible from its evidence. Do not pass your
+reasoning.
+
+The reviewer has only Read, Grep, and Glob, so give each DB-backed claim the exact query that
+produced it. The reviewer marks each claim reproduced, refuted, or unable to check. Re-run any claim
+it could not check yourself. Fix or downgrade each refuted claim before writing.
 
 ## What to Ignore
 
