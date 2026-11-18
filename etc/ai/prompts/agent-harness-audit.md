@@ -31,6 +31,11 @@ between Kiro CLI and Claude Code are intended, so judge each cross-tool gap agai
    generator and validators, and `.pre-commit-config.yaml`.
 1. Read the recent git log in full, without `--oneline`, so you see what changed and why.
 
+The latest prior audit records the `HEAD` it audited. Read only that header and its inventory table
+now, and leave the rest for the Prior Audit step. Re-inventory only the layers whose files changed
+since that commit, and copy the other rows forward, marked as carried. Re-inventory every layer when
+no prior audit records a `HEAD`, or when the user asks for a full audit.
+
 ## Harness Layers
 
 Inventory each layer. For each one, record:
@@ -72,7 +77,18 @@ rubric and returns its answers with transcript evidence:
 - Which model did each `Agent` call run on, and was that the expected one?
 - Was the step-down offer made, and how did the user answer it?
 
-Note every advisory rule that was skipped and every enforced one that did not fire.
+Note every advisory rule that was skipped and every enforced one that did not fire. A gate that
+fired and that the user declined with a stated reason worked as designed. Tally those overrides
+separately, not as failures.
+
+These recipes avoid known miscounts:
+
+- Find transcripts with `find`, not `ls`: the project directory names start with `-`.
+- Find advisor calls through `usage.iterations[].type == "advisor_message"`, and count them once per
+  `requestId`. One request spans several transcript records with identical usage.
+- Attribute cost by model or day through the `v_cost_deltas` view in `etc/ai/usage/schema.sql`, not
+  `sessions.model`, which holds only the last model. Dollar figures are API-equivalent, not
+  subscription spend, so label them that way.
 
 Transcripts are local to each machine. A commit that arrived by a fast-forward pull (`git reflog`
 shows it as a merge from a remote) has no session to sample here, so list it as unobserved rather
@@ -86,7 +102,9 @@ exists, say so and skip this section.
 
 - Treat its claims as leads, not evidence: re-verify each one against the repo, a transcript, or
   the DB, and mark it again as verified, inferred, or assumed. Its tags describe what held then.
-- Give each prior gap a status: still open, fixed (cite the commit), or no longer valid (say why).
+- Give each prior gap a status: still open, fixed and exercised (cite the commit and the session
+  that shows it working), fixed but not yet exercised (cite the commit), or no longer valid (say
+  why).
 - Keep gap IDs so pointers in `todo.md` and `ideas.md` stay valid. Number new gaps after the highest
   existing ID.
 - Transcripts age out, so keep prior behavior evidence that no longer exists locally, labelled as
@@ -94,9 +112,10 @@ exists, say so and skip this section.
 
 ## Gaps
 
-Rank the gaps by impact. For each, propose the smallest fix that uses the repo's existing building
-blocks: a skill line, a hook, a permission rule, or a validator. Recommend an outside harness only
-if no existing building block can close the gap, and say why.
+Rank the gaps by impact: how often the gap was observed, times what each occurrence costs. Give the
+cost in dollars where the usage store supports it. For each gap, propose the smallest fix that uses
+the repo's existing building blocks: a skill line, a hook, a permission rule, or a validator.
+Recommend an outside harness only if no existing building block can close the gap, and say why.
 
 ## Open Questions
 
@@ -119,6 +138,8 @@ it could not check yourself. Fix or downgrade each refuted claim before writing.
 - Features one tool lacks entirely, unless the gap matters for a layer above
 - Differences documented as intentional deviations in the tool READMEs
 - Style and wording issues that do not change behavior
+- Side questions the user raises during the audit. Answer them in a separate `analysis/` file, not
+  in the audit
 
 ## Output Format
 
@@ -126,6 +147,7 @@ Write the findings to `analysis/agent-harness-audit-<YYYY-MM-DD>.md`, using the 
 overwrite an earlier audit. Then point `analysis/agent-harness-audit.md` at the new file with a
 symlink (`ln -sf`), so that name always resolves to the latest audit. The file has:
 
+1. **Header**: the audit date and the `HEAD` commit it audited
 1. **Summary**: a short verdict on how well the soft harness holds up
 1. **Inventory table**: one row per layer:
 
