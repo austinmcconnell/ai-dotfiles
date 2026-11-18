@@ -171,7 +171,7 @@ repos:
           - mdformat-frontmatter
           - mdformat-simple-breaks
   - repo: https://github.com/rvben/rumdl-pre-commit
-    rev: v0.3.0
+    rev: v0.3.4
     hooks:
       - id: rumdl-fmt
   - repo: https://github.com/adrienverge/yamllint
