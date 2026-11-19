@@ -13,8 +13,10 @@ source "$REPORT_DIR/lib.sh"
 REPORT_MIN_USER_VERSION=3
 REPORT_TOP_PROJECTS=8
 REPORT_TOP_ROWS=10
-# The daily rate averages this month's complete days and needs at least 3.
+# The daily rate averages this month's complete days and needs at least 3. The recent pace averages
+# the last REPORT_RECENT_DAYS complete days and needs that many.
 REPORT_MIN_RATE_DAYS=3
+REPORT_RECENT_DAYS=7
 REPORT_OUT_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/ai-usage"
 REPORT_OUT="$REPORT_OUT_DIR/report.html"
 # Global, so the EXIT trap can still see it after main returns.
@@ -242,6 +244,23 @@ cost_burn(first_day, today, month_start, month_end, rate_days, rate, mtd, today_
         CAST(round(julianday(h.month_end) - julianday(h.today)) AS INTEGER)
     FROM cost_burn_hist h
 ),
+-- Unrounded sums for the recent pace and its ratio to the month's rate.
+cost_pace_sums(complete, month_sum, recent_sum) AS (
+    SELECT h.complete,
+        COALESCE((SELECT sum(t.usd) FROM cost_daily t
+            WHERE t.day >= h.month_start AND t.day < h.today), 0),
+        COALESCE((SELECT sum(t.usd) FROM cost_daily t
+            WHERE t.day >= date(h.today, '-' || $REPORT_RECENT_DAYS || ' days')
+                AND t.day < h.today), 0)
+    FROM cost_burn_hist h
+),
+-- NULL until there are REPORT_RECENT_DAYS complete days; the ratio also needs a non-zero month.
+cost_recent(recent, ratio) AS (
+    SELECT CASE WHEN complete >= $REPORT_RECENT_DAYS THEN recent_sum / $REPORT_RECENT_DAYS END,
+        CASE WHEN complete >= $REPORT_RECENT_DAYS AND month_sum > 0
+            THEN (recent_sum / $REPORT_RECENT_DAYS) / (month_sum / complete) END
+    FROM cost_pace_sums
+),
 -- NULL until there is a daily rate.
 cost_projection(usd) AS (
     SELECT CASE WHEN rate IS NULL THEN NULL
@@ -276,6 +295,11 @@ json((SELECT json_object(
     'mtd', printf('%.2f', mtd),
     'rate', CASE WHEN rate IS NULL THEN '' ELSE printf('%.2f', rate) END,
     'rate_days', printf('%d', rate_days), 'min_days', '$REPORT_MIN_RATE_DAYS',
+    'recent', CASE WHEN (SELECT recent FROM cost_recent) IS NULL THEN ''
+        ELSE printf('%.2f', (SELECT recent FROM cost_recent)) END,
+    'ratio', CASE WHEN (SELECT ratio FROM cost_recent) IS NULL THEN ''
+        ELSE printf('%.2f', (SELECT ratio FROM cost_recent)) END,
+    'recent_days', '$REPORT_RECENT_DAYS',
     'projected', CASE WHEN rate IS NULL THEN ''
         ELSE printf('%.2f', (SELECT usd FROM cost_projection)) END,
     'month', strftime('%Y-%m', today), 'month_end', month_end,

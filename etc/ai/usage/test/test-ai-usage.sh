@@ -525,6 +525,8 @@ mid_month() {
 burn_page "html renders a burn rate mid-month" "2026-03-18 15:00:00" < <(mid_month 4)
 check_page "html averages this month's complete days before today" present \
     "$(burn_tile_html 'Daily rate' "\$8.35 a day" "$(rate_detail 17)")"
+check_page "html shows the recent pace against the month's rate" present \
+    "$(burn_tile_html 'Recent pace' "\$6.00 a day" "Mean of the last 7 complete days, 0.72× this month's daily rate. A pacing signal, not part of the projection.")"
 check_page "html books the month to date mid-month" present \
     "$(burn_tile_html 'Month to date' "\$146.00" "$(month_detail 2026-03)")"
 check_page "html counts today at the rate when it is under it" present \
@@ -624,6 +626,8 @@ check_page "html books the whole month on the 31st" present \
     "$(burn_tile_html 'Month to date' "\$142.00" "$(month_detail 2026-12)")"
 check_page "html projects the last day of the month from the rate" present \
     "$(burn_tile_html 'Projected month end' "\$144.67" "$(projection_detail 2026-12-31)")"
+check_page "html takes the recent pace from the last 7 days of the month" present \
+    "$(burn_tile_html 'Recent pace' "\$3.00 a day" "Mean of the last 7 complete days, 0.64× this month's daily rate. A pacing signal, not part of the projection.")"
 
 # A first cost after the 1st: the month to date starts there, but the rate still divides by every
 # complete day since the 1st, so the idle days pull it down: 30 over 15 days is 2.00.
@@ -642,6 +646,8 @@ check_page "html projects a day with no cost so far at the rate" present \
 echo "2026-01-02 3" | burn_page "html renders a single day of cost" "2026-01-02 15:00:00"
 check_page "html shows no rate for a first day" present \
     "$(burn_tile_html 'Daily rate' 'Not enough history' 'Needs 3 complete days; 1 so far.')"
+check_page "html shows no recent pace before seven complete days" present \
+    "$(burn_tile_html 'Recent pace' 'Not enough history' 'Needs 7 complete days; 1 so far.')"
 check_page "html still books a single day" present \
     "$(burn_tile_html 'Month to date' "\$3.00" "$(month_detail 2026-01)")"
 check_page "html draws no projection before there is a rate" absent '<path class="proj"'

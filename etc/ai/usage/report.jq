@@ -101,6 +101,15 @@ def cost_pace:
     else
       burn_tile("Projected month end"; "Not enough history"; "A projection needs a daily rate.")
     end)
+  + (if $b.recent == "" then
+      burn_tile("Recent pace"; "Not enough history";
+        "Needs \($b.recent_days | esc) complete days; \($b.rate_days | esc) so far.")
+    else
+      burn_tile("Recent pace"; "$\($b.recent | esc) a day";
+        "Mean of the last \($b.recent_days | esc) complete days"
+        + (if $b.ratio == "" then "" else ", \($b.ratio | esc)× this month's daily rate" end)
+        + ". A pacing signal, not part of the projection.")
+    end)
   + "</div>";
 
 def quota_tiles:
