@@ -166,7 +166,7 @@ This provides better security and enables SSO integration.
 
 ```text
 Refs: #123
-Jira issue: AUTH-123
+Jira-issue: AUTH-123
 BREAKING CHANGE: Removes /api/login endpoint
 ```
 

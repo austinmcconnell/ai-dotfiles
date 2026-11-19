@@ -17,7 +17,7 @@ every 5 seconds. Metrics exceeding 80% threshold are highlighted in red.
 - Add threshold highlighting logic
 - Include error handling and empty states
 
-Jira issue: DASH-456
+Jira-issue: DASH-456
 ```
 
 ### API Enhancement
@@ -25,12 +25,11 @@ Jira issue: DASH-456
 ```text
 feat(api): add pagination to user list endpoint
 
-Support page and per_page query parameters for /api/users endpoint.
-Returns total count in response metadata for client-side pagination.
+Support page and per_page query parameters for the /api/users endpoint,
+as in GET /api/users?page=2&per_page=50. Returns the total count in
+response metadata for client-side pagination.
 
-Example: GET /api/users?page=2&per_page=50
-
-Jira issue: API-234
+Jira-issue: API-234
 ```
 
 ### Authentication Feature
@@ -47,9 +46,8 @@ Implements PKCE flow for public clients with secure session cookies.
 - Add role-based access control
 
 BREAKING CHANGE: Removes /api/login endpoint. Clients must migrate
-to /api/auth/login with OAuth2 flow.
-
-Jira issue: AUTH-123
+  to /api/auth/login with OAuth2 flow.
+Jira-issue: AUTH-123
 ```
 
 ## Bug Fixes
@@ -73,7 +71,7 @@ fix(db): optimize user lookup query
 Add index on users.email column to improve login performance.
 Reduces average query time from 800ms to 45ms.
 
-Jira issue: PERF-567
+Jira-issue: PERF-567
 ```
 
 ### Security Fix
@@ -83,9 +81,7 @@ fix(auth): prevent session fixation vulnerability
 
 Regenerate session ID after successful authentication to prevent
 session fixation attacks. Session is now marked as permanent with
-proper expiration.
-
-Addresses security audit finding SA-2024-003
+proper expiration. Addresses security audit finding SA-2024-003.
 ```
 
 ## Refactoring
@@ -221,28 +217,13 @@ feat(api)!: change user response format
 Standardize API responses to use consistent envelope format with
 data, meta, and errors fields.
 
+- Wrap each resource in a data field and add a meta field
+- Return errors in a top-level errors field
+
 BREAKING CHANGE: User endpoints now return data in `data` field
-instead of root level. Update clients to access `response.data.user`
-instead of `response.user`.
-
-Before:
-{
-  "id": "123",
-  "email": "user@example.com"
-}
-
-After:
-{
-  "data": {
-    "id": "123",
-    "email": "user@example.com"
-  },
-  "meta": {
-    "timestamp": "2024-01-01T00:00:00Z"
-  }
-}
-
-Jira issue: API-890
+  instead of root level. Update clients to access `response.data.user`
+  instead of `response.user`.
+Jira-issue: API-890
 ```
 
 ### Configuration Change
@@ -253,13 +234,12 @@ chore!: migrate to environment-based configuration
 Replace config files with environment variables for better
 container compatibility and security.
 
-BREAKING CHANGE: Configuration files are no longer supported.
-Set environment variables instead:
-- DATABASE_URL (required)
-- SECRET_KEY (required)
-- REDIS_URL (optional)
+- Require DATABASE_URL and SECRET_KEY
+- Accept an optional REDIS_URL
+- Document every variable in the README
 
-See .env.example for full list.
+BREAKING CHANGE: Configuration files are no longer supported. Set
+  environment variables instead.
 ```
 
 ## Multi-Component Changes
@@ -278,7 +258,7 @@ edit, and avatar upload.
 - Add profile validation and error handling
 - Add profile update tests
 
-Jira issue: USER-345
+Jira-issue: USER-345
 ```
 
 ### Cross-Cutting Refactor
@@ -302,12 +282,11 @@ classes and centralized error handler.
 ```text
 revert: revert "feat(api): add pagination"
 
-This reverts commit abc123def456.
+This reverts commit abc123def456. The pagination implementation caused
+a performance regression in production. Will reimplement with proper
+indexing in next iteration.
 
-Pagination implementation caused performance regression in production.
-Will reimplement with proper indexing in next iteration.
-
-Jira issue: HOTFIX-789
+Jira-issue: HOTFIX-789
 ```
 
 ## Co-Authored Commits
@@ -330,9 +309,9 @@ Co-authored-by: Jane Developer <jane@example.com>
 ```text
 chore(release): bump version to 2.1.0
 
-Update version number and generate changelog for 2.1.0 release.
+Update version number and generate changelog for the 2.1.0 release,
+which includes:
 
-Includes:
 - 5 new features
 - 12 bug fixes
 - 3 performance improvements
