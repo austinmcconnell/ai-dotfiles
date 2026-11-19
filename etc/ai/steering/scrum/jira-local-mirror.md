@@ -9,6 +9,8 @@ must stay in sync with remote Jira.
 
 - **At session start / before Jira work, check whether the repo has a `jira/` directory.** If it
   does, this convention is in force for that repo.
+- **If the repo has no `jira/` directory,** ask whether to create one before skipping the local
+  copy. Do not skip it silently.
 - **When you create or update a Jira ticket, also create/update the matching `jira/<key>.md`** (use
   the lowercased key). Keep the local file in sync with what you changed in Jira.
 - **Match the existing files' format** — open a sibling file in the same `jira/` directory and
