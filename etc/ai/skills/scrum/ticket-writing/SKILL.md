@@ -113,6 +113,15 @@ Out of scope   (optional — one tightly-bounded line)
 
 Apply all cross-cutting rules above. Keep Acceptance Criteria to 2–4 (optional 5th), each testable.
 
+Section rules for Tasks:
+
+- Background and Current Issue share no sentence. Background gives why the work matters. Current
+  Issue states only the gap as it stands now.
+- Proposed Change stays high level. Enumerate affected items in a table or a short list of groups,
+  not one line per item.
+- Out of scope is one line, even when it excludes several things. Combine the exclusions into one
+  sentence.
+
 ## Validation Checklist
 
 - [ ] Leads with problem/context, ends with Acceptance Criteria
@@ -120,6 +129,8 @@ Apply all cross-cutting rules above. Keep Acceptance Criteria to 2–4 (optional
 - [ ] No person full-names/secrets in the body; org data and minimal identifiers only
 - [ ] No omit-by-default sections unless genuinely needed
 - [ ] Any Out-of-scope note is a single bounded line
+- [ ] Background and Current Issue share no sentence; Proposed Change is high level, with items in a
+  table
 - [ ] Dependencies are issue links (not prose); no Blocks/is-blocked-by link points at a Done ticket
   (a Relates-to a recent, relevant Done ticket is fine); new links aren't stale; existing links left
   as-is
