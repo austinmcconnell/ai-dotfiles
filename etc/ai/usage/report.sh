@@ -13,8 +13,7 @@ source "$REPORT_DIR/lib.sh"
 REPORT_MIN_USER_VERSION=3
 REPORT_TOP_PROJECTS=8
 REPORT_TOP_ROWS=10
-# The daily rate averages up to 7 complete days and needs at least 3.
-REPORT_RATE_DAYS=7
+# The daily rate averages this month's complete days and needs at least 3.
 REPORT_MIN_RATE_DAYS=3
 REPORT_OUT_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/ai-usage"
 REPORT_OUT="$REPORT_OUT_DIR/report.html"
@@ -218,27 +217,26 @@ $(burn_ctes_sql)
 SQL
 }
 
-# The daily rate and month-end projection, from the daily totals above. A day with no cost counts
-# as $0 from the first day with cost on, so the rate needs REPORT_MIN_RATE_DAYS complete days
-# after that (a first day is often partial, and earlier days are unknown, not zero). All day
+# The daily rate and month-end projection, from the daily totals above. The rate is the mean of
+# this calendar month's complete days, so each month starts with no history: a day with no cost
+# counts as $0 from the 1st, and the rate needs REPORT_MIN_RATE_DAYS complete days. All day
 # arithmetic is on date strings, so a 23- or 25-hour DST day is still one day.
 burn_ctes_sql() {
     cat <<SQL
 cost_burn_hist(first_day, today, month_start, month_end, complete) AS (
     SELECT first_day, to_day, date(to_day, 'start of month'),
         date(to_day, 'start of month', '+1 month', '-1 day'),
-        CASE WHEN first_day IS NULL THEN 0
-            ELSE CAST(round(julianday(to_day) - julianday(first_day)) AS INTEGER) END
+        CAST(round(julianday(to_day) - julianday(date(to_day, 'start of month'))) AS INTEGER)
     FROM cost_clock, (SELECT min(day) AS first_day FROM cost_daily)
 ),
 cost_burn(first_day, today, month_start, month_end, rate_days, rate, mtd, today_usd,
         days_after) AS (
     SELECT h.first_day, h.today, h.month_start, h.month_end,
-        min($REPORT_RATE_DAYS, h.complete),
+        h.complete,
         CASE WHEN h.complete >= $REPORT_MIN_RATE_DAYS THEN round(COALESCE((
             SELECT sum(t.usd) FROM cost_daily t WHERE t.day < h.today
-                AND t.day >= date(h.today, '-' || min($REPORT_RATE_DAYS, h.complete) || ' days')
-            ), 0) / min($REPORT_RATE_DAYS, h.complete), 2) END,
+                AND t.day >= h.month_start
+            ), 0) / h.complete, 2) END,
         COALESCE((SELECT sum(usd) FROM cost_daily WHERE day >= h.month_start), 0),
         COALESCE((SELECT usd FROM cost_daily WHERE day = h.today), 0),
         CAST(round(julianday(h.month_end) - julianday(h.today)) AS INTEGER)

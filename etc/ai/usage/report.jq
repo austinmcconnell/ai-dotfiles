@@ -82,14 +82,14 @@ def cost_pace:
   .cost as $c
   | $c.burn as $b
   | "<p class=\"meta\">No quota data on this machine, so this follows cost: this local calendar"
-  + " month, and where it is heading at the recent daily rate. It counts only what this machine"
+  + " month, and where it is heading at this month's daily rate. It counts only what this machine"
   + " recorded, so it is an estimate, not a bill. \($c | dollar_note)</p>"
   + "<div class=\"tiles\">"
   + burn_tile("Month to date"; "$\($b.mtd | esc)";
       "Local calendar month \($b.month | esc), through today.")
   + (if $b.state == "ready" then
       burn_tile("Daily rate"; "$\($b.rate | esc) a day";
-        "Mean of the last \($b.rate_days | esc) complete days, not counting today.")
+        "Mean of this month's \($b.rate_days | esc) complete days, not counting today.")
     else
       burn_tile("Daily rate"; "Not enough history";
         "Needs \($b.min_days | esc) complete days; \($b.rate_days | esc) so far.")
@@ -239,7 +239,7 @@ def month_desc($b):
   + " dollars."
   + (if $b.state == "ready" then
       " A dashed line continues from there to a projected $\($b.projected | esc) on"
-      + " \($b.month_end | esc), at the recent daily rate."
+      + " \($b.month_end | esc), at this month's daily rate."
     else " No projection is drawn, because there is not yet a daily rate."
     end)
   + " The figures are in the table below.";
@@ -250,7 +250,7 @@ def cost_burnup:
   | "<section><h2>How has cost built up this month?</h2>"
   + "<p class=\"meta\">Days into the local calendar month against the cost so far."
   + (if $b.state == "ready" then
-      " The dashed line carries today's total to the projected month end at the daily rate."
+      " The dashed line carries today's total to the projected month end at this month's daily rate."
     else " A projection is drawn once there is a daily rate."
     end)
   + " \($c | dollar_note)</p>"
