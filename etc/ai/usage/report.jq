@@ -393,7 +393,7 @@ def cost:
 # Subagent launches can use a family the main sessions never did, so slots 1-4 keep fixed names.
 def family_name($c; $slot):
   ([$c.series[] | select(.slot == $slot) | .label][0])
-  // (["Sonnet", "Haiku", "Opus", "Other"][$slot - 1]);
+  // (["Haiku", "Sonnet", "Opus", "Other"][$slot - 1]);
 
 # A share of a row's dollars as a whole percent. Under 1% reads as <1%. Unescaped: callers escape.
 def mix_percent($usd; $total):

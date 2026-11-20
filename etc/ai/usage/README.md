@@ -429,10 +429,10 @@ statement repeats that view's `lag()` over the window's rows only, and drops a n
 the view keeps it, so a session whose total ever fell can sum higher here than in `--by-model`. A
 session whose `sessions` row says it began before the window, or that has no `sessions` row, steps
 its first row there from its last earlier snapshot, not from 0, so its earlier cost stays out of the
-window. Models group into Sonnet, Haiku and Opus by family, each with a fixed colour. Every other
-model shares Other, which is always grey and stacked on top. A 2px surface gap separates stacked
-segments. The light-mode green falls below 3:1 contrast, so the daily figures also appear as a
-table.
+window. Models group into Haiku, Sonnet and Opus by family, cheapest first, each with a fixed
+colour. Every other model shares Other, which is always grey and stacked on top. A 2px surface gap
+separates stacked segments. The light-mode green falls below 3:1 contrast, so the daily figures also
+appear as a table.
 
 The project table covers the same days, by the `workspace.project_dir` each snapshot reported. A
 path under `$HOME` shows as `~`, and the eight costliest projects get their own rows. The rest share

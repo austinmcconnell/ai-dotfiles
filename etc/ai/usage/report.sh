@@ -331,14 +331,14 @@ CASE
 SQL
 }
 
-# A model ID ($1) as its fixed series slot: 1 Sonnet, 2 Haiku, 3 Opus, else 4 Other. Substring
-# matching keeps dated and Bedrock/Vertex-style IDs in their family.
+# A model ID ($1) as its fixed series slot: 1 Haiku, 2 Sonnet, 3 Opus, else 4 Other, cheapest
+# family first. Substring matching keeps dated and Bedrock/Vertex-style IDs in their family.
 model_slot_sql() {
     local model="$1"
     cat <<SQL
 CASE
-            WHEN lower($model) LIKE '%sonnet%' THEN 1
-            WHEN lower($model) LIKE '%haiku%' THEN 2
+            WHEN lower($model) LIKE '%sonnet%' THEN 2
+            WHEN lower($model) LIKE '%haiku%' THEN 1
             WHEN lower($model) LIKE '%opus%' THEN 3
             ELSE 4 END
 SQL
@@ -500,7 +500,7 @@ json_object(
         FROM (SELECT day FROM cost_days ORDER BY day) d LEFT JOIN cost_day_totals t
             ON t.day = d.day)),
     'series', json((SELECT json_group_array(json_object('slot', slot,
-            'label', CASE slot WHEN 1 THEN 'Sonnet' WHEN 2 THEN 'Haiku'
+            'label', CASE slot WHEN 1 THEN 'Haiku' WHEN 2 THEN 'Sonnet'
                 WHEN 3 THEN 'Opus' ELSE 'Other' END,
             'members', json(member_list), 'total', printf('%.2f', total)))
         FROM (SELECT slot, json_group_array(model) AS member_list, sum(total) AS total

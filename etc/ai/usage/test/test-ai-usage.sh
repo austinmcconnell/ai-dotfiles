@@ -200,7 +200,7 @@ check_page "html never renders null" absent "null"
 check_page "html folds models past the fourth into Other" present "<th scope=\"col\">Other</th>"
 # s1 and s2 cost 3.25 on 2025-12-31 local time; the other three 5.15 on 2026-01-01.
 check_page "html books a day's cost per model" present \
-    "2025-12-31</span></th><td>\$2.50</td><td></td><td>\$0.75</td><td></td><td>\$3.25</td>"
+    "2025-12-31</span></th><td></td><td>\$2.50</td><td>\$0.75</td><td></td><td>\$3.25</td>"
 check_page "html fills a day with no cost" present \
     "2026-01-02</span></th><td></td><td></td><td></td><td></td><td>\$0.00</td>"
 check_page "html scales the cost axis to a 1-2-5 step" present ">\$8</text>"
@@ -478,16 +478,16 @@ check_page "html shortens a session id, keeping the full id as its title" presen
     "<code title=\"5be12826-7786-4294-a90e-03d9d18cb72b\">5be12826</code>"
 check_page "html gives opus its fixed slot 3" present \
     "<span class=\"swatch s3\"></span>Opus (claude-opus): \$4.00"
-check_page "html gives sonnet its fixed slot 1" present \
-    "<span class=\"swatch s1\"></span>Sonnet (claude-sonnet): \$3.00"
-check_page "html gives haiku its fixed slot 2" present \
-    "<span class=\"swatch s2\"></span>Haiku (claude-haiku): \$1.00"
+check_page "html gives haiku its fixed slot 1" present \
+    "<span class=\"swatch s1\"></span>Haiku (claude-haiku): \$1.00"
+check_page "html gives sonnet its fixed slot 2" present \
+    "<span class=\"swatch s2\"></span>Sonnet (claude-sonnet): \$3.00"
 check_page "html folds fable into Other" present \
     "<span class=\"swatch s4\"></span>Other (claude-fable): \$2.00"
 check_page "html folds agent types past the top 10 into Other" present \
     "<tr><th scope=\"row\">$(nw "Other")</th><td>3</td><td>0</td><td>$(nw "\$3.00")</td>"
 check_page "html sums the folded types' families into Other's mix" present \
-    "<td>$(nw "\$3.00")</td><td class=\"text\">Sonnet 33% · Haiku 33% · Opus 33%</td>"
+    "<td>$(nw "\$3.00")</td><td class=\"text\">Haiku 33% · Sonnet 33% · Opus 33%</td>"
 check_page "html heads mixed dollars plainly" present "<th scope=\"col\">Cost</th>"
 check_page "html notes mixed launch estimates" present \
     "Estimates from subscription sessions are API-equivalent, not money spent"
@@ -508,9 +508,9 @@ sqlite3 "$WORK/families/usage.db" "DELETE FROM cost_snapshots;
 rm -f "$REPORT"
 USAGE_DB_DIR="$WORK/families" check "html renders model families" 0 "$REPORT" -- --html --no-open
 check_page "html groups sonnet generations into one legend entry" present \
-    "<span class=\"swatch s1\"></span>Sonnet (claude-sonnet-5-5, claude-sonnet-5, claude-sonnet-opus-x): \$3.10"
+    "<span class=\"swatch s2\"></span>Sonnet (claude-sonnet-5-5, claude-sonnet-5, claude-sonnet-opus-x): \$3.10"
 check_page "html slots a dated haiku ID as haiku" present \
-    "<span class=\"swatch s2\"></span>Haiku (claude-haiku-4-5-20251001): \$0.50"
+    "<span class=\"swatch s1\"></span>Haiku (claude-haiku-4-5-20251001): \$0.50"
 check_page "html slots a bracketed opus ID as opus, costliest or not" present \
     "<span class=\"swatch s3\"></span>Opus (claude-opus-5[1m]): \$5.00"
 check_page "html folds a session with no model object into Other" present \
@@ -882,15 +882,15 @@ rm -f "$REPORT"
 HOME=/home/tester USAGE_DB_DIR="$WORK/mix" \
     check "html renders stacked project bars" 0 "$REPORT" -- --html --no-open
 check_page "html stacks a Sonnet-only project in one segment" present \
-    "title=\"Sonnet 100%\"><span class=\"seg s1\" style=\"flex: 1 1 0\" \
+    "title=\"Sonnet 100%\"><span class=\"seg s2\" style=\"flex: 1 1 0\" \
 title=\"Sonnet: \$2.00\"></span></span></td>"
 check_page "html draws Sonnet and Opus segments by their dollars" present \
-    "title=\"Sonnet 75% · Haiku &lt;1% · Opus 25%\"><span class=\"seg s1\" \
+    "title=\"Haiku &lt;1% · Sonnet 75% · Opus 25%\"><span class=\"seg s2\" \
 style=\"flex: 0.75 1 0\" title=\"Sonnet: \$3.00\"></span><span class=\"seg s3\" \
 style=\"flex: 0.25 1 0\" title=\"Opus: \$1.00\"></span></span>"
 check_page "html names a family under 1% in the text cell" present \
-    "<td class=\"text\">Sonnet 75% · Haiku &lt;1% · Opus 25%</td>"
-check_page "html draws no segment for a family under 1%" absent 'class="seg s2"'
+    "<td class=\"text\">Haiku &lt;1% · Sonnet 75% · Opus 25%</td>"
+check_page "html draws no segment for a family under 1%" absent 'class="seg s1"'
 check_page "html reads a 0.6% share as <1%" present \
     "<td class=\"text\">Sonnet 99% · Opus &lt;1%</td>"
 check_page "html draws no segment for a 0.6% share" absent "title=\"Opus: \$0.60\""
@@ -898,11 +898,11 @@ check_page "html reads a 1.4% share as 1%" present \
     "<td class=\"text\">Sonnet 99% · Opus 1%</td>"
 check_page "html draws a segment for a 1.4% share" present "title=\"Opus: \$1.40\""
 check_page "html splits a project under \$1 by its shares" present \
-    "<span class=\"seg s1\" style=\"flex: 0.5 1 0\" title=\"Sonnet: \$0.25\"></span>\
+    "<span class=\"seg s2\" style=\"flex: 0.5 1 0\" title=\"Sonnet: \$0.25\"></span>\
 <span class=\"seg s3\" style=\"flex: 0.5 1 0\" title=\"Opus: \$0.25\"></span>"
 check_page "html lists the families in the project legend" present \
-    "<ul class=\"legend\"><li><span class=\"swatch s1\"></span>Sonnet</li>\
-<li><span class=\"swatch s2\"></span>Haiku</li><li><span class=\"swatch s3\"></span>Opus</li></ul>"
+    "<ul class=\"legend\"><li><span class=\"swatch s1\"></span>Haiku</li>\
+<li><span class=\"swatch s2\"></span>Sonnet</li><li><span class=\"swatch s3\"></span>Opus</li></ul>"
 
 rm -f "$REPORT"
 USAGE_NOW_EPOCH="$(epoch '2026-07-01 17:00:00')" \
@@ -951,14 +951,14 @@ else
 fi
 check_page "html stacks a type's families in slot order" present \
     "<td class=\"text\">Sonnet 25% · Opus 75%</td><td class=\"bar-cell\" aria-hidden=\"true\">\
-<span class=\"bar\" style=\"width: 100%\" title=\"Sonnet 25% · Opus 75%\"><span class=\"seg s1\" \
+<span class=\"bar\" style=\"width: 100%\" title=\"Sonnet 25% · Opus 75%\"><span class=\"seg s2\" \
 style=\"flex: 0.25 1 0\" title=\"Sonnet: \$1.00\"></span><span class=\"seg s3\" \
 style=\"flex: 0.75 1 0\" title=\"Opus: \$3.00\"></span></span></td>"
 check_page "html counts an unpriced launch beside a type's priced mix" present \
     "<th scope=\"row\"><span class=\"nw\">alpha</span></th><td>3</td><td>1</td>"
 check_page "html names a family no main session used by its fixed name" present \
     "<td class=\"text\">Haiku 100%</td><td class=\"bar-cell\" aria-hidden=\"true\">\
-<span class=\"bar\" style=\"width: 50%\" title=\"Haiku 100%\"><span class=\"seg s2\" \
+<span class=\"bar\" style=\"width: 50%\" title=\"Haiku 100%\"><span class=\"seg s1\" \
 style=\"flex: 1 1 0\" title=\"Haiku: \$2.00\"></span></span></td>"
 check_page "html shows a launch with no model as Other" present \
     "<td class=\"text\">Other 100%</td><td class=\"bar-cell\" aria-hidden=\"true\">\
@@ -970,7 +970,7 @@ check_page "html draws no bar for an unpriced type" present \
     "<td>$(nw "(unpriced)")</td><td class=\"text\"></td><td class=\"bar-cell\" aria-hidden=\"true\">\
 </td></tr></tbody>"
 check_page "html lists a subagent-only family in the legend" present \
-    "<li><span class=\"swatch s2\"></span>Haiku</li>"
+    "<li><span class=\"swatch s1\"></span>Haiku</li>"
 check_page "html never renders null in subagent mixes" absent "null"
 
 # With no priced launch there are no families to name, so the legend is left out. The column
