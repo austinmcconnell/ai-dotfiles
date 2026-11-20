@@ -852,7 +852,8 @@ else
 fi
 
 # Stacked project bars: an all-Sonnet project, a Sonnet and Opus project with a Haiku session
-# under 1%, and a project under $1 split evenly, so its flex shares are checked below a total of 1.
+# under 1%, a project under $1 split evenly, so its flex shares are checked below a total of 1, and
+# two projects whose minor family sits at 0.6% and 1.4% to pin the "<1%" cut on the raw share.
 mkdir -p "$WORK/mix"
 cp "$USAGE_DB" "$WORK/mix/usage.db"
 mix_rows=""
@@ -869,6 +870,10 @@ m2 1 claude-opus-5-5 /home/tester/mixed
 m3 0.02 claude-haiku-5-5 /home/tester/mixed
 t1 0.25 claude-sonnet-5-5 /home/tester/small
 t2 0.25 claude-opus-5-5 /home/tester/small
+r1 99.4 claude-sonnet-5-5 /home/tester/rounding-under
+r2 0.6 claude-opus-5-5 /home/tester/rounding-under
+r3 98.6 claude-sonnet-5-5 /home/tester/rounding-over
+r4 1.4 claude-opus-5-5 /home/tester/rounding-over
 EOF
 sqlite3 "$WORK/mix/usage.db" "DELETE FROM cost_snapshots;
     INSERT INTO cost_snapshots (tool, session_id, total_cost_usd, occurred_at, raw_json)
@@ -886,6 +891,12 @@ style=\"flex: 0.25 1 0\" title=\"Opus: \$1.00\"></span></span>"
 check_page "html names a family under 1% in the text cell" present \
     "<td class=\"text\">Sonnet 75% · Haiku &lt;1% · Opus 25%</td>"
 check_page "html draws no segment for a family under 1%" absent 'class="seg s2"'
+check_page "html reads a 0.6% share as <1%" present \
+    "<td class=\"text\">Sonnet 99% · Opus &lt;1%</td>"
+check_page "html draws no segment for a 0.6% share" absent "title=\"Opus: \$0.60\""
+check_page "html reads a 1.4% share as 1%" present \
+    "<td class=\"text\">Sonnet 99% · Opus 1%</td>"
+check_page "html draws a segment for a 1.4% share" present "title=\"Opus: \$1.40\""
 check_page "html splits a project under \$1 by its shares" present \
     "<span class=\"seg s1\" style=\"flex: 0.5 1 0\" title=\"Sonnet: \$0.25\"></span>\
 <span class=\"seg s3\" style=\"flex: 0.5 1 0\" title=\"Opus: \$0.25\"></span>"

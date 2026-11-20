@@ -397,8 +397,8 @@ def family_name($c; $slot):
 
 # A share of a row's dollars as a whole percent. Under 1% reads as <1%. Unescaped: callers escape.
 def mix_percent($usd; $total):
-  ($usd / $total * 100 | round) as $p
-  | if $p == 0 then "<1%" else "\($p)%" end;
+  if $usd / $total < 0.01 then "<1%"
+  else "\($usd / $total * 100 | round)%" end;
 
 # A row's mix as text in slot order, for example "Sonnet 75% · Opus 25%". Unescaped.
 def mix_text($c; $total):

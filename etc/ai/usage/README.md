@@ -440,6 +440,13 @@ Other with paths under `/tmp` and `$TMPDIR`, with or without a leading `/private
 throwaway runs rather than projects. Each row counts its sessions, so a session that moved between
 projects counts in each row.
 
+Each project's bar is stacked by model family, in the daily chart's fixed colours. Segments are
+sized by dollars on the same scale as the bar's length. A family under 1% of its row's dollars is
+not drawn, but the Model mix column still names it. That column gives each family's whole-percent
+share and reads `<1%` for a family under 1%, so the shares may not total 100. The bar's tooltip
+repeats the column, and each drawn segment has its own tooltip with its dollars. A legend above the
+table lists the families in that table.
+
 A session counts as a subscription session when any of its snapshots in the window carries a
 `rate_limits` object; an explicit `null` does not count. The cost sections' captions call
 subscription dollars an API-equivalent estimate, not money spent, and other dollars API-rate
@@ -456,6 +463,11 @@ fast-finishing subagents can be missed, and no figure in it is added to a total:
 already inside its session's cost. Its caption and header take the subscription split from the
 priced launches' own parent sessions and name no amounts; a parent with no cost in the window counts
 as API-rate.
+
+Each agent type's bar is stacked by model family the same way, from its priced launches, and the
+Model mix column and legend work as they do for projects. The Other row's mix sums the types it
+folds in. Unpriced launches add nothing to a mix. A type with no priced cost has no bar and an empty
+Model mix cell.
 
 With SQLite 3.54, the statement takes about 80 ms on a 4,600-row DB with 15 days of cost, and the
 same on a 98,000-row copy with 20 months of older history, so it grows with the window, not the
