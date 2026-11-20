@@ -76,11 +76,12 @@ h3 { font-size: 0.95rem; margin: 0 0 0.25rem; color: var(--muted); font-weight: 
 .swatch.s3 { background: var(--s3); }
 .swatch.s4 { background: var(--s4); }
 details { margin-top: 0.5rem; }
-table { border-collapse: collapse; font-variant-numeric: tabular-nums; margin-top: 0.5rem; }
+table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; margin-top: 0.5rem; }
 th, td { padding: 0.2rem 0.75rem 0.2rem 0; text-align: right; border-bottom: 1px solid var(--rule); }
 th:first-child, .text { text-align: left; }
 thead th { color: var(--muted); font-weight: 600; }
-.bars { width: 100%; max-width: 48rem; }
+.bars { width: 100%; }
+.bars td.text { white-space: nowrap; }
 .bars tbody th { font-weight: 400; overflow-wrap: break-word; }
 tbody th { font-weight: 400; }
 td.text { overflow-wrap: break-word; }
