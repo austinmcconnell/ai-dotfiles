@@ -357,6 +357,20 @@ USAGE_DB_DIR="$WORK/seven-only" check "html renders 7d data alone" 0 "$REPORT" \
 check_page "html shows a window with no data" present \
     "<p class=\"figure\">No data</p>"
 
+# The 5-hour tile comes before the 7-day tile.
+mkdir -p "$WORK/tile-order"
+cp "$USAGE_DB" "$WORK/tile-order/usage.db"
+rm -f "$REPORT"
+USAGE_DB_DIR="$WORK/tile-order" check "html renders quota tiles for ordering" 0 "$REPORT" \
+    -- --html --no-open
+tile_order_page="$(cat "$REPORT")"
+if [[ "$tile_order_page" == *"5-hour window</h3>"*"7-day window</h3>"* ]]; then
+    echo "ok    html lists the 5-hour tile before the 7-day tile"
+else
+    printf 'FAIL  html lists the 5-hour tile before the 7-day tile: %s\n' "$REPORT"
+    FAILURES=$((FAILURES + 1))
+fi
+
 # Burn-up over a window opened 3.5 days before the clock. Each row is [<5h pct>, <7d pct>,
 # <7d resets_at>, <seconds before now>]; only rows of the open window with a 7d figure plot.
 window_end=$((USAGE_NOW_EPOCH + 302400))

@@ -89,8 +89,8 @@ def recent_line($b):
   end;
 
 # Cost pace for a machine with no quota rows (Enterprise or API), the same tile row as the quota
-# windows, longest window first. A figure that is not available arrives as an empty string,
-# never null, and the tile says why instead.
+# windows, with the month to date first. A figure that is not available arrives as an empty
+# string, never null, and the tile says why instead.
 def cost_pace:
   .cost as $c
   | $c.burn as $b
@@ -124,8 +124,8 @@ def quota_tiles:
   + (if .quota_observed == 1 then
       "<p class=\"meta\">Quota observed on this machine, most recently"
       + " \(.last_observed | esc). It is account-wide.</p>"
-      + "<div class=\"tiles\">" + tile("seven_day"; "7-day window")
-      + tile("five_hour"; "5-hour window") + "</div>"
+      + "<div class=\"tiles\">" + tile("five_hour"; "5-hour window")
+      + tile("seven_day"; "7-day window") + "</div>"
     else
       "<p>No quota data on this machine (Enterprise credits and API usage are not tracked"
       + " here).</p>"

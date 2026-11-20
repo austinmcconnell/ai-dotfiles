@@ -377,23 +377,23 @@ ahead of the clock, reset once it has passed, or unknown when the row has no res
 case the tile shows that row's own figure. A window with no row shows no data.
 
 Without quota rows (Enterprise or API use), the section is headed "How fast is cost building up?"
-and shows three tiles, longest window first: the month to date, a daily rate, and a projected month
-end. The cost window is 31 days, so the month to date is whole. The rate is the mean of this
-calendar month's complete days before today, counting a day with no cost as $0 from the 1st. Each
-month starts with no history, so the prior month's spend never feeds the rate. Today is left out,
-since a partial day would pull the rate down. The rate needs at least 3 complete days; until then it
-reads "Not enough history", which also withholds the projection. The projection is the month to date
-before today, plus the larger of today's cost so far and the rate, plus the rate for each full day
-left in the local calendar month, taken from the rate rounded to cents. It extends a bursty series
-in a straight line, so it is an estimate. Beneath the daily rate, a smaller line shows the mean of
-the last 7 complete days and its ratio to the rate. That recent pace is a pacing signal and is not
-part of the projection, and it needs 7 complete days before it shows. The report has no credit limit
-to compare against, so the heading does not claim to say whether quota will run out. A machine that
-has recorded quota rows shows the quota tiles and never these, since its dollars are API-equivalent
-and quota is the constraint; one that moved to Enterprise keeps showing quota tiles. The month is
-the local calendar month, while the Enterprise usage segment in the statusline assumes
-America/Chicago, so the two can disagree around a month boundary away from that zone. Like every
-figure here, it covers only what this machine recorded.
+and shows three tiles: the month to date, a daily rate, and a projected month end. The cost window
+is 31 days, so the month to date is whole. The rate is the mean of this calendar month's complete
+days before today, counting a day with no cost as $0 from the 1st. Each month starts with no
+history, so the prior month's spend never feeds the rate. Today is left out, since a partial day
+would pull the rate down. The rate needs at least 3 complete days; until then it reads "Not enough
+history", which also withholds the projection. The projection is the month to date before today,
+plus the larger of today's cost so far and the rate, plus the rate for each full day left in the
+local calendar month, taken from the rate rounded to cents. It extends a bursty series in a straight
+line, so it is an estimate. Beneath the daily rate, a smaller line shows the mean of the last 7
+complete days and its ratio to the rate. That recent pace is a pacing signal and is not part of the
+projection, and it needs 7 complete days before it shows. The report has no credit limit to compare
+against, so the heading does not claim to say whether quota will run out. A machine that has
+recorded quota rows shows the quota tiles and never these, since its dollars are API-equivalent and
+quota is the constraint; one that moved to Enterprise keeps showing quota tiles. The month is the
+local calendar month, while the Enterprise usage segment in the statusline assumes America/Chicago,
+so the two can disagree around a month boundary away from that zone. Like every figure here, it
+covers only what this machine recorded.
 
 The last time this machine saw quota is the later of the newest row in the 7-day tile's window
 carrying its figure and the newest `cost_snapshots` row whose payload carried `rate_limits` (scanned
