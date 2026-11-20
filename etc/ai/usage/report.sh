@@ -177,14 +177,9 @@ cost_daily(day, usd) AS (
 cost_sessions(tool, session_id, subscription) AS (
     SELECT tool, session_id, max(subscription) FROM cost_groups GROUP BY tool, session_id
 ),
--- The three costliest models keep their own series and the rest share Other, slot 4, which
--- the page draws grey and stacks on top.
-cost_models(model, total, rank) AS (
-    SELECT model, sum(usd), row_number() OVER (ORDER BY sum(usd) DESC, model)
-    FROM cost_shown WHERE usd > 0 GROUP BY model
-),
 cost_series(model, total, slot) AS (
-    SELECT model, total, CASE WHEN rank <= 3 THEN rank ELSE 4 END FROM cost_models
+    SELECT model, sum(usd), $(model_slot_sql model)
+    FROM cost_shown WHERE usd > 0 GROUP BY model
 ),
 cost_cells(day, slot, usd) AS (
     SELECT g.day, s.slot, sum(g.usd) FROM cost_shown g JOIN cost_series s ON s.model = g.model
@@ -336,6 +331,19 @@ CASE
 SQL
 }
 
+# A model ID ($1) as its fixed series slot: 1 Sonnet, 2 Haiku, 3 Opus, else 4 Other. Substring
+# matching keeps dated and Bedrock/Vertex-style IDs in their family.
+model_slot_sql() {
+    local model="$1"
+    cat <<SQL
+CASE
+            WHEN lower($model) LIKE '%sonnet%' THEN 1
+            WHEN lower($model) LIKE '%haiku%' THEN 2
+            WHEN lower($model) LIKE '%opus%' THEN 3
+            ELSE 4 END
+SQL
+}
+
 # Cost per project over the same window. Temp-directory paths fold into Other with every
 # project past the top REPORT_TOP_PROJECTS.
 project_ctes_sql() {
@@ -442,10 +450,10 @@ json_object(
         FROM (SELECT day FROM cost_days ORDER BY day) d LEFT JOIN cost_day_totals t
             ON t.day = d.day)),
     'series', json((SELECT json_group_array(json_object('slot', slot,
-            'label', CASE WHEN slot < 4 THEN first_model ELSE 'Other' END,
+            'label', CASE slot WHEN 1 THEN 'Sonnet' WHEN 2 THEN 'Haiku'
+                WHEN 3 THEN 'Opus' ELSE 'Other' END,
             'members', json(member_list), 'total', printf('%.2f', total)))
-        FROM (SELECT slot, min(model) AS first_model,
-                json_group_array(model) AS member_list, sum(total) AS total
+        FROM (SELECT slot, json_group_array(model) AS member_list, sum(total) AS total
             FROM (SELECT * FROM cost_series ORDER BY total DESC, model)
             GROUP BY slot ORDER BY slot))),
     'scale_max', (SELECT step * 4 FROM cost_scale),

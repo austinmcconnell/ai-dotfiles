@@ -175,8 +175,8 @@ check_page "html lists page caveats" present "Quota is account-wide"
 # The page wraps hyphenated ids, dates, and amounts in a no-wrap span.
 nw() { printf '<span class="nw">%s</span>' "$1"; }
 
-# Model ids reach the page as series labels; a hostile one must render inert. It costs the
-# most, so it keeps its own series while the two cheapest models share Other.
+# Model ids reach the page as series labels; a hostile one must render inert. It matches no
+# family, so it lands in Other.
 hostile='</script><!--&"'
 cost_row() {
     printf "('claude-code', '%s', %s, '2026-01-02T00:00:00Z', %s)" "$1" "$2" "$(sql_str "$3")"
@@ -200,14 +200,14 @@ check_page "html never renders null" absent "null"
 check_page "html folds models past the fourth into Other" present "<th scope=\"col\">Other</th>"
 # s1 and s2 cost 3.25 on 2025-12-31 local time; the other three 5.15 on 2026-01-01.
 check_page "html books a day's cost per model" present \
-    "2025-12-31</span></th><td></td><td>\$2.50</td><td>\$0.75</td><td></td><td>\$3.25</td>"
+    "2025-12-31</span></th><td>\$2.50</td><td></td><td>\$0.75</td><td></td><td>\$3.25</td>"
 check_page "html fills a day with no cost" present \
     "2026-01-02</span></th><td></td><td></td><td></td><td></td><td>\$0.00</td>"
 check_page "html scales the cost axis to a 1-2-5 step" present ">\$8</text>"
 check_page "html leaves a 2px gap under each upper segment" present \
     '<rect class="s3" x="84.2" y="140.6" width="131.6" height="18.6">'
 check_page "html stacks the grey Other on top" present \
-    '<rect class="s4" x="272.2" y="88.4" width="131.6" height="2.1">'
+    '<rect class="s4" x="272.2" y="88.3" width="131.6" height="138.3">'
 check_page "html labels API-rate dollars" present "Dollars are at API rates."
 check_page "html never calls cost spend" absent "spend"
 # The seeded DB has quota rows, so the page shows the quota tiles and no cost pace.
@@ -437,7 +437,7 @@ USAGE_DB_DIR="$WORK/stale" check "html renders stale cost snapshots" 0 "$REPORT"
 check_page "html dates the observation by a payload with the highest figure" present \
     "most recently 2026-01-02 11:30."
 
-# A fourth model alone still folds into Other, so slot 4 always means Other.
+# Fable is in no family, so it shares slot 4 while the other three keep their fixed slots.
 mkdir -p "$WORK/four"
 cp "$USAGE_DB" "$WORK/four/usage.db"
 four_rows=""
@@ -467,15 +467,43 @@ rm -f "$REPORT"
 USAGE_DB_DIR="$WORK/four" check "html renders four models" 0 "$REPORT" -- --html --no-open
 check_page "html shortens a session id, keeping the full id as its title" present \
     "<code title=\"5be12826-7786-4294-a90e-03d9d18cb72b\">5be12826</code>"
-check_page "html names at most three models" present \
-    "<span class=\"swatch s3\"></span>claude-fable: \$2.00"
-check_page "html folds a lone fourth model into Other" present \
-    "<span class=\"swatch s4\"></span>Other (claude-haiku): \$1.00"
+check_page "html gives opus its fixed slot 3" present \
+    "<span class=\"swatch s3\"></span>Opus (claude-opus): \$4.00"
+check_page "html gives sonnet its fixed slot 1" present \
+    "<span class=\"swatch s1\"></span>Sonnet (claude-sonnet): \$3.00"
+check_page "html gives haiku its fixed slot 2" present \
+    "<span class=\"swatch s2\"></span>Haiku (claude-haiku): \$1.00"
+check_page "html folds fable into Other" present \
+    "<span class=\"swatch s4\"></span>Other (claude-fable): \$2.00"
 check_page "html folds agent types past the top 10 into Other" present \
     "<tr><th scope=\"row\">$(nw "Other")</th><td>3</td><td>0</td><td>$(nw "\$3.00")</td>"
 check_page "html heads mixed dollars plainly" present "<th scope=\"col\">Cost</th>"
 check_page "html notes mixed launch estimates" present \
     "Estimates from subscription sessions are API-equivalent, not money spent"
+
+# Family slots: IDs in one family share a slot, and a slot never moves with cost rank. Opus costs
+# the most here and still takes slot 3.
+mkdir -p "$WORK/families"
+cp "$USAGE_DB" "$WORK/families/usage.db"
+family_rows="$(cost_row f1 1 '{"model":{"id":"claude-sonnet-5"}}'),
+    $(cost_row f2 2 '{"model":{"id":"claude-sonnet-5-5"}}'),
+    $(cost_row f3 0.10 '{"model":{"id":"claude-sonnet-opus-x"}}'),
+    $(cost_row f4 5 '{"model":{"id":"claude-opus-5[1m]"}}'),
+    $(cost_row f5 0.50 '{"model":{"id":"claude-haiku-4-5-20251001"}}'),
+    $(cost_row f6 0.25 '{}')"
+sqlite3 "$WORK/families/usage.db" "DELETE FROM cost_snapshots;
+    INSERT INTO cost_snapshots (tool, session_id, total_cost_usd, occurred_at, raw_json)
+    VALUES $family_rows;"
+rm -f "$REPORT"
+USAGE_DB_DIR="$WORK/families" check "html renders model families" 0 "$REPORT" -- --html --no-open
+check_page "html groups sonnet generations into one legend entry" present \
+    "<span class=\"swatch s1\"></span>Sonnet (claude-sonnet-5-5, claude-sonnet-5, claude-sonnet-opus-x): \$3.10"
+check_page "html slots a dated haiku ID as haiku" present \
+    "<span class=\"swatch s2\"></span>Haiku (claude-haiku-4-5-20251001): \$0.50"
+check_page "html slots a bracketed opus ID as opus, costliest or not" present \
+    "<span class=\"swatch s3\"></span>Opus (claude-opus-5[1m]): \$5.00"
+check_page "html folds a session with no model object into Other" present \
+    "<span class=\"swatch s4\"></span>Other ((unknown)): \$0.25"
 
 # Burn-rate scenarios, each on a copy of the seeded DB with its own local clock. A machine with no
 # quota rows (Enterprise) has no rate_limits in any payload, so every scenario is API-rate. Rows
@@ -727,7 +755,7 @@ sqlite3 "$WORK/straddle/usage.db" "DELETE FROM cost_snapshots;
 rm -f "$REPORT"
 USAGE_DB_DIR="$WORK/straddle" check "html renders a session older than the window" 0 "$REPORT" \
     -- --html --no-open
-check_page "html books only the in-window step" present "claude-opus-5-5: \$1.00</li>"
+check_page "html books only the in-window step" present "Opus (claude-opus-5-5): \$1.00</li>"
 check_page "html never books earlier cost to the window" absent "\$101.00"
 
 check_page "html reads a null rate_limits as API rates" present "Dollars are at API rates."
@@ -738,7 +766,7 @@ rm -f "$REPORT"
 USAGE_DB_DIR="$WORK/straddle" check "html renders a session with no sessions row" 0 "$REPORT" \
     -- --html --no-open
 check_page "html books only the in-window step without a sessions row" present \
-    "claude-opus-5-5: \$1.00</li>"
+    "Opus (claude-opus-5-5): \$1.00</li>"
 
 # A payload whose model and project are numbers still renders.
 sqlite3 "$WORK/straddle/usage.db" "INSERT INTO cost_snapshots (tool, session_id,
@@ -749,7 +777,7 @@ sqlite3 "$WORK/straddle/usage.db" "INSERT INTO cost_snapshots (tool, session_id,
 rm -f "$REPORT"
 USAGE_DB_DIR="$WORK/straddle" check "html renders numeric payload strings" 0 "$REPORT" \
     -- --html --no-open
-check_page "html renders a numeric model id" present "42: \$0.50</li>"
+check_page "html renders a numeric model id" present "Other (42): \$0.50</li>"
 
 # Project paths with a fake HOME and TMPDIR. Each row is <session> <cost> <project_dir>, all on
 # Opus an hour before the clock; "-" leaves project_dir out of the payload. Nine projects outside

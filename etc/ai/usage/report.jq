@@ -293,9 +293,7 @@ def cost_x($i; $n): (56 + $i * 564 / $n) * 10 | round / 10;
 def cost_h($usd; $max): ($usd / $max * 220) * 10 | round / 10;
 
 def series_label:
-  if .label == "Other" then "Other (" + (.members | map(esc) | join(", ")) + ")"
-  else .label | esc
-  end;
+  (.label | esc) + " (" + (.members | map(esc) | join(", ")) + ")";
 
 def capitalize: (.[0:1] | ascii_upcase) + .[1:];
 
