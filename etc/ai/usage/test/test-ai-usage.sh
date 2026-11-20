@@ -262,9 +262,9 @@ check_page "html fills a day with no cost" present \
     "2026-01-02</span></th><td></td><td></td><td></td><td></td><td>\$0.00</td>"
 check_page "html scales the cost axis to a 1-2-5 step" present ">\$8</text>"
 check_page "html leaves a 2px gap under each upper segment" present \
-    '<rect class="s3" x="84.2" y="140.6" width="131.6" height="18.6">'
+    '<rect class="s3" x="100.2" y="140.6" width="206.3" height="18.6">'
 check_page "html stacks the grey Other on top" present \
-    '<rect class="s4" x="272.2" y="88.3" width="131.6" height="138.3">'
+    '<rect class="s4" x="394.9" y="88.3" width="206.3" height="138.3">'
 check_page "html labels API-rate dollars" present "Dollars are at API rates."
 check_page "html never calls cost spend" absent "spend"
 # The seeded DB has quota rows, so the page shows the quota tiles and no cost pace.
@@ -451,8 +451,8 @@ USAGE_DB_DIR="$WORK/burnup" check "html renders a burn-up" 0 "$REPORT" -- --html
 # Day 0.5 at 10%, a repeat of 10% that adds no step, day 2.5 at 30%, then held to day 3.5. The
 # previous window's 90% and the row without a 7d figure stay off the line.
 check_page "html steps the burn-up from the first figure to the last observation" present \
-    'd="M81.4,208H247.1V164H330"'
-check_page "html draws the even-pace diagonal" present 'x1="40" y1="230" x2="620" y2="10"'
+    'd="M104.3,208H361.4V164H490"'
+check_page "html draws the even-pace diagonal" present 'x1="40" y1="230" x2="940" y2="10"'
 check_page "html marks steps as observed changes" present "Steps mark when this machine observed"
 check_page "html labels the burn-up for screen readers" present 'aria-labelledby="burnup-title'
 check_page "html labels subscription dollars" present \
@@ -461,7 +461,7 @@ check_page "html heads subscription dollars" present "API-equivalent cost</th>"
 check_page "html describes subscription dollars to screen readers" present \
     "not money spent. The figures are in the table below.</desc>"
 check_page "html labels the burn-up's current figure" present \
-    '<text class="end-label" x="336" y="168">30%</text>'
+    '<text class="end-label" x="496" y="168">30%</text>'
 
 # A 100% figure six and a half days into its window, so the label sits past day 6 and above the
 # line's end. Above the top of the plot it would be clipped, so it goes under the line instead.
@@ -480,7 +480,7 @@ rm -f "$REPORT"
 USAGE_DB_DIR="$WORK/burnup-top" check "html renders a burn-up at the top" 0 "$REPORT" \
     -- --html --no-open
 check_page "html keeps the top figure's label inside the plot" present \
-    '<text class="end-label" x="578.6" y="28" text-anchor="end">100%</text>'
+    '<text class="end-label" x="875.7" y="28" text-anchor="end">100%</text>'
 
 # Another session's stale 20% and 40% after 50% and 60% in the same windows, with no cost
 # snapshot after it. The tiles, pace, and line keep the higher figures as last seen an hour
@@ -507,7 +507,7 @@ check_page "html dates the observation to the highest figure" present \
 check_page "html paces the highest figure when it was seen" present \
     "11 points over an even pace"
 check_page "html holds the burn-up line over a stale figure" present \
-    'd="M323.1,142H326.5V98H326.5"'
+    'd="M479.3,142H484.6V98H484.6"'
 check_page "html says each quota figure is the window's highest" present \
     "A quota figure with a reset time is the highest recorded for its window"
 
@@ -682,7 +682,7 @@ check_page "html puts the month chart in the burn-up slot" present \
 check_page "html drops the quota burn-up without quota rows" absent \
     "How has 7-day usage built up this window?"
 check_page "html draws the projection as its own dashed path" present \
-    '<path class="proj" d="M383.5,149.7L620,87.6"/>'
+    '<path class="proj" d="M569.3,149.7L940,87.6"/>'
 check_page "html labels the end of the dashed line with the projection" present \
     "text-anchor=\"end\">\$258.90</text>"
 check_page "html scales the month axis to the projection" present ">\$400</text>"

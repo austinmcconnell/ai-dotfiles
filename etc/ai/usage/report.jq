@@ -140,9 +140,11 @@ def quota:
   else quota_tiles
   end;
 
-# Burn-up chart geometry: a 640x260 viewBox with the plot inset for axis labels. Coordinates
-# are rounded to one decimal, the only numbers jq prints itself.
-def plot_x($day): (40 + ([[$day, 0] | max, 7] | min) / 7 * 580) * 10 | round / 10;
+# Chart geometry: a 960x260 viewBox. Each plot keeps a left inset for its axis labels, in absolute
+# units so the labels hold their size, and ends at chart_right. Coordinates are rounded to one
+# decimal, the only numbers jq prints itself.
+def chart_right: 940;
+def plot_x($day): (40 + ([[$day, 0] | max, 7] | min) / 7 * (chart_right - 40)) * 10 | round / 10;
 def plot_y($pct): (10 + (100 - ([[$pct, 0] | max, 100] | min)) / 100 * 220) * 10 | round / 10;
 
 # Step-after: each figure holds until the next observed change, then the last one holds until
@@ -172,7 +174,7 @@ def end_label($b; $used):
 
 def burnup_axes:
   ([0, 25, 50, 75, 100] | map(plot_y(.) as $y
-    | "<line class=\"grid\" x1=\"40\" x2=\"620\" y1=\"\($y)\" y2=\"\($y)\"/>"
+    | "<line class=\"grid\" x1=\"40\" x2=\"\(chart_right)\" y1=\"\($y)\" y2=\"\($y)\"/>"
     + "<text class=\"tick\" x=\"34\" y=\"\($y + 4)\" text-anchor=\"end\">\(.)%</text>")
     | join(""))
   + ([range(0; 8)] | map(plot_x(.) as $x
@@ -188,7 +190,7 @@ def quota_burnup:
       else
         "<p class=\"meta\">Days into the current window against the highest share used so far."
         + " Steps mark when this machine observed a change; the quota is account-wide.</p>"
-        + "<svg class=\"chart\" viewBox=\"0 0 640 260\" role=\"img\""
+        + "<svg class=\"chart\" viewBox=\"0 0 960 260\" role=\"img\""
         + " aria-labelledby=\"burnup-title burnup-desc\">"
         + "<title id=\"burnup-title\">7-day usage this window</title>"
         + "<desc id=\"burnup-desc\">A solid stepped line of the highest 7-day share used so far,"
@@ -207,13 +209,13 @@ def quota_burnup:
 
 # Month-to-date cost chart for a machine with no quota rows: the same viewBox and left inset as
 # the daily cost columns, with x as days into the local calendar month.
-def month_x($day; $n): (56 + $day / $n * 564) * 10 | round / 10;
+def month_x($day; $n): (56 + $day / $n * (chart_right - 56)) * 10 | round / 10;
 def month_y($usd; $max): (230 - $usd / $max * 220) * 10 | round / 10;
 
 def month_axes($b):
   $b.chart as $ch
   | ([range(0; 5)] | map((230 - . * 55) as $y
-      | "<line class=\"grid\" x1=\"56\" x2=\"620\" y1=\"\($y)\" y2=\"\($y)\"/>"
+      | "<line class=\"grid\" x1=\"56\" x2=\"\(chart_right)\" y1=\"\($y)\" y2=\"\($y)\"/>"
       + "<text class=\"tick\" x=\"50\" y=\"\($y + 4)\" text-anchor=\"end\">"
       + "\($ch.ticks[.] | esc)</text>") | join(""))
   + ([0, 7, 14, 21, 28] | map(month_x(.; $ch.days) as $x
@@ -271,7 +273,7 @@ def cost_burnup:
     else " A projection is drawn once there is a daily rate."
     end)
   + " \($c | dollar_note)</p>"
-  + "<svg class=\"chart\" viewBox=\"0 0 640 260\" role=\"img\""
+  + "<svg class=\"chart\" viewBox=\"0 0 960 260\" role=\"img\""
   + " aria-labelledby=\"month-title month-desc\">"
   + "<title id=\"month-title\">Cost this month</title>"
   + "<desc id=\"month-desc\">\(month_desc($b))</desc>"
@@ -290,7 +292,7 @@ def burnup:
 # Daily cost columns: the same viewBox, with a wider left inset for dollar labels. Each day
 # stacks its series bottom up in slot order, so Other sits on top. A segment above the first
 # gives up its bottom 2 units to a surface gap, keeping the column's top at its true total.
-def cost_x($i; $n): (56 + $i * 564 / $n) * 10 | round / 10;
+def cost_x($i; $n): (56 + $i * (chart_right - 56) / $n) * 10 | round / 10;
 def cost_h($usd; $max): ($usd / $max * 220) * 10 | round / 10;
 
 def series_label:
@@ -320,10 +322,10 @@ def launch_note:
 def cost_columns($c):
   ($c.days | length) as $n
   | ([$n, 1] | max) as $n
-  | ((564 / $n * 0.7) * 10 | round / 10) as $bar
+  | (((chart_right - 56) / $n * 0.7) * 10 | round / 10) as $bar
   | ($c.series | map({key: (.slot | tostring), value: .label}) | from_entries) as $names
   | [range(0; $c.days | length) as $i | $c.days[$i] as $day
-    | (cost_x($i; $n) + (564 / $n - $bar) / 2) as $x
+    | (cost_x($i; $n) + ((chart_right - 56) / $n - $bar) / 2) as $x
     | reduce $day.cells[] as $cell ({y: 230, out: ""};
         cost_h($cell[1]; $c.scale_max) as $h
         | (if .y < 230 then ([$h - 2, 0.5] | max) * 10 | round / 10 else $h end) as $drawn
@@ -337,7 +339,7 @@ def cost_columns($c):
 def cost_chart($c):
   ($c.days | length) as $n
   | ([range(0; 5)] | map((230 - . * 55) as $y
-      | "<line class=\"grid\" x1=\"56\" x2=\"620\" y1=\"\($y)\" y2=\"\($y)\"/>"
+      | "<line class=\"grid\" x1=\"56\" x2=\"\(chart_right)\" y1=\"\($y)\" y2=\"\($y)\"/>"
       + "<text class=\"tick\" x=\"50\" y=\"\($y + 4)\" text-anchor=\"end\">"
       + "\($c.ticks[.] | esc)</text>") | join(""))
   + ([range(0; $n) | select(($n - 1 - .) % 7 == 0)] | map(
@@ -377,7 +379,7 @@ def cost:
       + (if $month then "from the first day with cost this month." else "for up to 31 days." end)
       + " Cost is booked to the main-session model, including its subagents."
       + " \($c | dollar_note)</p>"
-      + "<svg class=\"chart\" viewBox=\"0 0 640 260\" role=\"img\""
+      + "<svg class=\"chart\" viewBox=\"0 0 960 260\" role=\"img\""
       + " aria-labelledby=\"cost-title cost-desc\">"
       + "<title id=\"cost-title\">Daily cost by model</title>"
       + "<desc id=\"cost-desc\">Stacked columns of each local day's cost in US dollars, one"
