@@ -230,10 +230,12 @@ check_page "html shows a session's missing project as (unknown)" present \
 # 9.00 and 10.00 sum to 19.00 per type, not as text; the unpriced launch has no agent type.
 check_page "html sums a type's priced launches, costliest first" present \
     "<tr><th scope=\"row\">$(nw "doubt-reviewer")</th><td>2</td><td>0</td><td>$(nw "\$19.00")</td>\
-<td class=\"bar-cell\" aria-hidden=\"true\"><span class=\"bar\" style=\"width: 100%\">"
+<td class=\"text\">Opus 100%</td><td class=\"bar-cell\" aria-hidden=\"true\">\
+<span class=\"bar\" style=\"width: 100%\" title=\"Opus 100%\"><span class=\"seg s3\" \
+style=\"flex: 1 1 0\" title=\"Opus: \$19.00\"></span></span></td></tr>"
 check_page "html lists an unpriced type last, with no bar" present \
     "<tr><th scope=\"row\">$(nw "(unknown)")</th><td>1</td><td>1</td><td>$(nw "(unpriced)")</td>\
-<td class=\"bar-cell\" aria-hidden=\"true\"></td></tr></tbody>"
+<td class=\"text\"></td><td class=\"bar-cell\" aria-hidden=\"true\"></td></tr></tbody>"
 check_page "html never lists launch names" absent "Review ten"
 check_page "html leaves out launches outside the window" absent "Old review"
 check_page "html leaves out launches after the clock" absent "(no name)"
@@ -456,13 +458,20 @@ sqlite3 "$WORK/four/usage.db" "DELETE FROM cost_snapshots;
     VALUES ('claude-code', 'b', 't6', 'Subscription review', 1, '2026-01-02T00:00:00Z',
         '2026-01-02T00:00:00Z');"
 # Eleven more agent types at 1.00 each: the last three past the top 10 share Other.
+# The folded types (09-11) take three families, so the Other mix is their sum, not one slot.
 type_rows=""
 for n in 01 02 03 04 05 06 07 08 09 10 11; do
-    type_rows+="('claude-code', 'c', 'type$n', 'type$n', 1, '2026-01-02T00:00:00Z',
+    case "$n" in
+    09) model="'claude-opus-5-5'" ;;
+    10) model="'claude-haiku-5-5'" ;;
+    11) model="'claude-sonnet-5-5'" ;;
+    *) model=NULL ;;
+    esac
+    type_rows+="('claude-code', 'c', 'type$n', 'type$n', $model, 1, '2026-01-02T00:00:00Z',
         '2026-01-02T00:00:00Z'),"
 done
 sqlite3 "$WORK/four/usage.db" "INSERT INTO subagent_tasks (tool, parent_session_id, task_id,
-    agent_type, estimated_cost_usd, started_at, updated_at) VALUES ${type_rows%,};"
+    agent_type, model, estimated_cost_usd, started_at, updated_at) VALUES ${type_rows%,};"
 rm -f "$REPORT"
 USAGE_DB_DIR="$WORK/four" check "html renders four models" 0 "$REPORT" -- --html --no-open
 check_page "html shortens a session id, keeping the full id as its title" present \
@@ -477,6 +486,8 @@ check_page "html folds fable into Other" present \
     "<span class=\"swatch s4\"></span>Other (claude-fable): \$2.00"
 check_page "html folds agent types past the top 10 into Other" present \
     "<tr><th scope=\"row\">$(nw "Other")</th><td>3</td><td>0</td><td>$(nw "\$3.00")</td>"
+check_page "html sums the folded types' families into Other's mix" present \
+    "<td>$(nw "\$3.00")</td><td class=\"text\">Sonnet 33% · Haiku 33% · Opus 33%</td>"
 check_page "html heads mixed dollars plainly" present "<th scope=\"col\">Cost</th>"
 check_page "html notes mixed launch estimates" present \
     "Estimates from subscription sessions are API-equivalent, not money spent"
@@ -888,6 +899,89 @@ USAGE_NOW_EPOCH="$(epoch '2026-07-01 17:00:00')" \
 check_page "html labels the daylight offset" present "Generated 2026-07-01 12:00:00 (UTC−5)"
 USAGE_NOW_EPOCH=soon check "html rejects a non-numeric clock" 1 "USAGE_NOW_EPOCH" \
     -- --html --no-open
+
+# Subagent mixes. Types rank by cost with unpriced last; a row's segments follow slot order. Haiku
+# has no main-session cost, so its name comes from the fixed fallback. Zero-dollar and unpriced
+# types get no bar.
+mkdir -p "$WORK/agentmix"
+cp "$USAGE_DB" "$WORK/agentmix/usage.db"
+sqlite3 "$WORK/agentmix/usage.db" "DELETE FROM subagent_tasks; DELETE FROM cost_snapshots;
+    INSERT INTO cost_snapshots (tool, session_id, total_cost_usd, occurred_at, raw_json)
+    VALUES $(cost_row m-sonnet 1 '{"model":{"id":"claude-sonnet-5-5"}}'),
+    $(cost_row m-opus 1 '{"model":{"id":"claude-opus-5-5"}}');
+    INSERT INTO subagent_tasks (tool, parent_session_id, task_id, name, agent_type, model,
+        estimated_cost_usd, started_at, updated_at)
+    VALUES ('claude-code', 'm1', 'a1', 'Alpha opus', 'alpha', 'claude-opus-5-5', 3,
+        '2026-01-02T00:00:00Z', '2026-01-02T00:00:00Z'),
+        ('claude-code', 'm1', 'a2', 'Alpha sonnet', 'alpha', 'claude-sonnet-5-5', 1,
+        '2026-01-02T00:00:00Z', '2026-01-02T00:00:00Z'),
+        ('claude-code', 'm1', 'a3', 'Alpha unpriced', 'alpha', 'claude-opus-5-5', NULL,
+        '2026-01-02T00:00:00Z', '2026-01-02T00:00:00Z'),
+        ('claude-code', 'm1', 'b1', 'Beta', 'beta', 'claude-haiku-5-5', 2,
+        '2026-01-02T00:00:00Z', '2026-01-02T00:00:00Z'),
+        ('claude-code', 'm1', 'u1', 'No type', NULL, NULL, 1,
+        '2026-01-02T00:00:00Z', '2026-01-02T00:00:00Z'),
+        ('claude-code', 'm1', 'g1', 'Free', 'gamma', 'claude-sonnet-5-5', 0,
+        '2026-01-02T00:00:00Z', '2026-01-02T00:00:00Z'),
+        ('claude-code', 'm1', 'd1', 'Unpriced', 'delta', 'claude-opus-5-5', NULL,
+        '2026-01-02T00:00:00Z', '2026-01-02T00:00:00Z');"
+rm -f "$REPORT"
+USAGE_DB_DIR="$WORK/agentmix" check "html renders subagent mixes" 0 "$REPORT" -- --html --no-open
+agent_section() {
+    tr -d '\n' <"$REPORT" | sed -E 's/^.*Which subagent types//; s/<\/table>.*$//'
+}
+agent_order="$(agent_section | grep -oE '<th scope="row"><span class="nw">[^<]+</span></th>' |
+    sed -E 's/.*nw">([^<]+)<.*/\1/' | paste -sd, -)"
+if [[ "$agent_order" == "alpha,beta,(unknown),gamma,delta" ]]; then
+    echo "ok    subagent types rank by cost, unpriced last"
+else
+    printf 'FAIL  subagent types rank by cost, unpriced last: got [%s]\n' "$agent_order"
+    FAILURES=$((FAILURES + 1))
+fi
+check_page "html stacks a type's families in slot order" present \
+    "<td class=\"text\">Sonnet 25% · Opus 75%</td><td class=\"bar-cell\" aria-hidden=\"true\">\
+<span class=\"bar\" style=\"width: 100%\" title=\"Sonnet 25% · Opus 75%\"><span class=\"seg s1\" \
+style=\"flex: 0.25 1 0\" title=\"Sonnet: \$1.00\"></span><span class=\"seg s3\" \
+style=\"flex: 0.75 1 0\" title=\"Opus: \$3.00\"></span></span></td>"
+check_page "html counts an unpriced launch beside a type's priced mix" present \
+    "<th scope=\"row\"><span class=\"nw\">alpha</span></th><td>3</td><td>1</td>"
+check_page "html names a family no main session used by its fixed name" present \
+    "<td class=\"text\">Haiku 100%</td><td class=\"bar-cell\" aria-hidden=\"true\">\
+<span class=\"bar\" style=\"width: 50%\" title=\"Haiku 100%\"><span class=\"seg s2\" \
+style=\"flex: 1 1 0\" title=\"Haiku: \$2.00\"></span></span></td>"
+check_page "html shows a launch with no model as Other" present \
+    "<td class=\"text\">Other 100%</td><td class=\"bar-cell\" aria-hidden=\"true\">\
+<span class=\"bar\" style=\"width: 25%\" title=\"Other 100%\"><span class=\"seg s4\" \
+style=\"flex: 1 1 0\" title=\"Other: \$1.00\"></span></span></td>"
+check_page "html draws no bar for a type priced at zero" present \
+    "<td>$(nw "\$0.00")</td><td class=\"text\"></td><td class=\"bar-cell\" aria-hidden=\"true\"></td>"
+check_page "html draws no bar for an unpriced type" present \
+    "<td>$(nw "(unpriced)")</td><td class=\"text\"></td><td class=\"bar-cell\" aria-hidden=\"true\">\
+</td></tr></tbody>"
+check_page "html lists a subagent-only family in the legend" present \
+    "<li><span class=\"swatch s2\"></span>Haiku</li>"
+check_page "html never renders null in subagent mixes" absent "null"
+
+# With no priced launch there are no families to name, so the legend is left out. The column
+# header stays.
+mkdir -p "$WORK/agentlone"
+cp "$USAGE_DB" "$WORK/agentlone/usage.db"
+sqlite3 "$WORK/agentlone/usage.db" "DELETE FROM subagent_tasks; DELETE FROM cost_snapshots;
+    INSERT INTO subagent_tasks (tool, parent_session_id, task_id, name, agent_type, model,
+        estimated_cost_usd, started_at, updated_at)
+    VALUES ('claude-code', 'm1', 'l1', 'Lone', 'lone', NULL, NULL,
+        '2026-01-02T00:00:00Z', '2026-01-02T00:00:00Z');"
+rm -f "$REPORT"
+USAGE_DB_DIR="$WORK/agentlone" check "html renders an unpriced-only subagent table" 0 "$REPORT" \
+    -- --html --no-open
+check_page "html keeps the model mix header with no priced launch" present \
+    "<th scope=\"col\" class=\"text\">Model mix</th><td aria-hidden=\"true\"></td></tr></thead>"
+if agent_section | grep -q 'class="legend"'; then
+    echo "FAIL  html omits the subagent legend with no priced launch"
+    FAILURES=$((FAILURES + 1))
+else
+    echo "ok    html omits the subagent legend with no priced launch"
+fi
 
 # A render that fails after the temp file exists must exit 1 and remove it. Only the final
 # render passes --rawfile, so the fake jq fails there and defers to the real one elsewhere.

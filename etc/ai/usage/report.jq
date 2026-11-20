@@ -390,7 +390,10 @@ def cost:
   + "</section>";
 
 # A family's label from the daily chart's series, so the mix and the chart cannot drift apart.
-def family_name($c; $slot): [$c.series[] | select(.slot == $slot) | .label][0];
+# Subagent launches can use a family the main sessions never did, so slots 1-4 keep fixed names.
+def family_name($c; $slot):
+  ([$c.series[] | select(.slot == $slot) | .label][0])
+  // (["Sonnet", "Haiku", "Opus", "Other"][$slot - 1]);
 
 # A share of a row's dollars as a whole percent. Under 1% reads as <1%. Unescaped: callers escape.
 def mix_percent($usd; $total):
@@ -399,26 +402,29 @@ def mix_percent($usd; $total):
 
 # A row's mix as text in slot order, for example "Sonnet 75% · Opus 25%". Unescaped.
 def mix_text($c; $total):
-  map("\(family_name($c; .[0])) \(mix_percent(.[1]; $total))") | join(" · ");
+  sort_by(.[0])
+  | map("\(family_name($c; .[0])) \(mix_percent(.[1]; $total))") | join(" · ");
 
 # One row's bar: a flex stack with a segment for each family at least 1% of the row's dollars.
 # Each flex share is over the drawn total, so the shares sum to 1 and fill the bar.
 def stacked_bar($c; $usd; $max):
-  [.[] | select(.[1] / $usd >= 0.01)] as $drawn
+  [sort_by(.[0])[] | select(.[1] / $usd >= 0.01)] as $drawn
   | ($drawn | map(.[1]) | add) as $drawn_total
-  | "<span class=\"bar stack\" style=\"width: \((($usd / $max * 1000 | round) / 10))%\""
+  | "<span class=\"bar\" style=\"width: \((($usd / $max * 1000 | round) / 10))%\""
     + " title=\"\(mix_text($c; $usd) | esc)\">"
     + ($drawn | map("<span class=\"seg s\(.[0])\" style=\"flex: \(.[1] / $drawn_total) 1 0\""
         + " title=\"\((family_name($c; .[0]) + ": $" + .[2]) | esc)\"></span>") | join(""))
     + "</span>";
 
-# Legend for the families present in the project table, in series order.
-def mix_legend($c):
-  ([$c.projects[].mix[] | .[0]] | unique) as $slots
-  | "<ul class=\"legend\">"
-  + ([$c.series[] | select(.slot as $s | $slots | contains([$s]))
-      | "<li><span class=\"swatch s\(.slot)\"></span>\(.label | esc)</li>"] | join(""))
-  + "</ul>";
+# Legend for the families in the given mixes, in slot order. Empty when no family is drawn.
+def mix_legend($c; $mixes):
+  ([$mixes[][] | .[0]] | unique) as $slots
+  | if $slots == [] then ""
+    else "<ul class=\"legend\">"
+      + ([[1, 2, 3, 4][] | select(. as $s | $slots | contains([$s]))
+        | "<li><span class=\"swatch s\(.)\"></span>\(family_name($c; .) | esc)</li>"] | join(""))
+      + "</ul>"
+    end;
 
 # Bars are widths relative to the costliest row, set inline: the CSP allows inline styles.
 def projects:
@@ -434,7 +440,7 @@ def projects:
       + " by the project directory each snapshot reported."
       + " Paths under <code>/tmp</code>, <code>/private/tmp</code>, and <code>$TMPDIR</code>"
       + " count as Other. \($c | dollar_note)</p>"
-      + mix_legend($c)
+      + mix_legend($c; [$c.projects[].mix])
       + "<table class=\"bars\"><thead><tr><th scope=\"col\" class=\"text\">Project</th>"
       + "<th scope=\"col\">Sessions</th><th scope=\"col\">\($c | dollar_header("cost"))</th>"
       + "<th scope=\"col\" class=\"text\">Model mix</th>"
@@ -490,17 +496,19 @@ def agent_types:
         else "for the last 31 days" end).</p>"
     else
       ([$t[] | .usd // 0] | max) as $max
-      | "<table class=\"bars\"><thead><tr><th scope=\"col\" class=\"text\">Agent type</th>"
+      | mix_legend($c; [$t[].mix])
+      + "<table class=\"bars\"><thead><tr><th scope=\"col\" class=\"text\">Agent type</th>"
       + "<th scope=\"col\">Launches</th><th scope=\"col\">Unpriced</th>"
       + "<th scope=\"col\">\({kind: $c.launch_kind} | dollar_header("estimate"))</th>"
+      + "<th scope=\"col\" class=\"text\">Model mix</th>"
       + "<td aria-hidden=\"true\"></td></tr></thead><tbody>"
-      + ($t | map(
-          "<tr><th scope=\"row\">\(.agent_type | nowrap)</th><td>\(.launches | esc)</td>"
+      + ($t | map(. as $a
+          | "<tr><th scope=\"row\">\(.agent_type | nowrap)</th><td>\(.launches | esc)</td>"
           + "<td>\(.unpriced | esc)</td><td>\(.estimate | nowrap)</td>"
+          + "<td class=\"text\">\($a.mix | mix_text($c; $a.usd) | esc)</td>"
           + "<td class=\"bar-cell\" aria-hidden=\"true\">"
-          + (if .usd == null or $max == 0 then ""
-            else "<span class=\"bar\" style=\"width: \((.usd / $max * 1000 | round) / 10)%\">"
-              + "</span>"
+          + (if .usd == null or .usd == 0 or $max == 0 then ""
+            else $a.mix | stacked_bar($c; $a.usd; $max)
             end)
           + "</td></tr>") | join(""))
       + "</tbody></table>"

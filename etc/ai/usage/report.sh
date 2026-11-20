@@ -422,6 +422,37 @@ SELECT subagent_tasks.* FROM subagent_tasks, clock, cost_clock
 SQL
 }
 
+# Each agent type's launch totals with its rank by cost, unpriced last. The table and the model
+# mix both read this, so they fold the same types into Other.
+agent_type_ranks_sql() {
+    cat <<SQL
+SELECT agent_type, launches, unpriced, usd,
+        row_number() OVER (ORDER BY usd IS NULL, usd DESC, agent_type) AS rank
+    FROM (SELECT COALESCE(agent_type, '(unknown)') AS agent_type, COUNT(*) AS launches,
+            COUNT(*) - COUNT(estimated_cost_usd) AS unpriced,
+            sum(estimated_cost_usd) AS usd
+        FROM ($(window_launches_sql)) GROUP BY 1)
+SQL
+}
+
+# Each final label's priced cost per family slot, as [slot, usd, text] rows. Zero-dollar slots
+# are left out, so a row's mix sums to its usd and holds no empty segment. A label with no
+# priced cost has no row, and the table reads that as an empty mix.
+agent_type_mix_sql() {
+    cat <<SQL
+SELECT label, json_group_array(json_array(slot, usd, printf('%.2f', usd))) AS mix
+    FROM (SELECT label, slot, sum(usd) AS usd
+        FROM (SELECT CASE WHEN r.rank <= $REPORT_TOP_ROWS THEN r.agent_type ELSE 'Other' END
+                AS label, $(model_slot_sql l.model) AS slot, l.estimated_cost_usd AS usd
+            FROM ($(window_launches_sql)) l
+                JOIN ($(agent_type_ranks_sql)) r
+                    ON r.agent_type = COALESCE(l.agent_type, '(unknown)')
+            WHERE l.estimated_cost_usd IS NOT NULL)
+        GROUP BY label, slot HAVING sum(usd) > 0 ORDER BY label, slot)
+    GROUP BY label
+SQL
+}
+
 # Launch estimates per agent type, the costliest REPORT_TOP_ROWS types first and the rest as
 # Other. A type sums its own priced launches; estimates are already inside their sessions'
 # cost, so nothing here is summed across types.
@@ -429,17 +460,18 @@ agent_types_json_sql() {
     cat <<SQL
 json((SELECT json_group_array(json_object('agent_type', label, 'launches', launches,
         'unpriced', unpriced, 'usd', usd,
-        'estimate', CASE WHEN usd IS NULL THEN '(unpriced)' ELSE printf('\$%.2f', usd) END))
-    FROM (SELECT CASE WHEN rank <= $REPORT_TOP_ROWS THEN agent_type ELSE 'Other' END AS label,
-            CAST(sum(launches) AS TEXT) AS launches, CAST(sum(unpriced) AS TEXT) AS unpriced,
-            sum(usd) AS usd, min(rank) AS first_rank
-        FROM (SELECT agent_type, launches, unpriced, usd,
-                row_number() OVER (ORDER BY usd IS NULL, usd DESC, agent_type) AS rank
-            FROM (SELECT COALESCE(agent_type, '(unknown)') AS agent_type, COUNT(*) AS launches,
-                    COUNT(*) - COUNT(estimated_cost_usd) AS unpriced,
-                    sum(estimated_cost_usd) AS usd
-                FROM ($(window_launches_sql)) GROUP BY 1))
-        GROUP BY label ORDER BY first_rank)))
+        'estimate', CASE WHEN usd IS NULL THEN '(unpriced)' ELSE printf('\$%.2f', usd) END,
+        'mix', json(COALESCE(mix, '[]'))))
+    FROM (SELECT g.*, m.mix
+        FROM (SELECT CASE WHEN r.rank <= $REPORT_TOP_ROWS THEN r.agent_type ELSE 'Other' END
+                AS label,
+                CAST(sum(r.launches) AS TEXT) AS launches,
+                CAST(sum(r.unpriced) AS TEXT) AS unpriced,
+                sum(r.usd) AS usd, min(r.rank) AS first_rank
+            FROM ($(agent_type_ranks_sql)) r
+            GROUP BY label) g
+            LEFT JOIN ($(agent_type_mix_sql)) m ON m.label = g.label
+        ORDER BY g.first_rank)))
 SQL
 }
 
