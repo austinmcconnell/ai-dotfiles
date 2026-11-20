@@ -502,7 +502,9 @@ burn_page() {
         -- --html --no-open
 }
 burn_tile_html() {
-    printf '<div class="tile"><h3>%s</h3><p class="figure">%s</p><p>%s</p></div>' "$@"
+    local meta=""
+    [[ -n "${4:-}" ]] && meta="<p class=\"meta\">$4</p>"
+    printf '<div class="tile"><h3>%s</h3><p class="figure">%s</p><p>%s</p>%s</div>' "$1" "$2" "$3" "$meta"
 }
 same_cost_days() {
     local month="$1" first="$2" last="$3" usd="$4" day
@@ -524,9 +526,8 @@ mid_month() {
 }
 burn_page "html renders a burn rate mid-month" "2026-03-18 15:00:00" < <(mid_month 4)
 check_page "html averages this month's complete days before today" present \
-    "$(burn_tile_html 'Daily rate' "\$8.35 a day" "$(rate_detail 17)")"
-check_page "html shows the recent pace against the month's rate" present \
-    "$(burn_tile_html 'Recent pace' "\$6.00 a day" "Mean of the last 7 complete days, 0.72× this month's daily rate. A pacing signal, not part of the projection.")"
+    "$(burn_tile_html 'Daily rate' "\$8.35 a day" "$(rate_detail 17)" \
+        "Last 7 complete days: \$6.00 a day, 0.72× this month's rate.")"
 check_page "html books the month to date mid-month" present \
     "$(burn_tile_html 'Month to date' "\$146.00" "$(month_detail 2026-03)")"
 check_page "html counts today at the rate when it is under it" present \
@@ -581,7 +582,8 @@ BURN_EXTRA_SQL="INSERT INTO subagent_tasks (tool, parent_session_id, task_id, na
 2026-03-02 2
 EOF
 check_page "html does not rate from the days before the 1st" present \
-    "$(burn_tile_html 'Daily rate' 'Not enough history' 'Needs 3 complete days; 1 so far.')"
+    "$(burn_tile_html 'Daily rate' 'Not enough history' 'Needs 3 complete days; 1 so far.' \
+        'Last 7 days: needs 7 complete days; 1 so far.')"
 check_page "html does not project from the days before the 1st" present \
     "$(burn_tile_html 'Projected month end' 'Not enough history' 'A projection needs a daily rate.')"
 check_page "html leaves last month out of the daily table" absent \
@@ -607,7 +609,8 @@ burn_page "html renders the 1st before any cost" "2026-03-01 09:00:00" < <(same_
 check_page "html says no cost is recorded yet this month" present \
     "No cost is recorded yet this month."
 check_page "html shows no rate on the 1st from last month's cost" present \
-    "$(burn_tile_html 'Daily rate' 'Not enough history' 'Needs 3 complete days; 0 so far.')"
+    "$(burn_tile_html 'Daily rate' 'Not enough history' 'Needs 3 complete days; 0 so far.' \
+        'Last 7 days: needs 7 complete days; 0 so far.')"
 check_page "html shows no projection on the 1st from last month's cost" present \
     "$(burn_tile_html 'Projected month end' 'Not enough history' 'A projection needs a daily rate.')"
 
@@ -627,7 +630,7 @@ check_page "html books the whole month on the 31st" present \
 check_page "html projects the last day of the month from the rate" present \
     "$(burn_tile_html 'Projected month end' "\$144.67" "$(projection_detail 2026-12-31)")"
 check_page "html takes the recent pace from the last 7 days of the month" present \
-    "$(burn_tile_html 'Recent pace' "\$3.00 a day" "Mean of the last 7 complete days, 0.64× this month's daily rate. A pacing signal, not part of the projection.")"
+    "Last 7 complete days: \$3.00 a day, 0.64× this month's rate."
 
 # A first cost after the 1st: the month to date starts there, but the rate still divides by every
 # complete day since the 1st, so the idle days pull it down: 30 over 15 days is 2.00.
@@ -639,15 +642,17 @@ burn_page "html renders a first cost after the 1st" "2026-11-16 15:00:00" <<EOF
 2026-11-15 6
 EOF
 check_page "html averages every complete day of the month" present \
-    "$(burn_tile_html 'Daily rate' "\$2.00 a day" "$(rate_detail 15)")"
+    "$(burn_tile_html 'Daily rate' "\$2.00 a day" "$(rate_detail 15)" \
+        "Last 7 complete days: \$4.29 a day, 2.14× this month's rate.")"
 check_page "html projects a day with no cost so far at the rate" present \
     "$(burn_tile_html 'Projected month end' "\$60.00" "$(projection_detail 2026-11-30)")"
 
 echo "2026-01-02 3" | burn_page "html renders a single day of cost" "2026-01-02 15:00:00"
 check_page "html shows no rate for a first day" present \
-    "$(burn_tile_html 'Daily rate' 'Not enough history' 'Needs 3 complete days; 1 so far.')"
+    "$(burn_tile_html 'Daily rate' 'Not enough history' 'Needs 3 complete days; 1 so far.' \
+        'Last 7 days: needs 7 complete days; 1 so far.')"
 check_page "html shows no recent pace before seven complete days" present \
-    "$(burn_tile_html 'Recent pace' 'Not enough history' 'Needs 7 complete days; 1 so far.')"
+    "Last 7 days: needs 7 complete days; 1 so far."
 check_page "html still books a single day" present \
     "$(burn_tile_html 'Month to date' "\$3.00" "$(month_detail 2026-01)")"
 check_page "html draws no projection before there is a rate" absent '<path class="proj"'
@@ -673,7 +678,8 @@ burn_page "html renders across fall-back" "2026-11-04 15:00:00" <<EOF
 2026-11-03 4
 EOF
 check_page "html counts a 25-hour day as one day" present \
-    "$(burn_tile_html 'Daily rate' "\$4.00 a day" "$(rate_detail 3)")"
+    "$(burn_tile_html 'Daily rate' "\$4.00 a day" "$(rate_detail 3)" \
+        "Last 7 days: needs 7 complete days; 3 so far.")"
 check_page "html leaves the day before the 1st out of the daily table" absent \
     "<th scope=\"row\">$(nw "2026-10-31")</th>"
 check_page "html books only this month to the month to date" present \

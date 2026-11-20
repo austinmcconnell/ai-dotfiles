@@ -72,8 +72,21 @@ def dollar_note:
     + " money spent; the other $\(.other_usd | esc) is at API rates."
   end;
 
-def burn_tile($title; $figure; $detail):
-  "<div class=\"tile\"><h3>\($title)</h3><p class=\"figure\">\($figure)</p><p>\($detail)</p></div>";
+def burn_tile($title; $figure; $detail; $sub):
+  "<div class=\"tile\"><h3>\($title)</h3><p class=\"figure\">\($figure)</p><p>\($detail)</p>"
+  + (if $sub == "" then "" else "<p class=\"meta\">\($sub)</p>" end)
+  + "</div>";
+
+# The recent pace under the daily rate: the last seven complete days against the month's rate, or
+# how far off that is until there are enough days.
+def recent_line($b):
+  if $b.recent == "" then
+    "Last \($b.recent_days | esc) days: needs \($b.recent_days | esc) complete days;"
+    + " \($b.rate_days | esc) so far."
+  else
+    "Last \($b.recent_days | esc) complete days: $\($b.recent | esc) a day"
+    + (if $b.ratio == "" then "." else ", \($b.ratio | esc)× this month's rate." end)
+  end;
 
 # Cost pace for a machine with no quota rows (Enterprise or API), the same tile row as the quota
 # windows, longest window first. A figure that is not available arrives as an empty string,
@@ -86,29 +99,23 @@ def cost_pace:
   + " recorded, so it is an estimate, not a bill. \($c | dollar_note)</p>"
   + "<div class=\"tiles\">"
   + burn_tile("Month to date"; "$\($b.mtd | esc)";
-      "Local calendar month \($b.month | esc), through today.")
+      "Local calendar month \($b.month | esc), through today."; "")
   + (if $b.state == "ready" then
       burn_tile("Daily rate"; "$\($b.rate | esc) a day";
-        "Mean of this month's \($b.rate_days | esc) complete days, not counting today.")
+        "Mean of this month's \($b.rate_days | esc) complete days, not counting today.";
+        recent_line($b))
     else
       burn_tile("Daily rate"; "Not enough history";
-        "Needs \($b.min_days | esc) complete days; \($b.rate_days | esc) so far.")
+        "Needs \($b.min_days | esc) complete days; \($b.rate_days | esc) so far.";
+        recent_line($b))
     end)
   + (if $b.state == "ready" then
       burn_tile("Projected month end"; "$\($b.projected | esc)";
         "By \($b.month_end | esc), if the rate holds. Today counts as at least one day at the"
-        + " rate.")
+        + " rate."; "")
     else
-      burn_tile("Projected month end"; "Not enough history"; "A projection needs a daily rate.")
-    end)
-  + (if $b.recent == "" then
-      burn_tile("Recent pace"; "Not enough history";
-        "Needs \($b.recent_days | esc) complete days; \($b.rate_days | esc) so far.")
-    else
-      burn_tile("Recent pace"; "$\($b.recent | esc) a day";
-        "Mean of the last \($b.recent_days | esc) complete days"
-        + (if $b.ratio == "" then "" else ", \($b.ratio | esc)× this month's daily rate" end)
-        + ". A pacing signal, not part of the projection.")
+      burn_tile("Projected month end"; "Not enough history";
+        "A projection needs a daily rate."; "")
     end)
   + "</div>";
 
