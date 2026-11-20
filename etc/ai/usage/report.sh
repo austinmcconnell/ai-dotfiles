@@ -344,12 +344,21 @@ CASE
 SQL
 }
 
+# A project's display slot: its rank among the top REPORT_TOP_PROJECTS, else the shared Other
+# slot. The slot totals and the model mix both group by this, so they cannot disagree.
+project_slot_sql() {
+    cat <<SQL
+CASE WHEN r.rank <= $REPORT_TOP_PROJECTS THEN r.rank
+            ELSE $REPORT_TOP_PROJECTS + 1 END
+SQL
+}
+
 # Cost per project over the same window. Temp-directory paths fold into Other with every
 # project past the top REPORT_TOP_PROJECTS.
 project_ctes_sql() {
     cat <<SQL
-cost_project_rows(tool, session_id, project, usd) AS (
-    SELECT tool, session_id, $(project_label_sql project), usd
+cost_project_rows(tool, session_id, project, model, usd) AS (
+    SELECT tool, session_id, $(project_label_sql project), model, usd
     FROM cost_shown, clock WHERE usd > 0
 ),
 cost_project_rank(project, rank) AS (
@@ -357,12 +366,21 @@ cost_project_rank(project, rank) AS (
     FROM cost_project_rows WHERE project IS NOT NULL GROUP BY project
 ),
 cost_project_slots(slot, project, usd, sessions) AS (
-    SELECT CASE WHEN r.rank <= $REPORT_TOP_PROJECTS THEN r.rank
-            ELSE $REPORT_TOP_PROJECTS + 1 END AS slot,
+    SELECT $(project_slot_sql) AS slot,
         CASE WHEN r.rank <= $REPORT_TOP_PROJECTS THEN r.project ELSE 'Other' END,
         sum(p.usd), COUNT(DISTINCT p.tool || ' ' || p.session_id)
     FROM cost_project_rows p LEFT JOIN cost_project_rank r ON r.project = p.project
     GROUP BY slot
+),
+cost_project_families(slot, family, usd) AS (
+    SELECT $(project_slot_sql) AS slot, $(model_slot_sql p.model) AS family, sum(p.usd)
+    FROM cost_project_rows p LEFT JOIN cost_project_rank r ON r.project = p.project
+    GROUP BY slot, family
+),
+-- Each slot's families as JSON text, like cost_day_totals; the reader wraps it in json().
+cost_project_mix(slot, mix) AS (
+    SELECT slot, json_group_array(json_array(family, usd, printf('%.2f', usd)))
+    FROM (SELECT * FROM cost_project_families ORDER BY slot, family) GROUP BY slot
 )
 SQL
 }
@@ -464,8 +482,10 @@ json_object(
     'other_usd', (SELECT printf('%.2f', other_usd) FROM cost_split),
     'projects', json((SELECT json_group_array(json_object('project', project,
             'usd', usd, 'total', printf('%.2f', usd),
-            'sessions', printf('%d', sessions)))
-        FROM (SELECT * FROM cost_project_slots ORDER BY slot))),
+            'sessions', printf('%d', sessions),
+            'mix', json(COALESCE(mix, '[]'))))
+        FROM (SELECT s.*, m.mix FROM cost_project_slots s
+            LEFT JOIN cost_project_mix m ON m.slot = s.slot ORDER BY s.slot))),
     'top_sessions', $(sessions_json_sql),
     'agent_types', $(agent_types_json_sql),
     'launch_kind', $(launch_kind_sql),

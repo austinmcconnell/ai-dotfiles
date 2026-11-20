@@ -828,7 +828,8 @@ check_page "html folds temp paths and the tail into Other" present \
 check_page "html never lists a temp path" absent "/tmp/x"
 check_page "html folds TMPDIR into Other" absent "/var/tmpx"
 check_page "html lists Other last, scaled to the costliest row" present \
-    'width: 100%"></span></td></tr></tbody>'
+    "style=\"width: 100%\" title=\"Opus 100%\"><span class=\"seg s3\" style=\"flex: 1 1 0\" \
+title=\"Opus: \$14.00\"></span></span></td></tr></tbody>"
 check_page "html shows a temp-directory session as such" present \
     "<code title=\"tmp\">tmp</code></th><td>$(nw "2026-01-02") $(nw "11:00")</td>\
 <td class=\"text\">$(nw "claude-opus-5-5")</td><td class=\"text\">(temp directory)</td>"
@@ -838,6 +839,48 @@ else
     echo "FAIL  html lists at most 10 sessions"
     FAILURES=$((FAILURES + 1))
 fi
+
+# Stacked project bars: an all-Sonnet project, a Sonnet and Opus project with a Haiku session
+# under 1%, and a project under $1 split evenly, so its flex shares are checked below a total of 1.
+mkdir -p "$WORK/mix"
+cp "$USAGE_DB" "$WORK/mix/usage.db"
+mix_rows=""
+while read -r session cost model dir; do
+    payload="$(jq -nc --arg model "$model" --arg dir "$dir" \
+        '{model: {id: $model}, workspace: {project_dir: $dir}}')"
+    mix_rows+="('claude-code', '$session', $cost,
+        strftime('%Y-%m-%dT%H:%M:%SZ', $((USAGE_NOW_EPOCH - 3600)), 'unixepoch'),
+        $(sql_str "$payload")),"
+done <<EOF
+s1 2 claude-sonnet-5-5 /home/tester/only-sonnet
+m1 3 claude-sonnet-5-5 /home/tester/mixed
+m2 1 claude-opus-5-5 /home/tester/mixed
+m3 0.02 claude-haiku-5-5 /home/tester/mixed
+t1 0.25 claude-sonnet-5-5 /home/tester/small
+t2 0.25 claude-opus-5-5 /home/tester/small
+EOF
+sqlite3 "$WORK/mix/usage.db" "DELETE FROM cost_snapshots;
+    INSERT INTO cost_snapshots (tool, session_id, total_cost_usd, occurred_at, raw_json)
+    VALUES ${mix_rows%,};"
+rm -f "$REPORT"
+HOME=/home/tester USAGE_DB_DIR="$WORK/mix" \
+    check "html renders stacked project bars" 0 "$REPORT" -- --html --no-open
+check_page "html stacks a Sonnet-only project in one segment" present \
+    "title=\"Sonnet 100%\"><span class=\"seg s1\" style=\"flex: 1 1 0\" \
+title=\"Sonnet: \$2.00\"></span></span></td>"
+check_page "html draws Sonnet and Opus segments by their dollars" present \
+    "title=\"Sonnet 75% · Haiku &lt;1% · Opus 25%\"><span class=\"seg s1\" \
+style=\"flex: 0.75 1 0\" title=\"Sonnet: \$3.00\"></span><span class=\"seg s3\" \
+style=\"flex: 0.25 1 0\" title=\"Opus: \$1.00\"></span></span>"
+check_page "html names a family under 1% in the text cell" present \
+    "<td class=\"text\">Sonnet 75% · Haiku &lt;1% · Opus 25%</td>"
+check_page "html draws no segment for a family under 1%" absent 'class="seg s2"'
+check_page "html splits a project under \$1 by its shares" present \
+    "<span class=\"seg s1\" style=\"flex: 0.5 1 0\" title=\"Sonnet: \$0.25\"></span>\
+<span class=\"seg s3\" style=\"flex: 0.5 1 0\" title=\"Opus: \$0.25\"></span>"
+check_page "html lists the families in the project legend" present \
+    "<ul class=\"legend\"><li><span class=\"swatch s1\"></span>Sonnet</li>\
+<li><span class=\"swatch s2\"></span>Haiku</li><li><span class=\"swatch s3\"></span>Opus</li></ul>"
 
 rm -f "$REPORT"
 USAGE_NOW_EPOCH="$(epoch '2026-07-01 17:00:00')" \

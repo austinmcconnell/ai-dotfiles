@@ -88,6 +88,12 @@ td.text { overflow-wrap: break-word; }
 section { overflow-x: auto; }
 .bar-cell { width: 35%; }
 .bar { display: block; height: 0.6rem; min-width: 1px; border-radius: 2px; background: var(--s1); }
+.bar.stack { display: flex; gap: 2px; background: none; }
+.seg { display: block; min-width: 1px; }
+.seg.s1 { background: var(--s1); }
+.seg.s2 { background: var(--s2); }
+.seg.s3 { background: var(--s3); }
+.seg.s4 { background: var(--s4); }
 @media (max-width: 40rem) {
   .chart { overflow: visible; box-sizing: border-box; padding-left: 0.5rem; }
   .chart .tick { font-size: 18px; }

@@ -389,6 +389,37 @@ def cost:
     end)
   + "</section>";
 
+# A family's label from the daily chart's series, so the mix and the chart cannot drift apart.
+def family_name($c; $slot): [$c.series[] | select(.slot == $slot) | .label][0];
+
+# A share of a row's dollars as a whole percent. Under 1% reads as <1%. Unescaped: callers escape.
+def mix_percent($usd; $total):
+  ($usd / $total * 100 | round) as $p
+  | if $p == 0 then "<1%" else "\($p)%" end;
+
+# A row's mix as text in slot order, for example "Sonnet 75% · Opus 25%". Unescaped.
+def mix_text($c; $total):
+  map("\(family_name($c; .[0])) \(mix_percent(.[1]; $total))") | join(" · ");
+
+# One row's bar: a flex stack with a segment for each family at least 1% of the row's dollars.
+# Each flex share is over the drawn total, so the shares sum to 1 and fill the bar.
+def stacked_bar($c; $usd; $max):
+  [.[] | select(.[1] / $usd >= 0.01)] as $drawn
+  | ($drawn | map(.[1]) | add) as $drawn_total
+  | "<span class=\"bar stack\" style=\"width: \((($usd / $max * 1000 | round) / 10))%\""
+    + " title=\"\(mix_text($c; $usd) | esc)\">"
+    + ($drawn | map("<span class=\"seg s\(.[0])\" style=\"flex: \(.[1] / $drawn_total) 1 0\""
+        + " title=\"\((family_name($c; .[0]) + ": $" + .[2]) | esc)\"></span>") | join(""))
+    + "</span>";
+
+# Legend for the families present in the project table, in series order.
+def mix_legend($c):
+  ([$c.projects[].mix[] | .[0]] | unique) as $slots
+  | "<ul class=\"legend\">"
+  + ([$c.series[] | select(.slot as $s | $slots | contains([$s]))
+      | "<li><span class=\"swatch s\(.slot)\"></span>\(.label | esc)</li>"] | join(""))
+  + "</ul>";
+
 # Bars are widths relative to the costliest row, set inline: the CSP allows inline styles.
 def projects:
   .cost as $c
@@ -403,14 +434,17 @@ def projects:
       + " by the project directory each snapshot reported."
       + " Paths under <code>/tmp</code>, <code>/private/tmp</code>, and <code>$TMPDIR</code>"
       + " count as Other. \($c | dollar_note)</p>"
+      + mix_legend($c)
       + "<table class=\"bars\"><thead><tr><th scope=\"col\" class=\"text\">Project</th>"
       + "<th scope=\"col\">Sessions</th><th scope=\"col\">\($c | dollar_header("cost"))</th>"
+      + "<th scope=\"col\" class=\"text\">Model mix</th>"
       + "<td aria-hidden=\"true\"></td></tr></thead><tbody>"
-      + ($c.projects | map(
-          "<tr><th scope=\"row\">\(.project | path_cell)</th><td>\(.sessions | esc)</td>"
-          + "<td>\("$" + .total | nowrap)</td><td class=\"bar-cell\" aria-hidden=\"true\">"
-          + "<span class=\"bar\" style=\"width: \((.usd / $max * 1000 | round) / 10)%\">"
-          + "</span></td></tr>") | join(""))
+      + ($c.projects | map(. as $p
+          | "<tr><th scope=\"row\">\($p.project | path_cell)</th><td>\($p.sessions | esc)</td>"
+          + "<td>\("$" + $p.total | nowrap)</td>"
+          + "<td class=\"text\">\($p.mix | mix_text($c; $p.usd) | esc)</td>"
+          + "<td class=\"bar-cell\" aria-hidden=\"true\">"
+          + "\($p.mix | stacked_bar($c; $p.usd; $max))</td></tr>") | join(""))
       + "</tbody></table>"
     end)
   + "</section>";
