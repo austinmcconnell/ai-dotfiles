@@ -463,6 +463,25 @@ check_page "html describes subscription dollars to screen readers" present \
 check_page "html labels the burn-up's current figure" present \
     '<text class="end-label" x="336" y="168">30%</text>'
 
+# A 100% figure six and a half days into its window, so the label sits past day 6 and above the
+# line's end. Above the top of the plot it would be clipped, so it goes under the line instead.
+top_window_end=$((USAGE_NOW_EPOCH + 43200))
+mkdir -p "$WORK/burnup-top"
+cp "$USAGE_DB" "$WORK/burnup-top/usage.db"
+sqlite3 "$WORK/burnup-top/usage.db" "DELETE FROM rate_limit_snapshots; DELETE FROM cost_snapshots;
+    INSERT INTO rate_limit_snapshots (tool, five_hour_used_percentage,
+        seven_day_used_percentage, seven_day_resets_at, occurred_at) VALUES ('claude-code', 5, 100,
+        $top_window_end, strftime('%Y-%m-%dT%H:%M:%SZ', $((USAGE_NOW_EPOCH - 3600)), 'unixepoch'));
+    INSERT INTO cost_snapshots (tool, session_id, total_cost_usd, occurred_at, raw_json)
+    VALUES ('claude-code', 's1', 1, strftime('%Y-%m-%dT%H:%M:%SZ', $USAGE_NOW_EPOCH, 'unixepoch'),
+        '{\"rate_limits\":{\"seven_day\":{\"used_percentage\":100,
+        \"resets_at\":$top_window_end}}}');"
+rm -f "$REPORT"
+USAGE_DB_DIR="$WORK/burnup-top" check "html renders a burn-up at the top" 0 "$REPORT" \
+    -- --html --no-open
+check_page "html keeps the top figure's label inside the plot" present \
+    '<text class="end-label" x="578.6" y="28" text-anchor="end">100%</text>'
+
 # Another session's stale 20% and 40% after 50% and 60% in the same windows, with no cost
 # snapshot after it. The tiles, pace, and line keep the higher figures as last seen an hour
 # ago, when an even 7d pace was 49%.

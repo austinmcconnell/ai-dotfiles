@@ -158,12 +158,13 @@ def step_path($points; $end_x):
   + "H\(plot_x([$end_x, $steps[-1][0]] | max))";
 
 # The current figure beside the line's end, the same rounding as the tile. Past 6 days it sits
-# above the end instead, so it stays inside the plot.
+# above the end instead, or under the end near the top, so it stays inside the plot.
 def end_label($b; $used):
   ([$b.end_x // 0, $b.points[-1][0]] | max) as $x
   | plot_y($b.points[-1][1]) as $y
   | if $x > 6 then
-      "<text class=\"end-label\" x=\"\(plot_x($x))\" y=\"\($y - 8)\" text-anchor=\"end\">"
+      "<text class=\"end-label\" x=\"\(plot_x($x))\""
+      + " y=\"\(if $y < 24 then $y + 18 else $y - 8 end)\" text-anchor=\"end\">"
       + "\($used | esc)</text>"
     else
       "<text class=\"end-label\" x=\"\(plot_x($x) + 6)\" y=\"\($y + 4)\">\($used | esc)</text>"
