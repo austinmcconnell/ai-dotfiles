@@ -183,7 +183,11 @@ mode_by_effort() {
             printf('%.2f', SUM(COALESCE(cost_delta_usd, 0))) AS total_cost_usd
         FROM v_cost_deltas
         GROUP BY model, effort
-        ORDER BY model, SUM(COALESCE(cost_delta_usd, 0)) DESC;
+        ORDER BY $(model_slot_sql v_cost_deltas.model), v_cost_deltas.model IS NULL,
+            v_cost_deltas.model, $(effort_order_sql v_cost_deltas.effort),
+            CASE WHEN $(effort_order_sql v_cost_deltas.effort) = 6
+                THEN CAST(v_cost_deltas.effort AS INTEGER) END,
+            v_cost_deltas.effort;
     " "$NO_COST_SNAPSHOTS"
     echo
     print_attribution_caveat

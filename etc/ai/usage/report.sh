@@ -331,19 +331,6 @@ CASE
 SQL
 }
 
-# A model ID ($1) as its fixed series slot: 1 Haiku, 2 Sonnet, 3 Opus, else 4 Other, cheapest
-# family first. Substring matching keeps dated and Bedrock/Vertex-style IDs in their family.
-model_slot_sql() {
-    local model="$1"
-    cat <<SQL
-CASE
-            WHEN lower($model) LIKE '%sonnet%' THEN 2
-            WHEN lower($model) LIKE '%haiku%' THEN 1
-            WHEN lower($model) LIKE '%opus%' THEN 3
-            ELSE 4 END
-SQL
-}
-
 # A project's display slot: its rank among the top REPORT_TOP_PROJECTS, else the shared Other
 # slot. The slot totals and the model mix both group by this, so they cannot disagree.
 project_slot_sql() {

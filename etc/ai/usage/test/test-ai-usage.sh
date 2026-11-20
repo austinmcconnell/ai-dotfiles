@@ -131,6 +131,63 @@ check_row "by-effort splits a model switch by effort" \
 check_row "by-effort sums a model's cost at one effort" \
     '^claude-sonnet-5-5 +medium +2 +2\.50 *$' --by-effort
 check "by-model notes how cost is booked" 0 "main session's model" -- --by-model
+
+# Each new snapshot is its own session, so its cost is its own delta. Rows sort by family, then
+# model ID, then effort: named levels, numeric budgets by value, other text, and (unset) last.
+mkdir -p "$WORK/effort-order"
+cp "$USAGE_DB" "$WORK/effort-order/usage.db"
+raw_snapshot() {
+    printf "INSERT INTO cost_snapshots (tool, session_id, total_cost_usd, occurred_at, raw_json)
+        VALUES ('claude-code', '%s', %s, '2026-01-01T00:00:00Z', '%s');\n" "$1" "$2" "$3"
+}
+sqlite3 "$WORK/effort-order/usage.db" "
+    $(snapshot h1 0.10 claude-haiku-5-5 low)
+    $(raw_snapshot h2 0.20 '{"model":{"id":"claude-haiku-5-5"}}')
+    $(raw_snapshot n1 0.30 '{"effort":{"level":"high"}}')
+    $(snapshot o1 0.40 claude-opus-5 16000)
+    $(snapshot o2 0.50 claude-opus-5 8000)
+    $(snapshot o3 0.60 claude-opus-5 max)
+    $(snapshot o4 0.05 claude-opus-5 low)
+    $(snapshot p1 0.70 claude-opus-5-5 xhigh)
+    $(snapshot p2 0.80 claude-opus-5-5 beta)
+"
+expected_effort_order='claude-haiku-5-5 low
+claude-haiku-5-5 (unset)
+claude-sonnet-5-5 medium
+claude-opus-5 low
+claude-opus-5 max
+claude-opus-5 8000
+claude-opus-5 16000
+claude-opus-5-5 high
+claude-opus-5-5 xhigh
+claude-opus-5-5 beta
+(unknown) high'
+actual_effort_order="$(USAGE_DB_DIR="$WORK/effort-order" "$AI_USAGE" --by-effort |
+    awk '/^-/ {rows = 1; next} /^$/ {rows = 0} rows {print $1, $2}')"
+if [[ "$actual_effort_order" == "$expected_effort_order" ]]; then
+    echo "ok    by-effort orders rows by family, model ID, then effort"
+else
+    printf 'FAIL  by-effort orders rows by family, model ID, then effort:\n%s\n' \
+        "$actual_effort_order"
+    FAILURES=$((FAILURES + 1))
+fi
+
+# Haiku's cost is the highest, so by-model lists it first: ahead of Opus, which ID order would
+# put before Sonnet.
+mkdir -p "$WORK/by-model-cost"
+cp "$USAGE_DB" "$WORK/by-model-cost/usage.db"
+sqlite3 "$WORK/by-model-cost/usage.db" "$(snapshot h1 5.00 claude-haiku-5-5 low)"
+expected_model_order='claude-haiku-5-5
+claude-sonnet-5-5
+claude-opus-5-5'
+actual_model_order="$(USAGE_DB_DIR="$WORK/by-model-cost" "$AI_USAGE" --by-model |
+    awk '/^-/ {rows = 1; next} /^$/ {rows = 0} rows {print $1}')"
+if [[ "$actual_model_order" == "$expected_model_order" ]]; then
+    echo "ok    by-model stays ordered by cost descending"
+else
+    printf 'FAIL  by-model stays ordered by cost descending:\n%s\n' "$actual_model_order"
+    FAILURES=$((FAILURES + 1))
+fi
 check "seeded rate-limits" 0 "42%" -- --rate-limits
 
 # Costs 9.00 and 10.00 sort wrongly if compared as text; the third launch is unpriced with no

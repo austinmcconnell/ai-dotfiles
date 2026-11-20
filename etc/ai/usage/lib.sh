@@ -138,6 +138,36 @@ sql_num() {
     fi
 }
 
+# A model ID ($1) as its fixed series slot: 1 Haiku, 2 Sonnet, 3 Opus, else 4 Other, cheapest
+# family first. Substring matching keeps dated and Bedrock/Vertex-style IDs in their family.
+model_slot_sql() {
+    local model="$1"
+    cat <<SQL
+CASE
+            WHEN lower($model) LIKE '%sonnet%' THEN 2
+            WHEN lower($model) LIKE '%haiku%' THEN 1
+            WHEN lower($model) LIKE '%opus%' THEN 3
+            ELSE 4 END
+SQL
+}
+
+# An effort value ($1) as its display bucket: named levels 1-5, numeric budgets 6, other text 7,
+# NULL 8. Ordering within a bucket is left to the caller.
+effort_order_sql() {
+    local effort="$1"
+    cat <<SQL
+CASE
+            WHEN $effort IS NULL THEN 8
+            WHEN $effort = 'low' THEN 1
+            WHEN $effort = 'medium' THEN 2
+            WHEN $effort = 'high' THEN 3
+            WHEN $effort = 'xhigh' THEN 4
+            WHEN $effort = 'max' THEN 5
+            WHEN $effort != '' AND $effort NOT GLOB '*[^0-9]*' THEN 6
+            ELSE 7 END
+SQL
+}
+
 # One unit-separator-joined row per subagent task in a subagentStatusLine payload,
 # in the column order the read loop in claude-subagent-statusline.sh expects. The name is the
 # launch description, which is fixed, not `.label`, which tracks the live activity. Newlines and
