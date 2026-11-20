@@ -431,8 +431,8 @@ session whose `sessions` row says it began before the window, or that has no `se
 its first row there from its last earlier snapshot, not from 0, so its earlier cost stays out of the
 window. Models group into Haiku, Sonnet and Opus by family, cheapest first, each with a fixed
 colour. Every other model shares Other, which is always grey and stacked on top. A 2px surface gap
-separates stacked segments. The light-mode green falls below 3:1 contrast, so the daily figures also
-appear as a table.
+separates stacked segments. The light-mode Sonnet aqua falls below 3:1 contrast, so the daily
+figures also appear as a table.
 
 The project table covers the same days, by the `workspace.project_dir` each snapshot reported. A
 path under `$HOME` shows as `~`, and the eight costliest projects get their own rows. The rest share
